@@ -5,7 +5,7 @@ import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Output;
-import de.eldoria.bloodnight.nodes.base.OutputContainer;
+import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
 @Input(name = Fields.FIRST, type = DataType.ANY)

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MetadataReader {
+public final class MetadataReader {
 
     public static <T> Map<String, DataType> readInputs(Class<? extends T> klass) {
         return Arrays.stream(klass.getAnnotationsByType(Input.class))

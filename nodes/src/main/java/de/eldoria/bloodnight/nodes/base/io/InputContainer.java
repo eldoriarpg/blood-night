@@ -1,13 +1,14 @@
-package de.eldoria.bloodnight.nodes.base;
+package de.eldoria.bloodnight.nodes.base.io;
 
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.util.Checks;
+import de.eldoria.bloodnight.util.Numbers;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class InputContainer {
+public final class InputContainer {
     private final Map<String, DataType> inputFields;
     private final Map<String, Field> fields = new HashMap<>();
 
@@ -32,5 +33,26 @@ public class InputContainer {
         var field = fields.get(name);
         Checks.notNull(field, "No value set for field with name %s. Available names are %s.".formatted(name, String.join(", ", inputFields.keySet())));
         return (T) container.get(field.node()).output(container).get(field.name());
+    }
+
+    public InputMapping map(NodeContainer container, String name) {
+        return new InputMapping(get(container, name));
+    }
+
+    public record InputMapping(Object object) {
+        public int asInt() {
+            return Numbers.asInt(get());
+        }
+        public double asDouble() {
+            return Numbers.asDouble(get());
+        }
+        public float asFloat() {
+            return Numbers.asFloat(get());
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> T get(){
+            return (T) object;
+        }
     }
 }

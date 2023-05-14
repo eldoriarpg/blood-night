@@ -1,8 +1,7 @@
 package de.eldoria.bloodnight.nodes.action;
 
-import de.eldoria.bloodnight.nodes.NodeContainer;
-import de.eldoria.bloodnight.nodes.base.ExecutableNode;
+import de.eldoria.bloodnight.nodes.base.execution.ExecutableNode;
 
-public abstract class ActionNode extends ExecutableNode {
+public non-sealed abstract class ActionNode extends ExecutableNode {
 
 }

@@ -1,17 +1,22 @@
 package de.eldoria.bloodnight.nodes.input.impl;
 
 import de.eldoria.bloodnight.nodes.DataType;
+import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Output;
-import de.eldoria.bloodnight.nodes.base.OutputContainer;
+import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.input.ValueNode;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-@Output(name = "result", type = DataType.NUMBER)
+@Input(name = Fields.LOWER, type = DataType.NUMBER)
+@Input(name = Fields.UPPER, type = DataType.NUMBER)
+@Output(name = Fields.RESULT, type = DataType.NUMBER)
 public final class RandomNumberNode extends ValueNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        return super.output(container).set("result", ThreadLocalRandom.current().nextDouble());
+        double result = ThreadLocalRandom.current().nextDouble(input().map(container, Fields.LOWER).asDouble(), input().map(container, Fields.UPPER).asDouble());
+        return super.output(container).set(Fields.RESULT, result);
     }
 }

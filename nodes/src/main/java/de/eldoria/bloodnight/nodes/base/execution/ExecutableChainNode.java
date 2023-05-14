@@ -1,12 +1,15 @@
-package de.eldoria.bloodnight.nodes.base;
+package de.eldoria.bloodnight.nodes.base.execution;
 
 import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.base.io.ExecutionContainer;
+import de.eldoria.bloodnight.nodes.controlflow.ControlFlowNode;
+import de.eldoria.bloodnight.nodes.trigger.TriggerNode;
 import de.eldoria.bloodnight.util.Checks;
 
 import java.util.Set;
 
-public class ExecutableChainNode<T extends ExecutableChainNode<T>> extends ExecutableNode {
+public sealed class ExecutableChainNode<T extends ExecutableChainNode<T>> extends ExecutableNode permits ControlFlowNode, TriggerNode {
     private final ExecutionContainer executions = new ExecutionContainer(MetadataReader.readExecutions(this.getClass()));
 
     public ExecutableChainNode() {
@@ -25,12 +28,12 @@ public class ExecutableChainNode<T extends ExecutableChainNode<T>> extends Execu
     @Override
     public void invoke(NodeContainer container) {
         for (var out : executions.names()) {
-            for (Integer nextNode : executions.next(out)) {
-                if (container.get(nextNode) instanceof ExecutableNode exec) {
-                    exec.invoke(container);
-                }
-            }
+            executions().invokeNext(container, out);
         }
+    }
+
+    public ExecutionContainer executions() {
+        return executions;
     }
 
     @SuppressWarnings("unchecked")

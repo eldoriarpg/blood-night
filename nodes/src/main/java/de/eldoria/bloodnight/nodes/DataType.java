@@ -1,6 +1,9 @@
 package de.eldoria.bloodnight.nodes;
 
 public enum DataType {
+    EVENT,
+    ENTITY,
+    CANCELABLE_EVENT,
     INTEGER,
     NUMBER(INTEGER),
     STRING,

@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.base;
+package de.eldoria.bloodnight.nodes.base.io;
 
 import de.eldoria.bloodnight.nodes.DataType;
 
@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OutputContainer {
+public final class OutputContainer {
     private final Map<String, DataType> outputFields;
     private final Map<String, Object> values;
 

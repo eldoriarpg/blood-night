@@ -3,11 +3,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.math;
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
-import de.eldoria.bloodnight.nodes.base.Field;
+import de.eldoria.bloodnight.nodes.base.io.Field;
 import de.eldoria.bloodnight.nodes.input.impl.IntegerNode;
 import org.junit.jupiter.api.Test;
-
-import javax.xml.crypto.Data;
 
 import static org.junit.jupiter.api.Assertions.*;
 
