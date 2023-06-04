@@ -8,13 +8,16 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
+/**
+ * A node combining two object with an equals check.
+ */
 @Input(name = Fields.FIRST, type = DataType.ANY)
 @Input(name = Fields.SECOND, type = DataType.ANY)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
 public final class EqualNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        var result = input().get(container, Fields.FIRST).equals(input().get(container, Fields.SECOND));
+        var result = input().value(container, Fields.FIRST).equals(input().value(container, Fields.SECOND));
         return super.output(container).set(Fields.RESULT, result);
     }
 }

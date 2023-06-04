@@ -8,12 +8,15 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
+/**
+ * A node inverting a boolean value.
+ */
 @Input(name = Fields.FIRST, type = DataType.BOOLEAN)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
 public final class NotNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        var result = !(boolean) input().get(container, Fields.FIRST);
+        var result = !(boolean) input().value(container, Fields.FIRST);
         return super.output(container).set(Fields.RESULT, result);
     }
 }

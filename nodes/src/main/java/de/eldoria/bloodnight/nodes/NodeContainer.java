@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A container holding a bunch of nodes.
+ */
 public final class NodeContainer {
     private final Map<Integer, Node> nodes = new HashMap<>();
 

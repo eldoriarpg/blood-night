@@ -9,8 +9,10 @@ import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.util.Vector;
 
+/**
+ * Node to construct a {@link Location}.
+ */
 @Input(name = Fields.WORLD, type = DataType.WORLD)
 @Input(name = Fields.X, type = DataType.NUMBER)
 @Input(name = Fields.Y, type = DataType.NUMBER)
@@ -22,7 +24,7 @@ import org.bukkit.util.Vector;
 public final class CreateLocationNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        World world = input().get(container, Fields.WORLD);
+        World world = input().value(container, Fields.WORLD);
         double x = input().map(container, Fields.X).asDouble();
         double y = input().map(container, Fields.Y).asDouble();
         double z = input().map(container, Fields.Z).asDouble();

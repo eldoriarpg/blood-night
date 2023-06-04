@@ -6,9 +6,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * An execution output field on a node
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Executions.class)
 public @interface Execution {
+    /**
+     * Unique name of the output execution field
+     * @return string
+     */
     String value();
 }

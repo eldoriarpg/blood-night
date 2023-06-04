@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Class used to read metadata from class annotations.
+ */
 public final class MetadataReader {
 
     public static <T> Map<String, DataType> readInputs(Class<? extends T> klass) {

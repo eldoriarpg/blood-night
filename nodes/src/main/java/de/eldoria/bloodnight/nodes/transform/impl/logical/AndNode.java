@@ -8,13 +8,16 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
+/**
+ * A node combining two booleans with an {@code AND} operator.
+ */
 @Input(name = Fields.FIRST, type = DataType.BOOLEAN)
 @Input(name = Fields.SECOND, type = DataType.BOOLEAN)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
 public final class AndNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        var result = (boolean) input().get(container, Fields.FIRST) && (boolean) input().get(container, Fields.SECOND);
+        var result = (boolean) input().value(container, Fields.FIRST) && (boolean) input().value(container, Fields.SECOND);
         return super.output(container).set(Fields.RESULT, result);
     }
 }

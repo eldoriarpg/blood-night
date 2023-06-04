@@ -9,13 +9,16 @@ import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import org.bukkit.util.Vector;
 
+/**
+ * Returns the squared distance between two points.
+ */
 @Input(name = Fields.FIRST, type = DataType.VECTOR)
 @Input(name = Fields.SECOND, type = DataType.VECTOR)
 @Output(name = Fields.RESULT, type = DataType.NUMBER)
 public final class DistanceSqrtNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        var result = ((Vector) input().get(container, Fields.FIRST)).distanceSquared(input().get(container, Fields.SECOND));
+        var result = ((Vector) input().value(container, Fields.FIRST)).distanceSquared(input().value(container, Fields.SECOND));
         return super.output(container).set(Fields.RESULT, result);
     }
 }

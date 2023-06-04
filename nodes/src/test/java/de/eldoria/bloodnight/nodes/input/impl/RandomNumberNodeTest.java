@@ -2,7 +2,7 @@ package de.eldoria.bloodnight.nodes.input.impl;
 
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
-import de.eldoria.bloodnight.nodes.base.io.Field;
+import de.eldoria.bloodnight.nodes.base.io.Edge;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,10 +17,10 @@ class RandomNumberNodeTest {
 
         var randomIntegerNode = new RandomNumberNode();
         randomIntegerNode.input()
-                .set(container, Fields.LOWER, new Field(0, Fields.VALUE))
-                .set(container, Fields.UPPER, new Field(1, Fields.VALUE));
+                .connect(container, Fields.LOWER, new Edge(0, Fields.VALUE))
+                .connect(container, Fields.UPPER, new Edge(1, Fields.VALUE));
         container.add(2, randomIntegerNode);
-        var o = (double) randomIntegerNode.output(container).get(Fields.RESULT);
+        var o = (double) randomIntegerNode.output(container).value(Fields.RESULT);
         assertTrue(3 < o && o < 33.3);
     }
 }

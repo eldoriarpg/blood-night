@@ -8,6 +8,9 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
+/**
+ * Subtract a value from another value.
+ */
 @Input(name = Fields.FIRST, type = DataType.NUMBER)
 @Input(name = Fields.SECOND, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.NUMBER)

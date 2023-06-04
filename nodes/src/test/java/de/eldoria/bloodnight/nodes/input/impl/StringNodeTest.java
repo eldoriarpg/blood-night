@@ -11,6 +11,6 @@ class StringNodeTest {
     @Test
     void output() {
         var node = new StringNode("Chojo stinkt");
-        assertEquals("Chojo stinkt", node.output(new NodeContainer()).get(Fields.VALUE));
+        assertEquals("Chojo stinkt", node.output(new NodeContainer()).value(Fields.VALUE));
     }
 }

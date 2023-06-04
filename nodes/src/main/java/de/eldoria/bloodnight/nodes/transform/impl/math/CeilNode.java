@@ -8,6 +8,9 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
+/**
+ * A node returning the next integer that is greater or equal to the value.
+ */
 @Input(name = Fields.VALUE, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.INTEGER)
 public final class CeilNode extends TransformNode {

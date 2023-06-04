@@ -11,6 +11,9 @@ import de.eldoria.bloodnight.nodes.input.ValueNode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * A node providing a {@link DataType#BOOLEAN} which is true every {@code n} milliseconds.
+ */
 @Input(name = Fields.VALUE, type = DataType.INTEGER)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
 public final class CooldownNode extends ValueNode {

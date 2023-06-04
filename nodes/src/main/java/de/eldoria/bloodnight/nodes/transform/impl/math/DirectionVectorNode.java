@@ -9,15 +9,18 @@ import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import org.bukkit.util.Vector;
 
+/**
+ * Get the direction vector between two points.
+ */
 @Input(name = Fields.FROM, type = DataType.VECTOR)
 @Input(name = Fields.TO, type = DataType.VECTOR)
 @Output(name = Fields.RESULT, type = DataType.VECTOR)
 public class DirectionVectorNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        Vector from = input().get(container, Fields.FROM);
-        Vector to = input().get(container, Fields.TO);
-        var result = new Vector(to.getX() - from.getX(), to.getY() - from.getX(), to.getZ() - from.getZ());
+        Vector from = input().value(container, Fields.FROM);
+        Vector to = input().value(container, Fields.TO);
+        var result = new Vector(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ());
         return super.output(container).set(Fields.RESULT, result);
     }
 }

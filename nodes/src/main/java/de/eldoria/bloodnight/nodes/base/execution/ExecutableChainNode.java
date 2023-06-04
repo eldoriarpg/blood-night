@@ -9,6 +9,10 @@ import de.eldoria.bloodnight.util.Checks;
 
 import java.util.Set;
 
+/**
+ * A base node which is executable and executes one or more following nodes.
+ * @param <T> type of node
+ */
 public sealed class ExecutableChainNode<T extends ExecutableChainNode<T>> extends ExecutableNode permits ControlFlowNode, TriggerNode {
     private final ExecutionContainer executions = new ExecutionContainer(MetadataReader.readExecutions(this.getClass()));
 

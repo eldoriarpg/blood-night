@@ -10,6 +10,9 @@ import de.eldoria.bloodnight.nodes.input.ValueNode;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * A node providing a random {@link DataType#INTEGER} within inclusive bounds.
+ */
 @Input(name = Fields.LOWER, type = DataType.INTEGER)
 @Input(name = Fields.UPPER, type = DataType.INTEGER)
 @Output(name = Fields.RESULT, type = DataType.INTEGER)

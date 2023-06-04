@@ -2,7 +2,7 @@ package de.eldoria.bloodnight.nodes.transform.impl.construction;
 
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
-import de.eldoria.bloodnight.nodes.base.io.Field;
+import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.input.impl.IntegerNode;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Assertions;
@@ -23,10 +23,10 @@ class CreateVectorNodeTest {
         container.add(1, new IntegerNode(x));
         container.add(2, new IntegerNode(y));
         container.add(3, new IntegerNode(z));
-        createVectorNode.input().set(container, Fields.X, new Field(1, Fields.VALUE));
-        createVectorNode.input().set(container, Fields.Y, new Field(2, Fields.VALUE));
-        createVectorNode.input().set(container, Fields.Z, new Field(3, Fields.VALUE));
-        Assertions.assertEquals(new Vector(x, y, z), createVectorNode.output(container).get(Fields.RESULT));
+        createVectorNode.input().connect(container, Fields.X, new Edge(1, Fields.VALUE));
+        createVectorNode.input().connect(container, Fields.Y, new Edge(2, Fields.VALUE));
+        createVectorNode.input().connect(container, Fields.Z, new Edge(3, Fields.VALUE));
+        Assertions.assertEquals(new Vector(x, y, z), createVectorNode.output(container).value(Fields.RESULT));
     }
 
     private static Stream<Arguments> outputData() {

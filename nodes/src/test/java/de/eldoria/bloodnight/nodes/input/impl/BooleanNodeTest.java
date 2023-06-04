@@ -11,6 +11,6 @@ class BooleanNodeTest {
     @Test
     void output() {
         BooleanNode node = new BooleanNode(true);
-        assertTrue((boolean) node.output(new NodeContainer()).get(Fields.VALUE));
+        assertTrue((boolean) node.output(new NodeContainer()).value(Fields.VALUE));
     }
 }

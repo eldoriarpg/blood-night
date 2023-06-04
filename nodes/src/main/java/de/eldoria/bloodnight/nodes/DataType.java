@@ -1,5 +1,8 @@
 package de.eldoria.bloodnight.nodes;
 
+/**
+ * Class defining different data types.
+ */
 public enum DataType {
     EVENT,
     ENTITY,
@@ -18,7 +21,8 @@ public enum DataType {
     ENCHANTMENT_TYPE,
     BLOCK_TYPE,
     ITEM_TYPE,
-    ANY;
+    ANY,
+    LINKED;
 
     private final DataType[] subtypes;
 

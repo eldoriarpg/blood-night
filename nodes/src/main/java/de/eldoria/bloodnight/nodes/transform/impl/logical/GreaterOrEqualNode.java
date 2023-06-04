@@ -8,7 +8,9 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
-@Input(name = Fields.FIRST, type = DataType.NUMBER)
+/**
+ * A node checking whether a number is greater or equal another number
+ */@Input(name = Fields.FIRST, type = DataType.NUMBER)
 @Input(name = Fields.SECOND, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
 public final class GreaterOrEqualNode extends TransformNode {

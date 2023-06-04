@@ -6,6 +6,9 @@ import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 
+/**
+ * Base node for nodes providing values which are defined by the user.
+ */
 public abstract non-sealed class ValueNode extends Node {
     private final OutputContainer outputContainer = new OutputContainer(MetadataReader.readOutputs(this.getClass()));
 

@@ -12,10 +12,19 @@ public sealed abstract class Node permits ExecutableNode, ValueNode, TransformNo
     private final InputContainer input = new InputContainer(MetadataReader.readInputs(this.getClass()));
     private final OutputContainer output = new OutputContainer(MetadataReader.readOutputs(this.getClass()));
 
+    /**
+     * Get the input container of this node.
+     * @return input container
+     */
     public InputContainer input() {
         return input;
     }
 
+    /**
+     * Get the output container of this node. Calling this will eventually refresh the values provided by the node.
+     * @param container container holding the nodes
+     * @return output container
+     */
     public OutputContainer output(NodeContainer container) {
         return output;
     }

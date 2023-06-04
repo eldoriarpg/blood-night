@@ -6,7 +6,7 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
-import de.eldoria.bloodnight.nodes.base.io.Field;
+import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.input.impl.IntegerNode;
 import de.eldoria.bloodnight.nodes.input.impl.NumberNode;
 import org.bukkit.Location;
@@ -28,6 +28,7 @@ class CreateLocationNodeTest {
     static void beforeAll() {
         ServerMock mock = MockBukkit.mock();
         world = mock.createWorld(new WorldCreator("world"));
+
     }
 
     @ParameterizedTest
@@ -42,13 +43,13 @@ class CreateLocationNodeTest {
         container.add(5, new NumberNode(pitch));
         container.add(6, new StubValueNode(world, DataType.WORLD));
         createLocationNode.input()
-                .set(container, Fields.X, new Field(1, Fields.VALUE))
-                .set(container, Fields.Y, new Field(2, Fields.VALUE))
-                .set(container, Fields.Z, new Field(3, Fields.VALUE))
-                .set(container, Fields.YAW, new Field(4, Fields.VALUE))
-                .set(container, Fields.PITCH, new Field(5, Fields.VALUE))
-                .set(container, Fields.WORLD, new Field(6, Fields.VALUE));
-        Assertions.assertEquals(new Location(world, x, y, z, yaw, pitch), createLocationNode.output(container).get(Fields.RESULT));
+                .connect(container, Fields.X, new Edge(1, Fields.VALUE))
+                .connect(container, Fields.Y, new Edge(2, Fields.VALUE))
+                .connect(container, Fields.Z, new Edge(3, Fields.VALUE))
+                .connect(container, Fields.YAW, new Edge(4, Fields.VALUE))
+                .connect(container, Fields.PITCH, new Edge(5, Fields.VALUE))
+                .connect(container, Fields.WORLD, new Edge(6, Fields.VALUE));
+        Assertions.assertEquals(new Location(world, x, y, z, yaw, pitch), createLocationNode.output(container).value(Fields.RESULT));
     }
 
     private static Stream<Arguments> outputData() {

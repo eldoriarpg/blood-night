@@ -11,6 +11,6 @@ class NumberNodeTest {
     @Test
     void output() {
         var node = new NumberNode(4.9);
-        assertEquals(4.9, (double) node.output(new NodeContainer()).get(Fields.VALUE));
+        assertEquals(4.9, (double) node.output(new NodeContainer()).value(Fields.VALUE));
     }
 }

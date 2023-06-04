@@ -11,6 +11,6 @@ class IntegerNodeTest {
     @Test
     void output() {
         var node = new IntegerNode(007);
-        assertEquals(007, (int) node.output(new NodeContainer()).get(Fields.VALUE));
+        assertEquals(007, (int) node.output(new NodeContainer()).value(Fields.VALUE));
     }
 }

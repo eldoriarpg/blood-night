@@ -9,6 +9,9 @@ import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import de.eldoria.bloodnight.util.BMath;
 
+/**
+ * Returns the value and ensures that it is within the upper and lower bound.
+ */
 @Input(name = Fields.VALUE, type = DataType.NUMBER)
 @Input(name = Fields.LOWER, type = DataType.NUMBER)
 @Input(name = Fields.UPPER, type = DataType.NUMBER)

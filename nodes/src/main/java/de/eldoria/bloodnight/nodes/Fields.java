@@ -1,5 +1,8 @@
 package de.eldoria.bloodnight.nodes;
 
+/**
+ * Class holding names used for fields of nodes.
+ */
 public final class Fields {
     public static final String NEXT = "next";
     public static final String RESULT = "result";
@@ -24,4 +27,5 @@ public final class Fields {
     public static final String VEHICLE = "vehicle";
     public static final String VELOCITY = "velocity";
     public static final String DIRECTION = "direction";
+    public static final String CURRENT = "current";
 }

@@ -3,7 +3,7 @@ package de.eldoria.bloodnight.nodes.controlflow;
 import de.eldoria.bloodnight.nodes.DebugActionNode;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
-import de.eldoria.bloodnight.nodes.base.io.Field;
+import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.controlflow.impl.IfNode;
 import de.eldoria.bloodnight.nodes.input.impl.BooleanNode;
 import de.eldoria.bloodnight.nodes.trigger.impl.DebugNode;
@@ -32,7 +32,7 @@ class IfNodeTest {
         container.add(3, new IfNode())
                 .chain(Fields.TRUE, 0)
                 .chain(Fields.FALSE, 1)
-                .input().set(container, Fields.VALUE, new Field(4, Fields.VALUE));
+                .input().connect(container, Fields.VALUE, new Edge(4, Fields.VALUE));
 
         debugNode.invoke(container);
 

@@ -7,8 +7,12 @@ import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
+/**
+ * Node to split an {@link Entity}.
+ */
 @Input(name = Fields.VALUE, type = DataType.ENTITY)
 @Output(name = Fields.ENTITY_TYPE, type = DataType.ENTITY_TYPE)
 @Output(name = Fields.LOCATION, type = DataType.LOCATION)
@@ -17,8 +21,8 @@ import org.bukkit.entity.Entity;
 public final class SplitEntityNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
-        Entity entity = input().get(container, Fields.VALUE);
-        return output(container)
+        Entity entity = input().value(container, Fields.VALUE);
+        return super.output(container)
                 .set(Fields.ENTITY_TYPE, entity.getType())
                 .set(Fields.LOCATION, entity.getLocation())
                 .set(Fields.VEHICLE, entity.getVehicle())

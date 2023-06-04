@@ -8,6 +8,9 @@ import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
+/**
+ * Round a number to the closes integer value.
+ */
 @Input(name = Fields.VALUE, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.INTEGER)
 public final class RoundNode extends TransformNode {

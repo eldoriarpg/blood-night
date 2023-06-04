@@ -7,6 +7,9 @@ import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.controlflow.ControlFlowNode;
 
+/**
+ * An execution node executing nodes multiple times.
+ */
 @Execution(Fields.NEXT)
 @Input(name = Fields.VALUE, type = DataType.INTEGER)
 public class BatchNode extends ControlFlowNode<BatchNode> {
