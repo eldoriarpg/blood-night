@@ -5,7 +5,7 @@ import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.execution.ExecutableNode;
 import de.eldoria.bloodnight.nodes.base.io.InputContainer;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
-import de.eldoria.bloodnight.nodes.input.ValueNode;
+import de.eldoria.bloodnight.nodes.value.ValueNode;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
 
 public sealed abstract class Node permits ExecutableNode, ValueNode, TransformNode {

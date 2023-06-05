@@ -3,7 +3,7 @@ package de.eldoria.bloodnight.nodes.transform.impl.construction;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
-import de.eldoria.bloodnight.nodes.input.impl.IntegerNode;
+import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;

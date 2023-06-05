@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.input;
+package de.eldoria.bloodnight.nodes.value;
 
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.MetadataReader;

@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.input.impl;
+package de.eldoria.bloodnight.nodes.value.impl;
 
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;

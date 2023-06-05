@@ -5,7 +5,7 @@ import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BatchNode;
-import de.eldoria.bloodnight.nodes.input.impl.IntegerNode;
+import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import de.eldoria.bloodnight.nodes.trigger.impl.DebugNode;
 import org.junit.jupiter.api.Test;
 

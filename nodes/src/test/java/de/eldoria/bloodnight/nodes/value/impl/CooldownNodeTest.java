@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.input.impl;
+package de.eldoria.bloodnight.nodes.value.impl;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;

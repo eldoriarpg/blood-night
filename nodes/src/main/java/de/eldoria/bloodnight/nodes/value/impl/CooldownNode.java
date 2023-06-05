@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.input.impl;
+package de.eldoria.bloodnight.nodes.value.impl;
 
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
@@ -6,7 +6,7 @@ import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
-import de.eldoria.bloodnight.nodes.input.ValueNode;
+import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

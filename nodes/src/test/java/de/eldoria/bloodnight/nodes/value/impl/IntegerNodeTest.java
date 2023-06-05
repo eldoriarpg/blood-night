@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.input.impl;
+package de.eldoria.bloodnight.nodes.value.impl;
 
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BooleanNodeTest {
+class IntegerNodeTest {
 
     @Test
     void output() {
-        BooleanNode node = new BooleanNode(true);
-        assertTrue((boolean) node.output(new NodeContainer()).value(Fields.VALUE));
+        var node = new IntegerNode(007);
+        assertEquals(007, (int) node.output(new NodeContainer()).value(Fields.VALUE));
     }
 }

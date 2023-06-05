@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight.nodes;
 
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
-import de.eldoria.bloodnight.nodes.input.ValueNode;
+import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.util.Map;
 
