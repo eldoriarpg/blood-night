@@ -4,7 +4,7 @@ import de.eldoria.bloodnight.nodes.DebugActionNode;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
-import de.eldoria.bloodnight.nodes.controlflow.impl.IfNode;
+import de.eldoria.bloodnight.nodes.controlflow.impl.BranchNode;
 import de.eldoria.bloodnight.nodes.value.impl.BooleanNode;
 import de.eldoria.bloodnight.nodes.trigger.impl.DebugNode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class IfNodeTest {
+class BranchNodeTest {
 
     @ParameterizedTest
     @MethodSource("data")
@@ -29,7 +29,7 @@ class IfNodeTest {
                 .chain(Fields.NEXT, 3);
 
         container.add(4, new BooleanNode(condition));
-        container.add(3, new IfNode())
+        container.add(3, new BranchNode())
                 .chain(Fields.TRUE, 0)
                 .chain(Fields.FALSE, 1)
                 .input().connect(container, Fields.VALUE, new Edge(4, Fields.VALUE));

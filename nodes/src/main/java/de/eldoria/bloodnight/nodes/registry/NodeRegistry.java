@@ -3,12 +3,16 @@ package de.eldoria.bloodnight.nodes.registry;
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.Inputs;
 import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
-import de.eldoria.bloodnight.nodes.annotations.Outputs;
 import de.eldoria.bloodnight.nodes.base.Node;
+import de.eldoria.bloodnight.nodes.registry.meta.ExecutionMeta;
+import de.eldoria.bloodnight.nodes.registry.meta.InputMeta;
+import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistration;
+import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistrationMeta;
+import de.eldoria.bloodnight.nodes.registry.meta.OutputMeta;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,29 +24,49 @@ public final class NodeRegistry {
     static Map<String, NodeRegistration> nodes = new HashMap<>();
     static Set<String> names = new HashSet<>();
 
-    static {
-        DefaultNodes.registerAll();
+    public static void register(Class<? extends Node> nodeClass) {
+        checkNode(nodeClass);
+        NodeRegistration registration = generateRegistration(nodeClass);
+        nodes.put(nodeClass.getName(), registration);
+        names.add(registration.meta().name());
     }
 
-    public static void register(Class<? extends Node> nodeClass) {
-        bootstrapNode(nodeClass);
-        nodes.put(nodeClass.getName(), generateRegistration(nodeClass));
+    public static boolean unregisterNode(Class<? extends Node> nodeClass) {
+        return unregisterNode(nodeClass.getName());
+    }
+
+    public static boolean unregisterNode(String name) {
+        NodeRegistration remove = nodes.remove(name);
+        if (remove != null) {
+            names.remove(remove.meta().name());
+        }
+        return remove != null;
+    }
+
+    public static void unregisterAll() {
+        nodes.clear();
+        names.clear();
+    }
+
+    public static List<NodeRegistration> registrations(){
+        return List.copyOf(nodes.values());
     }
 
     private static NodeRegistration generateRegistration(Class<? extends Node> nodeClass) {
-        // TODO: this needs to be meta instead of a simple data type map. We need to serialize the full annotation data
-        Map<String, DataType> inputs = MetadataReader.readInputs(nodeClass);
-        Map<String, DataType> outputs = MetadataReader.readOutputs(nodeClass);
-        Map<String, Set<Integer>> executions = MetadataReader.readExecutions(nodeClass);
+        List<InputMeta> inputs = MetadataReader.readInputMeta(nodeClass);
+        List<OutputMeta> outputs = MetadataReader.readOutputMeta(nodeClass);
+        List<ExecutionMeta> executions = MetadataReader.readExecutionMeta(nodeClass);
         NodeRegistrationMeta meta = MetadataReader.readNodeMeta(nodeClass);
-        // TODO: Make order deterministic.
-        return new NodeRegistration(nodeClass, meta, inputs, outputs, executions.keySet());
+        return new NodeRegistration(nodeClass, meta, inputs, outputs, executions);
     }
 
-    private static void bootstrapNode(Class<? extends Node> nodeClass) {
+    private static void checkNode(Class<? extends Node> nodeClass) {
         NodeMeta meta = nodeClass.getAnnotation(NodeMeta.class);
         if (meta == null) {
             throw new IllegalNodeState(nodeClass, "Missing a NodeMeta annotation");
+        }
+        if (meta.name().isBlank()) {
+            throw new IllegalNodeState(nodeClass, "Description is empty");
         }
         if (names.contains(meta.name().toLowerCase())) {
             throw new IllegalNodeState(nodeClass, "Name is already taken");
@@ -54,25 +78,21 @@ public final class NodeRegistry {
             throw new IllegalNodeState(nodeClass, "Category is empty");
         }
 
-        Inputs inputs = nodeClass.getAnnotation(Inputs.class);
-        List<Input> inputFields = Collections.emptyList();
-        if (inputs != null) {
-            inputFields = List.of(inputs.value());
-            for (Input input : inputFields) {
-                if (input.name().isBlank()) {
-                    throw new IllegalNodeState(nodeClass, "Input name is empty");
-                }
+        List<Input> inputs = List.of(nodeClass.getAnnotationsByType(Input.class));
+        for (Input input : inputs) {
+            if (input.name().isBlank()) {
+                throw new IllegalNodeState(nodeClass, "Input name is empty");
             }
         }
 
-        Outputs outputs = nodeClass.getAnnotation(Outputs.class);
-        for (Output output : outputs.value()) {
+        List<Output> outputs = List.of(nodeClass.getAnnotationsByType(Output.class));
+        for (Output output : outputs) {
             if (output.name().isBlank()) {
                 throw new IllegalNodeState(nodeClass, "Output name is empty");
             }
 
             if (output.type() == DataType.LINKED) {
-                if (inputFields.stream().filter(in -> in.name().equals(output.link())).findAny().isEmpty()) {
+                if (inputs.stream().filter(in -> in.name().equals(output.link())).findAny().isEmpty()) {
                     throw new IllegalNodeState(nodeClass, "Output field %s is linked to input field %s, but input does not exist".formatted(output.name(), output.link()));
                 }
             } else {

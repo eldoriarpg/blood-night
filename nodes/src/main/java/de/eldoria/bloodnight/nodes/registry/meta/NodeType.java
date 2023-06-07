@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.registry;
+package de.eldoria.bloodnight.nodes.registry.meta;
 
 import de.eldoria.bloodnight.nodes.action.ActionNode;
 import de.eldoria.bloodnight.nodes.base.Node;

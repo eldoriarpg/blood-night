@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Class representing an ouput field on a node.
+ * Class representing an output field on a node.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

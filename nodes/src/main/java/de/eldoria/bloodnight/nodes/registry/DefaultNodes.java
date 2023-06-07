@@ -1,9 +1,10 @@
 package de.eldoria.bloodnight.nodes.registry;
 
 import de.eldoria.bloodnight.nodes.action.impl.PrintNode;
+import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BatchNode;
 import de.eldoria.bloodnight.nodes.controlflow.impl.ForEachNode;
-import de.eldoria.bloodnight.nodes.controlflow.impl.IfNode;
+import de.eldoria.bloodnight.nodes.controlflow.impl.BranchNode;
 import de.eldoria.bloodnight.nodes.transform.impl.construction.CreateLocationNode;
 import de.eldoria.bloodnight.nodes.transform.impl.construction.CreateVectorNode;
 import de.eldoria.bloodnight.nodes.transform.impl.deconstruction.SplitEntityNode;
@@ -44,69 +45,70 @@ import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import de.eldoria.bloodnight.nodes.value.impl.NumberNode;
 import de.eldoria.bloodnight.nodes.value.impl.StringNode;
 
-import static de.eldoria.bloodnight.nodes.registry.NodeRegistry.register;
+import java.util.List;
 
 public class DefaultNodes {
-    public static void registerAll() {
+    public static List<Class<? extends Node>> defaultNodes() {
+        return List.of(
         // Actions
-        register(PrintNode.class);
+        PrintNode.class,
 
         // Control Flow
-        register(BatchNode.class);
-        register(ForEachNode.class);
-        register(IfNode.class);
+        BatchNode.class,
+        ForEachNode.class,
+        BranchNode.class,
 
         // Transform - Construction
-        register(CreateLocationNode.class);
-        register(CreateVectorNode.class);
+        CreateLocationNode.class,
+        CreateVectorNode.class,
 
         // Transform - Deconstruction
-        register(SplitEntityNode.class);
-        register(SplitLocationNode.class);
-        register(SplitVectorNode.class);
+        SplitEntityNode.class,
+        SplitLocationNode.class,
+        SplitVectorNode.class,
 
         // Transform - Function
-        register(CooldownNode.class);
-        register(NearbyEntitiesNode.class);
-        register(RandomIntegerNode.class);
-        register(RandomNumberNode.class);
+        CooldownNode.class,
+        NearbyEntitiesNode.class,
+        RandomIntegerNode.class,
+        RandomNumberNode.class,
 
         // Transform - logical
-        register(AndNode.class);
-        register(EqualNode.class);
-        register(GreaterNode.class);
-        register(GreaterOrEqualNode.class);
-        register(IsNullNode.class);
-        register(LessNode.class);
-        register(LessOrEqualNode.class);
-        register(NotNode.class);
-        register(OrNode.class);
+        AndNode.class,
+        EqualNode.class,
+        GreaterNode.class,
+        GreaterOrEqualNode.class,
+        IsNullNode.class,
+        LessNode.class,
+        LessOrEqualNode.class,
+        NotNode.class,
+        OrNode.class,
 
         // Transform - math
-        register(AbsIntegerNode.class);
-        register(AbsNode.class);
-        register(AddNode.class);
-        register(CeilNode.class);
-        register(ClampIntegerNode.class);
-        register(ClampNode.class);
-        register(DirectionVectorNode.class);
-        register(DistanceNode.class);
-        register(DistanceSqrtNode.class);
-        register(DivideNode.class);
-        register(FloorNode.class);
-        register(MultiplyNode.class);
-        register(NormalizeNode.class);
-        register(RoundNode.class);
-        register(SubtractNode.class);
+        AbsIntegerNode.class,
+        AbsNode.class,
+        AddNode.class,
+        CeilNode.class,
+        ClampIntegerNode.class,
+        ClampNode.class,
+        DirectionVectorNode.class,
+        DistanceNode.class,
+        DistanceSqrtNode.class,
+        DivideNode.class,
+        FloorNode.class,
+        MultiplyNode.class,
+        NormalizeNode.class,
+        RoundNode.class,
+        SubtractNode.class,
 
         // Trigger
-        register(DebugNode.class);
-        register(TickNode.class);
+        DebugNode.class,
+        TickNode.class,
 
         // Value
-        register(BooleanNode.class);
-        register(IntegerNode.class);
-        register(NumberNode.class);
-        register(StringNode.class);
+        BooleanNode.class,
+        IntegerNode.class,
+        NumberNode.class,
+        StringNode.class);
     }
 }

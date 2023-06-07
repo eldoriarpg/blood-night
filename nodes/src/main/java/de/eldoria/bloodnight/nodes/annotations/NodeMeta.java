@@ -1,5 +1,7 @@
 package de.eldoria.bloodnight.nodes.annotations;
 
+import de.eldoria.bloodnight.nodes.Categories;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,5 +31,5 @@ public @interface NodeMeta {
      * The node category inside their type
      * @return category name
      */
-    String category();
+    String category() default Categories.DEFAULT;
 }
