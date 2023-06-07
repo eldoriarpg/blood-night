@@ -24,4 +24,10 @@ public @interface NodeMeta {
      * @return name
      */
     String description();
+
+    /**
+     * The node category inside their type
+     * @return category name
+     */
+    String category();
 }

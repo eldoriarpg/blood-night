@@ -20,7 +20,7 @@ import org.bukkit.entity.Entity;
 @Input(name = Fields.Y, type = DataType.NUMBER)
 @Input(name = Fields.Z, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.ENTITY, struct = DataStruct.LIST)
-public class NearbyEntities extends TransformNode {
+public class NearbyEntitiesNode extends TransformNode {
 
     @Override
     public OutputContainer output(NodeContainer container) {

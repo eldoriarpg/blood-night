@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.value.impl;
+package de.eldoria.bloodnight.nodes.transform.impl.function;
 
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
@@ -6,6 +6,7 @@ import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
+import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Input(name = Fields.LOWER, type = DataType.NUMBER)
 @Input(name = Fields.UPPER, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.NUMBER)
-public final class RandomNumberNode extends ValueNode {
+public final class RandomNumberNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
         double result = ThreadLocalRandom.current().nextDouble(input().map(container, Fields.LOWER).asDouble(), input().map(container, Fields.UPPER).asDouble());

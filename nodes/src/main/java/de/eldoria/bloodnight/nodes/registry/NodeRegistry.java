@@ -1,6 +1,7 @@
 package de.eldoria.bloodnight.nodes.registry;
 
 import de.eldoria.bloodnight.nodes.DataType;
+import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Inputs;
 import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
@@ -16,12 +17,26 @@ import java.util.Map;
 import java.util.Set;
 
 public final class NodeRegistry {
-    static Map<String, Class<? extends Node>> nodes = new HashMap<>();
+    static Map<String, NodeRegistration> nodes = new HashMap<>();
     static Set<String> names = new HashSet<>();
+
+    static {
+        DefaultNodes.registerAll();
+    }
 
     public static void register(Class<? extends Node> nodeClass) {
         bootstrapNode(nodeClass);
-        nodes.put(nodeClass.getName(), nodeClass);
+        nodes.put(nodeClass.getName(), generateRegistration(nodeClass));
+    }
+
+    private static NodeRegistration generateRegistration(Class<? extends Node> nodeClass) {
+        // TODO: this needs to be meta instead of a simple data type map. We need to serialize the full annotation data
+        Map<String, DataType> inputs = MetadataReader.readInputs(nodeClass);
+        Map<String, DataType> outputs = MetadataReader.readOutputs(nodeClass);
+        Map<String, Set<Integer>> executions = MetadataReader.readExecutions(nodeClass);
+        NodeRegistrationMeta meta = MetadataReader.readNodeMeta(nodeClass);
+        // TODO: Make order deterministic.
+        return new NodeRegistration(nodeClass, meta, inputs, outputs, executions.keySet());
     }
 
     private static void bootstrapNode(Class<? extends Node> nodeClass) {
@@ -32,8 +47,11 @@ public final class NodeRegistry {
         if (names.contains(meta.name().toLowerCase())) {
             throw new IllegalNodeState(nodeClass, "Name is already taken");
         }
-        if(meta.description().isBlank()){
+        if (meta.description().isBlank()) {
             throw new IllegalNodeState(nodeClass, "Description is empty");
+        }
+        if (meta.category().isBlank()) {
+            throw new IllegalNodeState(nodeClass, "Category is empty");
         }
 
         Inputs inputs = nodeClass.getAnnotation(Inputs.class);
@@ -42,7 +60,7 @@ public final class NodeRegistry {
             inputFields = List.of(inputs.value());
             for (Input input : inputFields) {
                 if (input.name().isBlank()) {
-                    throw new IllegalNodeState(nodeClass, "Input name is empty"));
+                    throw new IllegalNodeState(nodeClass, "Input name is empty");
                 }
             }
         }

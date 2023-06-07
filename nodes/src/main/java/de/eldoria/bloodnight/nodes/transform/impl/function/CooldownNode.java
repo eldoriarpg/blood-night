@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.value.impl;
+package de.eldoria.bloodnight.nodes.transform.impl.function;
 
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
@@ -6,6 +6,7 @@ import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
+import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.time.Instant;
@@ -16,7 +17,7 @@ import java.time.temporal.ChronoUnit;
  */
 @Input(name = Fields.VALUE, type = DataType.INTEGER)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
-public final class CooldownNode extends ValueNode {
+public final class CooldownNode extends TransformNode {
     private transient Instant last = Instant.EPOCH;
 
     @Override

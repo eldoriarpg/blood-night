@@ -4,6 +4,10 @@ package de.eldoria.bloodnight.nodes;
  * Class holding names used for fields of nodes.
  */
 public final class Fields {
+    private Fields() {
+        throw new UnsupportedOperationException("This is a utility class.");
+    }
+
     public static final String NEXT = "next";
     public static final String RESULT = "result";
     public static final String FIRST = "first";
