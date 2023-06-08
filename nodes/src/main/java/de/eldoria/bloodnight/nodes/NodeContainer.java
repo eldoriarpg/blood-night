@@ -12,6 +12,7 @@ import java.util.Objects;
  * A container holding a bunch of nodes.
  */
 public final class NodeContainer {
+    @JsonProperty
     private final Map<Integer, Node> nodes;
 
     public NodeContainer() {
@@ -29,7 +30,7 @@ public final class NodeContainer {
         return node;
     }
 
-    public Node get(int next) {
-        return Objects.requireNonNull(nodes.get(next));
+    public Node get(int id) {
+        return Objects.requireNonNull(nodes.get(id));
     }
 }

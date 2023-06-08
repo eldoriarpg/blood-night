@@ -1,9 +1,7 @@
 package de.eldoria.bloodnight.nodes.base;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -11,8 +9,8 @@ import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.execution.ExecutableNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
-import de.eldoria.bloodnight.nodes.base.io.InputContainer;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
+import de.eldoria.bloodnight.nodes.base.io.InputContainer;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.base.io.Vec2D;
 import de.eldoria.bloodnight.nodes.serializastion.InputContainerSerializer;
@@ -43,7 +41,7 @@ public sealed abstract class Node permits ExecutableNode, ValueNode, TransformNo
     public Node() {
         input = new InputContainer(MetadataReader.readInputs(this.getClass()));
         output = new OutputContainer(MetadataReader.readOutputs(this.getClass()));
-        this.meta = new EditorMeta(new Vec2D(0,0), null);
+        this.meta = new EditorMeta(new Vec2D(0, 0), null);
     }
 
     /**

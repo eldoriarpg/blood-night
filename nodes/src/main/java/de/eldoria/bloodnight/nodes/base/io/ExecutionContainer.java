@@ -1,5 +1,8 @@
 package de.eldoria.bloodnight.nodes.base.io;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
@@ -14,6 +17,7 @@ import java.util.Set;
  * Container holding the defined {@link Execution}s on a node.
  */
 public final class ExecutionContainer {
+    @JsonProperty
     private final Map<String, Set<Integer>> nextNodes;
 
     /**
@@ -23,7 +27,8 @@ public final class ExecutionContainer {
      *
      * @param nextNodes next nodes
      */
-    public ExecutionContainer(Map<String, Set<Integer>> nextNodes) {
+    @JsonCreator
+    public ExecutionContainer(@JsonProperty("nextNodes") Map<String, Set<Integer>> nextNodes) {
         this.nextNodes = nextNodes;
     }
 
@@ -32,6 +37,7 @@ public final class ExecutionContainer {
      *
      * @return true if empty
      */
+    @JsonIgnore
     public boolean isEmpty() {
         return nextNodes.isEmpty();
     }
