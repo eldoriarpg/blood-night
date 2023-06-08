@@ -16,7 +16,7 @@ import java.util.Map;
  * A node providing a {@link DataType#STRING}.
  */
 @Output(name = Fields.VALUE, type = DataType.STRING)
-@Meta(name = "String",description = "Allows to set a string value")
+@Meta(name = "String", description = "Allows to set a string value")
 public final class StringNode extends ValueNode {
     public StringNode(String value) {
         super(value);

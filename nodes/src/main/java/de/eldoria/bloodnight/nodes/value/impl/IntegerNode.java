@@ -16,14 +16,14 @@ import java.util.Map;
  * A node providing an {@link DataType#INTEGER}.
  */
 @Output(name = Fields.VALUE, type = DataType.INTEGER)
-@Meta(name = "Integer",description = "Allows to set an integer number")
+@Meta(name = "Integer", description = "Allows to set an integer number")
 public final class IntegerNode extends ValueNode {
     public IntegerNode(int value) {
         super(value);
     }
 
     @JsonCreator
-    public IntegerNode(@JsonProperty int value, @JsonProperty Map<String, Edge> input, EditorMeta meta) {
+    public IntegerNode(@JsonProperty("value") int value, @JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(value, input, meta);
     }
 }

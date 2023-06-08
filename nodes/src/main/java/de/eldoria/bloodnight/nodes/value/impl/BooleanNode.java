@@ -23,7 +23,7 @@ public class BooleanNode extends ValueNode {
     }
 
     @JsonCreator
-    public BooleanNode(@JsonProperty boolean value, @JsonProperty Map<String, Edge> input, EditorMeta meta) {
+    public BooleanNode(@JsonProperty("value") boolean value, @JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(value, input, meta);
     }
 }

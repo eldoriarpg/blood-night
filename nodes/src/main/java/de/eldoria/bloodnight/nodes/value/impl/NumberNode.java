@@ -16,14 +16,14 @@ import java.util.Map;
  * A node providing a {@link DataType#NUMBER}.
  */
 @Output(name = Fields.VALUE, type = DataType.NUMBER)
-@Meta(name = "Number",description = "Allows to set a decimal number")
+@Meta(name = "Number", description = "Allows to set a decimal number")
 public final class NumberNode extends ValueNode {
     public NumberNode(double value) {
         super(value);
     }
 
     @JsonCreator
-    public NumberNode(double value, @JsonProperty Map<String, Edge> input, EditorMeta meta) {
+    public NumberNode(@JsonProperty("value") double value, @JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(value, input, meta);
     }
 }

@@ -34,8 +34,7 @@ public sealed abstract class Node permits ExecutableNode, ValueNode, TransformNo
     @JsonSerialize
     private final EditorMeta meta;
 
-    @JsonCreator
-    public Node(@JsonProperty Map<String, Edge> input, EditorMeta meta) {
+    public Node(Map<String, Edge> input, EditorMeta meta) {
         this.input = new InputContainer(MetadataReader.readInputs(this.getClass()), input);
         this.output = new OutputContainer(MetadataReader.readOutputs(this.getClass()));
         this.meta = meta;

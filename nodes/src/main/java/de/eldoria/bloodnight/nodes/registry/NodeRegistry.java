@@ -1,17 +1,24 @@
 package de.eldoria.bloodnight.nodes.registry;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.Node;
+import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
 import de.eldoria.bloodnight.nodes.registry.meta.ExecutionMeta;
 import de.eldoria.bloodnight.nodes.registry.meta.InputMeta;
 import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistration;
 import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistrationMeta;
+import de.eldoria.bloodnight.nodes.registry.meta.NodeType;
 import de.eldoria.bloodnight.nodes.registry.meta.OutputMeta;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +53,7 @@ public final class NodeRegistry {
         names.clear();
     }
 
-    public static List<NodeRegistration> registrations(){
+    public static List<NodeRegistration> registrations() {
         return List.copyOf(nodes.values());
     }
 
@@ -59,23 +66,36 @@ public final class NodeRegistry {
     }
 
     private static void checkNode(Class<? extends Node> nodeClass) {
-        Meta meta = nodeClass.getAnnotation(Meta.class);
-        if (meta == null) {
-            throw new IllegalNodeState(nodeClass, "Missing a NodeMeta annotation");
-        }
-        if (meta.name().isBlank()) {
-            throw new IllegalNodeState(nodeClass, "Description is empty");
-        }
-        if (names.contains(meta.name().toLowerCase())) {
-            throw new IllegalNodeState(nodeClass, "Name is already taken");
-        }
-        if (meta.description().isBlank()) {
-            throw new IllegalNodeState(nodeClass, "Description is empty");
-        }
-        if (meta.category().isBlank()) {
-            throw new IllegalNodeState(nodeClass, "Category is empty");
+        NodeType nodeType = NodeType.getNodeType(nodeClass);
+
+        checkNodeMeta(nodeClass);
+
+        checkNodeIO(nodeClass);
+
+        // Check for correct serialization setup
+        var jsonCreator = Arrays.stream(nodeClass.getConstructors()).filter(c -> c.getAnnotation(JsonCreator.class) != null).findAny();
+        if (jsonCreator.isEmpty()) {
+            throw new IllegalNodeState(nodeClass, "Missing constructor with @JsonCreator annotation.");
         }
 
+        Constructor<? extends Node> constructor = (Constructor<? extends Node>) jsonCreator.get();
+
+        checkJsonInputParameter(constructor, Map.class, "input");
+        checkJsonInputParameter(constructor, EditorMeta.class, "meta");
+
+        if (nodeType == NodeType.VALUE) {
+            checkValueInputParameter(constructor);
+            if (constructor.getParameterCount() != 3) {
+                throw new IllegalNodeState(nodeClass, "Node of type VALUE requires 3 parameters, got %s.".formatted(constructor.getParameterCount()));
+            }
+        } else {
+            if (constructor.getParameterCount() != 2) {
+                throw new IllegalNodeState(nodeClass, "Node of type %s requires 2 parameters, got %s.".formatted(nodeType, constructor.getParameterCount()));
+            }
+        }
+    }
+
+    private static void checkNodeIO(Class<? extends Node> nodeClass) {
         List<Input> inputs = List.of(nodeClass.getAnnotationsByType(Input.class));
         for (Input input : inputs) {
             if (input.name().isBlank()) {
@@ -99,5 +119,52 @@ public final class NodeRegistry {
                 }
             }
         }
+    }
+
+    private static void checkNodeMeta(Class<? extends Node> nodeClass) {
+        Meta meta = nodeClass.getAnnotation(Meta.class);
+        if (meta == null) {
+            throw new IllegalNodeState(nodeClass, "Missing a NodeMeta annotation");
+        }
+        if (meta.name().isBlank()) {
+            throw new IllegalNodeState(nodeClass, "Description is empty");
+        }
+        if (names.contains(meta.name().toLowerCase())) {
+            throw new IllegalNodeState(nodeClass, "Name is already taken");
+        }
+        if (meta.description().isBlank()) {
+            throw new IllegalNodeState(nodeClass, "Description is empty");
+        }
+        if (meta.category().isBlank()) {
+            throw new IllegalNodeState(nodeClass, "Category is empty");
+        }
+    }
+
+    private static void checkJsonInputParameter(Constructor<? extends Node> constructor, Class<?> inputClass, String name) {
+        for (Parameter parameter : constructor.getParameters()) {
+            if (parameter.getType() != inputClass) continue;
+            JsonProperty jsonProperty = parameter.getAnnotation(JsonProperty.class);
+            if (jsonProperty == null) {
+                throw new IllegalNodeState(constructor.getDeclaringClass(), "Missing @JsonProperty annotation on input of type %s".formatted(inputClass));
+            }
+            if (!jsonProperty.value().equals(name)) {
+                throw new IllegalNodeState(constructor.getDeclaringClass(), "Expected name \"%s\" for input %s, but got \"%s\"".formatted(name, inputClass, jsonProperty.value()));
+            }
+            return;
+        }
+        throw new IllegalNodeState(constructor.getDeclaringClass(), "Class is missing input with name %s of type %s".formatted(name, inputClass));
+    }
+
+    private static void checkValueInputParameter(Constructor<? extends Node> constructor) {
+        for (Parameter parameter : constructor.getParameters()) {
+            JsonProperty jsonProperty = parameter.getAnnotation(JsonProperty.class);
+            if (jsonProperty == null) {
+                throw new IllegalNodeState(constructor.getDeclaringClass(), "Missing @JsonProperty annotation on input of type %s".formatted(parameter.getType()));
+            }
+            if (jsonProperty.value().equals("value")) {
+                return;
+            }
+        }
+        throw new IllegalNodeState(constructor.getDeclaringClass(), "Class is of type VALUE, but missing input with name \"value\"");
     }
 }
