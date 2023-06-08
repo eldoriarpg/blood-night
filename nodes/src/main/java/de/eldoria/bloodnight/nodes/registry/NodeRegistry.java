@@ -3,7 +3,7 @@ package de.eldoria.bloodnight.nodes.registry;
 import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.registry.meta.ExecutionMeta;
@@ -12,8 +12,6 @@ import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistration;
 import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistrationMeta;
 import de.eldoria.bloodnight.nodes.registry.meta.OutputMeta;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +59,7 @@ public final class NodeRegistry {
     }
 
     private static void checkNode(Class<? extends Node> nodeClass) {
-        NodeMeta meta = nodeClass.getAnnotation(NodeMeta.class);
+        Meta meta = nodeClass.getAnnotation(Meta.class);
         if (meta == null) {
             throw new IllegalNodeState(nodeClass, "Missing a NodeMeta annotation");
         }

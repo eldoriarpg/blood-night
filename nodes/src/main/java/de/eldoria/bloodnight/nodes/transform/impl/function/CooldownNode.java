@@ -5,11 +5,10 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
-import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,7 +18,7 @@ import java.time.temporal.ChronoUnit;
  */
 @Input(name = Fields.VALUE, type = DataType.INTEGER)
 @Output(name = Fields.RESULT, type = DataType.BOOLEAN)
-@NodeMeta(name = "Cooldown", description = "Providing a boolean which will be true every n milliseconds",category = Categories.FUNCTION)
+@Meta(name = "Cooldown", description = "Providing a boolean which will be true every n milliseconds",category = Categories.FUNCTION)
 public final class CooldownNode extends TransformNode {
     private transient Instant last = Instant.EPOCH;
 

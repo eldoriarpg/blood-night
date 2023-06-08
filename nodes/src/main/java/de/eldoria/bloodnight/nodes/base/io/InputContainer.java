@@ -15,7 +15,12 @@ import java.util.Map;
  */
 public final class InputContainer {
     private final Map<String, DataType> inputFields;
-    private final Map<String, Edge> edges = new HashMap<>();
+    private final Map<String, Edge> edges;
+
+    public InputContainer(Map<String, DataType> inputFields, Map<String, Edge> edges) {
+        this.inputFields = inputFields;
+        this.edges = edges;
+    }
 
     /**
      * Constructs a new input container based on a map of fields.
@@ -26,6 +31,7 @@ public final class InputContainer {
      */
     public InputContainer(Map<String, DataType> inputFields) {
         this.inputFields = inputFields;
+        this.edges = new HashMap<>();
     }
 
     /**
@@ -75,6 +81,10 @@ public final class InputContainer {
      */
     public InputMapping map(NodeContainer container, String name) {
         return new InputMapping(value(container, name));
+    }
+
+    public Map<String, Edge> edges() {
+        return edges;
     }
 
     public record InputMapping(Object object) {

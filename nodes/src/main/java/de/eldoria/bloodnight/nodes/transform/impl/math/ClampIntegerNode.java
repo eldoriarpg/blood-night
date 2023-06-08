@@ -4,7 +4,7 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
@@ -17,7 +17,7 @@ import de.eldoria.bloodnight.util.BMath;
 @Input(name = Fields.LOWER, type = DataType.NUMBER)
 @Input(name = Fields.UPPER, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.INTEGER)
-@NodeMeta(name = "Clamp Integer", description = "Returns the value and ensures that it is within the upper and lower bound")
+@Meta(name = "Clamp Integer", description = "Returns the value and ensures that it is within the upper and lower bound")
 public final class ClampIntegerNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {

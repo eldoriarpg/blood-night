@@ -5,7 +5,7 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
@@ -23,7 +23,7 @@ import org.bukkit.World;
 @Input(name = Fields.PITCH, type = DataType.NUMBER)
 @Input(name = Fields.DIRECTION, type = DataType.VECTOR)
 @Output(name = Fields.RESULT, type = DataType.LOCATION)
-@NodeMeta(name = "Create Location", description = "Create a Location", category = Categories.CONSTRUCTION)
+@Meta(name = "Create Location", description = "Create a Location", category = Categories.CONSTRUCTION)
 public final class CreateLocationNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {

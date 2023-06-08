@@ -5,11 +5,10 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
-import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -19,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Input(name = Fields.LOWER, type = DataType.INTEGER)
 @Input(name = Fields.UPPER, type = DataType.INTEGER)
 @Output(name = Fields.RESULT, type = DataType.INTEGER)
-@NodeMeta(name = "Random Integer", description = "Provides a random integer within inclusive bounds.", category = Categories.FUNCTION)
+@Meta(name = "Random Integer", description = "Provides a random integer within inclusive bounds.", category = Categories.FUNCTION)
 public final class RandomIntegerNode extends TransformNode {
 
     @Override

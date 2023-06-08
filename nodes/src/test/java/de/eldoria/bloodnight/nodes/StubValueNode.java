@@ -7,17 +7,16 @@ import java.util.Map;
 
 public class StubValueNode extends ValueNode {
 
-    private final Object value;
     private final DataType type;
 
     public StubValueNode(Object value, DataType type) {
-        this.value = value;
+        super(value);
         this.type = type;
     }
 
     @Override
     public OutputContainer output(NodeContainer container) {
         return new OutputContainer(Map.of(Fields.VALUE, type))
-                .set(Fields.VALUE, value);
+                .set(Fields.VALUE, value());
     }
 }

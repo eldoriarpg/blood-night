@@ -6,7 +6,7 @@ import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.controlflow.ControlFlowNode;
 
 /**
@@ -15,7 +15,7 @@ import de.eldoria.bloodnight.nodes.controlflow.ControlFlowNode;
 @Input(name = Fields.VALUE, type = DataType.BOOLEAN)
 @Execution(Fields.TRUE)
 @Execution(Fields.FALSE)
-@NodeMeta(name = "Branch", description = "calling other node depending on the evaluated boolean value.", category = Categories.DEFAULT)
+@Meta(name = "Branch", description = "calling other node depending on the evaluated boolean value.", category = Categories.DEFAULT)
 public class BranchNode extends ControlFlowNode<BranchNode> {
 
     @Override

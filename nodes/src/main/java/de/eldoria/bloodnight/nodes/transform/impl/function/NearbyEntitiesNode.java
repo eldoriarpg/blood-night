@@ -6,7 +6,7 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
@@ -22,7 +22,7 @@ import org.bukkit.entity.Entity;
 @Input(name = Fields.Y, type = DataType.NUMBER)
 @Input(name = Fields.Z, type = DataType.NUMBER)
 @Output(name = Fields.RESULT, type = DataType.ENTITY, struct = DataStruct.LIST)
-@NodeMeta(name = "Nearby Entities", description = "Get a list of nearby Entities around a Location",category = Categories.FUNCTION)
+@Meta(name = "Nearby Entities", description = "Get a list of nearby Entities around a Location",category = Categories.FUNCTION)
 public class NearbyEntitiesNode extends TransformNode {
 
     @Override

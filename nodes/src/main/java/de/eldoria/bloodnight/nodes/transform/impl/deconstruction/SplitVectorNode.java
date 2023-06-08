@@ -5,11 +5,10 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
-import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 /**
@@ -19,7 +18,7 @@ import org.bukkit.util.Vector;
 @Output(name = Fields.X, type = DataType.NUMBER)
 @Output(name = Fields.Y, type = DataType.NUMBER)
 @Output(name = Fields.Z, type = DataType.NUMBER)
-@NodeMeta(name = "Split Vector", description = "Split a Vector",category = Categories.DECONSTRUCTION)
+@Meta(name = "Split Vector", description = "Split a Vector",category = Categories.DECONSTRUCTION)
 public final class SplitVectorNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {

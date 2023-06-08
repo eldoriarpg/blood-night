@@ -6,13 +6,13 @@ import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.action.ActionNode;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 
 /**
  * A node which prints something to std out
  */
 @Input(name = Fields.VALUE, type = DataType.ANY)
-@NodeMeta(name = "Print", description = "Prints something to the console", category = Categories.DEBUGGING)
+@Meta(name = "Print", description = "Prints something to the console", category = Categories.DEBUGGING)
 public final class PrintNode extends ActionNode {
 
     @Override

@@ -4,7 +4,7 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.Fields;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
-import de.eldoria.bloodnight.nodes.annotations.NodeMeta;
+import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
 import de.eldoria.bloodnight.nodes.transform.TransformNode;
@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
  */
 @Input(name = Fields.VALUE, type = DataType.VECTOR)
 @Output(name = Fields.RESULT, type = DataType.VECTOR)
-@NodeMeta(name = "Normalize", description = "Normalize a vector. A normalized vector has the length 1.")
+@Meta(name = "Normalize", description = "Normalize a vector. A normalized vector has the length 1.")
 public class NormalizeNode extends TransformNode {
     @Override
     public OutputContainer output(NodeContainer container) {
