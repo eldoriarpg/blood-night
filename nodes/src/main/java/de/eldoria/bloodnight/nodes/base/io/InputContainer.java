@@ -4,6 +4,7 @@ import de.eldoria.bloodnight.nodes.DataType;
 import de.eldoria.bloodnight.nodes.MetadataReader;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
+import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.util.Checks;
 import de.eldoria.bloodnight.util.Numbers;
 
@@ -36,11 +37,17 @@ public final class InputContainer {
 
     /**
      * Connects an input field with the output field of another node.
+     * <p>
+     * This can be seen as a unidirectional edge between the output field of the node and the input field of this node.
+     * <p>
+     * The input field requires the same type set in {@link Output} as this field has set in {@link Input}.
+     * <p>
+     * The node also needs to exist already. You might want to define your chain backwards.
      *
-     * @param container node container holding the nodes.
-     * @param name      name of the linked node.
-     * @param edge      edge
-     * @return this instance.
+     * @param container node container holding the nodes
+     * @param name      name of the input field that should be linked
+     * @param edge      the edge pointing at the linked node
+     * @return this instance for chaining
      */
     public InputContainer connect(NodeContainer container, String name, Edge edge) {
         // Get the type of the input field

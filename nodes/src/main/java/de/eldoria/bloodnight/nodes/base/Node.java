@@ -18,7 +18,13 @@ import de.eldoria.bloodnight.nodes.transform.TransformNode;
 import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
+/**
+ * Represents a base node. This node holds the input and output values of a node and the meta for editors.
+ * <p>
+ * See {@link ExecutableNode}, {@link ValueNode} and {@link TransformNode} for specific implementation details.
+ */
 @JsonTypeInfo(visible = true, property = "nodeClass", use = JsonTypeInfo.Id.CLASS)
 @JsonPropertyOrder(alphabetic = true)
 @JsonIgnoreProperties({"nodeClass"})
@@ -51,6 +57,16 @@ public sealed abstract class Node permits ExecutableNode, ValueNode, TransformNo
      */
     public InputContainer input() {
         return input;
+    }
+
+    /**
+     * Get the input container of this node.
+     *
+     * @return input container
+     */
+    public Node input(Consumer<InputContainer> consumer) {
+        consumer.accept(input);
+        return this;
     }
 
     /**

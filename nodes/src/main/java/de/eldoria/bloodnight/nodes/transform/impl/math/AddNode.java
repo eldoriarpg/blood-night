@@ -37,4 +37,13 @@ public final class AddNode extends TransformNode {
         var result = input().map(container, Fields.FIRST).asDouble() + input().map(container, Fields.SECOND).asDouble();
         return super.output(container).set(Fields.RESULT, result);
     }
+
+    public static class Input {
+        public static final String FIRST = Fields.FIRST;
+        public static final String SECOND = Fields.SECOND;
+    }
+
+    public static class Output {
+        public static final String RESULT = Fields.RESULT;
+    }
 }

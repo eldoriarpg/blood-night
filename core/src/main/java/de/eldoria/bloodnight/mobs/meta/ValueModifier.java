@@ -1,5 +1,10 @@
 package de.eldoria.bloodnight.mobs.meta;
 
 public enum ValueModifier {
-    DEFAULT, MULTIPLY, VALUE
+    // Do not change the value
+    DEFAULT,
+    // Multiply the default value
+    MULTIPLY,
+    // Set the value
+    VALUE
 }

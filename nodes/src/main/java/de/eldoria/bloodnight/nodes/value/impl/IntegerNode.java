@@ -26,4 +26,8 @@ public final class IntegerNode extends ValueNode {
     public IntegerNode(@JsonProperty("value") int value, @JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(value, input, meta);
     }
+
+    public static class Output {
+        public static final String VALUE = Fields.VALUE;
+    }
 }

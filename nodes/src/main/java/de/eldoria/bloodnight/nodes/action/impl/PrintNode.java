@@ -32,4 +32,8 @@ public final class PrintNode extends ActionNode {
     public void invoke(NodeContainer container) {
         System.out.println((Object) input().value(container, Fields.VALUE));
     }
+
+    public static class Input {
+        public static final String VALUE = Fields.VALUE;
+    }
 }

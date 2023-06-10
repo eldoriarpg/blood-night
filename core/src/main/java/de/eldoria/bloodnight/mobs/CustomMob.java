@@ -5,10 +5,5 @@ import de.eldoria.bloodnight.mobs.meta.Drops;
 import de.eldoria.bloodnight.mobs.meta.Equipment;
 import de.eldoria.bloodnight.nodes.NodeContainer;
 
-public class CustomMob {
-    String name;
-    Equipment equipment;
-    Attributes attributes;
-    NodeContainer nodes;
-    Drops drops;
+public record CustomMob(String id, Equipment equipment, Attributes attributes, NodeContainer nodes, Drops drops) {
 }

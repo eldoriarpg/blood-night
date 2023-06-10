@@ -29,6 +29,18 @@ public final class NodeRegistry {
     static Map<String, NodeRegistration> nodes = new HashMap<>();
     static Set<String> names = new HashSet<>();
 
+    public static void register(List<Class<? extends Node>> nodeClasses) {
+        for (Class<? extends Node> nodeClass : nodeClasses) {
+            register(nodeClass);
+        }
+    }
+
+    public static void register(Class<? extends Node>... nodeClasses) {
+        for (Class<? extends Node> nodeClass : nodeClasses) {
+            register(nodeClass);
+        }
+    }
+
     public static void register(Class<? extends Node> nodeClass) {
         checkNode(nodeClass);
         NodeRegistration registration = generateRegistration(nodeClass);
