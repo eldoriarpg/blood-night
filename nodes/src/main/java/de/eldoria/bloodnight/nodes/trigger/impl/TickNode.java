@@ -16,13 +16,18 @@ import java.util.Map;
  */
 @Execution(Fields.NEXT)
 @Meta(name = "Tick", description = "Executed on every server tick")
-public class TickNode extends TriggerNode<TickNode> {
+public class TickNode extends TriggerNode<TickNode, Void> {
     public TickNode() {
     }
 
     @JsonCreator
     public TickNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(input, meta);
+    }
+
+    @Override
+    protected void inject(Void data) {
+        // ignore
     }
 
     public static class Executions {

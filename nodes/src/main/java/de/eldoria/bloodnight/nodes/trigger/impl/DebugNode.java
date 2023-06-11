@@ -17,13 +17,18 @@ import java.util.Map;
  */
 @Execution(Fields.NEXT)
 @Meta(name = "Debug", description = "Manually trigger a action", category = Categories.DEBUGGING)
-public final class DebugNode extends TriggerNode<DebugNode> {
+public final class DebugNode extends TriggerNode<DebugNode, Void> {
     public DebugNode() {
     }
 
-        @JsonCreator
+    @JsonCreator
     public DebugNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(input, meta);
+    }
+
+    @Override
+    protected void inject(Void data) {
+        // ignore
     }
 
 }
