@@ -59,7 +59,7 @@ public abstract non-sealed class TriggerNode<T extends TriggerNode<T, V>, V> ext
      * @throws IllegalStateException when this method is called outside the {@link #inject(Object)} or {@link #invoke(NodeContainer)} call of this node.
      */
     @Override
-    protected OutputContainer output() {
+    protected final OutputContainer output() {
         if (lock.locked()) {
             return super.output();
         }
@@ -78,9 +78,8 @@ public abstract non-sealed class TriggerNode<T extends TriggerNode<T, V>, V> ext
      * @return the output container
      * @throws IllegalStateException when this method is called outside the {@link #inject(Object)} or {@link #invoke(NodeContainer)} call of this node.
      */
-
     @Override
-    public OutputContainer output(NodeContainer container) {
+    public final OutputContainer output(NodeContainer container) {
         if (lock.locked()) {
             return super.output(container);
         }

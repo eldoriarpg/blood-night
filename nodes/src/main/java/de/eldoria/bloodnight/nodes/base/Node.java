@@ -82,5 +82,17 @@ public sealed abstract class Node permits ExecutableNode, ValueNode, TransformNo
     protected OutputContainer output() {
         return output;
     }
+
+    /**
+     * Creates a new instance of this node, which can be used for another mob instance.
+     * <p>
+     * For optimization reasons, this might be only implemented into nodes which actually hold data. Nodes which do not store any data or just static data might return themselves.
+     *
+     * @return a copy of this node if it holds any persistent data.
+     */
+    // TODO make this abstract to force implementation or are we fine with the non static data approach?
+    public Node copy() {
+        return this;
+    }
 }
 
