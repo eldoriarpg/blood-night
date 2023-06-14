@@ -4,6 +4,8 @@ import de.eldoria.bloodnight.nodes.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.execution.ExecutableChainNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
+import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
+import de.eldoria.bloodnight.nodes.trigger.base.TriggerLock;
 
 import java.util.Map;
 
@@ -17,6 +19,9 @@ import java.util.Map;
  * @param <T> type of node
  */
 public abstract non-sealed class TriggerNode<T extends TriggerNode<T, V>, V> extends ExecutableChainNode<T> {
+    // Lock for the trigger node.
+    private final TriggerLock lock = new TriggerLock();
+
     public TriggerNode() {
     }
 
@@ -38,8 +43,47 @@ public abstract non-sealed class TriggerNode<T extends TriggerNode<T, V>, V> ext
      *
      * @param data data provided to the triggered node.
      */
-    public void trigger(NodeContainer container, Object data) {
-        inject((V) data);
-        super.invoke(container);
+    public final void trigger(NodeContainer container, Object data) {
+        try (var l = lock.lock()) {
+            inject((V) data);
+            super.invoke(container);
+        }
+    }
+
+    /**
+     * Gets the output container of this node.
+     * <p>
+     * The output container can be only retrieved inside the {@link #inject(Object)} and {@link #invoke(NodeContainer)} call of this node.
+     *
+     * @return the output container
+     * @throws IllegalStateException when this method is called outside the {@link #inject(Object)} or {@link #invoke(NodeContainer)} call of this node.
+     */
+    @Override
+    protected OutputContainer output() {
+        if (lock.locked()) {
+            return super.output();
+        }
+        throw new IllegalStateException("Tried to get output from a trigger node which is not active");
+    }
+
+    /**
+     * Gets the output container of this node.
+     * <p>
+     * The output container can be only retrieved inside the {@link #inject(Object)} and {@link #invoke(NodeContainer)} call of this node.
+     * <p>
+     * Additionally, the output can be called from every node which is chained to the execution chain of this node in any way.
+     * <p>
+     * <b>Accessing this output container during a call from another trigger node will fail and throw an exception.</b>
+     *
+     * @return the output container
+     * @throws IllegalStateException when this method is called outside the {@link #inject(Object)} or {@link #invoke(NodeContainer)} call of this node.
+     */
+
+    @Override
+    public OutputContainer output(NodeContainer container) {
+        if (lock.locked()) {
+            return super.output(container);
+        }
+        throw new IllegalStateException("Tried to get output from a trigger node which is not active");
     }
 }
