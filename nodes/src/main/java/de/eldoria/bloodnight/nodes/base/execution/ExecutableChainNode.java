@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.base.execution;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.MetadataReader;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.MetadataReader;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
