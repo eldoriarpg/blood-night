@@ -3,7 +3,7 @@ package de.eldoria.bloodnight.nodes.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import de.eldoria.bloodnight.nodes.DataType;
+import de.eldoria.bloodnight.nodes.meta.DataType;
 
 import java.io.IOException;
 import java.util.Arrays;

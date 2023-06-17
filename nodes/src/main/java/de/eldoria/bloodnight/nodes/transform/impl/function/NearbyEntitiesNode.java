@@ -2,11 +2,10 @@ package de.eldoria.bloodnight.nodes.transform.impl.function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataStruct;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataStruct;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -39,14 +38,14 @@ public class NearbyEntitiesNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        Location location = input().value(container, Fields.LOCATION);
-        double x = input().value(container, Fields.X);
-        double y = input().value(container, Fields.Y);
-        double z = input().value(container, Fields.Z);
+    public OutputContainer output() {
+        Location location = input().value(Fields.LOCATION);
+        double x = input().value(Fields.X);
+        double y = input().value(Fields.Y);
+        double z = input().value(Fields.Z);
         Checks.notNull(location.getWorld(), "World must be non null.");
 
-        return super.output(container)
+        return super.output()
                 .set(Fields.RESULT, location.getWorld().getNearbyEntities(location, x, y, z));
     }
 }

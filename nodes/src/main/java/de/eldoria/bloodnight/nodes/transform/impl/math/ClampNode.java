@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.math;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -35,10 +34,10 @@ public final class ClampNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        double upper = input().map(container, Fields.UPPER).asDouble();
-        double lower = input().map(container, Fields.LOWER).asDouble();
-        double value = input().map(container, Fields.VALUE).asDouble();
-        return super.output(container).set(Fields.RESULT, BMath.clamp(value, lower, upper));
+    public OutputContainer output() {
+        double upper = input().map(Fields.UPPER).asDouble();
+        double lower = input().map(Fields.LOWER).asDouble();
+        double value = input().map(Fields.VALUE).asDouble();
+        return super.output().set(Fields.RESULT, BMath.clamp(value, lower, upper));
     }
 }

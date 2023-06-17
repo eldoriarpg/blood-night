@@ -1,7 +1,6 @@
 package de.eldoria.bloodnight.nodes.controlflow;
 
-import de.eldoria.bloodnight.nodes.DebugActionNode;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.trigger.impl.DebugNode;
 import org.junit.jupiter.api.Test;
 

@@ -2,7 +2,8 @@ package de.eldoria.bloodnight.nodes.trigger.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Fields;
+import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
@@ -28,6 +29,11 @@ public class TickNode extends TriggerNode<TickNode, Void> {
     @Override
     protected void inject(Void data) {
         // ignore
+    }
+
+    @Override
+    protected OutputContainer output(OutputContainer output) {
+        return output;
     }
 
     public static class Executions {

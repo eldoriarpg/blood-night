@@ -2,11 +2,10 @@ package de.eldoria.bloodnight.nodes.controlflow.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataStruct;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataStruct;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -35,9 +34,9 @@ public class ForEachNode extends ControlFlowNode<ForEachNode> {
 
     @Override
     public void invoke(NodeContainer container) {
-        Collection<Object> collection = input().map(container, Fields.VALUE).get();
+        Collection<Object> collection = input().map(Fields.VALUE).get();
         for (var c : collection) {
-            super.output(container).set(Fields.CURRENT, c);
+            super.output().set(Fields.CURRENT, c);
             super.invoke(container);
         }
     }

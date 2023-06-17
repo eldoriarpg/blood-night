@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.controlflow.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
@@ -34,7 +33,7 @@ public class BranchNode extends ControlFlowNode<BranchNode> {
 
     @Override
     public void invoke(NodeContainer container) {
-        var expression = String.valueOf((boolean) input().value(container, Fields.VALUE));
+        var expression = String.valueOf((boolean) input().value(Fields.VALUE));
         executions().invokeNext(container, expression);
     }
 }

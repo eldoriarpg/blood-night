@@ -2,8 +2,8 @@ package de.eldoria.bloodnight.editor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.serializastion.DataTypeSerializer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.serialization.DataTypeSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;

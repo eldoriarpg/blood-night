@@ -3,14 +3,16 @@ package de.eldoria.bloodnight.editor;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import de.eldoria.bloodnight.items.ItemRegistry;
-import de.eldoria.bloodnight.mobs.CustomMob;
+import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobRegistry;
-import de.eldoria.bloodnight.mobs.meta.Attributes;
-import de.eldoria.bloodnight.mobs.meta.Drop;
-import de.eldoria.bloodnight.mobs.meta.Drops;
-import de.eldoria.bloodnight.mobs.meta.Equipment;
-import de.eldoria.bloodnight.mobs.meta.ValueModifier;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.Drop;
+import de.eldoria.bloodnight.mob.meta.Drops;
+import de.eldoria.bloodnight.mob.meta.Equipment;
+import de.eldoria.bloodnight.mob.meta.Extension;
+import de.eldoria.bloodnight.mob.meta.ExtensionType;
+import de.eldoria.bloodnight.mob.meta.ValueModifier;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.action.impl.PrintNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.registry.DefaultNodes;
@@ -23,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -61,21 +64,22 @@ class EditorPayloadTest {
         container.add(1, new IntegerNode(10));
         container.add(2, new AddNode())
                 .input()
-                .connect(container, AddNode.Input.FIRST, Edge.to(0, IntegerNode.Output.VALUE))
-                .connect(container, AddNode.Input.SECOND, Edge.to(1, IntegerNode.Output.VALUE));
+                .connect(AddNode.Input.FIRST, Edge.to(0, IntegerNode.Output.VALUE))
+                .connect(AddNode.Input.SECOND, Edge.to(1, IntegerNode.Output.VALUE));
         container.add(3, new PrintNode())
-                .input(in -> in.connect(container, PrintNode.Input.VALUE, Edge.to(2, AddNode.Output.RESULT)));
+                .input(in -> in.connect(PrintNode.Input.VALUE, Edge.to(2, AddNode.Output.RESULT)));
         container.add(4, new TickNode())
                 .chain(TickNode.Executions.NEXT, 3);
 
-        Drops drops = new Drops(3, true, List.of(new Drop(itemIds.get(0), 10, 5), new Drop(itemIds.get(1), 1, 100)));
+        Drops drops = new Drops(3, true, List.of(new Drop(itemIds.get(0), 10, 5), new Drop(itemIds.get(1), 1, 100)), ValueModifier.MULTIPLY, 2);
 
-        CustomMob customMob = new CustomMob("test", equipment, attributes, container, drops);
+        Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER);
+        CustomMob customMob = new CustomMob("test", equipment, attributes, container, drops, extension);
         mobs.add(customMob);
 
         NodeRegistry.register(DefaultNodes.defaultNodes());
 
-        EditorPayload editorPayload = new EditorPayload(mobs, NodeRegistry.registrations(), new DataTypes(), itemRegistry);
+        EditorPayload editorPayload = new EditorPayload(mobs, NodeRegistry.registrations(), new DataTypes(), itemRegistry, drops);
 
         System.out.println(EditorPayload.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(editorPayload));
     }

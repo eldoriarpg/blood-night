@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -36,13 +35,13 @@ public final class CooldownNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        int cooldown = input().map(container, Fields.VALUE).asInt();
+    public OutputContainer output() {
+        int cooldown = input().map(Fields.VALUE).asInt();
 
         if (last.plus(cooldown, ChronoUnit.MILLIS).isBefore(Instant.now())) {
             last = Instant.now();
-            return super.output(container).set(Fields.RESULT, true);
+            return super.output().set(Fields.RESULT, true);
         }
-        return super.output(container).set(Fields.RESULT, false);
+        return super.output().set(Fields.RESULT, false);
     }
 }

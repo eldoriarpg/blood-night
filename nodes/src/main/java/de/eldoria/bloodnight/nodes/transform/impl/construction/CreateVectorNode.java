@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.construction;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -35,10 +34,10 @@ public final class CreateVectorNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        double x = input().map(container, Fields.X).asDouble();
-        double y = input().map(container, Fields.Y).asDouble();
-        double z = input().map(container, Fields.Z).asDouble();
-        return super.output(container).set(Fields.RESULT, new Vector(x, y, z));
+    public OutputContainer output() {
+        double x = input().map(Fields.X).asDouble();
+        double y = input().map(Fields.Y).asDouble();
+        double z = input().map(Fields.Z).asDouble();
+        return super.output().set(Fields.RESULT, new Vector(x, y, z));
     }
 }

@@ -2,10 +2,10 @@ package de.eldoria.bloodnight.nodes.action.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.action.ActionNode;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
@@ -30,7 +30,7 @@ public final class PrintNode extends ActionNode {
 
     @Override
     public void invoke(NodeContainer container) {
-        System.out.println((Object) input().value(container, Fields.VALUE));
+        System.out.println((Object) input().value(Fields.VALUE));
     }
 
     public static class Input {

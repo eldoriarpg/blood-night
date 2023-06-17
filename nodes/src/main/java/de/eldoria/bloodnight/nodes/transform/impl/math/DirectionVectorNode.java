@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.math;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -34,10 +33,10 @@ public class DirectionVectorNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        Vector from = input().value(container, Fields.FROM);
-        Vector to = input().value(container, Fields.TO);
+    public OutputContainer output() {
+        Vector from = input().value(Fields.FROM);
+        Vector to = input().value(Fields.TO);
         var result = new Vector(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ());
-        return super.output(container).set(Fields.RESULT, result);
+        return super.output().set(Fields.RESULT, result);
     }
 }

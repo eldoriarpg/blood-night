@@ -2,9 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.deconstruction;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import org.bukkit.Location;
@@ -12,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +29,8 @@ class SplitEntityNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new StubValueNode(entity, DataType.ENTITY));
         var splitEntityNode = new SplitEntityNode();
-        splitEntityNode.input().connect(nodeContainer, Fields.VALUE, new Edge(1, Fields.VALUE));
-        var output = splitEntityNode.output(nodeContainer);
+        splitEntityNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
+        var output = splitEntityNode.output();
 
         assertEquals(EntityType.ALLAY, output.value(Fields.ENTITY_TYPE));
         assertEquals(location.getX(), output.value(Fields.X));

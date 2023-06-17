@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.transform.impl.math;
 
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import org.bukkit.util.Vector;
@@ -20,9 +20,9 @@ class DirectionVectorNodeTest {
         nodeContainer.add(1, new StubValueNode(vector1, DataType.VECTOR));
         nodeContainer.add(2, new StubValueNode(vector2, DataType.VECTOR));
         var directionVectorNode = new DirectionVectorNode();
-        directionVectorNode.input().connect(nodeContainer, Fields.FROM, new Edge(1, Fields.VALUE))
-                .connect(nodeContainer, Fields.TO, new Edge(2, Fields.VALUE));
-        var output = directionVectorNode.output(nodeContainer);
+        directionVectorNode.input().connect(Fields.FROM, new Edge(1, Fields.VALUE))
+                .connect(Fields.TO, new Edge(2, Fields.VALUE));
+        var output = directionVectorNode.output();
 
         var outputVector = (Vector) output.value(Fields.RESULT);
         assertEquals(3D, outputVector.getX());

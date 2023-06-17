@@ -2,15 +2,14 @@ package de.eldoria.bloodnight.nodes.transform.impl.deconstruction;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +26,8 @@ class SplitLocationNodeTest {
         Location location = new Location(world, 1, 2, 3);
         nodeContainer.add(1, new StubValueNode(location, DataType.LOCATION));
         var splitLocationNode = new SplitLocationNode();
-        splitLocationNode.input().connect(nodeContainer, Fields.LOCATION, new Edge(1, Fields.VALUE));
-        var output = splitLocationNode.output(nodeContainer);
+        splitLocationNode.input().connect(Fields.LOCATION, new Edge(1, Fields.VALUE));
+        var output = splitLocationNode.output();
 
         assertEquals(world, output.value(Fields.WORLD));
         assertEquals(location.getX(), output.value(Fields.X));

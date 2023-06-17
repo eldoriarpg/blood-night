@@ -1,6 +1,6 @@
 package de.eldoria.bloodnight.nodes.annotations;
 
-import de.eldoria.bloodnight.nodes.Categories;
+import de.eldoria.bloodnight.nodes.meta.Categories;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

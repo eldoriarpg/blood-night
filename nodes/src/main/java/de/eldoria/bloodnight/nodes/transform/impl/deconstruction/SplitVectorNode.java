@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.deconstruction;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -35,9 +34,9 @@ public final class SplitVectorNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        Vector loc = input().value(container, Fields.VECTOR);
-        return super.output(container)
+    public OutputContainer output() {
+        Vector loc = input().value(Fields.VECTOR);
+        return super.output()
                 .set(Fields.X, loc.getX())
                 .set(Fields.Y, loc.getY())
                 .set(Fields.Z, loc.getZ());

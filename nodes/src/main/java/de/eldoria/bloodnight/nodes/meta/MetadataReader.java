@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes;
+package de.eldoria.bloodnight.nodes.meta;
 
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.annotations.Input;

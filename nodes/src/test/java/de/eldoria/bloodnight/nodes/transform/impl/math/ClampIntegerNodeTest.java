@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.transform.impl.math;
 
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.value.impl.NumberNode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,10 +23,10 @@ class ClampIntegerNodeTest {
         nodeContainer.add(3, new NumberNode(upper));
         var clampNode = new ClampIntegerNode();
         clampNode.input()
-                .connect(nodeContainer, Fields.VALUE, new Edge(1, Fields.VALUE))
-                .connect(nodeContainer, Fields.LOWER, new Edge(2, Fields.VALUE))
-                .connect(nodeContainer, Fields.UPPER, new Edge(3, Fields.VALUE));
-        var output = clampNode.output(nodeContainer);
+                .connect(Fields.VALUE, new Edge(1, Fields.VALUE))
+                .connect(Fields.LOWER, new Edge(2, Fields.VALUE))
+                .connect(Fields.UPPER, new Edge(3, Fields.VALUE));
+        var output = clampNode.output();
         assertEquals(result, (int) output.value(Fields.RESULT));
         assertEquals(DataType.INTEGER, output.getType(Fields.RESULT));
     }

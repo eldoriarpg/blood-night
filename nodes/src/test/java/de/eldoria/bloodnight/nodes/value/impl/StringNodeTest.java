@@ -2,15 +2,14 @@ package de.eldoria.bloodnight.nodes.value.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.registry.NodeRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StringNodeTest {
 
@@ -33,7 +32,16 @@ class StringNodeTest {
     @Test
     void output() {
         var node = new StringNode("Chojo stinkt");
-        assertEquals("Chojo stinkt", node.output(new NodeContainer()).value(Fields.VALUE));
+        assertEquals("Chojo stinkt", node.output().value(Fields.VALUE));
+    }
+
+    @Test
+    void copy() {
+        StringNode test = new StringNode("test");
+        Node copy = test.copy();
+        Assertions.assertTrue(copy instanceof StringNode);
+        Assertions.assertNotSame(test, copy);
+        Assertions.assertSame(test.value(), ((StringNode) copy).value());
     }
 
     @AfterEach

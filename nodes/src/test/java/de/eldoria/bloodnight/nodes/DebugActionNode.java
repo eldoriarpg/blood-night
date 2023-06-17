@@ -1,6 +1,7 @@
 package de.eldoria.bloodnight.nodes;
 
 import de.eldoria.bloodnight.nodes.action.ActionNode;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 
 public class DebugActionNode extends ActionNode {
 

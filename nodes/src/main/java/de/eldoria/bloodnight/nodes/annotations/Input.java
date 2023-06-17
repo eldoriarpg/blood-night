@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight.nodes.annotations;
 
-import de.eldoria.bloodnight.nodes.DataStruct;
-import de.eldoria.bloodnight.nodes.DataType;
+import de.eldoria.bloodnight.nodes.meta.DataStruct;
+import de.eldoria.bloodnight.nodes.meta.DataType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;

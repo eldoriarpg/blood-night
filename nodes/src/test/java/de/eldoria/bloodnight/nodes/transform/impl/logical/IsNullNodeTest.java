@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.transform.impl.logical;
 
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.value.impl.StringNode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,8 +21,8 @@ class IsNullNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new StringNode(value));
         var isNullNode = new IsNullNode();
-        isNullNode.input().connect(nodeContainer, Fields.VALUE, new Edge(1, Fields.VALUE));
-        var output = isNullNode.output(nodeContainer);
+        isNullNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
+        var output = isNullNode.output();
         assertEquals(result, output.value(Fields.RESULT));
         assertEquals(DataType.BOOLEAN, output.getType(Fields.RESULT));
     }

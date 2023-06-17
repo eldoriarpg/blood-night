@@ -2,8 +2,8 @@ package de.eldoria.bloodnight.nodes.value.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Output(name = Fields.VALUE, type = DataType.BOOLEAN)
 @Meta(name = "Boolean", description = "Allows to set a boolean")
-public class BooleanNode extends ValueNode {
+public final class BooleanNode extends ValueNode {
     public BooleanNode(boolean value) {
         super(value);
     }

@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.logical;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -33,8 +32,8 @@ public final class GreaterOrEqualNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        var result = input().map(container, Fields.FIRST).asDouble() >= input().map(container, Fields.SECOND).asDouble();
-        return super.output(container).set(Fields.RESULT, result);
+    public OutputContainer output() {
+        var result = input().map(Fields.FIRST).asDouble() >= input().map(Fields.SECOND).asDouble();
+        return super.output().set(Fields.RESULT, result);
     }
 }

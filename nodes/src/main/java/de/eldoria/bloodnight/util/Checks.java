@@ -1,6 +1,6 @@
 package de.eldoria.bloodnight.util;
 
-import de.eldoria.bloodnight.nodes.DataType;
+import de.eldoria.bloodnight.nodes.meta.DataType;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Objects;

@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.transform.impl.logical;
 
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.value.impl.NumberNode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,9 +23,9 @@ class LessOrEqualNodeTest {
         nodeContainer.add(1, new NumberNode(first));
         nodeContainer.add(2, new NumberNode(second));
         var lessOrEqualNode = new LessOrEqualNode();
-        lessOrEqualNode.input().connect(nodeContainer, Fields.FIRST, new Edge(1, Fields.VALUE))
-                .connect(nodeContainer, Fields.SECOND, new Edge(2, Fields.VALUE));
-        var output = lessOrEqualNode.output(nodeContainer);
+        lessOrEqualNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE))
+                .connect(Fields.SECOND, new Edge(2, Fields.VALUE));
+        var output = lessOrEqualNode.output();
         assertEquals(expectedResult, output.value(Fields.RESULT));
         assertEquals(DataType.BOOLEAN, output.getType(Fields.RESULT));
     }

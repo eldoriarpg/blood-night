@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -34,8 +33,8 @@ public final class RandomNumberNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        double result = ThreadLocalRandom.current().nextDouble(input().map(container, Fields.LOWER).asDouble(), input().map(container, Fields.UPPER).asDouble());
-        return super.output(container).set(Fields.RESULT, result);
+    public OutputContainer output() {
+        double result = ThreadLocalRandom.current().nextDouble(input().map(Fields.LOWER).asDouble(), input().map(Fields.UPPER).asDouble());
+        return super.output().set(Fields.RESULT, result);
     }
 }

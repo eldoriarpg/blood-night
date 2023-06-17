@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.controlflow;
 
 import de.eldoria.bloodnight.nodes.DebugActionNode;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BranchNode;
 import de.eldoria.bloodnight.nodes.value.impl.BooleanNode;
@@ -32,7 +32,7 @@ class BranchNodeTest {
         container.add(3, new BranchNode())
                 .chain(Fields.TRUE, 0)
                 .chain(Fields.FALSE, 1)
-                .input().connect(container, Fields.VALUE, new Edge(4, Fields.VALUE));
+                .input().connect(Fields.VALUE, new Edge(4, Fields.VALUE));
 
         debugNode.invoke(container);
 

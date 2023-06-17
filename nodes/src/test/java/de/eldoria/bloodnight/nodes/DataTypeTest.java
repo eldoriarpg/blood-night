@@ -1,5 +1,6 @@
 package de.eldoria.bloodnight.nodes;
 
+import de.eldoria.bloodnight.nodes.meta.DataType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

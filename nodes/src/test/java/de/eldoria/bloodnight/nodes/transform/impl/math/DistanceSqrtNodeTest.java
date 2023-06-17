@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.transform.impl.math;
 
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import org.bukkit.util.Vector;
@@ -20,9 +20,9 @@ class DistanceSqrtNodeTest {
         nodeContainer.add(1, new StubValueNode(vector1, DataType.VECTOR));
         nodeContainer.add(2, new StubValueNode(vector2, DataType.VECTOR));
         var distanceSqrtNode = new DistanceSqrtNode();
-        distanceSqrtNode.input().connect(nodeContainer, Fields.FIRST, new Edge(1, Fields.VALUE))
-                .connect(nodeContainer, Fields.SECOND, new Edge(2, Fields.VALUE));
-        var output = distanceSqrtNode.output(nodeContainer);
+        distanceSqrtNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE))
+                .connect(Fields.SECOND, new Edge(2, Fields.VALUE));
+        var output = distanceSqrtNode.output();
 
         assertEquals(vector1.distanceSquared(vector2), output.value(Fields.RESULT));
         assertEquals(DataType.NUMBER, output.getType(Fields.RESULT));

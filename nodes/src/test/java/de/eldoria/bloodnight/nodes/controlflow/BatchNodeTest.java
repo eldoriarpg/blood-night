@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.controlflow;
 
 import de.eldoria.bloodnight.nodes.DebugActionNode;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BatchNode;
 import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
@@ -21,7 +21,7 @@ class BatchNodeTest {
         container.add(1, new IntegerNode(69));
 
         BatchNode batchNode = container.add(2, new BatchNode());
-        batchNode.input().connect(container, Fields.VALUE, new Edge(1, Fields.VALUE));
+        batchNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
         batchNode.chain(Fields.NEXT, 0);
 
         DebugNode debugNode = container.add(3, new DebugNode());

@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes;
+package de.eldoria.bloodnight.nodes.container;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;

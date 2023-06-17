@@ -2,10 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.math;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.Categories;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
@@ -32,8 +31,8 @@ public final class CeilNode extends TransformNode {
     }
 
     @Override
-    public OutputContainer output(NodeContainer container) {
-        var result = (int) Math.ceil(input().map(container, Fields.VALUE).asDouble());
-        return super.output(container).set(Fields.RESULT, result);
+    public OutputContainer output() {
+        var result = (int) Math.ceil(input().map(Fields.VALUE).asDouble());
+        return super.output().set(Fields.RESULT, result);
     }
 }

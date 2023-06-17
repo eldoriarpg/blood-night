@@ -2,9 +2,9 @@ package de.eldoria.bloodnight.nodes.transform.impl.construction;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import de.eldoria.bloodnight.nodes.DataType;
-import de.eldoria.bloodnight.nodes.Fields;
-import de.eldoria.bloodnight.nodes.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
@@ -43,13 +43,13 @@ class CreateLocationNodeTest {
         container.add(5, new NumberNode(pitch));
         container.add(6, new StubValueNode(world, DataType.WORLD));
         createLocationNode.input()
-                .connect(container, Fields.X, new Edge(1, Fields.VALUE))
-                .connect(container, Fields.Y, new Edge(2, Fields.VALUE))
-                .connect(container, Fields.Z, new Edge(3, Fields.VALUE))
-                .connect(container, Fields.YAW, new Edge(4, Fields.VALUE))
-                .connect(container, Fields.PITCH, new Edge(5, Fields.VALUE))
-                .connect(container, Fields.WORLD, new Edge(6, Fields.VALUE));
-        Assertions.assertEquals(new Location(world, x, y, z, yaw, pitch), createLocationNode.output(container).value(Fields.RESULT));
+                .connect(Fields.X, new Edge(1, Fields.VALUE))
+                .connect(Fields.Y, new Edge(2, Fields.VALUE))
+                .connect(Fields.Z, new Edge(3, Fields.VALUE))
+                .connect(Fields.YAW, new Edge(4, Fields.VALUE))
+                .connect(Fields.PITCH, new Edge(5, Fields.VALUE))
+                .connect(Fields.WORLD, new Edge(6, Fields.VALUE));
+        Assertions.assertEquals(new Location(world, x, y, z, yaw, pitch), createLocationNode.output().value(Fields.RESULT));
     }
 
     private static Stream<Arguments> outputData() {
