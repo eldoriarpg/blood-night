@@ -1,10 +1,9 @@
-package de.eldoria.bloodnight.nodes;
+package de.eldoria.bloodnight.nodes.meta;
 
 /**
  * Class defining different data types.
  */
 public enum DataType {
-    EVENT,
     ENTITY,
     CANCELABLE_EVENT,
     INTEGER,
@@ -22,7 +21,8 @@ public enum DataType {
     BLOCK_TYPE,
     ITEM_TYPE,
     ANY,
-    LINKED;
+    LINKED,
+    PLAYER(ENTITY);
 
     private final DataType[] subtypes;
 

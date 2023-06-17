@@ -7,6 +7,8 @@ public final class Categories {
     private Categories() {
         throw new UnsupportedOperationException("This is a utility class.");
     }
+
+    public static final String EVENT = "Event";
     public static final String DEFAULT = "Default";
     public static final String DEBUGGING = "Debugging";
     public static final String MATH = "Math";

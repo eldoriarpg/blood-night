@@ -32,4 +32,8 @@ public final class Fields {
     public static final String VELOCITY = "velocity";
     public static final String DIRECTION = "direction";
     public static final String CURRENT = "current";
+    public static final String KILLER = "killer";
+    public static final String KILLED_ENTITY = "killed_entity";
+    public static final String DAMAGE_CAUSE = "damage_cause";
+        public static final String CANCELABLE_EVENT = "cancelable_event";
 }
