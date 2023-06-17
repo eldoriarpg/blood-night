@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs;
+package de.eldoria.bloodnight.mob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

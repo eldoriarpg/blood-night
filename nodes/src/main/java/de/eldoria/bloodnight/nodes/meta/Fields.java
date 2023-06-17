@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes;
+package de.eldoria.bloodnight.nodes.meta;
 
 /**
  * Class holding names used for fields of nodes.

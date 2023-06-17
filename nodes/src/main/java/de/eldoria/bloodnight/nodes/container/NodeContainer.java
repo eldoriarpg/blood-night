@@ -32,9 +32,11 @@ public final class NodeContainer {
     }
 
     public <T extends Node> T add(int id, T node) {
-        if (nodes.containsKey(id))
+        if (nodes.containsKey(id)) {
             throw new IllegalArgumentException("A node with id %s already exists!".formatted(id));
+        }
         nodes.put(id, node);
+        node.inject(id, this);
         return node;
     }
 
@@ -59,5 +61,13 @@ public final class NodeContainer {
 
     public Node get(int id) {
         return Objects.requireNonNull(nodes.get(id));
+    }
+
+    public NodeContainer copy() {
+        NodeContainer nodeContainer = new NodeContainer();
+        for (var entry : nodes.entrySet()) {
+            nodeContainer.add(entry.getKey(), entry.getValue().copy());
+        }
+        return nodeContainer;
     }
 }
