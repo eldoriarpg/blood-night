@@ -1,7 +1,8 @@
-package de.eldoria.bloodnight.mob;
+package de.eldoria.bloodnight.mobs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.eldoria.bloodnight.mob.CustomMob;
 
 import java.util.HashMap;
 import java.util.Map;

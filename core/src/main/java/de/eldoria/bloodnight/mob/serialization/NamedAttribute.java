@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs.serialization;
+package de.eldoria.bloodnight.mob.serialization;
 
 import java.util.function.Function;
 

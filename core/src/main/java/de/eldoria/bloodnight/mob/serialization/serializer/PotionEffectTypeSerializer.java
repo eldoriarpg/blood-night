@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs.serialization.serializer;
+package de.eldoria.bloodnight.mob.serialization.serializer;
 
 import org.bukkit.potion.PotionEffectType;
 

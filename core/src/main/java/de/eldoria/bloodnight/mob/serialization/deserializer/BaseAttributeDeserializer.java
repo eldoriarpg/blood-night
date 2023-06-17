@@ -1,9 +1,9 @@
-package de.eldoria.bloodnight.mobs.serialization.deserializer;
+package de.eldoria.bloodnight.mob.serialization.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import de.eldoria.bloodnight.mobs.serialization.NamedAttribute;
+import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 
 import java.io.IOException;
 import java.util.HashMap;

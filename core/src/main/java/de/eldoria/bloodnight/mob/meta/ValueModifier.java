@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs.meta;
+package de.eldoria.bloodnight.mob.meta;
 
 public enum ValueModifier {
     // Do not change the value

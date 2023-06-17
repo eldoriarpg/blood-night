@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs.serialization.deserializer;
+package de.eldoria.bloodnight.mob.serialization.deserializer;
 
 import org.bukkit.enchantments.Enchantment;
 

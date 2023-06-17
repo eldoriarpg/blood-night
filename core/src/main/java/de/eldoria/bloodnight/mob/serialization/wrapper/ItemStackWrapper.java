@@ -1,7 +1,7 @@
-package de.eldoria.bloodnight.mobs.serialization.wrapper;
+package de.eldoria.bloodnight.mob.serialization.wrapper;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.eldoria.bloodnight.mobs.serialization.deserializer.EnchantmentHashSerializer;
+import de.eldoria.bloodnight.mob.serialization.deserializer.EnchantmentHashSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;

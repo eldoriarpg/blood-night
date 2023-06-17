@@ -1,10 +1,9 @@
-package de.eldoria.bloodnight.mobs.serialization.serializer;
+package de.eldoria.bloodnight.mob.serialization.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import de.eldoria.bloodnight.mobs.serialization.NamedAttribute;
-import org.bukkit.enchantments.Enchantment;
+import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 
 import java.io.IOException;
 

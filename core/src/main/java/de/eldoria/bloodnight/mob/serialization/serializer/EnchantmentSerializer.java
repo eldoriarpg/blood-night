@@ -1,6 +1,5 @@
-package de.eldoria.bloodnight.mobs.serialization.serializer;
+package de.eldoria.bloodnight.mob.serialization.serializer;
 
-import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import org.bukkit.enchantments.Enchantment;
 
 public class EnchantmentSerializer extends BaseAttributeSerializer<Enchantment> {

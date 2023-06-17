@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs.serialization.deserializer;
+package de.eldoria.bloodnight.mob.serialization.deserializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

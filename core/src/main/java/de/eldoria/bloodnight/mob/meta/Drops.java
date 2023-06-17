@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.mobs.meta;
+package de.eldoria.bloodnight.mob.meta;
 
 import java.util.List;
 

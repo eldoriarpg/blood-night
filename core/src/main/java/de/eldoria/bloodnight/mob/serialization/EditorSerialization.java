@@ -1,15 +1,15 @@
-package de.eldoria.bloodnight.mobs.serialization;
+package de.eldoria.bloodnight.mob.serialization;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
-import de.eldoria.bloodnight.mobs.serialization.deserializer.EnchantmentDeserializer;
-import de.eldoria.bloodnight.mobs.serialization.deserializer.PotionEffectTypeDeserializer;
-import de.eldoria.bloodnight.mobs.serialization.serializer.EnchantmentSerializer;
-import de.eldoria.bloodnight.mobs.serialization.serializer.EnchantmentWrapperSerializer;
-import de.eldoria.bloodnight.mobs.serialization.serializer.PotionEffectTypeSerializer;
-import de.eldoria.bloodnight.mobs.serialization.serializer.SimpleItemStackSerializer;
+import de.eldoria.bloodnight.mob.serialization.deserializer.EnchantmentDeserializer;
+import de.eldoria.bloodnight.mob.serialization.deserializer.PotionEffectTypeDeserializer;
+import de.eldoria.bloodnight.mob.serialization.serializer.EnchantmentSerializer;
+import de.eldoria.bloodnight.mob.serialization.serializer.EnchantmentWrapperSerializer;
+import de.eldoria.bloodnight.mob.serialization.serializer.PotionEffectTypeSerializer;
+import de.eldoria.bloodnight.mob.serialization.serializer.SimpleItemStackSerializer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
