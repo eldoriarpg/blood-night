@@ -2,13 +2,13 @@ package de.eldoria.bloodnight.nodes.trigger.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
-import de.eldoria.bloodnight.nodes.meta.Categories;
-import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
+import de.eldoria.bloodnight.nodes.base.io.OutputContainer;
+import de.eldoria.bloodnight.nodes.meta.Categories;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.trigger.TriggerNode;
 
 import java.util.Map;

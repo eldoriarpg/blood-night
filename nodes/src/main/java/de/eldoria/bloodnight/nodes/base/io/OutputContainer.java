@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.base.io;
 
+import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.meta.DataType;
 import de.eldoria.bloodnight.nodes.meta.MetadataReader;
-import de.eldoria.bloodnight.nodes.annotations.Output;
 
 import java.util.Collections;
 import java.util.HashMap;

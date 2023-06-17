@@ -2,11 +2,11 @@ package de.eldoria.bloodnight.nodes.transform.impl.construction;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import de.eldoria.bloodnight.nodes.meta.DataType;
-import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import de.eldoria.bloodnight.nodes.value.impl.NumberNode;
 import org.bukkit.Location;
@@ -31,6 +31,20 @@ class CreateLocationNodeTest {
 
     }
 
+    private static Stream<Arguments> outputData() {
+        return Stream.of(
+                Arguments.of(0, 0, 0, 0, 0),
+                Arguments.of(Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE / 2, 187, 187),
+                Arguments.of(1000, 100, 10, 6.9F, 49F),
+                Arguments.of(-1000, 100, 10, 0.4F, 0.07F)
+        );
+    }
+
+    @AfterAll
+    static void afterAll() {
+        MockBukkit.unmock();
+    }
+
     @ParameterizedTest
     @MethodSource("outputData")
     void output(int x, int y, int z, float yaw, float pitch) {
@@ -50,19 +64,5 @@ class CreateLocationNodeTest {
                 .connect(Fields.PITCH, new Edge(5, Fields.VALUE))
                 .connect(Fields.WORLD, new Edge(6, Fields.VALUE));
         Assertions.assertEquals(new Location(world, x, y, z, yaw, pitch), createLocationNode.output().value(Fields.RESULT));
-    }
-
-    private static Stream<Arguments> outputData() {
-        return Stream.of(
-                Arguments.of(0, 0, 0, 0, 0),
-                Arguments.of(Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE / 2, 187, 187),
-                Arguments.of(1000, 100, 10, 6.9F, 49F),
-                Arguments.of(-1000, 100, 10, 0.4F, 0.07F)
-        );
-    }
-
-    @AfterAll
-    static void afterAll() {
-        MockBukkit.unmock();
     }
 }

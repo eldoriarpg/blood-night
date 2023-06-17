@@ -3,8 +3,8 @@ package de.eldoria.bloodnight.nodes.registry;
 import de.eldoria.bloodnight.nodes.action.impl.PrintNode;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BatchNode;
-import de.eldoria.bloodnight.nodes.controlflow.impl.ForEachNode;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BranchNode;
+import de.eldoria.bloodnight.nodes.controlflow.impl.ForEachNode;
 import de.eldoria.bloodnight.nodes.transform.impl.construction.CreateLocationNode;
 import de.eldoria.bloodnight.nodes.transform.impl.construction.CreateVectorNode;
 import de.eldoria.bloodnight.nodes.transform.impl.deconstruction.SplitEntityNode;
@@ -50,65 +50,65 @@ import java.util.List;
 public class DefaultNodes {
     public static List<Class<? extends Node>> defaultNodes() {
         return List.of(
-        // Actions
-        PrintNode.class,
+                // Actions
+                PrintNode.class,
 
-        // Control Flow
-        BatchNode.class,
-        ForEachNode.class,
-        BranchNode.class,
+                // Control Flow
+                BatchNode.class,
+                ForEachNode.class,
+                BranchNode.class,
 
-        // Transform - Construction
-        CreateLocationNode.class,
-        CreateVectorNode.class,
+                // Transform - Construction
+                CreateLocationNode.class,
+                CreateVectorNode.class,
 
-        // Transform - Deconstruction
-        SplitEntityNode.class,
-        SplitLocationNode.class,
-        SplitVectorNode.class,
+                // Transform - Deconstruction
+                SplitEntityNode.class,
+                SplitLocationNode.class,
+                SplitVectorNode.class,
 
-        // Transform - Function
-        CooldownNode.class,
-        NearbyEntitiesNode.class,
-        RandomIntegerNode.class,
-        RandomNumberNode.class,
+                // Transform - Function
+                CooldownNode.class,
+                NearbyEntitiesNode.class,
+                RandomIntegerNode.class,
+                RandomNumberNode.class,
 
-        // Transform - logical
-        AndNode.class,
-        EqualNode.class,
-        GreaterNode.class,
-        GreaterOrEqualNode.class,
-        IsNullNode.class,
-        LessNode.class,
-        LessOrEqualNode.class,
-        NotNode.class,
-        OrNode.class,
+                // Transform - logical
+                AndNode.class,
+                EqualNode.class,
+                GreaterNode.class,
+                GreaterOrEqualNode.class,
+                IsNullNode.class,
+                LessNode.class,
+                LessOrEqualNode.class,
+                NotNode.class,
+                OrNode.class,
 
-        // Transform - math
-        AbsIntegerNode.class,
-        AbsNode.class,
-        AddNode.class,
-        CeilNode.class,
-        ClampIntegerNode.class,
-        ClampNode.class,
-        DirectionVectorNode.class,
-        DistanceNode.class,
-        DistanceSqrtNode.class,
-        DivideNode.class,
-        FloorNode.class,
-        MultiplyNode.class,
-        NormalizeNode.class,
-        RoundNode.class,
-        SubtractNode.class,
+                // Transform - math
+                AbsIntegerNode.class,
+                AbsNode.class,
+                AddNode.class,
+                CeilNode.class,
+                ClampIntegerNode.class,
+                ClampNode.class,
+                DirectionVectorNode.class,
+                DistanceNode.class,
+                DistanceSqrtNode.class,
+                DivideNode.class,
+                FloorNode.class,
+                MultiplyNode.class,
+                NormalizeNode.class,
+                RoundNode.class,
+                SubtractNode.class,
 
-        // Trigger
-        DebugNode.class,
-        TickNode.class,
+                // Trigger
+                DebugNode.class,
+                TickNode.class,
 
-        // Value
-        BooleanNode.class,
-        IntegerNode.class,
-        NumberNode.class,
-        StringNode.class);
+                // Value
+                BooleanNode.class,
+                IntegerNode.class,
+                NumberNode.class,
+                StringNode.class);
     }
 }

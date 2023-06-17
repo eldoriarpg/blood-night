@@ -1,12 +1,12 @@
 package de.eldoria.bloodnight.nodes.controlflow;
 
 import de.eldoria.bloodnight.nodes.DebugActionNode;
-import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BranchNode;
-import de.eldoria.bloodnight.nodes.value.impl.BooleanNode;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.trigger.impl.DebugNode;
+import de.eldoria.bloodnight.nodes.value.impl.BooleanNode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,6 +16,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BranchNodeTest {
+
+    private static Stream<Arguments> data() {
+        return Stream.of(
+                Arguments.of(true, true, false),
+                Arguments.of(false, false, true)
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("data")
@@ -38,12 +45,5 @@ class BranchNodeTest {
 
         assertEquals(firstBranch, firstNode.executed());
         assertEquals(secondBranch, secondNode.executed());
-    }
-
-    private static Stream<Arguments> data() {
-        return Stream.of(
-                Arguments.of(true, true, false),
-                Arguments.of(false, false, true)
-        );
     }
 }

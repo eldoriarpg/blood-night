@@ -73,7 +73,7 @@ public final class NodeContainer {
         return nodeContainer;
     }
 
-    public void inject(ContainerMeta meta){
+    public void inject(ContainerMeta meta) {
         this.meta = meta;
     }
 

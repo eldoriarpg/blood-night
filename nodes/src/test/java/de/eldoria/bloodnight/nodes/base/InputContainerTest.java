@@ -1,9 +1,9 @@
 package de.eldoria.bloodnight.nodes.base;
 
-import de.eldoria.bloodnight.nodes.meta.DataType;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.InputContainer;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
 import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

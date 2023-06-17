@@ -1,8 +1,8 @@
 package de.eldoria.bloodnight.nodes.transform.impl.construction;
 
-import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +13,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 class CreateVectorNodeTest {
+
+    private static Stream<Arguments> outputData() {
+        return Stream.of(
+                Arguments.of(0, 0, 0),
+                Arguments.of(Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE / 2),
+                Arguments.of(1000, 100, 10),
+                Arguments.of(-1000, 100, 10)
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("outputData")
@@ -27,14 +36,5 @@ class CreateVectorNodeTest {
         createVectorNode.input().connect(Fields.Y, new Edge(2, Fields.VALUE));
         createVectorNode.input().connect(Fields.Z, new Edge(3, Fields.VALUE));
         Assertions.assertEquals(new Vector(x, y, z), createVectorNode.output().value(Fields.RESULT));
-    }
-
-    private static Stream<Arguments> outputData() {
-        return Stream.of(
-                Arguments.of(0, 0, 0),
-                Arguments.of(Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE / 2),
-                Arguments.of(1000, 100, 10),
-                Arguments.of(-1000, 100, 10)
-        );
     }
 }

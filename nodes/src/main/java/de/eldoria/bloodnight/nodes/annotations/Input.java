@@ -18,18 +18,21 @@ import java.lang.annotation.Target;
 public @interface Input {
     /**
      * Unique name of the input field
+     *
      * @return name
      */
     String name();
 
     /**
      * Type of the input field
+     *
      * @return type
      */
     DataType type();
 
     /**
      * Structure of the input type.
+     *
      * @return structure
      */
     DataStruct struct() default DataStruct.SINGLE;

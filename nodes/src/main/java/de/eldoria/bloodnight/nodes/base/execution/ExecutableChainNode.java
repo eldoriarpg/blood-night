@@ -1,13 +1,13 @@
 package de.eldoria.bloodnight.nodes.base.execution;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.meta.MetadataReader;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Execution;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
 import de.eldoria.bloodnight.nodes.base.io.ExecutionContainer;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.controlflow.ControlFlowNode;
+import de.eldoria.bloodnight.nodes.meta.MetadataReader;
 import de.eldoria.bloodnight.nodes.trigger.TriggerNode;
 import de.eldoria.bloodnight.util.Checks;
 
@@ -20,7 +20,7 @@ import java.util.Set;
  * Nodes of this type require at least one {@link Execution} annotation.
  * <p>
  * An execution node can have an "unlimited" number of execution fields.
- *
+ * <p>
  * See {@link ControlFlowNode} and {@link TriggerNode} for implementation details.
  *
  * @param <T> type of node

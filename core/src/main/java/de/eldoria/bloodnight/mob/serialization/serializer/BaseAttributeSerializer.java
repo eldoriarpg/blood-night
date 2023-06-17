@@ -8,7 +8,7 @@ import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 import java.io.IOException;
 
 public abstract class BaseAttributeSerializer<T> extends JsonSerializer<T> {
-        @Override
+    @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeObject(new NamedAttribute(String.valueOf(id(value)), name(value)));
     }

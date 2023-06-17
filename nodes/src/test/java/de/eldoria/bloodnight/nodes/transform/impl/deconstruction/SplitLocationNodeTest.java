@@ -2,18 +2,18 @@ package de.eldoria.bloodnight.nodes.transform.impl.deconstruction;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import de.eldoria.bloodnight.nodes.meta.DataType;
-import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SplitLocationNodeTest {
 

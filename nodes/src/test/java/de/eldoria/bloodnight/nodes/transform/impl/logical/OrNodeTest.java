@@ -15,6 +15,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrNodeTest {
 
+    private static Stream<Arguments> outputData() {
+        return Stream.of(
+                Arguments.of(true, true, true),
+                Arguments.of(true, false, true),
+                Arguments.of(false, true, true),
+                Arguments.of(false, false, false)
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("outputData")
     void output(boolean first, boolean second, boolean result) {
@@ -28,14 +37,5 @@ class OrNodeTest {
         var output = orNode.output();
         assertEquals(result, output.value(Fields.RESULT));
         assertEquals(DataType.BOOLEAN, output.getType(Fields.RESULT));
-    }
-
-    private static Stream<Arguments> outputData() {
-        return Stream.of(
-                Arguments.of(true, true, true),
-                Arguments.of(true, false, true),
-                Arguments.of(false, true, true),
-                Arguments.of(false, false, false)
-        );
     }
 }

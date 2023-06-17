@@ -27,11 +27,13 @@ public final class MetadataReader {
                 .map(InputMeta::fromAnnotation)
                 .toList();
     }
+
     public static List<OutputMeta> readOutputMeta(Class<? extends Node> nodeClazz) {
         return Arrays.stream(nodeClazz.getAnnotationsByType(Output.class))
                 .map(OutputMeta::fromAnnotation)
                 .toList();
     }
+
     public static List<ExecutionMeta> readExecutionMeta(Class<? extends Node> nodeClazz) {
         return Arrays.stream(nodeClazz.getAnnotationsByType(Execution.class))
                 .map(ExecutionMeta::fromAnnotation)

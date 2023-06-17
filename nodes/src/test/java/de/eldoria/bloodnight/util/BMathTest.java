@@ -7,13 +7,13 @@ class BMathTest {
 
     @Test
     void clampIntTest() {
-        Assertions.assertEquals(1, BMath.clamp(10, -10,1));
-        Assertions.assertEquals(1, BMath.clamp(0, 1,10));
+        Assertions.assertEquals(1, BMath.clamp(10, -10, 1));
+        Assertions.assertEquals(1, BMath.clamp(0, 1, 10));
     }
 
     @Test
     void clampDoubleTest() {
-        Assertions.assertEquals(1.0, BMath.clamp(10.0, -10.0,1.0));
-        Assertions.assertEquals(1.0, BMath.clamp(0, 1,10));
+        Assertions.assertEquals(1.0, BMath.clamp(10.0, -10.0, 1.0));
+        Assertions.assertEquals(1.0, BMath.clamp(0, 1, 10));
     }
 }

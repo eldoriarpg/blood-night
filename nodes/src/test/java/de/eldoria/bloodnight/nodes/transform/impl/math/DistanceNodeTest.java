@@ -1,14 +1,14 @@
 package de.eldoria.bloodnight.nodes.transform.impl.math;
 
-import de.eldoria.bloodnight.nodes.meta.DataType;
-import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.StubValueNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DistanceNodeTest {
 

@@ -1,20 +1,20 @@
 package de.eldoria.bloodnight.nodes.base.execution;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.action.ActionNode;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 
 import java.util.Map;
 
 /**
  * A node which is executable.
  * <p>
- *
+ * <p>
  * An {@link ExecutableNode} is placed at the end of an execution chain, which consists of {@link ExecutableChainNode}s.
- *
+ * <p>
  * See {@link ActionNode} and {@link ExecutableChainNode} for implementation details.
  */
 @JsonPropertyOrder(alphabetic = true)

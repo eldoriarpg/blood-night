@@ -4,10 +4,6 @@ package de.eldoria.bloodnight.nodes.meta;
  * Class holding names used for fields of nodes.
  */
 public final class Categories {
-    private Categories() {
-        throw new UnsupportedOperationException("This is a utility class.");
-    }
-
     public static final String EVENT = "Event";
     public static final String DEFAULT = "Default";
     public static final String DEBUGGING = "Debugging";
@@ -16,4 +12,7 @@ public final class Categories {
     public static final String FUNCTION = "Function";
     public static final String CONSTRUCTION = "Construction";
     public static final String DECONSTRUCTION = "Deconstruction";
+    private Categories() {
+        throw new UnsupportedOperationException("This is a utility class.");
+    }
 }

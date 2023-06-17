@@ -37,13 +37,6 @@ import java.util.function.Consumer;
 @JsonPropertyOrder(alphabetic = true)
 @JsonIgnoreProperties({"nodeClass"})
 public sealed abstract class Node permits ExecutableNode, ProviderNode, TransformNode, ValueNode {
-    @JsonIgnore
-    private MethodHandle constructorHandle;
-    @JsonIgnore
-    private NodeContainer container;
-    @JsonSerialize
-    @JsonProperty(defaultValue = "-1")
-    private int id = -1;
     // Only serialize edges
     @JsonSerialize(using = InputContainerSerializer.class)
     private final InputContainer input;
@@ -52,6 +45,13 @@ public sealed abstract class Node permits ExecutableNode, ProviderNode, Transfor
     private final OutputContainer output;
     @JsonSerialize
     private final EditorMeta meta;
+    @JsonIgnore
+    private MethodHandle constructorHandle;
+    @JsonIgnore
+    private NodeContainer container;
+    @JsonSerialize
+    @JsonProperty(defaultValue = "-1")
+    private int id = -1;
 
     public Node(Map<String, Edge> input, EditorMeta meta) {
         this.input = new InputContainer(MetadataReader.readInputs(this.getClass()), input);

@@ -11,7 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public record ItemStackWrapper(Material type, @JsonSerialize(keyUsing = EnchantmentHashSerializer.class) Map<Enchantment, Integer> enchantments, String displayName,
+public record ItemStackWrapper(Material type,
+                               @JsonSerialize(keyUsing = EnchantmentHashSerializer.class) Map<Enchantment, Integer> enchantments,
+                               String displayName,
                                List<String> lore) {
     public static ItemStackWrapper of(ItemStack stack) {
         Material type = stack.getType();

@@ -20,10 +20,6 @@ public enum NodeType {
         this.nodeClass = nodeClass;
     }
 
-    public Class<? extends Node> nodeClass() {
-        return nodeClass;
-    }
-
     public static NodeType getNodeType(Class<? extends Node> nodeClass) {
         for (NodeType value : values()) {
             if (value.nodeClass.isAssignableFrom(nodeClass)) {
@@ -31,5 +27,9 @@ public enum NodeType {
             }
         }
         throw new IllegalArgumentException("Class %s does not inherit from a valid node class".formatted(nodeClass.getName()));
+    }
+
+    public Class<? extends Node> nodeClass() {
+        return nodeClass;
     }
 }

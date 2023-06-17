@@ -2,16 +2,16 @@ package de.eldoria.bloodnight.nodes.controlflow.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.meta.DataStruct;
-import de.eldoria.bloodnight.nodes.meta.DataType;
-import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.controlflow.ControlFlowNode;
+import de.eldoria.bloodnight.nodes.meta.DataStruct;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.Fields;
 
 import java.util.Collection;
 import java.util.Map;

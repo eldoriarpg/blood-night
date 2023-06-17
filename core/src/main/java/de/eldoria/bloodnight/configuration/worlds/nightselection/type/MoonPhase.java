@@ -5,7 +5,7 @@ import de.eldoria.bloodnight.configuration.worlds.nightselection.NightSelectionC
 import java.util.HashMap;
 import java.util.Map;
 
-public class MoonPhase  implements NightSelectionCheck {
+public class MoonPhase implements NightSelectionCheck {
     Map<MoonPhaseType, Integer> probability = new HashMap<>() {{
         put(MoonPhaseType.FULL_MOON, 0);
         put(MoonPhaseType.WANING_GIBBOUS, 10);

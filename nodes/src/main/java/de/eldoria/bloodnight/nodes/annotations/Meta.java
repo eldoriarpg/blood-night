@@ -29,6 +29,7 @@ public @interface Meta {
 
     /**
      * The node category inside their type
+     *
      * @return category name
      */
     String category() default Categories.DEFAULT;

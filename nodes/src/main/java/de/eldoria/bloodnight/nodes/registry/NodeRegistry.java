@@ -2,13 +2,13 @@ package de.eldoria.bloodnight.nodes.registry;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.nodes.meta.DataType;
-import de.eldoria.bloodnight.nodes.meta.MetadataReader;
 import de.eldoria.bloodnight.nodes.annotations.Input;
 import de.eldoria.bloodnight.nodes.annotations.Meta;
 import de.eldoria.bloodnight.nodes.annotations.Output;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
+import de.eldoria.bloodnight.nodes.meta.DataType;
+import de.eldoria.bloodnight.nodes.meta.MetadataReader;
 import de.eldoria.bloodnight.nodes.registry.meta.ExecutionMeta;
 import de.eldoria.bloodnight.nodes.registry.meta.InputMeta;
 import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistration;

@@ -4,8 +4,8 @@ import de.eldoria.bloodnight.nodes.base.execution.ExecutableChainNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.base.io.EditorMeta;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BatchNode;
-import de.eldoria.bloodnight.nodes.controlflow.impl.ForEachNode;
 import de.eldoria.bloodnight.nodes.controlflow.impl.BranchNode;
+import de.eldoria.bloodnight.nodes.controlflow.impl.ForEachNode;
 
 import java.util.Map;
 

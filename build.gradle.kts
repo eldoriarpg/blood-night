@@ -17,14 +17,13 @@ allprojects {
     }
 
     dependencies {
-        //compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-        compileOnly("org.spigotmc", "spigot-api", "1.19.4-R0.1-SNAPSHOT")
-        compileOnly("org.jetbrains", "annotations", "24.0.1")
-        testImplementation("org.spigotmc", "spigot-api", "1.19.4-R0.1-SNAPSHOT")
-        testImplementation("com.github.seeseemelk", "MockBukkit-v1.19", "2.29.0")
-        testImplementation(platform("org.junit:junit-bom:5.9.2"))
-        testImplementation("org.junit.jupiter:junit-jupiter")
-        testImplementation("org.junit.jupiter:junit-jupiter-params")
+        val libs = rootProject.libs
+        val testlibs = rootProject.testlibs
+        compileOnly(libs.spigot.latest)
+        compileOnly(libs.jetbrains.annotations)
+        testImplementation(libs.spigot.latest)
+        testImplementation(testlibs.mockbuckit)
+        testImplementation(testlibs.bundles.junit)
     }
 
     tasks {

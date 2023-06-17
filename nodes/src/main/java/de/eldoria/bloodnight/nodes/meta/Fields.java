@@ -4,10 +4,6 @@ package de.eldoria.bloodnight.nodes.meta;
  * Class holding names used for fields of nodes.
  */
 public final class Fields {
-    private Fields() {
-        throw new UnsupportedOperationException("This is a utility class.");
-    }
-
     public static final String NEXT = "next";
     public static final String RESULT = "result";
     public static final String FIRST = "first";
@@ -35,5 +31,8 @@ public final class Fields {
     public static final String KILLER = "killer";
     public static final String KILLED_ENTITY = "killed_entity";
     public static final String DAMAGE_CAUSE = "damage_cause";
-        public static final String CANCELABLE_EVENT = "cancelable_event";
+    public static final String CANCELABLE_EVENT = "cancelable_event";
+    private Fields() {
+        throw new UnsupportedOperationException("This is a utility class.");
+    }
 }

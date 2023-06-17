@@ -1,9 +1,9 @@
 package de.eldoria.bloodnight.nodes.transform.impl.math;
 
+import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.meta.DataType;
 import de.eldoria.bloodnight.nodes.meta.Fields;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
-import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.value.impl.NumberNode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,9 +11,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ClampNodeTest {
+
+    private static Stream<Arguments> outputData() {
+        return Stream.of(
+                Arguments.of(35.5, 30.0, 32.0, 32.0),
+                Arguments.of(28.0, 30.0, 32.0, 30.0),
+                Arguments.of(31.0, 30.0, 32.0, 31.0)
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("outputData")
@@ -30,13 +38,5 @@ class ClampNodeTest {
         var output = clampNode.output();
         assertEquals(result, output.value(Fields.RESULT));
         assertEquals(DataType.NUMBER, output.getType(Fields.RESULT));
-    }
-
-    private static Stream<Arguments> outputData() {
-        return Stream.of(
-                Arguments.of(35.5, 30.0, 32.0, 32.0),
-                Arguments.of(28.0, 30.0, 32.0, 30.0),
-                Arguments.of(31.0, 30.0, 32.0, 31.0)
-        );
     }
 }
