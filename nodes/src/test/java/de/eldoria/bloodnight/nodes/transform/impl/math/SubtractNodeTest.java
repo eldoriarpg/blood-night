@@ -15,7 +15,7 @@ class SubtractNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new IntegerNode(42));
         nodeContainer.add(2, new IntegerNode(12));
-        var subtractNode = new SubtractNode();
+        var subtractNode = nodeContainer.add(3, new SubtractNode());
         subtractNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));
         var output = subtractNode.output();

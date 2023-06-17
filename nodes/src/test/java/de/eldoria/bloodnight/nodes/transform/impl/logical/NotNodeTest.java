@@ -19,7 +19,7 @@ class NotNodeTest {
     void output(boolean first, boolean expectedResult) {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new BooleanNode(first));
-        var notNode = new NotNode();
+        var notNode = nodeContainer.add(2,new NotNode());
         notNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE));
         var output = notNode.output();
         assertEquals(expectedResult, output.value(Fields.RESULT));

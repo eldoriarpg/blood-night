@@ -25,7 +25,7 @@ class SplitLocationNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         Location location = new Location(world, 1, 2, 3);
         nodeContainer.add(1, new StubValueNode(location, DataType.LOCATION));
-        var splitLocationNode = new SplitLocationNode();
+        var splitLocationNode = nodeContainer.add(2, new SplitLocationNode());
         splitLocationNode.input().connect(Fields.LOCATION, new Edge(1, Fields.VALUE));
         var output = splitLocationNode.output();
 

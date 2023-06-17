@@ -16,7 +16,7 @@ class AddNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new IntegerNode(1));
         nodeContainer.add(2, new IntegerNode(69));
-        var addNode = new AddNode();
+        var addNode = nodeContainer.add(3, new AddNode());
         addNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));
         var output = addNode.output();

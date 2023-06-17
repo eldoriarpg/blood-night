@@ -6,6 +6,7 @@ import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.value.ValueNode;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class StubValueNode extends ValueNode {
 
@@ -13,7 +14,7 @@ public class StubValueNode extends ValueNode {
 
     public StubValueNode(Object value, DataType type) {
         super(value);
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
     }
 
     @Override

@@ -23,7 +23,7 @@ class GreaterNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, first);
         nodeContainer.add(2, second);
-        var greaterNode = new GreaterNode();
+        var greaterNode = nodeContainer.add(3, new GreaterNode());
         greaterNode.input()
                 .connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));

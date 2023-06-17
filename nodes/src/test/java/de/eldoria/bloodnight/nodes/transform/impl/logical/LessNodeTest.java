@@ -22,7 +22,7 @@ class LessNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new NumberNode(first));
         nodeContainer.add(2, new NumberNode(second));
-        var lessNode = new LessNode();
+        var lessNode = nodeContainer.add(3, new LessNode());
         lessNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));
         var output = lessNode.output();

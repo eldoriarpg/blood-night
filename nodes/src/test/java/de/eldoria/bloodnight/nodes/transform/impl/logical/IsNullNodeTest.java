@@ -20,7 +20,7 @@ class IsNullNodeTest {
     void output(String value, boolean result) {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new StringNode(value));
-        var isNullNode = new IsNullNode();
+        var isNullNode = nodeContainer.add(2, new IsNullNode());
         isNullNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
         var output = isNullNode.output();
         assertEquals(result, output.value(Fields.RESULT));

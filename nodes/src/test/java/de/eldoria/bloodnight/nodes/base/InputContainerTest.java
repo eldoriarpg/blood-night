@@ -17,6 +17,7 @@ class InputContainerTest {
         NodeContainer nodeContainer = new NodeContainer();
         InputContainer inputContainer = new InputContainer(Map.of("value", DataType.INTEGER));
         nodeContainer.add(1, new IntegerNode(1));
+        inputContainer.inject(nodeContainer);
         inputContainer.connect("value", new Edge(1, "value"));
         Assertions.assertEquals(1, (Integer) inputContainer.value("value"));
     }

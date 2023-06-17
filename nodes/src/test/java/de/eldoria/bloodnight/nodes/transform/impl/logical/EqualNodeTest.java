@@ -25,7 +25,7 @@ class EqualNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, firstNode);
         nodeContainer.add(2, secondNode);
-        var equalNode = new EqualNode();
+        var equalNode = nodeContainer.add(3,new EqualNode());
         equalNode.input()
                 .connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));

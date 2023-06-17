@@ -15,7 +15,7 @@ class RoundNodeTest {
     void output() {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new NumberNode(30.2));
-        var roundNode = new RoundNode();
+        var roundNode = nodeContainer.add(2, new RoundNode());
         roundNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
         var output = roundNode.output();
         assertEquals(30, output.value(Fields.RESULT));

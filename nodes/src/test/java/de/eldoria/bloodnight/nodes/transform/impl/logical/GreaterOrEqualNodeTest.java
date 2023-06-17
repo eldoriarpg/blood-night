@@ -23,7 +23,7 @@ class GreaterOrEqualNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, first);
         nodeContainer.add(2, second);
-        var greaterNode = new GreaterOrEqualNode();
+        var greaterNode = nodeContainer.add(3,new GreaterOrEqualNode());
         greaterNode.input()
                 .connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));

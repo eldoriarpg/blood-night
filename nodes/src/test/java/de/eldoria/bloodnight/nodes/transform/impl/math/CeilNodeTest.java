@@ -15,7 +15,7 @@ class CeilNodeTest {
     void output() {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new NumberNode(30.2));
-        var ceilNode = new CeilNode();
+        var ceilNode = nodeContainer.add(2,new CeilNode());
         ceilNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
         var output = ceilNode.output();
         assertEquals(31, output.value(Fields.RESULT));

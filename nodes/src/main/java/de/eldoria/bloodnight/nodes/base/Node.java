@@ -2,6 +2,7 @@ package de.eldoria.bloodnight.nodes.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -41,6 +42,7 @@ public sealed abstract class Node permits ExecutableNode, ProviderNode, Transfor
     @JsonIgnore
     private NodeContainer container;
     @JsonSerialize
+    @JsonProperty(defaultValue = "-1")
     private int id = -1;
     // Only serialize edges
     @JsonSerialize(using = InputContainerSerializer.class)

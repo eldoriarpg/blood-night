@@ -21,7 +21,7 @@ class ClampIntegerNodeTest {
         nodeContainer.add(1, new NumberNode(value));
         nodeContainer.add(2, new NumberNode(lower));
         nodeContainer.add(3, new NumberNode(upper));
-        var clampNode = new ClampIntegerNode();
+        var clampNode = nodeContainer.add(4,new ClampIntegerNode());
         clampNode.input()
                 .connect(Fields.VALUE, new Edge(1, Fields.VALUE))
                 .connect(Fields.LOWER, new Edge(2, Fields.VALUE))

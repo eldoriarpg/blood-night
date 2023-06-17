@@ -19,7 +19,7 @@ class DistanceNodeTest {
         Vector vector2 = new Vector(4, 5, 6);
         nodeContainer.add(1, new StubValueNode(vector1, DataType.VECTOR));
         nodeContainer.add(2, new StubValueNode(vector2, DataType.VECTOR));
-        var distanceNode = new DistanceNode();
+        var distanceNode = nodeContainer.add(3, new DistanceNode());
         distanceNode.input().connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));
         var output = distanceNode.output();

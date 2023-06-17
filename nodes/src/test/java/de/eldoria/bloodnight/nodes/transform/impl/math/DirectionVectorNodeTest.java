@@ -19,7 +19,7 @@ class DirectionVectorNodeTest {
         Vector vector2 = new Vector(4, 5, 6);
         nodeContainer.add(1, new StubValueNode(vector1, DataType.VECTOR));
         nodeContainer.add(2, new StubValueNode(vector2, DataType.VECTOR));
-        var directionVectorNode = new DirectionVectorNode();
+        var directionVectorNode = nodeContainer.add(3,new DirectionVectorNode());
         directionVectorNode.input().connect(Fields.FROM, new Edge(1, Fields.VALUE))
                 .connect(Fields.TO, new Edge(2, Fields.VALUE));
         var output = directionVectorNode.output();

@@ -17,7 +17,7 @@ class AbsNodeTest {
     void output() {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new NumberNode(-36.0));
-        var absNode = new AbsNode();
+        var absNode = nodeContainer.add(2,new AbsNode());
         absNode.input().connect(Fields.VALUE, new Edge(1, Fields.VALUE));
         var output = absNode.output();
         assertEquals(36.0, output.value(Fields.RESULT));

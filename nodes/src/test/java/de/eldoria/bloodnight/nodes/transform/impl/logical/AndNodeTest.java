@@ -21,7 +21,7 @@ class AndNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new BooleanNode(first));
         nodeContainer.add(2, new BooleanNode(second));
-        var andNode = new AndNode();
+        var andNode = nodeContainer.add(3, new AndNode());
         andNode.input()
                     .connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));

@@ -16,7 +16,7 @@ class DivideNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(1, new IntegerNode(30));
         nodeContainer.add(2, new IntegerNode(15));
-        var divideNode = new DivideNode();
+        var divideNode = nodeContainer.add(3, new DivideNode());
         divideNode.input()
                 .connect(Fields.FIRST, new Edge(1, Fields.VALUE))
                 .connect(Fields.SECOND, new Edge(2, Fields.VALUE));

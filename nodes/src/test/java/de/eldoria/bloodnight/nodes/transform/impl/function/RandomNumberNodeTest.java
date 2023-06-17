@@ -16,11 +16,10 @@ class RandomNumberNodeTest {
         container.add(0, new NumberNode(3));
         container.add(1, new NumberNode(33.3));
 
-        var randomIntegerNode = new RandomNumberNode();
+        var randomIntegerNode = container.add(2,new RandomNumberNode());
         randomIntegerNode.input()
                 .connect(Fields.LOWER, new Edge(0, Fields.VALUE))
                 .connect(Fields.UPPER, new Edge(1, Fields.VALUE));
-        container.add(2, randomIntegerNode);
         var o = (double) randomIntegerNode.output().value(Fields.RESULT);
         assertTrue(3 < o && o < 33.3);
     }

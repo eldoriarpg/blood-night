@@ -17,7 +17,7 @@ class SplitVectorNodeTest {
         NodeContainer nodeContainer = new NodeContainer();
         Vector vector = new Vector(1, 2, 3);
         nodeContainer.add(1, new StubValueNode(vector, DataType.VECTOR));
-        var splitVectorNode = new SplitVectorNode();
+        var splitVectorNode = nodeContainer.add(2,new SplitVectorNode());
         splitVectorNode.input().connect(Fields.VECTOR, new Edge(1, Fields.VALUE));
         var output = splitVectorNode.output();
 
