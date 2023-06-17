@@ -21,6 +21,8 @@ public final class NodeContainer {
     private final Map<Integer, Node> nodes;
     @JsonIgnore
     private final Map<Class<? extends Node>, List<TriggerNode<?, ?>>> trigger = new HashMap<>();
+    @JsonIgnore
+    private ContainerMeta meta;
 
     public NodeContainer() {
         this.nodes = new HashMap<>();
@@ -69,5 +71,13 @@ public final class NodeContainer {
             nodeContainer.add(entry.getKey(), entry.getValue().copy());
         }
         return nodeContainer;
+    }
+
+    public void inject(ContainerMeta meta){
+        this.meta = meta;
+    }
+
+    public ContainerMeta meta() {
+        return meta;
     }
 }
