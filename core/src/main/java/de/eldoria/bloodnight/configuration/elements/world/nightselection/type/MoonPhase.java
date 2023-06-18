@@ -1,6 +1,6 @@
-package de.eldoria.bloodnight.configuration.worlds.nightselection.type;
+package de.eldoria.bloodnight.configuration.elements.world.nightselection.type;
 
-import de.eldoria.bloodnight.configuration.worlds.nightselection.NightSelectionCheck;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionCheck;
 
 import java.util.HashMap;
 import java.util.Map;

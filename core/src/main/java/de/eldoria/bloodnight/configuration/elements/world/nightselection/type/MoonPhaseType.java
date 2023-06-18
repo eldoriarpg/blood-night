@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.configuration.worlds.nightselection.type;
+package de.eldoria.bloodnight.configuration.elements.world.nightselection.type;
 
 public enum MoonPhaseType {
     FULL_MOON,

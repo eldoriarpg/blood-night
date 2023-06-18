@@ -1,10 +1,10 @@
-package de.eldoria.bloodnight.configuration.worlds.nightselection;
+package de.eldoria.bloodnight.configuration.elements.world.nightselection;
 
-import de.eldoria.bloodnight.configuration.worlds.nightselection.type.Curve;
-import de.eldoria.bloodnight.configuration.worlds.nightselection.type.Interval;
-import de.eldoria.bloodnight.configuration.worlds.nightselection.type.MoonPhase;
-import de.eldoria.bloodnight.configuration.worlds.nightselection.type.Phase;
-import de.eldoria.bloodnight.configuration.worlds.nightselection.type.Random;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Interval;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.MoonPhase;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Curve;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Phase;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Random;
 
 import java.util.function.Supplier;
 

@@ -18,7 +18,7 @@ dependencyResolutionManagement {
             library("eldoutil-jackson","de.eldoria.util", "jackson-configuration").versionRef("eldoutil")
             bundle("eldoria-utilities", listOf("eldoutil-items", "eldoutil-jackson"))
 
-            version("minecraft-latest", "1.20.1-R0.1-SNAPSHOT")
+            version("minecraft-latest", "1.19.4-R0.1-SNAPSHOT")
             library("paper-latest", "io.papermc.paper", "paper-api").versionRef("minecraft-latest")
             library("spigot-latest", "org.spigotmc", "spigot-api").versionRef("minecraft-latest")
 

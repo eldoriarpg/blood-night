@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.eldoria.bloodnight.items.ItemRegistry;
-import de.eldoria.bloodnight.mob.meta.Drops;
+import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
 import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.bloodnight.nodes.registry.meta.NodeRegistration;
@@ -24,9 +24,9 @@ public class EditorPayload {
     private final DataTypes dataTypes;
     @JsonProperty
     private final ItemRegistry registry;
-    private final Drops defaultDrops;
+    private final MobDrops defaultDrops;
 
-    public EditorPayload(MobRegistry mobs, List<NodeRegistration> nodes, DataTypes dataTypes, ItemRegistry registry, Drops defaultDrops) {
+    public EditorPayload(MobRegistry mobs, List<NodeRegistration> nodes, DataTypes dataTypes, ItemRegistry registry, MobDrops defaultDrops) {
         this.mobs = mobs;
         this.nodes = nodes;
         this.dataTypes = dataTypes;

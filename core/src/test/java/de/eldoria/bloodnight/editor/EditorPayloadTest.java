@@ -7,7 +7,7 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Drop;
-import de.eldoria.bloodnight.mob.meta.Drops;
+import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
@@ -71,15 +71,15 @@ class EditorPayloadTest {
         container.add(4, new TickNode())
                 .chain(TickNode.Executions.NEXT, 3);
 
-        Drops drops = new Drops(3, true, List.of(new Drop(itemIds.get(0), 10, 5), new Drop(itemIds.get(1), 1, 100)), ValueModifier.MULTIPLY, 2);
+        MobDrops mobDrops = new MobDrops(3, true, List.of(new Drop(itemIds.get(0), 10, 5), new Drop(itemIds.get(1), 1, 100)), ValueModifier.MULTIPLY, 2);
 
         Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER);
-        CustomMob customMob = new CustomMob("test", equipment, attributes, container, drops, extension);
+        CustomMob customMob = new CustomMob("test", equipment, attributes, container, mobDrops, extension);
         mobs.add(customMob);
 
         NodeRegistry.register(DefaultNodes.defaultNodes());
 
-        EditorPayload editorPayload = new EditorPayload(mobs, NodeRegistry.registrations(), new DataTypes(), itemRegistry, drops);
+        EditorPayload editorPayload = new EditorPayload(mobs, NodeRegistry.registrations(), new DataTypes(), itemRegistry, mobDrops);
 
         System.out.println(EditorPayload.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(editorPayload));
     }
