@@ -11,4 +11,12 @@ public class MobSpawning {
      * The mobs which are permitted to spawn.
      */
     private Set<String> activeTypes;
+
+    public Set<String> activeTypes() {
+        return activeTypes;
+    }
+
+    public int spawnPercentage() {
+        return spawnPercentage;
+    }
 }

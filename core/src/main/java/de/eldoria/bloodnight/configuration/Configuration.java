@@ -17,7 +17,7 @@ public class Configuration extends JacksonConfig<ConfigFile> {
     // TODO: Register default mobs on creation
     public static final ConfigKey<MobRegistry> MOBS = ConfigKey.of("mobs", Path.of("mobs.yml"), MobRegistry.class, MobRegistry::new);
     public static final ConfigKey<ItemRegistry> ITEMS = ConfigKey.of("mobs", Path.of("mobs.yml"), ItemRegistry.class, ItemRegistry::new);
-    public static final ConfigKey<GlobalDrops> GLOBAL_DROPS = ConfigKey.of("Global Drops", Path.of("global_drops.yml"), GlobalDrops.class, GlobalDrops::new)
+    public static final ConfigKey<GlobalDrops> GLOBAL_DROPS = ConfigKey.of("Global Drops", Path.of("global_drops.yml"), GlobalDrops.class, GlobalDrops::defaultDrops);
 
     public Configuration(@NotNull Plugin plugin) {
         super(plugin, ConfigKey.defaultConfig(ConfigFile.class, ConfigFile::new));

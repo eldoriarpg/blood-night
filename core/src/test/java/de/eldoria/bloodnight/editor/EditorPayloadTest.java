@@ -2,19 +2,20 @@ package de.eldoria.bloodnight.editor;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import de.eldoria.bloodnight.configuration.elements.ConfigurationScope;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Drop;
-import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
+import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
+import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.bloodnight.nodes.action.impl.PrintNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
+import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.registry.DefaultNodes;
 import de.eldoria.bloodnight.nodes.registry.NodeRegistry;
 import de.eldoria.bloodnight.nodes.transform.impl.math.AddNode;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 class EditorPayloadTest {
@@ -57,7 +59,7 @@ class EditorPayloadTest {
         MobRegistry mobs = new MobRegistry();
 
         Equipment equipment = new Equipment(null, itemIds.get(1), null, null, itemIds.get(0), null);
-        Attributes attributes = new Attributes("Test Mob", ValueModifier.DEFAULT, 2, ValueModifier.MULTIPLY, 3);
+        Attributes attributes = new Attributes("Test Mob", EntityType.ZOMBIE, false, ValueModifier.DEFAULT, 2, ValueModifier.MULTIPLY, 3);
 
         NodeContainer container = new NodeContainer();
         container.add(0, new IntegerNode(5));
@@ -71,7 +73,18 @@ class EditorPayloadTest {
         container.add(4, new TickNode())
                 .chain(TickNode.Executions.NEXT, 3);
 
-        MobDrops mobDrops = new MobDrops(3, true, List.of(new Drop(itemIds.get(0), 10, 5), new Drop(itemIds.get(1), 1, 100)), ValueModifier.MULTIPLY, 2);
+        MobDrops mobDrops = new MobDrops(ConfigurationScope.MOB,
+                new HashMap<>() {{
+                    put(1, 90);
+                    put(2, 50);
+                    put(3, 10);
+                }},
+                List.of(ConfigurationScope.MOB, ConfigurationScope.WORLD),
+                List.of(new Drop(itemIds.get(0), 10, 5),
+                        new Drop(itemIds.get(1), 1, 100)),
+                ConfigurationScope.MOB,
+                ValueModifier.MULTIPLY,
+                2);
 
         Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER);
         CustomMob customMob = new CustomMob("test", equipment, attributes, container, mobDrops, extension);

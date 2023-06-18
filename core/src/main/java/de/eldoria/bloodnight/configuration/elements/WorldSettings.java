@@ -28,5 +28,25 @@ public class WorldSettings {
         soundSettings = new SoundSettings();
         worldDrops = WorldDrops.defaultDrops();
     }
+
+    public NightSelection nightSelection() {
+        return nightSelection;
+    }
+
+    public NightSettings nightSettings() {
+        return nightSettings;
+    }
+
+    public MobSettings mobSettings() {
+        return mobSettings;
+    }
+
+    public SoundSettings soundSettings() {
+        return soundSettings;
+    }
+
+    public WorldDrops worldDrops() {
+        return worldDrops;
+    }
 }
 
