@@ -3,6 +3,7 @@
   "extends": [
     "github>eldoriarpg/.github//.github/default_renovate"
   ],
+  "baseBranch": ["main"],
   "reviewers": [
     "RainbowDashLabs",
     "Goldmensch",
