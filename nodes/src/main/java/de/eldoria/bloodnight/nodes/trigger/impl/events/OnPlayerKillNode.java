@@ -15,13 +15,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Map;
 
-@Output(name = OnKillNode.Outputs.KILLED_ENTITY, type = DataType.ENTITY)
-@Output(name = OnKillNode.Outputs.CANCELABLE_EVENT, type = DataType.CANCELABLE_EVENT)
-@Meta(name = "On entity kill", description = "A trigger, that's called when an entity got killed by this mob.", category = Categories.EVENT)
-public class OnKillNode extends CancelableEventTriggerNode<OnKillNode, EntityDamageByEntityEvent> {
+@Output(name = OnPlayerKillNode.Outputs.KILLED_ENTITY, type = DataType.PLAYER)
+@Output(name = OnPlayerKillNode.Outputs.CANCELABLE_EVENT, type = DataType.CANCELABLE_EVENT)
+@Meta(name = "On entity kill", description = "A trigger, that's called when a player got killed by this mob.", category = Categories.EVENT)
+public class OnPlayerKillNode extends CancelableEventTriggerNode<OnPlayerKillNode, EntityDamageByEntityEvent> {
 
     @JsonCreator
-    public OnKillNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
+    public OnPlayerKillNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(input, meta);
     }
 

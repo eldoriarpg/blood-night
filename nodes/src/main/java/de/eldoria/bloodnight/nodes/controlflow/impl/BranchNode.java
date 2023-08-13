@@ -20,7 +20,7 @@ import java.util.Map;
 @Input(name = Fields.VALUE, type = DataType.BOOLEAN)
 @Execution(Fields.TRUE)
 @Execution(Fields.FALSE)
-@Meta(name = "Branch", description = "calling other node depending on the evaluated boolean value.")
+@Meta(name = "Branch", description = "Calling other nodes depending on the evaluated boolean value.")
 public class BranchNode extends ControlFlowNode<BranchNode> {
 
     public BranchNode() {

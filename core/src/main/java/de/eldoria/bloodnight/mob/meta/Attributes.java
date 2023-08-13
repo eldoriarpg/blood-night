@@ -1,5 +1,6 @@
 package de.eldoria.bloodnight.mob.meta;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 public record Attributes(String displayName,
@@ -9,6 +10,8 @@ public record Attributes(String displayName,
                          ValueModifier damageModifier, double damage) {
     public boolean isAssignable(EntityType type) {
         if(exactType) return type == entityType;
-        return entityType.getEntityClass().isAssignableFrom(type.getEntityClass());
+        Class<? extends Entity> thisClass = entityType.getEntityClass();
+        Class<? extends Entity> thatClass = type.getEntityClass();
+        return thisClass != null && thatClass != null && thisClass.isAssignableFrom(thatClass);
     }
 }
