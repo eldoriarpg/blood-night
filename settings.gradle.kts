@@ -16,6 +16,7 @@ dependencyResolutionManagement {
 
             version("eldoutil", "2.0.1")
             library("eldoutil-items","de.eldoria.util", "items").versionRef("eldoutil")
+            library("eldoutil-items","de.eldoria.util", "entities").versionRef("eldoutil")
             library("eldoutil-jackson","de.eldoria.util", "jackson-configuration").versionRef("eldoutil")
             bundle("eldoria-utilities", listOf("eldoutil-items", "eldoutil-jackson"))
 

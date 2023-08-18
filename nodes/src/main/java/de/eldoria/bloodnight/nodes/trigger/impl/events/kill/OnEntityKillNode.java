@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.trigger.impl.events;
+package de.eldoria.bloodnight.nodes.trigger.impl.events.kill;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,20 +15,24 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Map;
 
-@Output(name = OnPlayerKillNode.Outputs.KILLED_ENTITY, type = DataType.PLAYER)
-@Output(name = OnPlayerKillNode.Outputs.CANCELABLE_EVENT, type = DataType.CANCELABLE_EVENT)
-@Meta(name = "On entity kill", description = "A trigger, that's called when a player got killed by this mob.", category = Categories.EVENT)
-public class OnPlayerKillNode extends CancelableEventTriggerNode<OnPlayerKillNode, EntityDamageByEntityEvent> {
+/**
+ * A trigger, that's called when an entity got killed by this mob.
+ */
+@Output(name = OnEntityKillNode.Outputs.KILLED_ENTITY, type = DataType.ENTITY)
+@Output(name = OnEntityKillNode.Outputs.CANCELABLE_EVENT, type = DataType.CANCELABLE_EVENT)
+@Meta(name = "On entity kill", description = "A trigger, that's called when an entity got killed by this mob.", category = Categories.EVENT)
+public class OnEntityKillNode extends CancelableEventTriggerNode<OnEntityKillNode, EntityDamageByEntityEvent> {
 
     @JsonCreator
-    public OnPlayerKillNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
+    public OnEntityKillNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(input, meta);
     }
 
     @Override
     protected OutputContainer output(OutputContainer output) {
         return super.output()
-                .set(Outputs.KILLED_ENTITY, event.getEntity());
+                .set(Outputs.KILLED_ENTITY, event.getEntity())
+                .set(OnPlayerKillNode.Outputs.CANCELABLE_EVENT, event);
     }
 
     public static class Outputs {

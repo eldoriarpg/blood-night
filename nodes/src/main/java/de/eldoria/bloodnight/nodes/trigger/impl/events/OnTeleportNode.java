@@ -11,29 +11,34 @@ import de.eldoria.bloodnight.nodes.meta.Categories;
 import de.eldoria.bloodnight.nodes.meta.DataType;
 import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.trigger.base.CancelableEventTriggerNode;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
 
 import java.util.Map;
 
-@Output(name = OnEntityKillNode.Outputs.KILLED_ENTITY, type = DataType.ENTITY)
-@Output(name = OnEntityKillNode.Outputs.CANCELABLE_EVENT, type = DataType.CANCELABLE_EVENT)
-@Meta(name = "On entity kill", description = "A trigger, that's called when an entity got killed by this mob.", category = Categories.EVENT)
-public class OnEntityKillNode extends CancelableEventTriggerNode<OnEntityKillNode, EntityDamageByEntityEvent> {
-
+/**
+ * A trigger, that's called when an entity ports to a new location
+ */
+@Output(name = OnTeleportNode.Outputs.FROM, type = DataType.LOCATION)
+@Output(name = OnTeleportNode.Outputs.TO, type = DataType.LOCATION)
+@Output(name = OnTeleportNode.Outputs.CANCELABLE_EVENT, type = DataType.CANCELABLE_EVENT)
+@Meta(name = "On teleport", description = "A trigger, that's called when an entity ports to a new location", category = Categories.EVENT)
+public class OnTeleportNode extends CancelableEventTriggerNode<OnTeleportNode, EntityTeleportEvent> {
     @JsonCreator
-    public OnEntityKillNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
+    public OnTeleportNode(@JsonProperty("input") Map<String, Edge> input, @JsonProperty("meta") EditorMeta meta) {
         super(input, meta);
     }
 
     @Override
     protected OutputContainer output(OutputContainer output) {
         return super.output()
-                .set(Outputs.KILLED_ENTITY, event.getEntity());
+                .set(Outputs.FROM, event.getFrom())
+                .set(Outputs.TO, event.getTo());
     }
 
     public static class Outputs {
-        public static final String KILLED_ENTITY = Fields.KILLED_ENTITY;
+        public static final String FROM = Fields.FROM;
+        public static final String TO = Fields.TO;
         public static final String CANCELABLE_EVENT = Fields.CANCELABLE_EVENT;
+
     }
 }
-

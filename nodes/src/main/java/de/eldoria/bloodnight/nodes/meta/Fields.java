@@ -32,6 +32,11 @@ public final class Fields {
     public static final String KILLED_ENTITY = "killed_entity";
     public static final String DAMAGE_CAUSE = "damage_cause";
     public static final String CANCELABLE_EVENT = "cancelable_event";
+    public static final String PROJECTILE = "projectile";
+    public static final String TARGET = "target";
+    public static final String DAMAGE = "damage";
+    public static final String FINAL_DAMAGE = "final_damage";
+
     private Fields() {
         throw new UnsupportedOperationException("This is a utility class.");
     }

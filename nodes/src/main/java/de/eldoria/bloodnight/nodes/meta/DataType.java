@@ -5,6 +5,7 @@ package de.eldoria.bloodnight.nodes.meta;
  */
 public enum DataType {
     ENTITY,
+    PROJECTILE(ENTITY),
     CANCELABLE_EVENT,
     INTEGER,
     NUMBER(INTEGER),

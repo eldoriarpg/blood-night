@@ -1,4 +1,4 @@
-package de.eldoria.bloodnight.nodes.trigger.impl.events;
+package de.eldoria.bloodnight.nodes.trigger.impl.events.damage;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,9 +15,12 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
 
+/**
+ * A trigger, that's called when an entity dies.
+ */
 @Output(name = OnDeathNode.Outputs.KILLER, type = DataType.PLAYER)
 @Output(name = OnDeathNode.Outputs.DAMAGE_CAUSE, type = DataType.DAMAGE_CAUSE)
-@Meta(name = "On entity death", description = "A trigger, that's called when an entity dies.", category = Categories.EVENT)
+@Meta(name = "On death", description = "A trigger, that's called when the mob dies.", category = Categories.EVENT)
 public class OnDeathNode extends TriggerNode<OnDeathNode, EntityDeathEvent> {
 
     private EntityDeathEvent event;

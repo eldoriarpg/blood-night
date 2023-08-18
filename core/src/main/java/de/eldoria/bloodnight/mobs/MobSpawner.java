@@ -38,7 +38,9 @@ public class MobSpawner implements Listener, Runnable {
         List<CustomMob> matching = configuration.mobs().getMatching(active, entity.getType());
         if(matching.isEmpty()) return;
         if (worldSettings.mobSettings().spawning().spawnPercentage() < ThreadLocalRandom.current().nextInt(100)) return;
+        // TODO: This doesnt factor in the spawn percentage of matching active mobs itself.
         CustomMob customMob = matching.get(ThreadLocalRandom.current().nextInt(matching.size()));
+        // TODO Building the mob with changed attributes, equipment, extensions etc is missing.
         coordinator.register(entity, customMob);
     }
 
