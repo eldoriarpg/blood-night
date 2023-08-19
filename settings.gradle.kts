@@ -16,9 +16,9 @@ dependencyResolutionManagement {
 
             version("eldoutil", "2.0.1")
             library("eldoutil-items","de.eldoria.util", "items").versionRef("eldoutil")
-            library("eldoutil-items","de.eldoria.util", "entities").versionRef("eldoutil")
+            library("eldoutil-entities","de.eldoria.util", "entities").versionRef("eldoutil")
             library("eldoutil-jackson","de.eldoria.util", "jackson-configuration").versionRef("eldoutil")
-            bundle("eldoria-utilities", listOf("eldoutil-items", "eldoutil-jackson"))
+            bundle("eldoria-utilities", listOf("eldoutil-items", "eldoutil-jackson","eldoutil-entities"))
 
             version("minecraft-latest", "1.19.4-R0.1-SNAPSHOT")
             library("paper-latest", "io.papermc.paper", "paper-api").versionRef("minecraft-latest")
