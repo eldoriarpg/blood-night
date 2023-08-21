@@ -8,10 +8,8 @@ import de.eldoria.bloodnight.mobs.exceptions.MobIdAlreadyTakenException;
 import de.eldoria.bloodnight.util.Checks;
 import org.bukkit.entity.EntityType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.swing.text.html.Option;
+import java.util.*;
 
 public class MobRegistry {
     @JsonProperty
@@ -33,36 +31,22 @@ public class MobRegistry {
      * @throws MobIdAlreadyTakenException when the id is already taken.
      */
     public void add(CustomMob mob) {
-        check(mob);
-        if (mobs.containsKey(mob.id())) throw new MobIdAlreadyTakenException(mob, get(mob.id()));
-        mobs.put(mob.id(), mob);
-    }
+        Checks.notNull(mob, "Mob can not be null");
 
-
-    /**
-     * Returns the {@link CustomMob} associated with the given id.
-     *
-     * @param id the id of the mob to be retrieved.
-     * @return the {@link CustomMob} associated with the given id, or null if no mob is found.
-     */
-    public CustomMob get(String id) {
-        return mobs.get(id);
+        var previousMob = mobs.putIfAbsent(mob.id(), mob);
+        if (previousMob != null) {
+            throw new MobIdAlreadyTakenException(mob, previousMob);
+        }
     }
 
     /**
      * Gets all matching {@link CustomMob}s, depending on the result of calling {@link Attributes#isAssignable(EntityType)}.
      *
      * @param active a set containing the ids of active mobs that should be checked
-     * @param type   the type of the entity
+     * @param type   the entityType of the entity
      * @return an immutable list containing all mobs that are matching. May be empty.
      */
     public List<CustomMob> getMatching(Set<String> active, EntityType type) {
         return active.stream().map(mobs::get).filter(mob -> mob.attributes().isAssignable(type)).toList();
-    }
-
-    private void check(CustomMob mob) {
-        Checks.notNull(mob, "Mob can not be null");
-        Checks.notNull(mob.id(), "Mob id can not be null");
-        Checks.lowerCase(mob.id(), "Mob id must be lower case.");
     }
 }

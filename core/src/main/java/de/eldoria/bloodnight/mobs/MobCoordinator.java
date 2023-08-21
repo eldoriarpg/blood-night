@@ -1,8 +1,12 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.nodes.dispatching.TriggerData;
+import de.eldoria.bloodnight.util.MobTags;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,14 +35,13 @@ public class MobCoordinator {
 
     /**
      * Registers the custom mob on the provided entity.
-     * Will create a copy of the custom mob using {@link CustomMob#copy(Entity, Entity)}
+     * Will create a living entity of the custom mob using {@link CustomMob#createLiving(Entity)}
      * If this mob is already registered, it will be changed to the new custom mob.
      *
      * @param entity    the entity to assign the mob to
      * @param customMob the custom mob assigned to the entity.
      */
     public void register(Entity entity, CustomMob customMob) {
-        // TODO spawn and register extension
-        mobs.put(entity.getEntityId(), customMob.copy(entity, null));
+        mobs.put(entity.getEntityId(), customMob.createLiving(entity));
     }
 }

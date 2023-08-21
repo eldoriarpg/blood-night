@@ -3,33 +3,36 @@ package de.eldoria.bloodnight.mobs;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayDeque;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MobSpawner implements Listener, Runnable {
+public class MobSpawner implements Listener {
     private final Configuration configuration;
-    private final Queue<Entity> nextTick = new ArrayDeque<>();
-    private final Queue<Entity> schedule = new ArrayDeque<>();
     private final MobCoordinator coordinator;
+    private final Plugin plugin;
 
-    public MobSpawner(Configuration configuration, MobCoordinator coordinator) {
+    public MobSpawner(Configuration configuration, MobCoordinator coordinator, Plugin plugin) {
         this.configuration = configuration;
         this.coordinator = coordinator;
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    void onSpawn(EntitySpawnEvent event) {
+    public void onSpawn(EntitySpawnEvent event) {
         // Wait one tick since there might be modification of freshly spawned mobs.
-        schedule.add(event.getEntity());
+        var entity = event.getEntity();
+        if (MobTags.isExtended(entity)) return;
+        entity.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> handleSpawnedMob(entity), 1);
     }
 
     void handleSpawnedMob(Entity entity) {
@@ -43,14 +46,5 @@ public class MobSpawner implements Listener, Runnable {
         CustomMob customMob = matching.get(ThreadLocalRandom.current().nextInt(matching.size()));
         // TODO Building the mob with changed attributes, equipment, extensions etc is missing.
         coordinator.register(entity, customMob);
-    }
-
-    @Override
-    public void run() {
-        while (!nextTick.isEmpty()) {
-            handleSpawnedMob(nextTick.poll());
-        }
-        nextTick.addAll(schedule);
-        schedule.clear();
     }
 }
