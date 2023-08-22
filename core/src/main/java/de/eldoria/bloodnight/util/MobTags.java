@@ -5,6 +5,7 @@ import de.eldoria.eldoutilities.utils.DataContainerUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -85,15 +86,15 @@ public final class MobTags {
      *
      * @param entity The Entity to mark as a custom mob.
      */
-    public static void markCustomMob(Entity entity) {
-        DataContainerUtil.putValue(entity, CUSTOM_MOB, PersistentDataType.STRING, entity.getUniqueId().toString());
+    public static void markCustomMob(Entity entity, CustomMob mob) {
+        DataContainerUtil.putValue(entity, CUSTOM_MOB, PersistentDataType.STRING, mob.id());
     }
 
     /**
      * Marks the given extension entity with the UUID of the base entity.
      *
      * @param extension The entity to mark as an extension.
-     * @param base The base entity that the extension is extending.
+     * @param base      The base entity that the extension is extending.
      */
     public static void markExtension(Entity extension, Entity base) {
         DataContainerUtil.putValue(extension, EXTENDS, PersistentDataType.STRING, base.getUniqueId().toString());
@@ -102,7 +103,7 @@ public final class MobTags {
     /**
      * Marks the base entity with the extension entity.
      *
-     * @param base The base entity to be marked.
+     * @param base      The base entity to be marked.
      * @param extension The extension entity to mark the base entity with.
      */
     public static void markBase(Entity base, Entity extension) {
@@ -112,7 +113,7 @@ public final class MobTags {
     /**
      * Marks an extended mob by establishing a connection between a base entity and an extension entity.
      *
-     * @param base The base entity to be marked.
+     * @param base      The base entity to be marked.
      * @param extension The extension entity to be marked.
      */
     public static void markExtendedMob(Entity base, Entity extension) {
@@ -121,11 +122,28 @@ public final class MobTags {
     }
 
     /**
+     * Sets up tags for a custom mob by establishing connections between the entities and tag the mob with its id.
+     *
+     * @param base      The base entity to be tagged.
+     * @param extension The extension entity to be tagged, can be null.
+     * @param mob       The custom mob that is represented by those entities.
+     */
+    public static void setupTags(Entity base, @Nullable Entity extension, CustomMob mob) {
+        markCustomMob(base, mob);
+        if (extension != null) {
+            markCustomMob(extension, mob);
+            markBase(base, extension);
+            markExtension(extension, base);
+        }
+    }
+
+
+    /**
      * Returns the extension of the given entity as an Optional UUID.
      *
      * @param entity The entity to retrieve the extension from
      * @return An Optional instance containing the extension UUID if found,
-     *         or an empty Optional if no extension is present
+     * or an empty Optional if no extension is present
      */
     public static Optional<UUID> getExtension(Entity entity) {
         return DataContainerUtil.get(entity, EXTENDED, PersistentDataType.STRING).map(UUID::fromString);
