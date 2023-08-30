@@ -5,6 +5,7 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,10 +31,11 @@ public class MobSpawner implements Listener {
     public void onSpawn(EntitySpawnEvent event) {
         // Wait one tick since there might be modification of freshly spawned mobs.
         var entity = event.getEntity();
-        entity.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> handleSpawnedMob(entity), 1);
+        if (!(entity instanceof LivingEntity livingEntity)) return;
+        entity.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> handleSpawnedMob(livingEntity), 1);
     }
 
-    void handleSpawnedMob(Entity entity) {
+    void handleSpawnedMob(LivingEntity entity) {
         if (MobTags.isExtended(entity)) return;
 
         WorldSettings worldSettings = configuration.worldConfig(entity.getWorld());

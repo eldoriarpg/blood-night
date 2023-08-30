@@ -1,12 +1,10 @@
 package de.eldoria.bloodnight.mobs;
 
+import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.nodes.dispatching.TriggerData;
-import de.eldoria.bloodnight.util.MobTags;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.entity.LivingEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +18,12 @@ public class MobCoordinator {
      * Maps which references the {@link Entity#getEntityId()} and holds the custom mob assigned to id.
      */
     private final Map<Integer, CustomMob> mobs = new HashMap<>();
+
+    private final Configuration configuration;
+
+    public MobCoordinator(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
     /**
      * Dispatch a trigger onto an entity if it is a custom mob.
@@ -35,13 +39,13 @@ public class MobCoordinator {
 
     /**
      * Registers the custom mob on the provided entity.
-     * Will create a living entity of the custom mob using {@link CustomMob#createLiving(Entity)}
+     * Will create a living entity of the custom mob using {@link CustomMob#createLiving(LivingEntity, Configuration)}
      * If this mob is already registered, it will be changed to the new custom mob.
      *
      * @param entity    the entity to assign the mob to
      * @param customMob the custom mob assigned to the entity.
      */
-    public void register(Entity entity, CustomMob customMob) {
-        mobs.put(entity.getEntityId(), customMob.createLiving(entity));
+    public void register(LivingEntity entity, CustomMob customMob) {
+        mobs.put(entity.getEntityId(), customMob.createLiving(entity, configuration));
     }
 }
