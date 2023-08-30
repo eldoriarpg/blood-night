@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 public enum NightSelectionType {
     /**
-     * Simply choose a random entityType.
+     * Simply choose a random type.
      */
     RANDOM(Random::new),
     /**

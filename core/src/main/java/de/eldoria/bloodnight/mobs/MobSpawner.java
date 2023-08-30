@@ -9,7 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -31,11 +30,12 @@ public class MobSpawner implements Listener {
     public void onSpawn(EntitySpawnEvent event) {
         // Wait one tick since there might be modification of freshly spawned mobs.
         var entity = event.getEntity();
-        if (MobTags.isExtended(entity)) return;
         entity.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> handleSpawnedMob(entity), 1);
     }
 
     void handleSpawnedMob(Entity entity) {
+        if (MobTags.isExtended(entity)) return;
+
         WorldSettings worldSettings = configuration.worldConfig(entity.getWorld());
         Set<String> active = worldSettings.mobSettings().spawning().activeTypes();
         List<CustomMob> matching = configuration.mobs().getMatching(active, entity.getType());
@@ -47,4 +47,5 @@ public class MobSpawner implements Listener {
         // TODO Building the mob with changed attributes, equipment, extensions etc is missing.
         coordinator.register(entity, customMob);
     }
+
 }

@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -87,7 +86,7 @@ class EditorPayloadTest {
                 ValueModifier.MULTIPLY,
                 2);
 
-        Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER, null);
+        Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER, new Equipment(null, null, null, null, null, null));
         CustomMob customMob = new CustomMob("test", equipment, attributes, container, mobDrops, extension);
         mobs.add(customMob);
 

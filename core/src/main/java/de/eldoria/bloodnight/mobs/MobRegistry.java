@@ -8,8 +8,10 @@ import de.eldoria.bloodnight.mobs.exceptions.MobIdAlreadyTakenException;
 import de.eldoria.bloodnight.util.Checks;
 import org.bukkit.entity.EntityType;
 
-import javax.swing.text.html.Option;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MobRegistry {
     @JsonProperty
@@ -33,10 +35,18 @@ public class MobRegistry {
     public void add(CustomMob mob) {
         Checks.notNull(mob, "Mob can not be null");
 
-        var previousMob = mobs.putIfAbsent(mob.id(), mob);
-        if (previousMob != null) {
-            throw new MobIdAlreadyTakenException(mob, previousMob);
-        }
+        if (mobs.containsKey(mob.id())) throw new MobIdAlreadyTakenException(mob, get(mob.id()));
+        mobs.put(mob.id(), mob);
+    }
+
+    /**
+     * Returns the {@link CustomMob} associated with the given id.
+     *
+     * @param id the id of the mob to be retrieved.
+     * @return the {@link CustomMob} associated with the given id, or null if no mob is found.
+     */
+    public CustomMob get(String id) {
+        return mobs.get(id);
     }
 
     /**
