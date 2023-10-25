@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +54,7 @@ class EditorPayloadTest {
                 .build());
         itemRegistry.register(ItemStackBuilder.of(Material.DIAMOND_CHESTPLATE).withDisplayName("Shiny Armor").build());
 
-        var itemIds = new ArrayList<String>(itemRegistry.registrations().keySet());
+        var itemIds = new ArrayList<>(itemRegistry.registrations().keySet());
 
         MobRegistry mobs = new MobRegistry();
 
@@ -87,7 +86,7 @@ class EditorPayloadTest {
                 ValueModifier.MULTIPLY,
                 2);
 
-        Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER);
+        Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER, new Equipment(null, null, null, null, null, null));
         CustomMob customMob = new CustomMob("test", equipment, attributes, container, mobDrops, extension);
         mobs.add(customMob);
 

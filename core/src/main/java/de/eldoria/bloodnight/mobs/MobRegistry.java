@@ -33,11 +33,11 @@ public class MobRegistry {
      * @throws MobIdAlreadyTakenException when the id is already taken.
      */
     public void add(CustomMob mob) {
-        check(mob);
+        Checks.notNull(mob, "Mob can not be null");
+
         if (mobs.containsKey(mob.id())) throw new MobIdAlreadyTakenException(mob, get(mob.id()));
         mobs.put(mob.id(), mob);
     }
-
 
     /**
      * Returns the {@link CustomMob} associated with the given id.
@@ -53,16 +53,10 @@ public class MobRegistry {
      * Gets all matching {@link CustomMob}s, depending on the result of calling {@link Attributes#isAssignable(EntityType)}.
      *
      * @param active a set containing the ids of active mobs that should be checked
-     * @param type   the type of the entity
+     * @param type   the entityType of the entity
      * @return an immutable list containing all mobs that are matching. May be empty.
      */
     public List<CustomMob> getMatching(Set<String> active, EntityType type) {
         return active.stream().map(mobs::get).filter(mob -> mob.attributes().isAssignable(type)).toList();
-    }
-
-    private void check(CustomMob mob) {
-        Checks.notNull(mob, "Mob can not be null");
-        Checks.notNull(mob.id(), "Mob id can not be null");
-        Checks.lowerCase(mob.id(), "Mob id must be lower case.");
     }
 }
