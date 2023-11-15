@@ -24,7 +24,7 @@ dependencyResolutionManagement {
             library("paper-latest", "io.papermc.paper", "paper-api").versionRef("minecraft-latest")
             library("spigot-latest", "org.spigotmc", "spigot-api").versionRef("minecraft-latest")
 
-            library("jetbrains-annotations", "org.jetbrains:annotations:24.0.1")
+            library("jetbrains-annotations", "org.jetbrains:annotations:24.1.0")
         }
 
         create("testlibs") {
