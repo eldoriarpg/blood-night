@@ -11,6 +11,11 @@ ecj = "3.46.100"
 javapoet = "0.20.0"
 shadow = "9.6.1"
 javaparser = "3.28.2"
+spotless = "8.10.4"
+spotbugs = "6.5.12"
+spotbugs-annotations = "4.10.4"
+jspecify = "1.0.1"
+palantir = "2.84.0"
 
 [libraries]
 jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
@@ -35,6 +40,8 @@ mockbukkit = { module = "org.mockbukkit.mockbukkit:mockbukkit-v26.2", version.re
 ecj = { module = "org.eclipse.jdt:ecj", version.ref = "ecj" }
 javapoet = { module = "com.palantir.javapoet:javapoet", version.ref = "javapoet" }
 javaparser = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs-annotations" }
 
 [bundles]
 jackson-lite = ["jackson-core", "jackson-databind", "jackson-annotations"]
@@ -44,3 +51,5 @@ junit = ["junit-jupiter", "junit-params"]
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }

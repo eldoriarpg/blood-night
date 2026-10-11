@@ -1,5 +1,5 @@
 plugins {
-    `java-library`
+    id("bloodnight.paper")
     alias(libs.plugins.shadow)
 }
 

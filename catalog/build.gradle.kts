@@ -1,8 +1,8 @@
 plugins {
-    java
+    id("bloodnight.paper")
 }
 
-val apiSources: Configuration by configurations.creating {
+val apiSources = configurations.create("apiSources") {
     isTransitive = false
 }
 
@@ -16,7 +16,7 @@ dependencies {
 
 val catalogFile = layout.buildDirectory.file("catalog/catalog.json")
 
-val generateCatalog by tasks.registering(JavaExec::class) {
+tasks.register<JavaExec>("generateCatalog") {
     description = "Writes the editor catalog of the blood-night node platform, with javadoc from the Paper API sources."
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "de.eldoria.bloodnight.catalog.CatalogMain"
