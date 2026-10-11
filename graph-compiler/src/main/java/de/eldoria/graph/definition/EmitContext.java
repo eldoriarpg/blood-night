@@ -1,0 +1,66 @@
+package de.eldoria.graph.definition;
+
+import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.TypeName;
+
+/**
+ * What a node definition can use while emitting code for one node instance.
+ * <p>
+ * Everything comes back as finished {@link CodeBlock}s: inputs as expressions, config values as literals emitted by
+ * their codec. A definition never sees a string from the graph, so it cannot splice user data into code by accident;
+ * it embeds these blocks with {@code $L}.
+ */
+public interface EmitContext {
+    /**
+     * @return id of the node instance being emitted, for naming and diagnostics
+     */
+    String nodeId();
+
+    /**
+     * Value of a data input. Evaluated once per execution scope, so reading it twice yields the same value.
+     *
+     * @param port input port id
+     * @return an expression of the input's type
+     * @throws IllegalArgumentException when the port is not declared or an optional input is not connected
+     */
+    CodeBlock input(String port);
+
+    /**
+     * @param port input port id
+     * @return whether an edge is connected to the input
+     */
+    boolean connected(String port);
+
+    /**
+     * Value of a config field, or its default when the graph sets none.
+     *
+     * @param field config field id
+     * @return a literal expression of the field's type
+     */
+    CodeBlock config(String field);
+
+    /**
+     * Java type of a port after type variables are resolved for this instance.
+     *
+     * @param port input or output port id
+     * @return the type as rendered into code
+     */
+    TypeName type(String port);
+
+    /**
+     * Declares a field on the generated class, one per node instance and per behaviour instance. This is where state
+     * such as cooldowns lives.
+     *
+     * @param name        name, unique within this node
+     * @param type        field type
+     * @param initializer initial value
+     * @return an expression referring to the field
+     */
+    CodeBlock field(String name, TypeName type, CodeBlock initializer);
+
+    /**
+     * @return an expression referring to the context object the host passes in
+     * @throws IllegalStateException when the platform declares no context type
+     */
+    CodeBlock context();
+}
