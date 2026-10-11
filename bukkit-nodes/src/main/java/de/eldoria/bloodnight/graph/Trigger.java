@@ -33,6 +33,8 @@ import java.util.function.Predicate;
  * @param priority        listener priority
  * @param ignoreCancelled whether cancelled events are skipped
  * @param invoke          calls the behaviour method
+ * @param extension       whether {@code subject} is the mob's extension rather than the mob, so the behaviour is
+ *                        found through the extension
  * @param <E>             the event type
  */
 public record Trigger<E extends Event>(
@@ -45,7 +47,25 @@ public record Trigger<E extends Event>(
         Predicate<E> filter,
         EventPriority priority,
         boolean ignoreCancelled,
-        BiConsumer<CompiledBehaviour, E> invoke) {
+        BiConsumer<CompiledBehaviour, E> invoke,
+        boolean extension) {
+    /**
+     * A trigger for events that happen to the mob itself.
+     */
+    public Trigger(
+            String id,
+            String name,
+            String description,
+            Class<E> event,
+            String method,
+            Function<E, @Nullable Entity> subject,
+            Predicate<E> filter,
+            EventPriority priority,
+            boolean ignoreCancelled,
+            BiConsumer<CompiledBehaviour, E> invoke) {
+        this(id, name, description, event, method, subject, filter, priority, ignoreCancelled, invoke, false);
+    }
+
     public Trigger {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(event, "event");

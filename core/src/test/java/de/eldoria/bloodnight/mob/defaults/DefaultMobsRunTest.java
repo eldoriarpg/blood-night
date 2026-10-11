@@ -22,11 +22,14 @@ import org.bukkit.World;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Phantom;
+import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -84,7 +87,8 @@ class DefaultMobsRunTest {
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
         Behaviours behaviours = service.compileNow(mobs.values(), List.of());
         coordinator.rebind(behaviours);
-        dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, error) -> errors.add(error));
+        dispatcher = new TriggerDispatcher(
+                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, error) -> errors.add(error));
         dispatcher.register(plugin, behaviours.usedTriggers());
     }
 
@@ -175,6 +179,36 @@ class DefaultMobsRunTest {
 
         assertTrue(creeper.isIgnited());
         assertFalse(elsewhere.isIgnited());
+    }
+
+    @Test
+    void ridersKeepTheirPassengerFromSuffocating() {
+        Spider spider = spawn("blaze_rider", Spider.class);
+        Entity blaze = coordinator.mob(spider).orElseThrow().extension();
+        assertNotNull(blaze);
+
+        EntityDamageEvent suffocation = new EntityDamageEvent(
+                blaze,
+                EntityDamageEvent.DamageCause.SUFFOCATION,
+                DamageSource.builder(DamageType.IN_WALL).build(),
+                1);
+        server.getPluginManager().callEvent(suffocation);
+
+        assertTrue(suffocation.isCancelled());
+    }
+
+    @Test
+    void ridersDieWithTheirPassenger() {
+        Spider spider = spawn("blaze_rider", Spider.class);
+        LivingEntity blaze =
+                (LivingEntity) coordinator.mob(spider).orElseThrow().extension();
+        assertNotNull(blaze);
+
+        server.getPluginManager()
+                .callEvent(new EntityDeathEvent(
+                        blaze, DamageSource.builder(DamageType.GENERIC).build(), List.of()));
+
+        assertTrue(spider.isDead());
     }
 
     private static EntityDamageByEntityEvent hit(org.bukkit.entity.Entity damager, org.bukkit.entity.Entity victim) {

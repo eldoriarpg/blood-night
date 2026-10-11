@@ -28,7 +28,8 @@ import java.util.List;
  * The event triggers of blood-night.
  * <p>
  * Damage is split as before: {@code event.damage} only for damage without an attacking entity,
- * {@code event.damage_by_entity} and {@code event.damage_by_player} for the rest. Kills are damage that will kill:
+ * {@code event.damage_by_entity} and {@code event.damage_by_player} for the rest. The extension triggers fire for
+ * the entity riding or carrying the mob and run the mob's behaviour. Kills are damage that will kill:
  * final damage at least the victim's health. {@code mob.tick} and {@code debug.trigger} have no event; the plugin
  * calls them itself.
  */
@@ -187,7 +188,32 @@ public final class Triggers {
                     event -> true,
                     EventPriority.NORMAL,
                     false,
-                    CompiledBehaviour::onExplode));
+                    CompiledBehaviour::onExplode),
+            new Trigger<>(
+                    BloodNightNodes.EVENT_EXTENSION_DAMAGE,
+                    "On Extension Damage",
+                    "The entity riding or carrying the mob took damage; cancelling it also keeps the damage from"
+                            + " being passed on to the mob",
+                    EntityDamageEvent.class,
+                    "onExtensionDamage",
+                    EntityDamageEvent::getEntity,
+                    event -> true,
+                    EventPriority.HIGH,
+                    true,
+                    CompiledBehaviour::onExtensionDamage,
+                    true),
+            new Trigger<>(
+                    BloodNightNodes.EVENT_EXTENSION_DEATH,
+                    "On Extension Death",
+                    "The entity riding or carrying the mob died",
+                    EntityDeathEvent.class,
+                    "onExtensionDeath",
+                    EntityDeathEvent::getEntity,
+                    event -> true,
+                    EventPriority.HIGH,
+                    false,
+                    CompiledBehaviour::onExtensionDeath,
+                    true));
 
     private Triggers() {}
 

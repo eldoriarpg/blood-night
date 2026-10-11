@@ -32,15 +32,31 @@ import java.util.stream.Collectors;
 public final class TriggerDispatcher {
     private final Listener owner = new Listener() {};
     private final Function<Entity, Optional<CompiledBehaviour>> behaviours;
+    private final Function<Entity, Optional<CompiledBehaviour>> extensions;
     private final BiConsumer<Trigger<?>, RuntimeException> errors;
 
     /**
+     * A dispatcher for mobs without extensions: extension triggers never fire.
+     *
      * @param behaviours the behaviour of a custom mob entity, empty for other entities
      * @param errors     receives exceptions thrown by behaviours
      */
     public TriggerDispatcher(
             Function<Entity, Optional<CompiledBehaviour>> behaviours, BiConsumer<Trigger<?>, RuntimeException> errors) {
+        this(behaviours, entity -> Optional.empty(), errors);
+    }
+
+    /**
+     * @param behaviours the behaviour of a custom mob entity, empty for other entities
+     * @param extensions the behaviour of the mob an entity is the extension of, empty for other entities
+     * @param errors     receives exceptions thrown by behaviours
+     */
+    public TriggerDispatcher(
+            Function<Entity, Optional<CompiledBehaviour>> behaviours,
+            Function<Entity, Optional<CompiledBehaviour>> extensions,
+            BiConsumer<Trigger<?>, RuntimeException> errors) {
         this.behaviours = behaviours;
+        this.extensions = extensions;
         this.errors = errors;
     }
 
@@ -75,7 +91,7 @@ public final class TriggerDispatcher {
 
     private void dispatch(Trigger<?> trigger, Event event) {
         try {
-            trigger.dispatch(event, behaviours);
+            trigger.dispatch(event, trigger.extension() ? extensions : behaviours);
         } catch (RuntimeException e) {
             errors.accept(trigger, e);
         }

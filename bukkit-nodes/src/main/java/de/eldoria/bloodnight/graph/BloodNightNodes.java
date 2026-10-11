@@ -33,6 +33,8 @@ public interface BloodNightNodes extends StdNodes {
     String EVENT_PROJECTILE_HIT = "event.projectile_hit";
     String EVENT_EXPLOSION_PRIME = "event.explosion_prime";
     String EVENT_EXPLODE = "event.explode";
+    String EVENT_EXTENSION_DAMAGE = "event.extension_damage";
+    String EVENT_EXTENSION_DEATH = "event.extension_death";
 
     String CAST_ENTITY = "cast.entity";
     String CAST_LIVING_ENTITY = "cast.living_entity";

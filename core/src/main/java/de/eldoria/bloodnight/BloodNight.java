@@ -86,8 +86,9 @@ public final class BloodNight extends JavaPlugin {
                 () -> configuration.items(),
                 id -> configuration.mobs().get(id),
                 getLogger());
-        dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, error) -> getLogger()
-                .log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error));
+        dispatcher = new TriggerDispatcher(
+                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, error) -> getLogger()
+                        .log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error));
 
         var plugins = getServer().getPluginManager();
         plugins.registerEvents(new MobSpawner(configuration, coordinator, this), this);

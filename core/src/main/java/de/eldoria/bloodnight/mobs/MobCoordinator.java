@@ -39,6 +39,7 @@ public final class MobCoordinator {
     private static final CompiledBehaviour NONE = new CompiledBehaviour() {};
 
     private final Map<Integer, ActiveMob> mobs = new HashMap<>();
+    private final Map<Integer, Integer> baseByExtension = new HashMap<>();
     private final Set<String> reported = new HashSet<>();
     private final MobOutfitter outfitter;
     private final Supplier<ItemRegistry> items;
@@ -104,6 +105,16 @@ public final class MobCoordinator {
 
     /**
      * @param entity any entity
+     * @return the behaviour of the mob the entity rides or carries, if it is a custom mob's extension
+     */
+    public Optional<CompiledBehaviour> extensionBehaviour(Entity entity) {
+        Integer base = baseByExtension.get(entity.getEntityId());
+        ActiveMob mob = base == null ? null : mobs.get(base);
+        return mob == null ? Optional.empty() : Optional.of(mob.behaviour());
+    }
+
+    /**
+     * @param entity any entity
      * @return the active mob, if the entity is one
      */
     public Optional<ActiveMob> mob(Entity entity) {
@@ -116,7 +127,7 @@ public final class MobCoordinator {
      * @param entity the entity
      */
     public void remove(Entity entity) {
-        mobs.remove(entity.getEntityId());
+        forget(entity.getEntityId());
     }
 
     /**
@@ -125,7 +136,7 @@ public final class MobCoordinator {
     public void tick() {
         for (ActiveMob mob : new ArrayList<>(mobs.values())) {
             if (!mob.entity().isValid()) {
-                mobs.remove(mob.entity().getEntityId());
+                forget(mob.entity().getEntityId());
                 continue;
             }
             guard(mob, () -> mob.behaviour().onTick());
@@ -195,7 +206,14 @@ public final class MobCoordinator {
     private ActiveMob track(LivingEntity entity, CustomMob mob, @Nullable Entity extension) {
         ActiveMob active = new ActiveMob(mob, entity, extension, instantiate(mob, entity, extension));
         mobs.put(entity.getEntityId(), active);
+        if (extension != null) baseByExtension.put(extension.getEntityId(), entity.getEntityId());
         return active;
+    }
+
+    private void forget(int entityId) {
+        ActiveMob mob = mobs.remove(entityId);
+        Entity extension = mob == null ? null : mob.extension();
+        if (extension != null) baseByExtension.remove(extension.getEntityId());
     }
 
     private CompiledBehaviour instantiate(CustomMob mob, LivingEntity entity, @Nullable Entity extension) {

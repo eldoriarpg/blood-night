@@ -112,4 +112,14 @@ public interface CompiledBehaviour {
      * The mob explodes.
      */
     default void onExplode(EntityExplodeEvent event) {}
+
+    /**
+     * The entity riding or carrying the mob took damage.
+     */
+    default void onExtensionDamage(EntityDamageEvent event) {}
+
+    /**
+     * The entity riding or carrying the mob died.
+     */
+    default void onExtensionDeath(EntityDeathEvent event) {}
 }

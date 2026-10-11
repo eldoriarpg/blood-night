@@ -292,7 +292,7 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Rides an invisible vex, and takes no suffocation damage.
+     * Rides an invisible vex; neither takes suffocation damage, and the creeper dies with its vex.
      */
     private CustomMob ghostCreeper() {
         Extension vex = new Extension(ExtensionType.RIDER, EntityType.VEX, null);
@@ -316,6 +316,7 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 4, false));
             String damage = graph.entry(EVENT_DAMAGE);
             graph.on(EVENT_DAMAGE, graph.when(causeIs(graph, damage, "SUFFOCATION"), RESULT, graph.cancel(damage)));
+            bindToExtension(graph);
             String remove =
                     graph.node(ENTITY_REMOVE).input(TARGET, extension, "entity").id();
             graph.on(EVENT_EXPLODE, graph.present(extension, "entity", remove));
@@ -469,12 +470,13 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * A spider carrying another mob that attacks whatever the spider targets.
+     * A spider carrying another mob that attacks whatever the spider targets; the spider dies with its rider.
      */
     private CustomMob rider(String id, String name, EntityType passenger, boolean fast) {
         Extension extension = new Extension(ExtensionType.CARRIER, passenger, null);
         return mob(id, name, EntityType.SPIDER, extension, graph -> {
             graph.forwardTargetToExtension();
+            bindToExtension(graph);
             if (fast) graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 1, true));
             smokeAtNightEnd(graph);
         });
@@ -591,6 +593,24 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input(TARGET, graph.selfAs("creeper"), RESULT)
                 .id();
         graph.on(MOB_NIGHT_END, graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 0), ignite);
+    }
+
+    /**
+     * Keeps the extension from suffocating in the blocks it is carried into, and lets the mob die with its extension.
+     */
+    private static void bindToExtension(MobGraph graph) {
+        String damage = graph.entry(EVENT_EXTENSION_DAMAGE);
+        graph.on(
+                EVENT_EXTENSION_DAMAGE,
+                graph.when(causeIs(graph, damage, "SUFFOCATION"), RESULT, graph.cancel(damage)));
+        String self = graph.node(LIVING_ENTITY_GET)
+                .input(TARGET, graph.self(), "entity")
+                .id();
+        String die = graph.node(LIVING_ENTITY_DAMAGE)
+                .input(TARGET, graph.self(), "entity")
+                .input("amount", self, "health")
+                .id();
+        graph.on(EVENT_EXTENSION_DEATH, graph.unless(self, "dead", die));
     }
 
     private static String causeIs(MobGraph graph, String trigger, String cause) {

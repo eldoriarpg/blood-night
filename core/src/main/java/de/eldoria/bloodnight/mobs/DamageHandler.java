@@ -41,7 +41,7 @@ public class DamageHandler implements Listener {
         if (baseId.isEmpty()) return;
         if (!(entity instanceof LivingEntity extension)) return;
         // Forward damage from extension over to base mob
-        if (!(entity.getServer().getEntity(baseId.get()) instanceof LivingEntity base)) return;
+        if (!(entity.getServer().getEntity(baseId.get()) instanceof LivingEntity base) || base.isDead()) return;
 
         if (event instanceof EntityDamageByEntityEvent byEntity) {
             base.damage(event.getDamage(), byEntity.getDamager());
@@ -69,8 +69,10 @@ public class DamageHandler implements Listener {
 
     /**
      * Sets the health of an extension, kept within what it can have: base and extension may differ in maximum health.
+     * A dead extension is left alone: setting its health would fire its death again, and with it the base's reaction.
      */
     private static void syncHealth(LivingEntity extension, double health) {
+        if (extension.isDead()) return;
         AttributeInstance max = extension.getAttribute(Attribute.MAX_HEALTH);
         double limit = max == null ? extension.getHealth() : max.getValue();
         extension.setHealth(Math.clamp(health, 0, limit));
