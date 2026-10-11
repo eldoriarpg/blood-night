@@ -16,6 +16,7 @@ import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.std.runtime.Cooldown;
+import de.eldoria.graph.std.runtime.Randoms;
 import de.eldoria.graph.std.runtime.Timer;
 import de.eldoria.graph.types.TypeMapping;
 import tools.jackson.databind.JsonNode;
@@ -27,7 +28,6 @@ import tools.jackson.databind.node.StringNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +53,7 @@ public final class StandardNodes {
     private static final String NEXT = "next";
     private static final String BODY = "body";
     private static final String TIMER = "timer";
+    private static final ClassName RANDOMS = ClassName.get(Randoms.class);
     private static final Pattern EQUALITY = Pattern.compile("\\(([A-Za-z_$][A-Za-z0-9_$]*) == ([A-Za-z0-9_$]+)\\)");
     private static final Pattern SIMPLE = Pattern.compile("[A-Za-z_$][A-Za-z0-9_$.]*(\\(\\))?");
     private static final String DEFAULT_TIMER = "timer";
@@ -161,24 +162,20 @@ public final class StandardNodes {
                     ctx.input(VALUE)));
     public static final ExpressionDefinition RANDOM_INTEGER = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_RANDOM_INTEGER, NodeKind.PURE)
-                    .stateful()
                     .description("A random integer between lower and upper, both inclusive")
                     .input(LOWER, int.class)
                     .input(UPPER, int.class)
                     .output(RESULT, int.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of(
-                    "$T.current().nextInt($L, $L + 1)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
+            (port, ctx) -> ctx.staticCall(RANDOMS, "nextInt", ctx.input(LOWER), ctx.input(UPPER)));
     public static final ExpressionDefinition RANDOM_NUMBER = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_RANDOM_NUMBER, NodeKind.PURE)
-                    .stateful()
                     .description("A random number from lower, inclusive, to upper, exclusive")
                     .input(LOWER, double.class)
                     .input(UPPER, double.class)
                     .output(RESULT, double.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of(
-                    "$T.current().nextDouble($L, $L)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
+            (port, ctx) -> ctx.staticCall(RANDOMS, "nextDouble", ctx.input(LOWER), ctx.input(UPPER)));
 
     public static final StatementDefinition BRANCH = new StatementDefinition(
             NodeDescriptor.builder(StdNodes.FLOW_BRANCH, NodeKind.CONTROL_FLOW)
@@ -228,13 +225,11 @@ public final class StandardNodes {
     public static final StatementDefinition SWITCH = switchNode();
     public static final ExpressionDefinition CHANCE = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_CHANCE, NodeKind.PURE)
-                    .stateful()
                     .description("True with the given probability in percent")
                     .input("percent", double.class)
                     .output(RESULT, boolean.class)
                     .build(),
-            (port, ctx) ->
-                    CodeBlock.of("($T.current().nextDouble(100) < $L)", ThreadLocalRandom.class, ctx.input("percent")));
+            (port, ctx) -> ctx.staticCall(RANDOMS, "chance", ctx.input("percent")));
 
     public static final StatementDefinition PRINT = new StatementDefinition(
             NodeDescriptor.builder(StdNodes.DEBUG_PRINT, NodeKind.ACTION)
@@ -398,10 +393,19 @@ public final class StandardNodes {
     }
 
     /**
-     * Writes only the arms that run something: {@code if (c)}, {@code if (!c)} or both.
+     * Writes only the arms that run something: {@code if (c)}, {@code if (!c)} or both. When the branch is the last
+     * code of its method and only one arm runs something, it returns early instead: {@code if (!c) return;} followed
+     * by the arm.
      */
     private static CodeBlock branch(StatementContext ctx) {
         CodeBlock condition = ctx.input("condition");
+        boolean whenTrueChained = ctx.chained("true");
+        if (ctx.last() && !ctx.chained(NEXT) && whenTrueChained != ctx.chained("false")) {
+            return CodeBlock.builder()
+                    .addStatement("if $L return", whenTrueChained ? negated(condition) : parenthesised(condition))
+                    .add(ctx.lastChain(whenTrueChained ? "true" : "false"))
+                    .build();
+        }
         CodeBlock whenTrue = ctx.chain("true");
         CodeBlock whenFalse = ctx.chain("false");
         CodeBlock.Builder code = CodeBlock.builder();

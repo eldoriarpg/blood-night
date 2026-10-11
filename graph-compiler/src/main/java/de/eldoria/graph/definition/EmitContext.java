@@ -5,6 +5,7 @@
  */
 package de.eldoria.graph.definition;
 
+import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
 
@@ -90,6 +91,17 @@ public interface EmitContext {
      * @return an expression referring to the field
      */
     CodeBlock sharedField(String name, TypeName type, CodeBlock initializer);
+
+    /**
+     * Calls a static helper method by its simple name, with a static import, e.g. {@code nextDouble(-2.0d, 2.0d)}. When
+     * another class's method already holds that name in the generated class, the call is qualified instead.
+     *
+     * @param owner     the class declaring the method
+     * @param method    the method name
+     * @param arguments the arguments, in order
+     * @return the call
+     */
+    CodeBlock staticCall(ClassName owner, String method, CodeBlock... arguments);
 
     /**
      * @return an expression referring to the context object the host passes in

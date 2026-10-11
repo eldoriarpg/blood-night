@@ -31,6 +31,7 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final String RESULT = "result";
     private static final String TARGET = "target";
     private static final String VALUE = "value";
+    private static final String TELEPORT_NEAR = "teleport_near";
 
     private final GraphPlatform platform;
 
@@ -278,15 +279,16 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob enderCreeper() {
         return mob("ender_creeper", "Ender Creeper", EntityType.CREEPER, graph -> {
-            graph.on(MOB_TICK, graph.dust(128, 0, 128, 2, 5), teleportToTarget(graph));
-            graph.on(EVENT_TARGET_CHANGE, teleportToTarget(graph));
+            defineTeleportNear(graph);
+            graph.on(MOB_TICK, graph.dust(128, 0, 128, 2, 5), teleportNear(graph, graph.selfMob(), TARGET));
+            graph.on(EVENT_TARGET_CHANGE, teleportNear(graph, graph.entry(EVENT_TARGET_CHANGE), TARGET));
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String attacker = graph.as("living_entity", graph.entry(trigger), "damager");
                 String target = graph.node(MOB_SET_TARGET)
                         .input(TARGET, graph.selfAs("mob"), RESULT)
                         .input(VALUE, attacker, RESULT)
                         .id();
-                graph.on(trigger, graph.when(attacker, "matches", target), teleportToTarget(graph));
+                graph.on(trigger, graph.when(attacker, "matches", target), teleportNear(graph, attacker, RESULT));
             }
         });
     }
@@ -494,11 +496,19 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Teleports the mob next to its target: when it has one more than five blocks away, at most every five seconds,
-     * and only onto a spot with room for it.
+     * Calls {@code teleport_near} for a target.
      */
-    private static String teleportToTarget(MobGraph graph) {
-        String target = graph.entity(graph.selfMob(), TARGET);
+    private static String teleportNear(MobGraph graph, String node, String port) {
+        return graph.call(TELEPORT_NEAR).input(TARGET, node, port).id();
+    }
+
+    /**
+     * Routine {@code teleport_near(target)}: teleports the mob next to the target when there is one more than five
+     * blocks away, at most every five seconds, and only onto a spot with room for it.
+     */
+    private static void defineTeleportNear(MobGraph graph) {
+        String parameter = graph.parameter(TELEPORT_NEAR, TARGET, "living_entity");
+        String target = graph.entity(parameter, VALUE);
         String distance = graph.node(LOCATION_DISTANCE)
                 .input(TARGET, graph.selfMob(), "location")
                 .input("other", target, "location")
@@ -536,14 +546,18 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("location", spot, RESULT)
                 .id();
         String puff = graph.particlesAt("minecraft:portal", 10, target, "location");
-        return graph.present(
-                graph.selfMob(),
-                TARGET,
-                graph.after(
-                        "teleport",
-                        5,
-                        graph.when(
-                                far, RESULT, graph.when(free, RESULT, teleport, graph.resetTimer("teleport"), puff))));
+        graph.routine(
+                TELEPORT_NEAR,
+                graph.present(
+                        parameter,
+                        VALUE,
+                        graph.after(
+                                "teleport",
+                                5,
+                                graph.when(
+                                        far,
+                                        RESULT,
+                                        graph.when(free, RESULT, teleport, graph.resetTimer("teleport"), puff)))));
     }
 
     /**

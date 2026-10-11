@@ -30,7 +30,8 @@ import java.util.Optional;
  * Node types, input, output and execution ports, config fields and typed-in values are checked the moment they are
  * named, so a typo fails where it is written instead of when the graph is compiled. {@link #build()} then runs the
  * full validation: edge types, required inputs, cycles. Node types are best named through the id constants of a
- * node set rather than as raw strings.
+ * node set rather than as raw strings. A routine call can be placed once the routine's definition and parameter
+ * nodes are, since its ports come from them.
  */
 public final class Graphs {
     private static final List<PortType> SCALARS = List.of(
@@ -91,11 +92,24 @@ public final class Graphs {
     public NodeBuilder node(String id, String type) {
         NodeDefinition definition = platform.node(type)
                 .or(() -> Optional.ofNullable(extra.get(type)))
+                .or(() -> routine(type))
                 .orElseThrow(() -> new IllegalArgumentException("Unknown node type " + type));
         if (nodes.containsKey(id)) throw new IllegalArgumentException("Duplicate node id " + id);
         NodeBuilder node = new NodeBuilder(id, definition);
         nodes.put(id, node);
         return node;
+    }
+
+    /**
+     * Routine nodes: the boundary types, and call types of routines whose definition and parameters are placed
+     * already.
+     */
+    private Optional<NodeDefinition> routine(String type) {
+        Map<String, NodeInstance> placed = new LinkedHashMap<>();
+        nodes.forEach((id, node) -> placed.put(id, node.instance.build()));
+        return Routines.definitions(placed, platform.types()).stream()
+                .filter(definition -> definition.id().equals(type))
+                .findFirst();
     }
 
     /**

@@ -1,6 +1,6 @@
 {
   "format" : 1,
-  "version" : "7d811025074c6cc1",
+  "version" : "f52c59fab635ec85",
   "nodes" : [ {
     "id" : "debug.print",
     "kind" : "action",
@@ -916,6 +916,127 @@
       "name" : "Result",
       "type" : {
         "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "routine.define",
+    "kind" : "entry",
+    "category" : "routine",
+    "name" : "Define Routine",
+    "description" : "Starts a routine: a chain any other chain of this mob can call by name",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.boolean",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Boolean)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.integer",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Integer)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.number",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Number)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.text",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Text)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
       }
     } ]
   }, {

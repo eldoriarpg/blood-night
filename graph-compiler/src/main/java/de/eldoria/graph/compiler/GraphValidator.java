@@ -80,8 +80,13 @@ final class GraphValidator {
         }
 
         ValidatedGraph run() throws GraphCompilationException {
+            Map<String, NodeDefinition> routines = new HashMap<>();
+            Routines.definitions(graph.nodes(), platform.types())
+                    .forEach(definition -> routines.put(definition.id(), definition));
+            problems.addAll(Routines.check(graph.nodes(), platform.types()));
             graph.nodes().forEach((id, node) -> platform.node(node.type())
                     .or(() -> Optional.ofNullable(extra.get(node.type())))
+                    .or(() -> Optional.ofNullable(routines.get(node.type())))
                     .ifPresentOrElse(
                             definition -> definitions.put(id, definition),
                             () -> problems.add(GraphProblem.error(id, null, "Unknown node type " + node.type()))));

@@ -29,8 +29,8 @@ import java.util.stream.Stream;
  * @param outputs     data outputs
  * @param executions  execution outputs that nodes are chained into
  * @param config      literal values set in the editor
- * @param stateful    whether the node's value may change between two evaluations at the same point, e.g. random
- *                    numbers; such values are never moved or merged when the code is tidied
+ * @param stateful    whether evaluating the node changes state, e.g. a cooldown that starts again when it is read;
+ *                    such values are evaluated exactly where the graph says and never moved into other code
  */
 public record NodeDescriptor(
         String id,
@@ -250,8 +250,9 @@ public record NodeDescriptor(
         }
 
         /**
-         * Marks the node's value as one that may differ between two evaluations at the same point, such as a random
-         * number or a cooldown, so generated code never moves or merges it.
+         * Marks evaluating the node as changing state, such as a cooldown that starts again when it is read, so
+         * generated code evaluates it exactly where the graph says. Random values do not need this: moving them
+         * changes nothing else.
          *
          * @return this builder
          */

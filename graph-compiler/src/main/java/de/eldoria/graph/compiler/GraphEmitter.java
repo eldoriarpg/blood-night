@@ -25,21 +25,26 @@ import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.model.Edge;
+import de.eldoria.graph.model.NodeInstance;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.Modifier;
 
@@ -82,9 +87,11 @@ final class GraphEmitter {
     private final Identifiers fieldNames = new Identifiers(CONTEXT_FIELD);
     private final Map<String, CodeBlock> constants = new HashMap<>();
     private final List<FieldSpec> constantSpecs = new ArrayList<>();
+    private final Map<String, ClassName> staticImports = new LinkedHashMap<>();
     private Pass pass = Pass.counting();
 
     private final boolean inline;
+    private final Map<String, Routines.Routine> routines;
 
     /**
      * @param graph  the graph
@@ -93,6 +100,9 @@ final class GraphEmitter {
     GraphEmitter(ValidatedGraph graph, boolean inline) {
         this.graph = graph;
         this.inline = inline;
+        Map<String, NodeInstance> instances = new LinkedHashMap<>();
+        graph.nodes().forEach((id, node) -> instances.put(id, node.instance()));
+        this.routines = Routines.of(instances, graph.platform().types());
     }
 
     /**
@@ -118,11 +128,13 @@ final class GraphEmitter {
         for (String entry : graph.entries()) {
             EntryDefinition definition =
                     (EntryDefinition) graph.nodes().get(entry).definition();
+            if (definition.id().equals(Routines.DEFINE)) continue;
             entriesByMethod
                     .computeIfAbsent(hostMethod(definition), key -> new ArrayList<>())
                     .add(entry);
         }
         entriesByMethod.forEach((method, entries) -> type.addMethod(entryMethod(method, entries)));
+        routines.values().forEach(routine -> routineMethod(routine).ifPresent(type::addMethod));
         for (Method method : host.getMethods()) {
             if (java.lang.reflect.Modifier.isAbstract(method.getModifiers()) && !entriesByMethod.containsKey(method)) {
                 type.addMethod(emptyMethod(method));
@@ -141,10 +153,9 @@ final class GraphEmitter {
         List<GraphProblem> all = new ArrayList<>(graph.warnings());
         all.addAll(problems);
         if (!problems.isEmpty()) throw new GraphCompilationException(all, null);
-        JavaFile file = JavaFile.builder(name.packageName(), type.build())
-                .skipJavaLangImports(true)
-                .indent("    ")
-                .build();
+        JavaFile.Builder builder = JavaFile.builder(name.packageName(), type.build());
+        staticImports.forEach((method, owner) -> builder.addStaticImport(owner, method));
+        JavaFile file = builder.skipJavaLangImports(true).indent("    ").build();
         sourceMap.index(file.toString());
         return new Emitted(file, sourceMap);
     }
@@ -170,12 +181,73 @@ final class GraphEmitter {
     }
 
     private MethodSpec entryMethod(Method method, List<String> entries) {
+        return twoPass(() -> emitEntryMethod(method, entries));
+    }
+
+    /**
+     * A routine as a private method. Its name must not hide a method of the host, which a call would reach
+     * instead.
+     */
+    private Optional<MethodSpec> routineMethod(Routines.Routine routine) {
+        boolean taken = Stream.concat(
+                        Arrays.stream(graph.platform().host().getMethods()), Arrays.stream(Object.class.getMethods()))
+                .anyMatch(method -> method.getName().equals(routine.method()));
+        if (taken) {
+            report(GraphProblem.error(
+                    routine.define(),
+                    Routines.NAME,
+                    "Routine name %s is taken by a method of the behaviour".formatted(routine.name())));
+            return Optional.empty();
+        }
+        return Optional.of(twoPass(() -> emitRoutineMethod(routine)));
+    }
+
+    private MethodSpec emitRoutineMethod(Routines.Routine routine) {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder(routine.method()).addModifiers(Modifier.PRIVATE);
+        Set<String> methodNames = new HashSet<>();
+        routine.parameters().forEach((name, type) -> {
+            String parameter = Routines.javaName(name);
+            builder.addParameter(type.typeName(), parameter);
+            methodNames.add(parameter);
+        });
+        Scope root = Scope.root(routine.define(), methodNames);
+        builder.addCode(marker(routine.define()));
+        for (ExecutionPort port :
+                graph.nodes().get(routine.define()).definition().descriptor().executions()) {
+            builder.addCode(chain(routine.define(), port, root, Map.of(), true));
+        }
+        return builder.addCode(sourceMap.boundary()).build();
+    }
+
+    /**
+     * Emits a method twice, see the class documentation: counting reads, then naming and inlining.
+     */
+    private MethodSpec twoPass(Supplier<MethodSpec> emit) {
         pass = Pass.counting();
-        MethodSpec counted = emitEntryMethod(method, entries);
+        MethodSpec counted = emit.get();
         pass = inline ? pass.inlining(counted.toString()) : Pass.naming();
-        MethodSpec emitted = emitEntryMethod(method, entries);
+        MethodSpec emitted = emit.get();
         pass = Pass.counting();
         return emitted;
+    }
+
+    /**
+     * A routine parameter is the parameter of the routine's method, and only visible inside it.
+     */
+    private CodeBlock parameter(String reader, String readerPort, ValidatedGraph.Node source, Scope scope) {
+        JsonNode routineName = source.instance().config().get(Routines.ROUTINE);
+        JsonNode name = source.instance().config().get(Routines.NAME);
+        Routines.Routine routine = routineName == null ? null : routines.get(routineName.asString());
+        if (routine == null || name == null || !scope.within(routine.define())) {
+            return fail(
+                    reader,
+                    readerPort,
+                    "Parameter %s of routine %s is only available inside that routine"
+                            .formatted(
+                                    name == null ? "?" : name.asString(),
+                                    routineName == null ? "?" : routineName.asString()));
+        }
+        return CodeBlock.of("$N", Routines.javaName(name.asString()));
     }
 
     private MethodSpec emitEntryMethod(Method method, List<String> entries) {
@@ -185,11 +257,14 @@ final class GraphEmitter {
                 definition.parameters().stream().map(EntryParameter::name).toList();
         Set<String> methodNames = new HashSet<>(parameters);
         MethodSpec.Builder builder = override(method, parameters);
+        boolean returnsNothing = method.getReturnType() == void.class;
+        List<ExecutionPort> ports = definition.descriptor().executions();
         for (String entry : entries) {
             Scope root = Scope.root(entry, methodNames);
             builder.addCode(marker(entry));
-            for (ExecutionPort port : definition.descriptor().executions()) {
-                builder.addCode(chain(entry, port, root, Map.of()));
+            for (ExecutionPort port : ports) {
+                boolean last = returnsNothing && entry.equals(entries.getLast()) && port.equals(ports.getLast());
+                builder.addCode(chain(entry, port, root, Map.of(), last));
             }
         }
         return builder.addCode(sourceMap.boundary()).build();
@@ -219,20 +294,25 @@ final class GraphEmitter {
         return builder;
     }
 
-    private CodeBlock chain(String node, ExecutionPort port, Scope owner, Map<String, CodeBlock> bindings) {
+    /**
+     * @param last whether the chain is the last code of its method, so its last node may return early
+     */
+    private CodeBlock chain(
+            String node, ExecutionPort port, Scope owner, Map<String, CodeBlock> bindings, boolean last) {
         Scope scope = owner.child(port.repeating());
         bindings.forEach(scope::bind);
         CodeBlock.Builder code = CodeBlock.builder();
-        for (String target : graph.nodes().get(node).instance().executions().getOrDefault(port.id(), List.of())) {
-            code.add(statement(target, scope));
+        List<String> targets = graph.nodes().get(node).instance().executions().getOrDefault(port.id(), List.of());
+        for (int i = 0; i < targets.size(); i++) {
+            code.add(statement(targets.get(i), scope, last && !port.repeating() && i == targets.size() - 1));
         }
         return code.build();
     }
 
-    private CodeBlock statement(String node, Scope scope) {
+    private CodeBlock statement(String node, Scope scope, boolean last) {
         ValidatedGraph.Node info = graph.nodes().get(node);
         CodeBlock.Builder prelude = CodeBlock.builder();
-        Statement context = new Statement(info, scope, prelude);
+        Statement context = new Statement(info, scope, prelude, last);
         CodeBlock body;
         try {
             body = ((StatementDefinition) info.definition()).emitter().emit(context);
@@ -264,6 +344,9 @@ final class GraphEmitter {
         if (existing != null) return existing;
 
         ValidatedGraph.Node source = graph.nodes().get(edge.node());
+        if (source.definition().id().startsWith(Routines.PARAMETER_PREFIX)) {
+            return parameter(reader, readerPort, source, scope);
+        }
         return switch (source.definition()) {
             case ExpressionDefinition expression ->
                 compute(source, edge.port(), scope, prelude, () -> expression
@@ -463,6 +546,20 @@ final class GraphEmitter {
         }
 
         @Override
+        public CodeBlock staticCall(ClassName owner, String method, CodeBlock... arguments) {
+            CodeBlock joined = CodeBlock.join(List.of(arguments), ", ");
+            boolean inherited = Arrays.stream(graph.platform().host().getMethods())
+                            .anyMatch(member -> member.getName().equals(method))
+                    || routines.values().stream()
+                            .anyMatch(routine -> routine.method().equals(method));
+            if (!inherited) {
+                ClassName holder = staticImports.putIfAbsent(method, owner);
+                if (holder == null || holder.equals(owner)) return CodeBlock.of("$N($L)", method, joined);
+            }
+            return CodeBlock.of("$T.$N($L)", owner, method, joined);
+        }
+
+        @Override
         public boolean isRead(String port) {
             return graph.nodes().values().stream()
                     .flatMap(other -> other.instance().inputs().values().stream())
@@ -542,14 +639,35 @@ final class GraphEmitter {
 
     private final class Statement extends Base implements StatementContext {
         private final Map<String, Map<String, CodeBlock>> bindings = new HashMap<>();
+        private final boolean last;
 
-        Statement(ValidatedGraph.Node node, Scope scope, CodeBlock.Builder prelude) {
+        Statement(ValidatedGraph.Node node, Scope scope, CodeBlock.Builder prelude, boolean last) {
             super(node, scope, prelude);
+            this.last = last;
         }
 
         @Override
         public CodeBlock chain(String port) {
-            return GraphEmitter.this.chain(node.id(), execution(port), scope, bindings.getOrDefault(port, Map.of()));
+            return GraphEmitter.this.chain(
+                    node.id(), execution(port), scope, bindings.getOrDefault(port, Map.of()), false);
+        }
+
+        @Override
+        public boolean chained(String port) {
+            execution(port);
+            return !node.instance().executions().getOrDefault(port, List.of()).isEmpty();
+        }
+
+        @Override
+        public boolean last() {
+            return last;
+        }
+
+        @Override
+        public CodeBlock lastChain(String port) {
+            if (!last) throw new IllegalStateException(node.id() + " is not the last node of its method");
+            return GraphEmitter.this.chain(
+                    node.id(), execution(port), scope, bindings.getOrDefault(port, Map.of()), true);
         }
 
         @Override

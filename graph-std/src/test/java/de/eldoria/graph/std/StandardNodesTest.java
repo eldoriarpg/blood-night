@@ -392,7 +392,7 @@ class StandardNodesTest {
     @Test
     void branchWritesOnlyTheArmsThatRun() throws GraphCompilationException {
         Graph graph = Graph.builder()
-                .node("run", NodeInstance.of("test.run").chain("next", "branch"))
+                .node("run", NodeInstance.of("test.run").chain("next", "branch", "after"))
                 .node(
                         "never",
                         NodeInstance.of("logic.greater")
@@ -404,12 +404,37 @@ class StandardNodesTest {
                                 .input("condition", "never", "result")
                                 .chain("false", "record"))
                 .node("record", NodeInstance.of("test.record").literal("value", StringNode.valueOf("ran")))
+                .node("after", NodeInstance.of("test.record").literal("value", StringNode.valueOf("after")))
                 .build();
 
         String source = Harness.compile(graph).source();
-        assertEquals(List.of("ran"), Harness.run(graph, 1));
-        assertTrue(source.contains("if (!(1.0d > 2.0d))"), source);
+        assertEquals(List.of("ran", "after"), Harness.run(graph, 1));
+        assertTrue(source.contains("if (!(1.0d > 2.0d)) {"), source);
         assertFalse(source.contains("else"), source);
+        assertFalse(source.contains("return"), source);
+    }
+
+    @Test
+    void aBranchEndingTheMethodReturnsEarly() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "branch"))
+                .node(
+                        "never",
+                        NodeInstance.of("logic.greater")
+                                .literal("first", DoubleNode.valueOf(1))
+                                .literal("second", DoubleNode.valueOf(2)))
+                .node(
+                        "branch",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "never", "result")
+                                .chain("true", "record"))
+                .node("record", NodeInstance.of("test.record").literal("value", StringNode.valueOf("ran")))
+                .build();
+
+        String source = Harness.compile(graph).source();
+        assertEquals(List.of(), Harness.run(graph, 1));
+        assertTrue(source.contains("if (!(1.0d > 2.0d)) return;"), source);
+        assertTrue(source.contains("        this.context.record(\"ran\");"), source);
     }
 
     @Test
@@ -425,7 +450,7 @@ class StandardNodesTest {
     }
 
     @Test
-    void statefulValuesAndValuesReadInNestedBlocksStayLocals() throws GraphCompilationException {
+    void valuesReadInNestedBlocksStayLocals() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "branch"))
                 .node(
@@ -449,8 +474,20 @@ class StandardNodesTest {
 
         String source = Harness.compile(graph).source();
         assertEquals(1, Harness.run(graph, 1).size());
-        assertTrue(source.contains("final double randomNumber = "), source);
-        assertTrue(source.contains("final double abs = Math.abs(randomNumber);"), source);
-        assertTrue(source.contains("if (abs < 2.0d)"), source);
+        assertTrue(source.contains("final double abs = Math.abs(nextDouble(0.0d, 1.0d));"), source);
+        assertTrue(source.contains("abs < 2.0d"), source);
+    }
+
+    @Test
+    void statefulValuesStayLocals() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "record"))
+                .node("cooldown", NodeInstance.of("function.cooldown").literal("value", IntNode.valueOf(1000)))
+                .node("record", NodeInstance.of("test.record").input("value", "cooldown", "result"))
+                .build();
+
+        String source = Harness.compile(graph).source();
+        assertEquals(List.of(true, false), Harness.run(graph, 2));
+        assertTrue(source.contains("final boolean cooldown = this.cooldown.ready(1000);"), source);
     }
 }

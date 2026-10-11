@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.mob.defaults;
 import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.graph.compiler.Graphs;
+import de.eldoria.graph.compiler.Routines;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.StdNodes;
@@ -71,6 +72,32 @@ final class MobGraph implements BloodNightNodes {
     void on(String type, String... chain) {
         entry(type);
         entries.get(type).chain(NEXT, chain);
+    }
+
+    /**
+     * Defines a routine: a chain the graph's other chains call by name.
+     */
+    void routine(String name, String... chain) {
+        node(Routines.DEFINE).config("name", name).chain(NEXT, chain);
+    }
+
+    /**
+     * A parameter of a routine; output {@code value}.
+     *
+     * @param selectable the parameter's type, e.g. {@code living_entity}
+     */
+    String parameter(String routine, String name, String selectable) {
+        return node(Routines.PARAMETER_PREFIX + selectable)
+                .config("routine", routine)
+                .config("name", name)
+                .id();
+    }
+
+    /**
+     * Calls a routine; its definition and parameters must be placed already.
+     */
+    Graphs.NodeBuilder call(String routine) {
+        return node(Routines.CALL_PREFIX + routine);
     }
 
     String self() {
