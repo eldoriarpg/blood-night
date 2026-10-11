@@ -110,7 +110,7 @@ public final class BukkitTypes {
                 .selectable("item", PortType.of(ItemStack.class))
                 .selectable("damage_cause", PortType.of(EntityDamageEvent.DamageCause.class))
                 .selectable("entity_type", PortType.of(EntityType.class))
-                .selectable("potion_effect", PortType.of(PotionEffectType.class))
+                .selectable("potion_effect_type", PortType.of(PotionEffectType.class))
                 .build();
     }
 
