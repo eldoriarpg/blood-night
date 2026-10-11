@@ -111,7 +111,7 @@ public final class BehaviourService implements AutoCloseable {
         for (CustomMob mob : mobs) {
             String key = BytecodeCache.key(version, mob.behaviour(), macros);
             keys.add(key);
-            ClassName name = ClassName.get(PACKAGE, "Mob_" + mob.id().replaceAll("[^A-Za-z0-9_]", "_"));
+            ClassName name = ClassName.get(PACKAGE, className(mob.id()));
             try {
                 CompiledGraph<CompiledBehaviour> graph;
                 var cached = cache.read(key).filter(entry -> entry.name().equals(name.reflectionName()));
@@ -152,5 +152,20 @@ public final class BehaviourService implements AutoCloseable {
     @Override
     public void close() {
         executor.shutdownNow();
+    }
+
+    /**
+     * The generated class of a mob: its id in PascalCase with a {@code Behaviour} suffix, e.g.
+     * {@code SpeedCreeperBehaviour}. The suffix keeps the name apart from the Bukkit types the code imports, such as
+     * {@code Creeper}.
+     */
+    static String className(String mobId) {
+        StringBuilder name = new StringBuilder();
+        for (String word : mobId.split("[^A-Za-z0-9]+")) {
+            if (word.isEmpty()) continue;
+            name.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        if (name.isEmpty() || Character.isDigit(name.charAt(0))) name.insert(0, "Mob");
+        return name.append("Behaviour").toString();
     }
 }
