@@ -1,7 +1,10 @@
 module de.eldoria.bloodnight {
-    requires com.fasterxml.jackson.core;
+    requires tools.jackson.core;
     requires com.fasterxml.jackson.annotation;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.databind;
     requires org.jetbrains.annotations;
     requires org.bukkit;
+    requires net.kyori.adventure.api;
+    requires net.kyori.adventure.key;
+    requires com.google.common;
 }

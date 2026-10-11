@@ -1,8 +1,9 @@
 package de.eldoria.bloodnight.editor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
@@ -13,9 +14,10 @@ import de.eldoria.jacksonbukkit.JacksonPaper;
 import java.util.List;
 
 public class EditorPayload {
-    public static final ObjectMapper MAPPER = new ObjectMapper()
-            .registerModule(JacksonPaper.builder().build())
-            .registerModule(new EditorSerialization());
+    public static final ObjectMapper MAPPER = JsonMapper.builder()
+            .addModule(JacksonPaper.builder().build())
+            .addModule(new EditorSerialization())
+            .build();
     @JsonProperty
     private final MobRegistry mobs;
     @JsonProperty
@@ -34,7 +36,7 @@ public class EditorPayload {
         this.defaultDrops = defaultDrops;
     }
 
-    public String asJson() throws JsonProcessingException {
+    public String asJson() throws JacksonException {
         return MAPPER.writeValueAsString(this);
     }
 }

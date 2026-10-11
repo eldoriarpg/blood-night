@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight.editor;
 
-import be.seeseemelk.mockbukkit.MockBukkit;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import tools.jackson.core.JacksonException;
 import de.eldoria.bloodnight.configuration.elements.ConfigurationScope;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -23,10 +23,12 @@ import de.eldoria.bloodnight.nodes.trigger.impl.TickNode;
 import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import de.eldoria.eldoutilities.builder.ItemStackBuilder;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,14 +45,14 @@ class EditorPayloadTest {
     }
 
     @Test
-    void asJson() throws JsonProcessingException {
+    void asJson() throws JacksonException {
         ItemRegistry itemRegistry = new ItemRegistry();
         itemRegistry.register(ItemStackBuilder.of(Material.NETHERITE_SWORD)
-                .withUnsafeEnchantment(Enchantment.DURABILITY, 3)
-                .withUnsafeEnchantment(Enchantment.DAMAGE_ALL, 4)
+                .withUnsafeEnchantment(Enchantment.UNBREAKING, 3)
+                .withUnsafeEnchantment(Enchantment.SHARPNESS, 4)
                 .withDisplayName("Awesome Sword")
                 .withLore("The most awesome sword", "much wow")
-                .withAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier("Damage", 2, AttributeModifier.Operation.MULTIPLY_SCALAR_1))
+                .withAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(new NamespacedKey("bloodnight", "damage"), 2, AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.ANY))
                 .build());
         itemRegistry.register(ItemStackBuilder.of(Material.DIAMOND_CHESTPLATE).withDisplayName("Shiny Armor").build());
 

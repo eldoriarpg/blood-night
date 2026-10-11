@@ -1,15 +1,14 @@
 package de.eldoria.bloodnight.mob.serialization.deserializer;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BaseAttributeDeserializer<T> extends JsonDeserializer<T> {
+public abstract class BaseAttributeDeserializer<T> extends ValueDeserializer<T> {
     private final Map<String, T> mappings;
 
     public BaseAttributeDeserializer() {
@@ -20,7 +19,7 @@ public abstract class BaseAttributeDeserializer<T> extends JsonDeserializer<T> {
     }
 
     @Override
-    public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public T deserialize(JsonParser p, DeserializationContext ctxt) {
         return map(ctxt.readValue(p, NamedAttribute.class).id());
     }
 

@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight.nodes.registry;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import de.eldoria.bloodnight.nodes.base.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class NodeRegistryTest {
     }
 
     @Test
-    public void exportSchema() throws JsonProcessingException {
+    public void exportSchema() throws JacksonException {
         for (Class<? extends Node> node : DefaultNodes.defaultNodes()) {
             NodeRegistry.register(node);
         }

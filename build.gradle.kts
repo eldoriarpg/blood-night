@@ -10,20 +10,29 @@ allprojects {
         plugin<JavaPlugin>()
     }
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+
     repositories {
         mavenCentral()
+        maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://eldonexus.de/repository/maven-public/")
         maven("https://eldonexus.de/repository/maven-proxies/")
     }
 
     dependencies {
         val libs = rootProject.libs
-        val testlibs = rootProject.testlibs
-        compileOnly(libs.spigot.latest)
+        implementation(platform(libs.jackson.bom))
+        compileOnly(libs.paper.api)
         compileOnly(libs.jetbrains.annotations)
-        testImplementation(libs.spigot.latest)
-        testImplementation(testlibs.mockbuckit)
-        testImplementation(testlibs.bundles.junit)
+        testImplementation(libs.paper.api)
+        testImplementation(libs.mockbukkit)
+        testImplementation(platform(libs.junit.bom))
+        testImplementation(libs.bundles.junit)
+        testRuntimeOnly(libs.junit.launcher)
     }
 
     tasks {

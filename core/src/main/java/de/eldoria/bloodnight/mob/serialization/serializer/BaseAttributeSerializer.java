@@ -1,16 +1,15 @@
 package de.eldoria.bloodnight.mob.serialization.serializer;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.SerializationContext;
 import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 
-import java.io.IOException;
 
-public abstract class BaseAttributeSerializer<T> extends JsonSerializer<T> {
+public abstract class BaseAttributeSerializer<T> extends ValueSerializer<T> {
     @Override
-    public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeObject(new NamedAttribute(String.valueOf(id(value)), name(value)));
+    public void serialize(T value, JsonGenerator gen, SerializationContext serializers) {
+        gen.writePOJO(new NamedAttribute(String.valueOf(id(value)), name(value)));
     }
 
     public abstract String id(T value);

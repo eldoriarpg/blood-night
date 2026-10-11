@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight.nodes.value.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import de.eldoria.bloodnight.nodes.base.Node;
 import de.eldoria.bloodnight.nodes.meta.Fields;
 import de.eldoria.bloodnight.nodes.registry.NodeRegistry;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StringNodeTest {
 
     @Test
-    void serializeData() throws JsonProcessingException {
+    void serializeData() throws JacksonException {
         StringNode test = new StringNode("Test");
         String asString = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(test);
         System.out.println(asString);
@@ -23,7 +23,7 @@ class StringNodeTest {
     }
 
     @Test
-    void serializeSchema() throws JsonProcessingException {
+    void serializeSchema() throws JacksonException {
         NodeRegistry.register(StringNode.class);
         String schema = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(NodeRegistry.registrations());
         System.out.println(schema);

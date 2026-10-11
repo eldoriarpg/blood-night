@@ -3,39 +3,54 @@ package de.eldoria.bloodnight.configuration;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.items.ItemRegistry;
-import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mobs.MobRegistry;
-import de.eldoria.eldoutilities.config.ConfigKey;
-import de.eldoria.eldoutilities.config.JacksonConfig;
+import de.eldoria.jacksonbukkit.JacksonPaper;
+import dev.chojo.ocular.Configurations;
+import dev.chojo.ocular.dataformats.YamlDataFormat;
+import dev.chojo.ocular.key.Key;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public class Configuration extends JacksonConfig<ConfigFile> {
+public class Configuration {
     // TODO: Register default mobs on creation
-    public static final ConfigKey<MobRegistry> MOBS = ConfigKey.of("mobs", Path.of("mobs.yml"), MobRegistry.class, MobRegistry::new);
-    public static final ConfigKey<ItemRegistry> ITEMS = ConfigKey.of("items", Path.of("items.yml"), ItemRegistry.class, ItemRegistry::new);
-    public static final ConfigKey<GlobalDrops> GLOBAL_DROPS = ConfigKey.of("Global Drops", Path.of("global_drops.yml"), GlobalDrops.class, GlobalDrops::defaultDrops);
+    public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new).name("mobs").build();
+    public static final Key<ItemRegistry> ITEMS = Key.builder(Path.of("items.yml"), ItemRegistry::new).name("items").build();
+    public static final Key<GlobalDrops> GLOBAL_DROPS = Key.builder(Path.of("global_drops.yml"), GlobalDrops::defaultDrops).name("Global Drops").build();
+    private static final Key<ConfigFile> MAIN = Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
+
+    private final Configurations<ConfigFile> configurations;
 
     public Configuration(@NotNull Plugin plugin) {
-        super(plugin, ConfigKey.defaultConfig(ConfigFile.class, ConfigFile::new));
+        configurations = Configurations.builder(MAIN, new YamlDataFormat())
+                .setBase(plugin.getDataFolder().toPath())
+                .withClassLoader(plugin.getClass().getClassLoader())
+                .addModule(JacksonPaper.builder().build())
+                .build();
+    }
+
+    public ConfigFile main() {
+        return configurations.main();
     }
 
     public WorldSettings worldConfig(World world) {
-        return secondary(ConfigKey.of(world.getName() + " Configuration", Path.of("worlds", world.getUID() + ".yml"), WorldSettings.class, WorldSettings::new));
+        Key<WorldSettings> key = Key.builder(Path.of("worlds", world.getUID() + ".yml"), WorldSettings::new)
+                .name(world.getName() + " Configuration")
+                .build();
+        return configurations.secondary(key);
     }
 
     public MobRegistry mobs() {
-        return secondary(MOBS);
+        return configurations.secondary(MOBS);
     }
 
     public ItemRegistry items() {
-        return secondary(ITEMS);
+        return configurations.secondary(ITEMS);
     }
 
-    public GlobalDrops globalDrops(){
-        return secondary(GLOBAL_DROPS);
+    public GlobalDrops globalDrops() {
+        return configurations.secondary(GLOBAL_DROPS);
     }
 }

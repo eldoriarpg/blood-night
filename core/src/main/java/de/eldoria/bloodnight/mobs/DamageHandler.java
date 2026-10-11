@@ -1,7 +1,6 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.util.MobTags;
-import org.bukkit.EntityEffect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -45,7 +44,7 @@ public class DamageHandler implements Listener {
         event.setCancelled(true);
         // Sync damage from base to extension
         extension.setHealth(base.getHealth());
-        entity.playEffect(EntityEffect.HURT);
+        extension.playHurtAnimation(0);
     }
 
     private void handleBaseDamage(EntityDamageEvent event) {
@@ -58,7 +57,7 @@ public class DamageHandler implements Listener {
 
         // We assume that the damage won't change anymore
         extension.setHealth(base.getHealth() - event.getFinalDamage());
-        extension.playEffect(EntityEffect.HURT);
+        extension.playHurtAnimation(0);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

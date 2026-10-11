@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight.nodes;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import de.eldoria.bloodnight.nodes.action.impl.PrintNode;
 import de.eldoria.bloodnight.nodes.base.io.Edge;
 import de.eldoria.bloodnight.nodes.container.NodeContainer;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class NodeContainerTest {
 
     @Test
-    public void test() throws JsonProcessingException {
+    public void test() throws JacksonException {
         DebugNode debugNode = new DebugNode().chain(Fields.NEXT, 1);
         NodeContainer nodeContainer = new NodeContainer();
         nodeContainer.add(0, debugNode);
