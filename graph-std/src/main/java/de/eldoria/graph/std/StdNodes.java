@@ -30,6 +30,11 @@ public interface StdNodes {
     String MATH_ABS = "math.abs";
     String MATH_ABS_INTEGER = "math.abs_integer";
     String MATH_ADD = "math.add";
+    String MATH_ADD_INTEGER = "math.add_integer";
+    String MATH_DIVIDE_INTEGER = "math.divide_integer";
+    String MATH_MODULO_INTEGER = "math.modulo_integer";
+    String MATH_MULTIPLY_INTEGER = "math.multiply_integer";
+    String MATH_SUBTRACT_INTEGER = "math.subtract_integer";
     String MATH_CEIL = "math.ceil";
     String MATH_CLAMP = "math.clamp";
     String MATH_CLAMP_INTEGER = "math.clamp_integer";

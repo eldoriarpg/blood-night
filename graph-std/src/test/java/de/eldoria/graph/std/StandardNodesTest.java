@@ -490,4 +490,20 @@ class StandardNodesTest {
         assertEquals(List.of(true, false), Harness.run(graph, 2));
         assertTrue(source.contains("final boolean cooldown = this.cooldown.ready(1000);"), source);
     }
+
+    @Test
+    void integerMathStaysInteger() throws GraphCompilationException {
+        assertEquals(5, Harness.evaluate("math.add_integer", Map.of("first", 2, "second", 3)));
+        assertEquals(-1, Harness.evaluate("math.subtract_integer", Map.of("first", 2, "second", 3)));
+        assertEquals(6, Harness.evaluate("math.multiply_integer", Map.of("first", 2, "second", 3)));
+    }
+
+    @Test
+    void integerDivisionRoundsTowardZeroAndNeverThrows() throws GraphCompilationException {
+        assertEquals(3, Harness.evaluate("math.divide_integer", Map.of("first", 7, "second", 2)));
+        assertEquals(-3, Harness.evaluate("math.divide_integer", Map.of("first", -7, "second", 2)));
+        assertEquals(0, Harness.evaluate("math.divide_integer", Map.of("first", 7, "second", 0)));
+        assertEquals(2, Harness.evaluate("math.modulo_integer", Map.of("first", -1, "second", 3)));
+        assertEquals(0, Harness.evaluate("math.modulo_integer", Map.of("first", 5, "second", 0)));
+    }
 }
