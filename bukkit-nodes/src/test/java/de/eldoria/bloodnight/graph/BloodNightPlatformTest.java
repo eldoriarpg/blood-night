@@ -27,6 +27,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,7 @@ import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.StringNode;
 
 import java.util.ArrayList;
@@ -264,6 +267,42 @@ class BloodNightPlatformTest {
 
         assertEquals(6, damage.getDamage());
         assertTrue(teleport.isCancelled());
+        assertTrue(errors.isEmpty(), errors.toString());
+    }
+
+    @Test
+    void declaredCallsApplyPotionEffects() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("hurt", NodeInstance.of("event.damage_by_player").chain("next", "apply"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node(
+                        "effect",
+                        NodeInstance.of("potion_effect.create")
+                                .literal("type", StringNode.valueOf("minecraft:regeneration"))
+                                .literal("duration", IntNode.valueOf(100))
+                                .literal("amplifier", IntNode.valueOf(1)))
+                .node(
+                        "apply",
+                        NodeInstance.of("living_entity.add_potion_effect")
+                                .input("target", "self", "entity")
+                                .input("effect", "effect", "result")
+                                .chain("next", "print"))
+                .node("print", NodeInstance.of("debug.print").input("value", "apply", "result"))
+                .build();
+        Zombie zombie = zombie();
+        behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
+        PlayerMock player = server.addPlayer();
+
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        player,
+                        zombie,
+                        EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                        DamageSource.builder(DamageType.GENERIC).build(),
+                        1));
+
+        PotionEffect effect = zombie.getPotionEffect(PotionEffectType.REGENERATION);
+        assertTrue(effect != null && effect.getDuration() == 100 && effect.getAmplifier() == 1, String.valueOf(effect));
         assertTrue(errors.isEmpty(), errors.toString());
     }
 

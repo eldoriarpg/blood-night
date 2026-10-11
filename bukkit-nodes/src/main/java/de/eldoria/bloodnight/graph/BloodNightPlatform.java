@@ -31,6 +31,8 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.nio.file.Path;
@@ -84,13 +86,35 @@ public final class BloodNightPlatform {
         ReflectionRules rules = BukkitRules.rules(documentation);
         List<NodeDefinition> nodes = new ArrayList<>(StandardNodes.all());
         nodes.addAll(BukkitNodes.all());
-        nodes.addAll(ReflectedType.of(Entity.class, "entity").build(rules));
+        nodes.addAll(ReflectedType.of(Entity.class, "entity")
+                .action("teleport", "teleport", Param.of("location", Location.class))
+                .query(
+                        "nearby_entities",
+                        "getNearbyEntities",
+                        Param.of("x", double.class),
+                        Param.of("y", double.class),
+                        Param.of("z", double.class))
+                .build(rules));
         nodes.addAll(ReflectedType.of(LivingEntity.class, "living_entity")
                 .name("Living Entity")
+                .action("add_potion_effect", "addPotionEffect", Param.of("effect", PotionEffect.class))
+                .action("remove_potion_effect", "removePotionEffect", Param.of("type", PotionEffectType.class))
+                .action("damage", "damage", Param.of("amount", double.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(PotionEffect.class, "potion_effect")
+                .name("Potion Effect")
+                .category("entity")
+                .constructor(
+                        "create",
+                        Param.of("type", PotionEffectType.class),
+                        Param.of("duration", int.class),
+                        Param.of("amplifier", int.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(Player.class, "player").build(rules));
         nodes.addAll(ReflectedType.of(Projectile.class, "projectile").build(rules));
-        nodes.addAll(ReflectedType.of(Location.class, "location").build(rules));
+        nodes.addAll(ReflectedType.of(Location.class, "location")
+                .query("distance", "distance", Param.of("other", Location.class))
+                .build(rules));
         nodes.addAll(ReflectedType.of(Vector.class, "vector")
                 .constructor(
                         "create", Param.of("x", double.class), Param.of("y", double.class), Param.of("z", double.class))

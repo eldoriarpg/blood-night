@@ -66,6 +66,7 @@ public final class ReflectedType {
         private boolean fluent;
         private boolean recordConstructor = true;
         private final List<Creations.Creation> creations = new ArrayList<>();
+        private final List<Calls.Call> calls = new ArrayList<>();
 
         private Builder(Class<?> type, String prefix) {
             this.type = Objects.requireNonNull(type, "type");
@@ -147,6 +148,32 @@ public final class ReflectedType {
         }
 
         /**
+         * Exposes an instance method with side effects as action node {@code <prefix>.<name>}. It runs where it is
+         * chained; a return value becomes output {@code result}, readable by the chain after it.
+         *
+         * @param name   node id suffix, e.g. {@code add_potion_effect}
+         * @param method the method name
+         * @param params the method's parameters in order; their types select the overload
+         */
+        public Builder action(String name, String method, Param... params) {
+            calls.add(new Calls.Call(name, method, List.of(params), true));
+            return this;
+        }
+
+        /**
+         * Exposes an instance method without side effects as pure node {@code <prefix>.<name>} with output
+         * {@code result}, evaluated once per scope like a getter.
+         *
+         * @param name   node id suffix
+         * @param method the method name
+         * @param params the method's parameters in order; their types select the overload
+         */
+        public Builder query(String name, String method, Param... params) {
+            calls.add(new Calls.Call(name, method, List.of(params), false));
+            return this;
+        }
+
+        /**
          * Whether a record gets {@code <prefix>.create} from its canonical constructor. Defaults to true.
          */
         public Builder recordConstructor(boolean recordConstructor) {
@@ -198,6 +225,7 @@ public final class ReflectedType {
             }
             all.forEach(creation ->
                     nodes.add(Creations.node(type, prefix, category, name, creation, rules.documentation())));
+            calls.forEach(call -> nodes.add(Calls.node(type, prefix, category, name, call, rules.documentation())));
             return nodes;
         }
 

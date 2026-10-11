@@ -298,6 +298,9 @@ class ReflectionTest {
         nodes.addAll(ReflectedType.of(ToyPlayer.class, "player")
                 .constructor("create", Param.of("name", String.class), Param.of("score", int.class))
                 .factory("fallback", "getDefault")
+                .action("befriend", "befriend", Param.of("friend", String.class))
+                .action("reset", "reset")
+                .query("score_times", "scoreTimes", Param.of("factor", int.class))
                 .build(RULES));
         nodes.addAll(ReflectedType.of(ToyPosition.class, "position").build(RULES));
         nodes.addAll(ReflectedType.of(ToyEvent.class, "event").getter(false).build(RULES));
@@ -396,6 +399,79 @@ class ReflectionTest {
                 .onStart();
 
         assertEquals(List.of("Lilly", "ToyPosition[x=1.0, y=2.5]", "default"), context.printed());
+    }
+
+    @Test
+    void actionsRunWhereTheyAreChained() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("start", NodeInstance.of("entry.start").chain("next", "times", "befriend", "reset", "after"))
+                .node(
+                        "player",
+                        NodeInstance.of("player.create")
+                                .literal("name", StringNode.valueOf("Lilly"))
+                                .literal("score", IntNode.valueOf(3)))
+                .node(
+                        "tripled",
+                        NodeInstance.of("player.score_times")
+                                .input("target", "player", "result")
+                                .literal("factor", IntNode.valueOf(3)))
+                .node("times", NodeInstance.of("debug.print").input("value", "tripled", "result"))
+                .node(
+                        "befriend",
+                        NodeInstance.of("player.befriend")
+                                .input("target", "player", "result")
+                                .literal("friend", StringNode.valueOf("Mia"))
+                                .chain("next", "befriended"))
+                .node("befriended", NodeInstance.of("debug.print").input("value", "befriend", "result"))
+                .node("reset", NodeInstance.of("player.reset").input("target", "player", "result"))
+                .node("parts", NodeInstance.of("player.get").input("target", "player", "result"))
+                .node("after", NodeInstance.of("debug.print").input("value", "parts", "score"))
+                .build();
+        ToyContext context = new ToyContext();
+
+        compiler()
+                .compile(graph, ClassName.get("generated.toy", "Calling"))
+                .instantiate(context)
+                .onStart();
+
+        assertEquals(List.of("9", "true", "0"), context.printed());
+    }
+
+    @Test
+    void actionResultsAreOnlyVisibleAfterTheAction() {
+        Graph graph = Graph.builder()
+                .node("start", NodeInstance.of("entry.start").chain("next", "befriend", "print"))
+                .node("player", NodeInstance.of("player.fallback"))
+                .node(
+                        "befriend",
+                        NodeInstance.of("player.befriend")
+                                .input("target", "player", "result")
+                                .literal("friend", StringNode.valueOf("Mia")))
+                .node("print", NodeInstance.of("debug.print").input("value", "befriend", "result"))
+                .build();
+
+        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compiler()
+                .compile(graph, ClassName.get("generated.toy", "Misread")));
+
+        assertTrue(
+                exception.problems().stream().anyMatch(problem -> "print".equals(problem.node())),
+                exception.getMessage());
+    }
+
+    @Test
+    void unusableCallsAreRejected() {
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .action("fallback", "getDefault")
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .query("reset", "reset")
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .action("befriend", "befriend", Param.of("friend", int.class))
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .action("home", "getHome")
+                .build(RULES));
     }
 
     @Test

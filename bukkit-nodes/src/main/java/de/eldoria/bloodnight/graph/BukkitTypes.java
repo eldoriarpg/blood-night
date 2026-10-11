@@ -33,6 +33,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
@@ -61,6 +62,7 @@ public final class BukkitTypes {
             Block.class,
             UUID.class,
             PotionEffectType.class,
+            PotionEffect.class,
             EntityType.class,
             ItemType.class,
             BlockType.class,
@@ -85,7 +87,8 @@ public final class BukkitTypes {
                 .name(ItemStack.class, "Item")
                 .name(Block.class, "Block")
                 .name(EntityDamageEvent.DamageCause.class, "Damage Cause")
-                .name(PotionEffectType.class, "Potion Effect")
+                .name(PotionEffectType.class, "Potion Effect Type")
+                .name(PotionEffect.class, "Potion Effect")
                 .name(EntityType.class, "Entity Type")
                 .name(ItemType.class, "Item Type")
                 .name(BlockType.class, "Block Type")

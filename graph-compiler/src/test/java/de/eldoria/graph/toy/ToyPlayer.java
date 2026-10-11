@@ -55,6 +55,18 @@ public class ToyPlayer {
         return List.of("Lilly");
     }
 
+    public boolean befriend(String friend) {
+        return !friend.equals(name);
+    }
+
+    public void reset() {
+        score = 0;
+    }
+
+    public int scoreTimes(int factor) {
+        return score * factor;
+    }
+
     public String[] getTags() {
         return new String[0];
     }
