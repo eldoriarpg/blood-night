@@ -1,4 +1,6 @@
 [versions]
+plugin-yml = "0.9.0"
+strokkcommands = "2.3.1"
 jackson = "3.2.3"
 jackson-bukkit = "2.0.0"
 ocular = "2.3.0"
@@ -19,6 +21,8 @@ jspecify = "1.0.1"
 palantir = "2.84.0"
 
 [libraries]
+strokkcommands-annotations = { module = "net.strokkur.commands:annotations-paper", version.ref = "strokkcommands" }
+strokkcommands-processor = { module = "net.strokkur.commands:processor-paper", version.ref = "strokkcommands" }
 jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson" }
 jackson-core = { module = "tools.jackson.core:jackson-core" }
 jackson-databind = { module = "tools.jackson.core:jackson-databind" }
@@ -52,6 +56,7 @@ eldoria-utilities = ["eldoutil-items", "eldoutil-entities"]
 junit = ["junit-jupiter", "junit-params"]
 
 [plugins]
+plugin-yml-paper = { id = "de.eldoria.plugin-yml.paper", version.ref = "plugin-yml" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }
