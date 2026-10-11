@@ -60,7 +60,7 @@ sadu-datasource = { module = "de.chojo.sadu:sadu-datasource", version.ref = "sad
 sadu-queries = { module = "de.chojo.sadu:sadu-queries", version.ref = "sadu" }
 sadu-mapper = { module = "de.chojo.sadu:sadu-mapper", version.ref = "sadu" }
 sadu-updater = { module = "de.chojo.sadu:sadu-updater", version.ref = "sadu" }
-postgresql = { module = "org.postgresql:postgresql", version = "42.7.13" }
+postgresql = { module = "org.postgresql:postgresql", version = "42.7.14" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
