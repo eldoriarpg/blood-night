@@ -2,8 +2,9 @@ name: Verify
 
 on:
   # Branches with a pull request are verified by it alone; a push run beside it would report every check twice.
+  # Renovate branches carry no pull request when they are merged automatically, so a push is what verifies them.
   push:
-    branches: [main]
+    branches: [main, 'renovate/**']
     tags: ['v*']
   pull_request:
     types: [opened, ready_for_review, synchronize, reopened]
