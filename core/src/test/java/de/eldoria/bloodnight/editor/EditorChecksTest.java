@@ -35,8 +35,8 @@ class EditorChecksTest {
 
     @Test
     void mobsNeedTheirIdAndKnownItems() {
-        EditorResult result =
-                new EditorResult(Map.of("a", armed("a", "sword"), "b", armed("other", "axe")), List.of(), null);
+        EditorResult result = new EditorResult(
+                Map.of("a", armed("a", "sword"), "b", armed("other", "axe")), List.of(), null, Map.of());
         assertEquals(
                 List.of("Mob other is stored as b", "Mob other uses unknown item axe"),
                 EditorChecks.problems(result, Set.of("sword")).stream().sorted().toList());
@@ -49,7 +49,19 @@ class EditorChecksTest {
                 Map.of(),
                 List.of(),
                 new SettingsPayload(
-                        new ConfigFile(), GlobalDrops.defaultDrops(), Map.of("known", world, "gone", world)));
+                        new ConfigFile(), GlobalDrops.defaultDrops(), Map.of("known", world, "gone", world)),
+                Map.of());
         assertEquals(List.of("gone"), EditorChecks.unknownWorlds(result, Set.of("known")));
+    }
+
+    @Test
+    void filesChangedSinceTheSessionOpenedAreFound() {
+        Map<String, String> opened = Map.of("mobs.yml", "a", "config.yml", "b");
+        EditorResult result = new EditorResult(Map.of(), List.of(), null, opened);
+        assertEquals(List.of(), EditorChecks.changedFiles(result, opened));
+        assertEquals(
+                List.of("mobs.yml"), EditorChecks.changedFiles(result, Map.of("mobs.yml", "c", "config.yml", "b")));
+        EditorResult lost = new EditorResult(Map.of(), List.of(), null, Map.of());
+        assertEquals(List.of("config.yml", "mobs.yml"), EditorChecks.changedFiles(lost, opened));
     }
 }

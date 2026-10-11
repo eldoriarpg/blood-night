@@ -36,11 +36,12 @@ import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 /**
- * {@code /bloodnight editor [apply | cancel]}: opens a web editor session with the server's mobs, macros, items and
- * settings, applies the session once it is marked as done in the editor, or closes it.
+ * {@code /bloodnight editor [apply [force] | cancel]}: opens a web editor session with the server's mobs, macros,
+ * items and settings, applies the session once it is marked as done in the editor, or closes it.
  * <p>
  * Applying is the confirmation: nothing changes on the server before. The result is checked first (mob ids, items,
- * readable files); a result that does not pass changes nothing and keeps the session open. Otherwise every file is
+ * readable files, and that no file it replaces changed on disk since the session opened; {@code force} skips the
+ * last check); a result that does not pass changes nothing and keeps the session open. Otherwise every file is
  * backed up, mobs, macros and settings are replaced, the configuration is reloaded and every mob recompiled. Items
  * are never changed by the editor.
  */
@@ -69,12 +70,18 @@ final class EditorCommand {
 
     @Executes
     void open(CommandSender sender) {
-        String payload = EditorPayload.of(
-                        plugin.configuration(),
-                        plugin.behaviours(),
-                        plugin.catalog().version(),
-                        plugin.getServer().getWorlds())
-                .asJson();
+        String payload;
+        try {
+            payload = EditorPayload.of(
+                            plugin.configuration(),
+                            plugin.behaviours(),
+                            plugin.catalog().version(),
+                            plugin.getServer().getWorlds())
+                    .asJson();
+        } catch (IOException e) {
+            sender.sendMessage(Component.text("The files cannot be read: " + e.getMessage(), NamedTextColor.RED));
+            return;
+        }
         String catalog = CatalogGenerator.write(plugin.catalog());
         sender.sendMessage("Opening an editor session...");
         Optional<SessionCreated> previous = sessions().load();
@@ -98,6 +105,15 @@ final class EditorCommand {
 
     @Executes("apply")
     void apply(CommandSender sender) {
+        apply(sender, false);
+    }
+
+    @Executes("apply force")
+    void applyForce(CommandSender sender) {
+        apply(sender, true);
+    }
+
+    private void apply(CommandSender sender, boolean force) {
         Optional<SessionCreated> session = sessions().load();
         if (session.isEmpty()) {
             sender.sendMessage("There is no open editor session, open one with /bloodnight editor");
@@ -110,7 +126,7 @@ final class EditorCommand {
                         sender.sendMessage(Component.text(reason(error), NamedTextColor.RED));
                         return;
                     }
-                    if (apply(sender, view)) {
+                    if (apply(sender, view, force)) {
                         client().close(session.get());
                         sessions().clear();
                     }
@@ -129,7 +145,7 @@ final class EditorCommand {
         sender.sendMessage("The editor session was closed");
     }
 
-    private boolean apply(CommandSender sender, SessionView view) {
+    private boolean apply(CommandSender sender, SessionView view, boolean force) {
         EditorResult result;
         try {
             result = EditorResult.of(view.payload());
@@ -144,6 +160,7 @@ final class EditorCommand {
             problems.forEach(problem -> sender.sendMessage(" - " + problem));
             return false;
         }
+        if (!force && !unchanged(sender, result)) return false;
         Map<String, World> worlds = plugin.getServer().getWorlds().stream()
                 .collect(Collectors.toMap(world -> world.getUID().toString(), world -> world));
         Path backup;
@@ -173,6 +190,23 @@ final class EditorCommand {
                 .formatted(result.mobs().size(), result.macros().size(), backup));
         ReloadCommand.reload(plugin, sender);
         return true;
+    }
+
+    private boolean unchanged(CommandSender sender, EditorResult result) {
+        List<String> changed;
+        try {
+            changed = EditorChecks.changedFiles(
+                    result, plugin.configuration().fileHashes(plugin.getServer().getWorlds()));
+        } catch (IOException e) {
+            sender.sendMessage(Component.text("The files cannot be read: " + e.getMessage(), NamedTextColor.RED));
+            return false;
+        }
+        if (changed.isEmpty()) return true;
+        sender.sendMessage(Component.text(
+                "The session was not applied, these files changed since it was opened:", NamedTextColor.RED));
+        changed.forEach(file -> sender.sendMessage(" - " + file));
+        sender.sendMessage("Run /bloodnight editor apply force to overwrite them anyway; they are backed up first.");
+        return false;
     }
 
     private void sync(Runnable task) {

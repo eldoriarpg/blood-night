@@ -20,6 +20,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ import java.util.TreeMap;
  * @param macroProblems  problems per macro id
  * @param configProblems files that could not be read, with the reason
  * @param settings       the server-wide settings, the global drops and every world's settings
+ * @param hashes         SHA-256 of each file the session may replace, as it was when the session opened; checked
+ *                       when the result comes back
  */
 public record EditorPayload(
         String catalog,
@@ -48,7 +51,8 @@ public record EditorPayload(
         Map<String, List<GraphProblem>> problems,
         Map<String, List<GraphProblem>> macroProblems,
         Map<String, String> configProblems,
-        SettingsPayload settings) {
+        SettingsPayload settings,
+        Map<String, String> hashes) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
             .addModule(new EditorSerialization())
@@ -66,9 +70,12 @@ public record EditorPayload(
      * @param catalog       version of the catalog the server runs
      * @param worlds        the server's worlds
      * @return the payload
+     * @throws IOException when a file cannot be hashed
      */
     public static EditorPayload of(
-            Configuration configuration, Behaviours behaviours, String catalog, Collection<? extends World> worlds) {
+            Configuration configuration, Behaviours behaviours, String catalog, Collection<? extends World> worlds)
+            throws IOException {
+        SettingsPayload settings = settings(configuration, worlds);
         Map<String, CustomMob> mobs = new TreeMap<>();
         configuration.mobs().all().forEach(mob -> mobs.put(mob.id(), mob));
         return new EditorPayload(
@@ -79,7 +86,8 @@ public record EditorPayload(
                 behaviours.problems(),
                 behaviours.macroProblems(),
                 configuration.problems(),
-                settings(configuration, worlds));
+                settings,
+                configuration.fileHashes(worlds));
     }
 
     private static SettingsPayload settings(Configuration configuration, Collection<? extends World> worlds) {

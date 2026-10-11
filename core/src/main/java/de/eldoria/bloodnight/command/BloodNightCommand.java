@@ -24,7 +24,7 @@ import org.bukkit.command.CommandSender;
 final class BloodNightCommand {
     private static final String USAGE =
             "/bloodnight <reload | spawn <mob> | problems [mob] | source <mob> | debug [mob] | export"
-                    + " | night [force | cancel] [world] | editor [apply | cancel]>";
+                    + " | night [force | cancel] [world] | editor [apply [force] | cancel]>";
 
     @Subcommand
     final ReloadCommand reload;

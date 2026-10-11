@@ -53,11 +53,13 @@ class EditorResultTest {
                 new SettingsPayload(
                         new ConfigFile(),
                         GlobalDrops.defaultDrops(),
-                        Map.of("uid", new SettingsPayload.WorldPayload("world", world))));
+                        Map.of("uid", new SettingsPayload.WorldPayload("world", world))),
+                Map.of("mobs.yml", "abc"));
 
         EditorResult result = EditorResult.of(EditorPayload.MAPPER.readTree(payload.asJson()));
 
         assertEquals(mob, result.mobs().get("test"));
+        assertEquals(Map.of("mobs.yml", "abc"), result.hashes());
         assertEquals("burst", result.macros().getFirst().id());
         WorldSettings back = result.settings().worlds().get("uid").settings();
         assertEquals(false, back.enabled());
