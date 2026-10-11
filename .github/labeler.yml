@@ -32,8 +32,7 @@
       - any-glob-to-any-file:
           - "graph-editor-payload/**"
           - "catalog/**"
-          - "editor-api/**"
-          - "editor-service/**"
+          - "web/**"
           - ".docker/**"
 "a:build":
   - changed-files:

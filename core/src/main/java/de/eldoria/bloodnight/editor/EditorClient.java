@@ -6,10 +6,12 @@
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.configuration.elements.EditorSettings;
-import de.eldoria.bloodnight.editor.api.CreateSession;
-import de.eldoria.bloodnight.editor.api.EditorRoutes;
-import de.eldoria.bloodnight.editor.api.SessionCreated;
-import de.eldoria.bloodnight.editor.api.SessionView;
+import de.eldoria.bloodnight.web.api.editor.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.CreateSession;
+import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
+import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
+import de.eldoria.bloodnight.web.api.editor.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.SessionView;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
@@ -17,6 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -44,9 +47,11 @@ public final class EditorClient {
      * @param catalogVersion the catalog's version
      * @param catalog        the catalog, JSON
      * @param payload        the editor payload, JSON
-     * @return the opened session
+     * @param participant    the name of who opens it
+     * @return the opened session, with the opener's link
      */
-    public CompletableFuture<SessionCreated> open(String catalogVersion, String catalog, String payload) {
+    public CompletableFuture<SessionCreated> open(
+            String catalogVersion, String catalog, String payload, String participant) {
         String catalogPath = EditorRoutes.path(EditorRoutes.CATALOG, catalogVersion);
         return send(request(catalogPath).method("HEAD", HttpRequest.BodyPublishers.noBody()))
                 .thenCompose(head -> head.statusCode() == 200
@@ -54,11 +59,39 @@ public final class EditorClient {
                         : send(request(catalogPath).PUT(HttpRequest.BodyPublishers.ofString(catalog)))
                                 .thenApply(EditorClient::expectSuccess))
                 .thenCompose(ignored -> {
-                    String body =
-                            MAPPER.writeValueAsString(new CreateSession(catalogVersion, MAPPER.readTree(payload)));
+                    String body = MAPPER.writeValueAsString(
+                            new CreateSession(catalogVersion, MAPPER.readTree(payload), participant));
                     return send(request(EditorRoutes.SESSIONS).POST(HttpRequest.BodyPublishers.ofString(body)));
                 })
                 .thenApply(response -> MAPPER.readValue(expectSuccess(response).body(), SessionCreated.class));
+    }
+
+    /**
+     * @param session a session the server opened
+     * @return the session as the editor sees it; empty when it expired or was closed
+     */
+    public CompletableFuture<Optional<SessionView>> view(SessionCreated session) {
+        return send(request(EditorRoutes.path(EditorRoutes.SESSION, session.id()))
+                        .GET())
+                .thenApply(response -> response.statusCode() == 404
+                        ? Optional.empty()
+                        : Optional.of(MAPPER.readValue(expectSuccess(response).body(), SessionView.class)));
+    }
+
+    /**
+     * Lets someone else edit an open session.
+     *
+     * @param session the session
+     * @param name    their name
+     * @return their personal link; empty when the session expired or was closed
+     */
+    public CompletableFuture<Optional<ParticipantCreated>> addParticipant(SessionCreated session, String name) {
+        String body = MAPPER.writeValueAsString(new AddParticipant(name));
+        return send(authorized(EditorRoutes.path(EditorRoutes.PARTICIPANTS, session.id()), session)
+                        .POST(HttpRequest.BodyPublishers.ofString(body)))
+                .thenApply(response -> response.statusCode() == 404
+                        ? Optional.empty()
+                        : Optional.of(MAPPER.readValue(expectSuccess(response).body(), ParticipantCreated.class)));
     }
 
     /**
@@ -93,7 +126,8 @@ public final class EditorClient {
         EditorSettings editor = settings.get();
         return HttpRequest.newBuilder(URI.create(editor.url() + path))
                 .timeout(Duration.ofSeconds(editor.timeoutSeconds()))
-                .header("Content-Type", "application/json");
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json");
     }
 
     private HttpRequest.Builder authorized(String path, SessionCreated session) {

@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
     api(project(":api"))
-    api(project(":editor-api"))
+    api(project(":web-api"))
     api(project(":bukkit-nodes"))
     api(project(":graph-editor-payload"))
     api(libs.bundles.eldoria.utilities)

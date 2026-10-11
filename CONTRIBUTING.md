@@ -18,9 +18,9 @@ version tags are verified on push.
 
 `./gradlew :core:runServer` builds the plugin and starts a Paper server with it in `core/run/`.
 
-`DB_PASSWORD=<password> docker compose -f .docker/compose.yaml up -d --build` starts the editor service on
-port 8080 with its database, the address the plugin uses by default. The service reads its settings from the
-environment, see `ServiceConfig`.
+`DB_PASSWORD=<password> docker compose -f .docker/compose.yaml up -d --build` starts BloodNight's web backend (for
+now the editor service) on port 8080 with its database, the address the plugin uses by default. The service reads its settings from the
+environment, see `ServiceConfig` in `web/backend`.
 
 ## Pull requests
 
