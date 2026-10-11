@@ -1,9 +1,9 @@
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
-import com.palantir.javapoet.JavaFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A graph compiled and loaded into its own class loader.
@@ -15,7 +15,14 @@ import java.util.List;
  * @param warnings problems that did not prevent compilation
  * @param <T>      the host type
  */
-public record CompiledGraph<T>(ClassName name, JavaFile source, CompilationResult result, Class<T> host, List<GraphProblem> warnings) {
+public record CompiledGraph<T>(ClassName name, String source, CompilationResult result, Class<T> host, List<GraphProblem> warnings) {
+
+    /**
+     * @return class files by binary name, for caching
+     */
+    public Map<String, byte[]> bytecode() {
+        return result.loader().bytecode();
+    }
 
     /**
      * Creates an instance for a platform with a context type.

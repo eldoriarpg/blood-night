@@ -1,67 +1,62 @@
 package de.eldoria.bloodnight.mob;
 
-import de.eldoria.bloodnight.configuration.Configuration;
-import de.eldoria.bloodnight.items.ItemRegistry;
-import de.eldoria.bloodnight.mob.meta.*;
-import de.eldoria.bloodnight.nodes.container.ContainerMeta;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
-import de.eldoria.bloodnight.util.Checks;
-import de.eldoria.bloodnight.util.MobTags;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import de.eldoria.bloodnight.graph.LegacyGraphs;
+import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.Equipment;
+import de.eldoria.bloodnight.mob.meta.Extension;
+import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.graph.model.Graph;
+import tools.jackson.databind.JsonNode;
 
-public record CustomMob(String id, Equipment equipment, Attributes attributes, NodeContainer nodes, MobDrops mobDrops,
-                        Extension extension) {
+import java.util.List;
+import java.util.Objects;
 
+/**
+ * A custom mob as configured: looks, attributes, drops, extension and the node graph of its behaviour.
+ * <p>
+ * Configs written by the old object runtime store the behaviour under {@code nodes}; such mobs are migrated when read,
+ * and what could not be carried over is kept in {@link #migrationNotes()} until the config is saved again.
+ *
+ * @param id             unique lower-case id
+ * @param equipment      item ids per slot
+ * @param attributes     type, name, health and damage
+ * @param behaviour      the behaviour graph
+ * @param mobDrops       drops on death
+ * @param extension      entity riding or carrying the mob
+ * @param migrationNotes problems found while migrating an old behaviour; never written
+ */
+public record CustomMob(String id, Equipment equipment, Attributes attributes, Graph behaviour, MobDrops mobDrops,
+                        Extension extension, @JsonIgnore List<String> migrationNotes) {
     public CustomMob {
-        Checks.notNull(extension, "Extension can not be null");
-        Checks.notNull(id, "Mob id can not be null");
-        Checks.lowerCase(id, "Mob id must be lower case.");
+        Objects.requireNonNull(id, "Mob id can not be null");
+        if (!id.equals(id.toLowerCase())) throw new IllegalArgumentException("Mob id must be lower case.");
+        Objects.requireNonNull(extension, "Extension can not be null");
+        behaviour = behaviour == null ? Graph.builder().build() : behaviour;
+        migrationNotes = migrationNotes == null ? List.of() : List.copyOf(migrationNotes);
     }
 
-    public CustomMob createLiving(LivingEntity entity, Configuration configuration) {
-        NodeContainer copy = nodes.copy();
-        Entity extensionEntity = extension.type() != ExtensionType.NONE
-                ? createExtension(entity, configuration)
-                : null;
-        MobTags.setupTags(entity, extensionEntity, this);
-
-        applyEquipment(entity, this.equipment, configuration);
-
-        copy.inject(new ContainerMeta(entity, extensionEntity));
-        return new CustomMob(id, equipment, attributes, copy, mobDrops, this.extension);
+    public CustomMob(String id, Equipment equipment, Attributes attributes, Graph behaviour, MobDrops mobDrops, Extension extension) {
+        this(id, equipment, attributes, behaviour, mobDrops, extension, List.of());
     }
 
-    private Entity createExtension(Entity baseEntity, Configuration configuration) {
-        var world = baseEntity.getWorld();
-        var extensionEntity = world.spawnEntity(baseEntity.getLocation(), extension.entityType());
-
-        if (!(extensionEntity instanceof LivingEntity livingEntity)) throw new RuntimeException("Entity is no living entity");
-
-        applyEquipment(livingEntity, equipment, configuration);
-
-        boolean added = switch (extension.type()) {
-            case RIDER -> extensionEntity.addPassenger(baseEntity);
-            case CARRIER -> baseEntity.addPassenger(extensionEntity);
-            case NONE -> throw new IllegalStateException("No NONE type expected here");
-        };
-        if (!added) throw new RuntimeException("Extension couldn't be added."); // TODO: 21.08.23 good logging
-        return extensionEntity;
-    }
-
-    private ItemStack getItem(String item, Configuration configuration) {
-        return configuration.items().registrations().get(item);
-    }
-
-    private void applyEquipment(LivingEntity entity, Equipment equipment, Configuration configuration) {
-        var entityEquipment = entity.getEquipment();
-        if (entityEquipment == null) return;
-        entityEquipment.setBoots(getItem(equipment.feet(), configuration));
-        entityEquipment.setLeggings(getItem(equipment.legs(), configuration));
-        entityEquipment.setChestplate(getItem(equipment.chest(), configuration));
-        entityEquipment.setHelmet(getItem(equipment.head(), configuration));
-        entityEquipment.setItemInMainHand(getItem(equipment.mainHand(), configuration));
-        entityEquipment.setItemInOffHand(getItem(equipment.offHand(), configuration));
+    /**
+     * Reads a mob, migrating an old behaviour stored under {@code nodes} when no {@code behaviour} is present.
+     */
+    @JsonCreator
+    static CustomMob read(@JsonProperty("id") String id,
+                          @JsonProperty("equipment") Equipment equipment,
+                          @JsonProperty("attributes") Attributes attributes,
+                          @JsonProperty("behaviour") Graph behaviour,
+                          @JsonProperty("nodes") JsonNode legacy,
+                          @JsonProperty("mobDrops") MobDrops mobDrops,
+                          @JsonProperty("extension") Extension extension) {
+        if (behaviour == null && legacy != null && !legacy.isNull()) {
+            LegacyGraphs.Migration migration = LegacyGraphs.migrate(legacy);
+            return new CustomMob(id, equipment, attributes, migration.graph(), mobDrops, extension, migration.warnings());
+        }
+        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, List.of());
     }
 }

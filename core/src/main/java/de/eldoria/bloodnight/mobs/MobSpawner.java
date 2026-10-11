@@ -40,6 +40,7 @@ public class MobSpawner implements Listener {
 
         WorldSettings worldSettings = configuration.worldConfig(entity.getWorld());
         Set<String> active = worldSettings.mobSettings().spawning().activeTypes();
+        if (active == null || active.isEmpty()) return;
         List<CustomMob> matching = configuration.mobs().getMatching(active, entity.getType());
         if(matching.isEmpty()) return;
         if (worldSettings.mobSettings().spawning().spawnPercentage() < ThreadLocalRandom.current().nextInt(100)) return;

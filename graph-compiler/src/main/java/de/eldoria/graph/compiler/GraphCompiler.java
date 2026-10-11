@@ -9,6 +9,7 @@ import javax.tools.Diagnostic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Turns graphs into loaded classes: expand macros, validate, emit, compile.
@@ -75,7 +76,7 @@ public final class GraphCompiler<T> {
         GraphEmitter.Emitted emitted = emit(expansion, validated, name);
         try {
             CompilationResult result = compiler.compile(emitted.file());
-            return new CompiledGraph<>(name, emitted.file(), result, host, expansion.locate(validated.warnings()));
+            return new CompiledGraph<>(name, emitted.file().toString(), result, host, expansion.locate(validated.warnings()));
         } catch (CompilationException e) {
             List<GraphProblem> problems = new ArrayList<>(validated.warnings());
             e.diagnostics().stream()
@@ -85,6 +86,21 @@ public final class GraphCompiler<T> {
                             "Generated code does not compile, line %d: %s".formatted(diagnostic.getLineNumber(), diagnostic.getMessage(Locale.ROOT)))));
             throw new GraphCompilationException(expansion.locate(problems), emitted.file().toString());
         }
+    }
+
+    /**
+     * Restores a graph compiled earlier, without validating or compiling again. The caller is responsible for the
+     * bytecode matching the current graph, platform and macros, e.g. by keying a cache on all three.
+     *
+     * @param name     name of the generated class
+     * @param source   its source
+     * @param bytecode its class files by binary name
+     * @param warnings warnings found when it was compiled
+     * @return the loaded class
+     */
+    public CompiledGraph<T> load(ClassName name, String source, Map<String, byte[]> bytecode, List<GraphProblem> warnings) {
+        CompilationResult result = compiler.load(bytecode, List.of(SourceFile.of(name.reflectionName(), source)));
+        return new CompiledGraph<>(name, source, result, host, warnings);
     }
 
     private ValidatedGraph validate(MacroExpander.Expansion expansion) throws GraphCompilationException {

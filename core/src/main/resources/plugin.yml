@@ -4,8 +4,8 @@ version: ${version}
 api-version: '26.2'
 commands:
   bloodnight:
-    description: Blood night debugging
-    usage: /bloodnight <compile [runs]|source>
+    description: Blood night administration
+    usage: /bloodnight <reload|source <mob>|problems [mob]|spawn <mob>|debug [mob]>
     permission: bloodnight.admin
 permissions:
   bloodnight.admin:

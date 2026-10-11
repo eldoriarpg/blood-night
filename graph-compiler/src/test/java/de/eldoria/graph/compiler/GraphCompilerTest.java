@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -91,6 +92,27 @@ class GraphCompilerTest {
                 .build();
 
         assertEquals(List.of("5.0"), run(graph, ToyHost::onStart));
+    }
+
+    @Test
+    void compiledGraphsCanBeRestoredFromBytecode() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("start", NodeInstance.of("entry.start").chain("next", "print"))
+                .node("counter", NodeInstance.of("state.counter"))
+                .node("print", print("counter", "count"))
+                .build();
+        CompiledGraph<ToyHost> compiled = compile(graph);
+
+        CompiledGraph<ToyHost> restored = new GraphCompiler<>(platform(), ToyHost.class, GraphCompilerTest.class.getClassLoader())
+                .load(compiled.name(), compiled.source(), compiled.bytecode(), compiled.warnings());
+        ToyContext context = new ToyContext();
+        ToyHost host = restored.instantiate(context);
+        host.onStart();
+        host.onStart();
+
+        assertEquals(List.of("1", "2"), context.printed());
+        assertNotSame(compiled.result().loader(), restored.result().loader());
+        assertEquals(compiled.source(), restored.source());
     }
 
     @Test

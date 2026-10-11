@@ -13,15 +13,11 @@ import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.mobs.MobRegistry;
-import de.eldoria.bloodnight.nodes.action.impl.PrintNode;
-import de.eldoria.bloodnight.nodes.base.io.Edge;
-import de.eldoria.bloodnight.nodes.container.NodeContainer;
 import de.eldoria.bloodnight.nodes.registry.DefaultNodes;
 import de.eldoria.bloodnight.nodes.registry.NodeRegistry;
-import de.eldoria.bloodnight.nodes.transform.impl.math.AddNode;
-import de.eldoria.bloodnight.nodes.trigger.impl.TickNode;
-import de.eldoria.bloodnight.nodes.value.impl.IntegerNode;
 import de.eldoria.eldoutilities.builder.ItemStackBuilder;
+import de.eldoria.graph.model.Graph;
+import de.eldoria.graph.model.NodeInstance;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -32,6 +28,7 @@ import org.bukkit.inventory.EquipmentSlotGroup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.node.IntNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,17 +60,12 @@ class EditorPayloadTest {
         Equipment equipment = new Equipment(null, itemIds.get(1), null, null, itemIds.get(0), null);
         Attributes attributes = new Attributes("Test Mob", EntityType.ZOMBIE, false, ValueModifier.DEFAULT, 2, ValueModifier.MULTIPLY, 3);
 
-        NodeContainer container = new NodeContainer();
-        container.add(0, new IntegerNode(5));
-        container.add(1, new IntegerNode(10));
-        container.add(2, new AddNode())
-                .input()
-                .connect(AddNode.Input.FIRST, Edge.to(0, IntegerNode.Output.VALUE))
-                .connect(AddNode.Input.SECOND, Edge.to(1, IntegerNode.Output.VALUE));
-        container.add(3, new PrintNode())
-                .input(in -> in.connect(PrintNode.Input.VALUE, Edge.to(2, AddNode.Output.RESULT)));
-        container.add(4, new TickNode())
-                .chain(TickNode.Executions.NEXT, 3);
+        Graph behaviour = Graph.builder()
+                .node("0", NodeInstance.of("value.integer").config("value", IntNode.valueOf(5)))
+                .node("1", NodeInstance.of("math.add").input("first", "0", "value").literal("second", IntNode.valueOf(10)))
+                .node("2", NodeInstance.of("debug.print").input("value", "1", "result"))
+                .node("3", NodeInstance.of("mob.tick").chain("next", "2"))
+                .build();
 
         MobDrops mobDrops = new MobDrops(ConfigurationScope.MOB,
                 new HashMap<>() {{
@@ -89,7 +81,7 @@ class EditorPayloadTest {
                 2);
 
         Extension extension = new Extension(ExtensionType.CARRIER, EntityType.SPIDER, new Equipment(null, null, null, null, null, null));
-        CustomMob customMob = new CustomMob("test", equipment, attributes, container, mobDrops, extension);
+        CustomMob customMob = new CustomMob("test", equipment, attributes, behaviour, mobDrops, extension);
         mobs.add(customMob);
 
         NodeRegistry.register(DefaultNodes.defaultNodes());

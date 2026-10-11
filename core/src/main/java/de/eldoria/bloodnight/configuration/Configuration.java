@@ -19,6 +19,7 @@ public class Configuration {
     public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new).name("mobs").build();
     public static final Key<ItemRegistry> ITEMS = Key.builder(Path.of("items.yml"), ItemRegistry::new).name("items").build();
     public static final Key<GlobalDrops> GLOBAL_DROPS = Key.builder(Path.of("global_drops.yml"), GlobalDrops::defaultDrops).name("Global Drops").build();
+    public static final Key<MacroFile> MACROS = Key.builder(Path.of("macros.yml"), MacroFile::new).name("macros").build();
     private static final Key<ConfigFile> MAIN = Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
 
     private final Configurations<ConfigFile> configurations;
@@ -48,6 +49,17 @@ public class Configuration {
 
     public ItemRegistry items() {
         return configurations.secondary(ITEMS);
+    }
+
+    public MacroFile macros() {
+        return configurations.secondary(MACROS);
+    }
+
+    /**
+     * Reads every configuration file again.
+     */
+    public void reload() {
+        configurations.reload();
     }
 
     public GlobalDrops globalDrops() {

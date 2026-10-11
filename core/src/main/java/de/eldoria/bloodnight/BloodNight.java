@@ -1,81 +1,134 @@
 package de.eldoria.bloodnight;
 
-import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.behaviour.BehaviourService;
+import de.eldoria.bloodnight.behaviour.Behaviours;
+import de.eldoria.bloodnight.behaviour.BytecodeCache;
+import de.eldoria.bloodnight.configuration.Configuration;
+import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
-import de.eldoria.bloodnight.compiler.HardcodedBehaviour;
-import de.eldoria.graph.compiler.CompilationException;
-import de.eldoria.graph.compiler.CompilationResult;
-import de.eldoria.graph.compiler.RuntimeCompiler;
+import de.eldoria.bloodnight.graph.TriggerDispatcher;
+import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mobs.DamageHandler;
+import de.eldoria.bloodnight.mobs.MobCoordinator;
+import de.eldoria.bloodnight.mobs.MobLifecycle;
+import de.eldoria.bloodnight.mobs.MobOutfitter;
+import de.eldoria.bloodnight.mobs.MobSpawner;
+import de.eldoria.bloodnight.mobs.TargetPolicy;
+import de.eldoria.graph.compiler.GraphProblem;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
-import java.util.LongSummaryStatistics;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 /**
- * Plugin entry point.
+ * Plugin entry point: loads the configuration, compiles every mob's behaviour in the background, and wires the
+ * compiled behaviours to spawned mobs, events and the tick loop.
  * <p>
- * Compiles {@link HardcodedBehaviour} off the main thread on enable, then drives it from the tick scheduler and from an
- * {@link EntityDamageEvent} executor registered without a listener class. {@code /bloodnight compile [runs]} measures
- * repeated compilation, {@code /bloodnight source} prints the generated source.
+ * Worlds load before plugins are enabled, so custom mobs already in loaded chunks are taken over on enable; they get
+ * their behaviour once compilation finished.
+ * <p>
+ * {@code /bloodnight reload} reads the configuration again and recompiles; living mobs switch to the new behaviours
+ * once compilation finished. {@code source} writes a mob's generated source to {@code debug/}, {@code problems} lists
+ * why a mob does not compile, {@code spawn} and {@code debug} help testing.
  */
 public final class BloodNight extends JavaPlugin {
-    private final Listener dispatchOwner = new Listener() {
-    };
-    private RuntimeCompiler compiler;
+    private Configuration configuration;
+    private BehaviourService behaviourService;
+    private MobCoordinator coordinator;
+    private TriggerDispatcher dispatcher;
     private BukkitTask tickTask;
+    private Behaviours behaviours = Behaviours.empty();
 
     @Override
     public void onEnable() {
-        List<Path> classpath = CompileClasspath.discover(getClassLoader());
-        getLogger().info("Compile classpath: %d entries".formatted(classpath.size()));
-        classpath.forEach(path -> getLogger().fine(path.toString()));
-        compiler = new RuntimeCompiler(classpath, getClassLoader());
+        configuration = new Configuration(this);
+        var platform = BloodNightPlatform.create(CompileClasspath.discover(getClassLoader()));
+        behaviourService = new BehaviourService(platform, getClassLoader(), new BytecodeCache(getDataFolder().toPath().resolve("cache")),
+                buildFingerprint(), getLogger());
+        coordinator = new MobCoordinator(new MobOutfitter(() -> configuration.items()), () -> configuration.items(),
+                id -> configuration.mobs().get(id), getLogger());
+        dispatcher = new TriggerDispatcher(coordinator::behaviour,
+                (trigger, error) -> getLogger().log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error));
 
-        getServer().getScheduler().runTaskAsynchronously(this, () -> {
-            try {
-                CompilationResult result = compiler.compile(HardcodedBehaviour.source());
-                getLogger().info("Compiled %s in %d ms".formatted(HardcodedBehaviour.BINARY_NAME, result.took().toMillis()));
-                CompiledBehaviour behaviour = result.instantiate(HardcodedBehaviour.BINARY_NAME, CompiledBehaviour.class, getLogger());
-                getServer().getScheduler().runTask(this, () -> install(behaviour));
-            } catch (CompilationException | RuntimeException e) {
-                getLogger().log(Level.SEVERE, "Could not compile generated behaviour", e);
-            }
-        });
+        var plugins = getServer().getPluginManager();
+        plugins.registerEvents(new MobSpawner(configuration, coordinator, this), this);
+        plugins.registerEvents(new DamageHandler(), this);
+        plugins.registerEvents(new TargetPolicy(), this);
+        plugins.registerEvents(new MobLifecycle(coordinator), this);
+        getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));
+        tickTask = getServer().getScheduler().runTaskTimer(this, coordinator::tick, 1, 1);
+        recompile();
+    }
+
+    /**
+     * Identifies this exact build for the bytecode cache: the version alone would let a rebuilt jar with changed nodes
+     * reuse classes generated by the previous build.
+     */
+    private String buildFingerprint() {
+        try {
+            Path jar = Path.of(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+            return "%s+%d+%d".formatted(getPluginMeta().getVersion(), Files.size(jar), Files.getLastModifiedTime(jar).toMillis());
+        } catch (IOException | URISyntaxException | RuntimeException e) {
+            return getPluginMeta().getVersion();
+        }
     }
 
     @Override
     public void onDisable() {
-        HandlerList.unregisterAll(dispatchOwner);
         if (tickTask != null) tickTask.cancel();
+        if (dispatcher != null) dispatcher.unregister();
+        if (behaviourService != null) behaviourService.close();
     }
 
-    private void install(CompiledBehaviour behaviour) {
-        getServer().getPluginManager().registerEvent(EntityDamageEvent.class, dispatchOwner, EventPriority.NORMAL,
-                (listener, event) -> {
-                    if (event instanceof EntityDamageEvent damage) behaviour.onDamage(damage);
-                }, this, true);
-        tickTask = getServer().getScheduler().runTaskTimer(this, behaviour::onTick, 1, 1);
-        getLogger().info("Generated behaviour installed: %s loaded by %s".formatted(
-                behaviour.getClass().getName(), behaviour.getClass().getClassLoader()));
+    /**
+     * Compiles every mob in the background and switches living mobs over on the main thread.
+     *
+     * @return completes on the main thread once the new behaviours are active
+     */
+    CompletableFuture<Behaviours> recompile() {
+        CompletableFuture<Behaviours> applied = new CompletableFuture<>();
+        behaviourService.compile(configuration.mobs().all(), configuration.macros().macros()).whenComplete((result, error) -> {
+            if (error != null) {
+                getLogger().log(Level.SEVERE, "Compiling behaviours failed", error);
+                applied.completeExceptionally(error);
+                return;
+            }
+            getServer().getScheduler().runTask(this, () -> {
+                behaviours = result;
+                coordinator.rebind(result);
+                dispatcher.register(this, result.usedTriggers());
+                configuration.mobs().all().stream()
+                        .filter(mob -> !mob.migrationNotes().isEmpty())
+                        .forEach(mob -> getLogger().warning("Mob %s was migrated from the old format: %s".formatted(mob.id(), mob.migrationNotes())));
+                applied.complete(result);
+            });
+        });
+        return applied;
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) return false;
+        String mob = args.length > 1 ? args[1] : null;
         switch (args[0]) {
-            case "compile" -> benchmark(sender, args.length > 1 ? Integer.parseInt(args[1]) : 20);
-            case "source" -> sender.sendMessage(HardcodedBehaviour.source().toString());
+            case "reload" -> reload(sender);
+            case "source" -> source(sender, mob);
+            case "problems" -> problems(sender, mob);
+            case "spawn" -> spawn(sender, mob);
+            case "debug" -> sender.sendMessage("Debug trigger fired on %d mobs".formatted(coordinator.debug(mob)));
             default -> {
                 return false;
             }
@@ -83,20 +136,54 @@ public final class BloodNight extends JavaPlugin {
         return true;
     }
 
-    private void benchmark(CommandSender sender, int runs) {
-        getServer().getScheduler().runTaskAsynchronously(this, () -> {
-            LongSummaryStatistics stats = new LongSummaryStatistics();
+    private void reload(CommandSender sender) {
+        configuration.reload();
+        sender.sendMessage("Compiling behaviours...");
+        recompile().thenAccept(result -> sender.sendMessage("Compiled %d mobs (%d from cache), %d with problems".formatted(
+                result.compiled().size(), result.fromCache(), result.problems().size())));
+    }
+
+    private void source(CommandSender sender, String mob) {
+        if (mob == null) {
+            sender.sendMessage("Usage: /bloodnight source <mob>");
+            return;
+        }
+        behaviours.of(mob).ifPresentOrElse(compiled -> {
             try {
-                for (int i = 0; i < runs; i++) {
-                    Duration took = compiler.compile(HardcodedBehaviour.source()).took();
-                    stats.accept(took.toNanos() / 1000);
-                }
-            } catch (CompilationException e) {
-                getLogger().log(Level.SEVERE, "Benchmark failed", e);
-                return;
+                Path file = getDataFolder().toPath().resolve("debug").resolve(mob + ".java");
+                Files.createDirectories(file.getParent());
+                Files.writeString(file, compiled.source());
+                sender.sendMessage("Source of %s written to %s".formatted(mob, file));
+            } catch (IOException e) {
+                sender.sendMessage("Could not write source: " + e.getMessage());
             }
-            sender.sendMessage("Compiled %d times: min %.1f ms, avg %.1f ms, max %.1f ms".formatted(
-                    runs, stats.getMin() / 1000.0, stats.getAverage() / 1000.0, stats.getMax() / 1000.0));
-        });
+        }, () -> sender.sendMessage("Mob %s has no compiled behaviour".formatted(mob)));
+    }
+
+    private void problems(CommandSender sender, String mob) {
+        if (mob == null) {
+            sender.sendMessage("Mobs with problems: " + String.join(", ", behaviours.problems().keySet()));
+            return;
+        }
+        List<GraphProblem> problems = behaviours.problems().getOrDefault(mob, List.of());
+        if (problems.isEmpty()) sender.sendMessage("Mob %s has no problems".formatted(mob));
+        problems.forEach(problem -> sender.sendMessage(problem.toString()));
+    }
+
+    private void spawn(CommandSender sender, String mob) {
+        CustomMob definition = mob == null ? null : configuration.mobs().get(mob);
+        if (definition == null) {
+            sender.sendMessage("Unknown mob " + mob);
+            return;
+        }
+        Location location = sender instanceof Player player ? player.getLocation() : getServer().getWorlds().getFirst().getSpawnLocation();
+        Entity entity = location.getWorld().spawnEntity(location, definition.attributes().entityType());
+        if (!(entity instanceof LivingEntity living)) {
+            entity.remove();
+            sender.sendMessage("Mob %s is not a living entity type".formatted(mob));
+            return;
+        }
+        coordinator.register(living, definition);
+        sender.sendMessage("Spawned %s at %d %d %d".formatted(mob, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
     }
 }

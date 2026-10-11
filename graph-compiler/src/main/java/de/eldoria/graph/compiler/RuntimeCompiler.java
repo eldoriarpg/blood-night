@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Compiles generated Java source in memory and loads the result into a child class loader.
@@ -45,6 +46,17 @@ public final class RuntimeCompiler {
     public RuntimeCompiler(List<Path> classpath, ClassLoader parent) {
         this.classpath = List.copyOf(classpath);
         this.parent = parent;
+    }
+
+    /**
+     * Loads classes compiled earlier, e.g. from a cache, without compiling.
+     *
+     * @param bytecode class files by binary name, as {@link GeneratedClassLoader#bytecode()} returned them
+     * @param sources  the sources they were compiled from, kept for debugging
+     * @return the loaded classes
+     */
+    public CompilationResult load(Map<String, byte[]> bytecode, List<SourceFile> sources) {
+        return new CompilationResult(new GeneratedClassLoader(bytecode, parent), sources, Duration.ZERO);
     }
 
     /**

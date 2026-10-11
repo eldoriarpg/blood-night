@@ -19,6 +19,15 @@ public final class SourceFile extends SimpleJavaFileObject {
     }
 
     /**
+     * @param binaryName binary name of the top level type
+     * @param source     the full source text
+     * @return the source file
+     */
+    public static SourceFile of(String binaryName, String source) {
+        return new SourceFile(binaryName, source);
+    }
+
+    /**
      * Renders a JavaPoet file.
      *
      * @param file file to render
