@@ -65,6 +65,18 @@ public interface EmitContext {
     CodeBlock field(String name, TypeName type, CodeBlock initializer);
 
     /**
+     * Declares a field shared by every node instance of the graph asking for the same name, one per behaviour
+     * instance. This is where state lives that several triggers read and write, such as named timers. The first
+     * declaration decides type and initial value.
+     *
+     * @param name        name, shared across the graph
+     * @param type        field type
+     * @param initializer initial value
+     * @return an expression referring to the field
+     */
+    CodeBlock sharedField(String name, TypeName type, CodeBlock initializer);
+
+    /**
      * @return an expression referring to the context object the host passes in
      * @throws IllegalStateException when the platform declares no context type
      */

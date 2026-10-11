@@ -16,11 +16,18 @@ import de.eldoria.graph.reflect.ReflectedEntry;
 import de.eldoria.graph.reflect.ReflectedType;
 import de.eldoria.graph.reflect.ReflectionRules;
 import de.eldoria.graph.std.StandardNodes;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Cancellable;
@@ -30,7 +37,9 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -88,6 +97,7 @@ public final class BloodNightPlatform {
         nodes.addAll(BukkitNodes.all());
         nodes.addAll(StandardNodes.casts(BukkitTypes.mapping()));
         nodes.addAll(ReflectedType.of(Entity.class, "entity")
+                .action("remove", "remove")
                 .action("teleport", "teleport", Param.of("location", Location.class))
                 .query(
                         "nearby_entities",
@@ -101,6 +111,8 @@ public final class BloodNightPlatform {
                 .action("add_potion_effect", "addPotionEffect", Param.of("effect", PotionEffect.class))
                 .action("remove_potion_effect", "removePotionEffect", Param.of("type", PotionEffectType.class))
                 .action("damage", "damage", Param.of("amount", double.class))
+                .action("damage_by", "damage", Param.of("amount", double.class), Param.of("source", Entity.class))
+                .query("attribute", "getAttribute", Param.of("attribute", Attribute.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(PotionEffect.class, "potion_effect")
                 .name("Potion Effect")
@@ -111,7 +123,48 @@ public final class BloodNightPlatform {
                         Param.of("duration", int.class),
                         Param.of("amplifier", int.class))
                 .build(rules));
-        nodes.addAll(ReflectedType.of(Player.class, "player").build(rules));
+        nodes.addAll(ReflectedType.of(Player.class, "player")
+                .action(
+                        "play_sound",
+                        "playSound",
+                        Param.of("location", Location.class),
+                        Param.of("sound", Sound.class),
+                        Param.of("volume", float.class),
+                        Param.of("pitch", float.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(Mob.class, "mob").category("entity").build(rules));
+        nodes.addAll(ReflectedType.of(Creeper.class, "creeper")
+                .category("entity")
+                .action("explode", "explode")
+                .action("ignite", "ignite")
+                .build(rules));
+        nodes.addAll(ReflectedType.of(EntityEquipment.class, "equipment")
+                .category("entity")
+                .build(rules));
+        nodes.addAll(ReflectedType.of(ItemType.class, "item_type")
+                .category("item")
+                .name("Item Type")
+                .query("create_item_stack", "createItemStack")
+                .build(rules));
+        nodes.addAll(ReflectedType.of(AttributeInstance.class, "attribute")
+                .category("entity")
+                .name("Attribute")
+                .build(rules));
+        nodes.addAll(ReflectedType.of(Particle.DustOptions.class, "dust")
+                .category("world")
+                .name("Dust")
+                .constructor("create", Param.of("color", Color.class), Param.of("size", float.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(Color.class, "color")
+                .category("value")
+                .factory(
+                        "rgb",
+                        "fromRGB",
+                        Param.of("red", int.class),
+                        Param.of("green", int.class),
+                        Param.of("blue", int.class))
+                .build(rules));
+
         nodes.addAll(ReflectedType.of(Projectile.class, "projectile").build(rules));
         nodes.addAll(ReflectedType.of(Location.class, "location")
                 .query("distance", "distance", Param.of("other", Location.class))
@@ -120,7 +173,30 @@ public final class BloodNightPlatform {
                 .constructor(
                         "create", Param.of("x", double.class), Param.of("y", double.class), Param.of("z", double.class))
                 .build(rules));
-        nodes.addAll(ReflectedType.of(World.class, "world").build(rules));
+        nodes.addAll(ReflectedType.of(World.class, "world")
+                .action(
+                        "spawn_particle",
+                        "spawnParticle",
+                        Param.of("particle", Particle.class),
+                        Param.of("location", Location.class),
+                        Param.of("count", int.class),
+                        Param.of("offset_x", double.class),
+                        Param.of("offset_y", double.class),
+                        Param.of("offset_z", double.class))
+                .action(
+                        "spawn_particle_with_data",
+                        "spawnParticle",
+                        Param.of("particle", Particle.class),
+                        Param.of("location", Location.class),
+                        Param.of("count", int.class),
+                        Param.of("offset_x", double.class),
+                        Param.of("offset_y", double.class),
+                        Param.of("offset_z", double.class),
+                        Param.of("data", Object.class))
+                .action("strike_lightning", "strikeLightning", Param.of("location", Location.class))
+                .action("strike_lightning_effect", "strikeLightningEffect", Param.of("location", Location.class))
+                .query("block_at", "getBlockAt", Param.of("location", Location.class))
+                .build(rules));
         nodes.addAll(ReflectedType.of(ItemStack.class, "item").name("Item").build(rules));
         nodes.addAll(ReflectedType.of(Block.class, "block").build(rules));
         nodes.addAll(ReflectedType.of(Cancellable.class, "cancellable")
@@ -150,7 +226,11 @@ public final class BloodNightPlatform {
                     .category("event")
                     .build(rules));
         }
-        nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onTick", "mob.tick")
+        nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onSpawn", BloodNightNodes.MOB_SPAWN)
+                .name("On Spawn")
+                .description("Runs once when the mob has spawned, after its equipment and extension are set up")
+                .build(rules));
+        nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onTick", BloodNightNodes.MOB_TICK)
                 .name("On Tick")
                 .description("Runs every server tick")
                 .build(rules));

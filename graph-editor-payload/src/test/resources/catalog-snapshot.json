@@ -1,6 +1,6 @@
 {
   "format" : 1,
-  "version" : "36dda11b5d2b19d7",
+  "version" : "7d811025074c6cc1",
   "nodes" : [ {
     "id" : "debug.print",
     "kind" : "action",
@@ -111,6 +111,72 @@
     }, {
       "id" : "next",
       "name" : "Next"
+    } ]
+  }, {
+    "id" : "flow.switch",
+    "kind" : "control_flow",
+    "category" : "flow",
+    "name" : "Switch",
+    "description" : "Runs the chain of the case matching the value, default otherwise, then continues",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "executions" : [ {
+      "id" : "case_0",
+      "name" : "Case 0"
+    }, {
+      "id" : "case_1",
+      "name" : "Case 1"
+    }, {
+      "id" : "case_2",
+      "name" : "Case 2"
+    }, {
+      "id" : "case_3",
+      "name" : "Case 3"
+    }, {
+      "id" : "case_4",
+      "name" : "Case 4"
+    }, {
+      "id" : "case_5",
+      "name" : "Case 5"
+    }, {
+      "id" : "case_6",
+      "name" : "Case 6"
+    }, {
+      "id" : "case_7",
+      "name" : "Case 7"
+    }, {
+      "id" : "default",
+      "name" : "Default"
+    }, {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "function.chance",
+    "kind" : "pure",
+    "category" : "function",
+    "name" : "Chance",
+    "description" : "True with the given probability in percent",
+    "inputs" : [ {
+      "id" : "percent",
+      "name" : "Percent",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
     } ]
   }, {
     "id" : "function.cooldown",
@@ -851,6 +917,45 @@
       "type" : {
         "id" : "double"
       }
+    } ]
+  }, {
+    "id" : "timer.elapsed",
+    "kind" : "pure",
+    "category" : "timer",
+    "name" : "Elapsed",
+    "description" : "Seconds since the mob appeared or a named timer was last reset",
+    "outputs" : [ {
+      "id" : "seconds",
+      "name" : "Seconds",
+      "type" : {
+        "id" : "double"
+      }
+    } ],
+    "config" : [ {
+      "id" : "timer",
+      "name" : "Timer",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "timer"
+    } ]
+  }, {
+    "id" : "timer.reset",
+    "kind" : "action",
+    "category" : "timer",
+    "name" : "Reset",
+    "description" : "Starts a named timer again; every timer node with the same name shares it",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "timer",
+      "name" : "Timer",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "timer"
     } ]
   }, {
     "id" : "value.boolean",

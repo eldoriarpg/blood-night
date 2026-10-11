@@ -6,6 +6,8 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.util.MobTags;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -48,7 +50,7 @@ public class DamageHandler implements Listener {
         }
         event.setCancelled(true);
         // Sync damage from base to extension
-        extension.setHealth(base.getHealth());
+        syncHealth(extension, base.getHealth());
         extension.playHurtAnimation(0);
     }
 
@@ -61,8 +63,17 @@ public class DamageHandler implements Listener {
         if (!(entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension)) return;
 
         // We assume that the damage won't change anymore
-        extension.setHealth(base.getHealth() - event.getFinalDamage());
+        syncHealth(extension, base.getHealth() - event.getFinalDamage());
         extension.playHurtAnimation(0);
+    }
+
+    /**
+     * Sets the health of an extension, kept within what it can have: base and extension may differ in maximum health.
+     */
+    private static void syncHealth(LivingEntity extension, double health) {
+        AttributeInstance max = extension.getAttribute(Attribute.MAX_HEALTH);
+        double limit = max == null ? extension.getHealth() : max.getValue();
+        extension.setHealth(Math.clamp(health, 0, limit));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

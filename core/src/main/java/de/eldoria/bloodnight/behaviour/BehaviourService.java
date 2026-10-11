@@ -44,6 +44,7 @@ public final class BehaviourService implements AutoCloseable {
     static {
         Triggers.EVENTS.forEach(trigger -> TRIGGERS.add(trigger.id()));
         TRIGGERS.add("mob.tick");
+        TRIGGERS.add("mob.spawn");
         TRIGGERS.add("debug.trigger");
     }
 

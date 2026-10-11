@@ -83,10 +83,8 @@ final class Creations {
                 .name("%s %s".formatted(Names.humanize(creation.name()), typeName))
                 .description(description);
         for (int i = 0; i < generic.length; i++) {
-            PortType input = PortType.of(generic[i]);
-            if (input.hasVariables())
-                throw new IllegalArgumentException("%s uses type variables".formatted(executable));
             Param param = creation.params().get(i);
+            PortType input = declared(generic[i], param);
             descriptor.input(param.name(), Names.humanize(param.name()), input, false, "");
         }
         if (output.hasVariables())
@@ -131,6 +129,15 @@ final class Creations {
                                                     .toList())),
                     e);
         }
+    }
+
+    /**
+     * The port type of a parameter: its generic type, or the type the consumer declared when the parameter is a type
+     * variable, e.g. the {@code T data} of {@code World.spawnParticle}.
+     */
+    private static PortType declared(Type generic, Param param) {
+        PortType type = PortType.of(generic);
+        return type.hasVariables() ? PortType.of(param.type()) : type;
     }
 
     private static boolean checked(Class<?> exception) {

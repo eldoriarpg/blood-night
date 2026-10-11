@@ -14,6 +14,9 @@ import de.eldoria.graph.types.TypeMapping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -310,6 +313,43 @@ class StandardNodesTest {
     }
 
     @Test
+    void switchRunsTheMatchingCase() throws GraphCompilationException {
+        for (int value : new int[] {0, 5, 9}) {
+            Graph graph = Graph.builder()
+                    .node("run", NodeInstance.of("test.run").chain("next", "switch"))
+                    .node(
+                            "switch",
+                            NodeInstance.of("flow.switch")
+                                    .literal("value", IntNode.valueOf(value))
+                                    .chain("case_0", "zero")
+                                    .chain("case_5", "five")
+                                    .chain("default", "other")
+                                    .chain("next", "after"))
+                    .node("zero", NodeInstance.of("test.record").literal("value", StringNode.valueOf("zero")))
+                    .node("five", NodeInstance.of("test.record").literal("value", StringNode.valueOf("five")))
+                    .node("other", NodeInstance.of("test.record").literal("value", StringNode.valueOf("other")))
+                    .node("after", NodeInstance.of("test.record").literal("value", StringNode.valueOf("after")))
+                    .build();
+
+            String expected = value == 0 ? "zero" : value == 5 ? "five" : "other";
+            assertEquals(List.of(expected, "after"), Harness.run(graph, 1));
+        }
+    }
+
+    @Test
+    void chanceFollowsItsPercentage() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "never", "always"))
+                .node("zero", NodeInstance.of("function.chance").literal("percent", DoubleNode.valueOf(0)))
+                .node("hundred", NodeInstance.of("function.chance").literal("percent", DoubleNode.valueOf(100)))
+                .node("never", NodeInstance.of("test.record").input("value", "zero", "result"))
+                .node("always", NodeInstance.of("test.record").input("value", "hundred", "result"))
+                .build();
+
+        assertEquals(List.of(false, true, false, true), Harness.run(graph, 2));
+    }
+
+    @Test
     void printWritesToStandardOut() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "print"))
@@ -326,5 +366,25 @@ class StandardNodesTest {
         }
 
         assertEquals("hello", buffer.toString(StandardCharsets.UTF_8).strip());
+    }
+
+    @Test
+    void timersWithTheSameNameShareTheirState() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "reset", "fresh"))
+                .node("reset", NodeInstance.of("timer.reset").config("timer", StringNode.valueOf("hit")))
+                .node("elapsed", NodeInstance.of("timer.elapsed").config("timer", StringNode.valueOf("hit")))
+                .node("other", NodeInstance.of("timer.elapsed").config("timer", StringNode.valueOf("shot")))
+                .node(
+                        "less",
+                        NodeInstance.of("logic.less_or_equal")
+                                .input("first", "elapsed", "seconds")
+                                .input("second", "other", "seconds"))
+                .node("fresh", NodeInstance.of("test.record").input("value", "less", "result"))
+                .build();
+
+        assertEquals(List.of(true), Harness.run(graph, 1));
+        String source = Harness.compile(graph).source();
+        assertEquals(2, source.split("new Timer\\(\\)", -1).length - 1, source);
     }
 }

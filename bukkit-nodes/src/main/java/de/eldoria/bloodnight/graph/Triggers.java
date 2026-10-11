@@ -35,7 +35,7 @@ import java.util.List;
 public final class Triggers {
     public static final List<Trigger<?>> EVENTS = List.of(
             new Trigger<>(
-                    "event.damage",
+                    BloodNightNodes.EVENT_DAMAGE,
                     "On Damage",
                     "The mob took damage from something other than an entity",
                     EntityDamageEvent.class,
@@ -46,7 +46,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onDamage),
             new Trigger<>(
-                    "event.damage_by_entity",
+                    BloodNightNodes.EVENT_DAMAGE_BY_ENTITY,
                     "On Damage By Entity",
                     "The mob took damage from an entity that is not a player",
                     EntityDamageByEntityEvent.class,
@@ -57,7 +57,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onDamageByEntity),
             new Trigger<>(
-                    "event.damage_by_player",
+                    BloodNightNodes.EVENT_DAMAGE_BY_PLAYER,
                     "On Damage By Player",
                     "The mob took damage from a player",
                     EntityDamageByEntityEvent.class,
@@ -68,7 +68,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onDamageByPlayer),
             new Trigger<>(
-                    "event.hit",
+                    BloodNightNodes.EVENT_HIT,
                     "On Hit",
                     "The mob damaged another entity",
                     EntityDamageByEntityEvent.class,
@@ -79,7 +79,7 @@ public final class Triggers {
                     false,
                     CompiledBehaviour::onHit),
             new Trigger<>(
-                    "event.kill",
+                    BloodNightNodes.EVENT_KILL,
                     "On Kill",
                     "The mob is about to kill an entity or player",
                     EntityDamageByEntityEvent.class,
@@ -90,7 +90,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onKill),
             new Trigger<>(
-                    "event.player_kill",
+                    BloodNightNodes.EVENT_PLAYER_KILL,
                     "On Player Kill",
                     "The mob is about to kill a player",
                     EntityDamageByEntityEvent.class,
@@ -101,7 +101,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onPlayerKill),
             new Trigger<>(
-                    "event.entity_kill",
+                    BloodNightNodes.EVENT_ENTITY_KILL,
                     "On Entity Kill",
                     "The mob is about to kill an entity that is not a player",
                     EntityDamageByEntityEvent.class,
@@ -112,7 +112,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onEntityKill),
             new Trigger<>(
-                    "event.death",
+                    BloodNightNodes.EVENT_DEATH,
                     "On Death",
                     "The mob died",
                     EntityDeathEvent.class,
@@ -123,7 +123,7 @@ public final class Triggers {
                     false,
                     CompiledBehaviour::onDeath),
             new Trigger<>(
-                    "event.teleport",
+                    BloodNightNodes.EVENT_TELEPORT,
                     "On Teleport",
                     "The mob teleports",
                     EntityTeleportEvent.class,
@@ -134,7 +134,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onTeleport),
             new Trigger<>(
-                    "event.target_change",
+                    BloodNightNodes.EVENT_TARGET_CHANGE,
                     "On Target Change",
                     "The mob gets or loses a target",
                     EntityTargetLivingEntityEvent.class,
@@ -145,7 +145,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onTargetChange),
             new Trigger<>(
-                    "event.projectile_shoot",
+                    BloodNightNodes.EVENT_PROJECTILE_SHOOT,
                     "On Projectile Shoot",
                     "The mob launched a projectile",
                     ProjectileLaunchEvent.class,
@@ -156,7 +156,7 @@ public final class Triggers {
                     false,
                     CompiledBehaviour::onProjectileShoot),
             new Trigger<>(
-                    "event.projectile_hit",
+                    BloodNightNodes.EVENT_PROJECTILE_HIT,
                     "On Projectile Hit",
                     "A projectile launched by the mob hit something",
                     ProjectileHitEvent.class,
@@ -167,7 +167,7 @@ public final class Triggers {
                     false,
                     CompiledBehaviour::onProjectileHit),
             new Trigger<>(
-                    "event.explosion_prime",
+                    BloodNightNodes.EVENT_EXPLOSION_PRIME,
                     "On Explosion Prime",
                     "The mob is about to explode",
                     ExplosionPrimeEvent.class,
@@ -178,7 +178,7 @@ public final class Triggers {
                     true,
                     CompiledBehaviour::onExplosionPrime),
             new Trigger<>(
-                    "event.explode",
+                    BloodNightNodes.EVENT_EXPLODE,
                     "On Explode",
                     "The mob explodes",
                     EntityExplodeEvent.class,

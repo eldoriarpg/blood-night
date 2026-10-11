@@ -63,7 +63,7 @@ public final class MobCoordinator {
     }
 
     /**
-     * Turns an entity into a custom mob: outfits it and gives it its behaviour.
+     * Turns an entity into a custom mob: outfits it, gives it its behaviour and runs the behaviour's spawn entry.
      *
      * @param entity the entity
      * @param mob    the mob definition
@@ -71,7 +71,9 @@ public final class MobCoordinator {
      */
     public ActiveMob register(LivingEntity entity, CustomMob mob) {
         Entity extension = outfitter.outfit(entity, mob);
-        return track(entity, mob, extension);
+        ActiveMob active = track(entity, mob, extension);
+        guard(active, () -> active.behaviour().onSpawn());
+        return active;
     }
 
     /**

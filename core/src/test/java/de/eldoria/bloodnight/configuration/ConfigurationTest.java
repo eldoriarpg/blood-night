@@ -6,7 +6,12 @@
 package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.graph.BloodNightPlatform;
+import de.eldoria.bloodnight.graph.CompileClasspath;
+import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.graph.model.Graph;
+import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +21,9 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,5 +103,22 @@ class ConfigurationTest {
         configuration.reload();
         assertTrue(configuration.problems().isEmpty());
         assertEquals(1, configuration.mobs().all().size());
+    }
+
+    @Test
+    void seedsTheDefaultMobsOnlyWhenTheFileIsMissing() throws IOException {
+        GraphPlatform platform =
+                BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader()));
+        List<CustomMob> defaults = DefaultMobs.create(platform);
+        new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).seedMobs(() -> defaults);
+
+        Configuration reread =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        assertEquals(Map.of(), reread.problems());
+        assertEquals(Set.copyOf(defaults), Set.copyOf(reread.mobs().all()));
+
+        Files.writeString(mobs, "mobs: {}\n");
+        new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).seedMobs(() -> defaults);
+        assertEquals("mobs: {}\n", Files.readString(mobs));
     }
 }

@@ -15,26 +15,32 @@ import io.papermc.paper.registry.keys.EnchantmentKeys;
 import io.papermc.paper.registry.keys.ItemTypeKeys;
 import io.papermc.paper.registry.keys.MobEffectKeys;
 import io.papermc.paper.registry.keys.SoundEventKeys;
+import org.bukkit.Color;
 import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockType;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
 
@@ -63,6 +69,10 @@ public final class BukkitTypes {
             UUID.class,
             PotionEffectType.class,
             PotionEffect.class,
+            PotionType.class,
+            EntityEquipment.class,
+            AttributeInstance.class,
+            Color.class,
             EntityType.class,
             ItemType.class,
             BlockType.class,
@@ -89,6 +99,10 @@ public final class BukkitTypes {
                 .name(EntityDamageEvent.DamageCause.class, "Damage Cause")
                 .name(PotionEffectType.class, "Potion Effect Type")
                 .name(PotionEffect.class, "Potion Effect")
+                .name(PotionType.class, "Potion")
+                .name(Mob.class, "Mob")
+                .name(Creeper.class, "Creeper")
+                .name(Color.class, "Color")
                 .name(EntityType.class, "Entity Type")
                 .name(ItemType.class, "Item Type")
                 .name(BlockType.class, "Block Type")
@@ -101,8 +115,11 @@ public final class BukkitTypes {
                 .codec(registry(Enchantment.class, RegistryKey.ENCHANTMENT, "ENCHANTMENT", EnchantmentKeys.class))
                 .codec(registry(Attribute.class, RegistryKey.ATTRIBUTE, "ATTRIBUTE", AttributeKeys.class))
                 .codec(registry(Biome.class, RegistryKey.BIOME, "BIOME", BiomeKeys.class))
+                .codec(registry(PotionType.class, RegistryKey.POTION, "POTION", null))
                 .selectable("entity", PortType.of(Entity.class))
                 .selectable("living_entity", PortType.of(LivingEntity.class))
+                .selectable("mob", PortType.of(Mob.class))
+                .selectable("creeper", PortType.of(Creeper.class))
                 .selectable("player", PortType.of(Player.class))
                 .selectable("location", PortType.of(Location.class))
                 .selectable("vector", PortType.of(Vector.class))

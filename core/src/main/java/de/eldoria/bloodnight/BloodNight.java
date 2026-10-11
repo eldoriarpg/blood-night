@@ -15,6 +15,7 @@ import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
@@ -66,6 +67,7 @@ public final class BloodNight extends JavaPlugin {
     public void onEnable() {
         configuration = new Configuration(this);
         var platform = BloodNightPlatform.create(CompileClasspath.discover(getClassLoader()));
+        configuration.seedMobs(() -> DefaultMobs.create(platform));
         long start = System.nanoTime();
         catalog = RuntimeCatalog.create(platform);
         getLogger()

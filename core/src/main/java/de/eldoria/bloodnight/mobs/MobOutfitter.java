@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -46,12 +47,12 @@ public final class MobOutfitter {
     }
 
     private Entity spawnExtension(LivingEntity base, CustomMob mob) {
-        Entity extension =
-                base.getWorld().spawnEntity(base.getLocation(), mob.extension().entityType());
+        EntityType type = mob.extension().entityType();
+        if (type == null) throw new IllegalStateException("Extension of %s has no entity type".formatted(mob.id()));
+        Entity extension = base.getWorld().spawnEntity(base.getLocation(), type);
         if (!(extension instanceof LivingEntity living)) {
             extension.remove();
-            throw new IllegalStateException("Extension of %s is no living entity: %s"
-                    .formatted(mob.id(), mob.extension().entityType()));
+            throw new IllegalStateException("Extension of %s is no living entity: %s".formatted(mob.id(), type));
         }
         if (mob.extension().equipment() != null) equip(living, mob.extension().equipment());
         boolean added =
@@ -67,7 +68,7 @@ public final class MobOutfitter {
         return extension;
     }
 
-    private void equip(LivingEntity entity, Equipment equipment) {
+    private void equip(LivingEntity entity, @Nullable Equipment equipment) {
         EntityEquipment slots = entity.getEquipment();
         if (slots == null || equipment == null) return;
         slots.setBoots(item(equipment.feet()));

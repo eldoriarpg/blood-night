@@ -7,6 +7,7 @@ package de.eldoria.graph.std;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
+import de.eldoria.graph.definition.EmitContext;
 import de.eldoria.graph.definition.ExpressionDefinition;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.NodeDescriptor;
@@ -14,6 +15,7 @@ import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.std.runtime.Cooldown;
+import de.eldoria.graph.std.runtime.Timer;
 import de.eldoria.graph.types.TypeMapping;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.BooleanNode;
@@ -47,80 +49,87 @@ public final class StandardNodes {
     private static final String UPPER = "upper";
     private static final String NEXT = "next";
     private static final String BODY = "body";
+    private static final String TIMER = "timer";
+    private static final String DEFAULT_TIMER = "timer";
 
     public static final ExpressionDefinition BOOLEAN =
-            value("value.boolean", boolean.class, BooleanNode.FALSE, "A fixed true or false");
+            value(StdNodes.VALUE_BOOLEAN, boolean.class, BooleanNode.FALSE, "A fixed true or false");
     public static final ExpressionDefinition INTEGER =
-            value("value.integer", int.class, IntNode.valueOf(0), "A fixed integer number");
+            value(StdNodes.VALUE_INTEGER, int.class, IntNode.valueOf(0), "A fixed integer number");
     public static final ExpressionDefinition NUMBER =
-            value("value.number", double.class, DoubleNode.valueOf(0), "A fixed decimal number");
+            value(StdNodes.VALUE_NUMBER, double.class, DoubleNode.valueOf(0), "A fixed decimal number");
     public static final ExpressionDefinition TEXT =
-            value("value.text", String.class, StringNode.valueOf(""), "A fixed text");
+            value(StdNodes.VALUE_TEXT, String.class, StringNode.valueOf(""), "A fixed text");
 
-    public static final ExpressionDefinition ADD = arithmetic("math.add", "+", "Adds two numbers");
+    public static final ExpressionDefinition ADD = arithmetic(StdNodes.MATH_ADD, "+", "Adds two numbers");
     public static final ExpressionDefinition SUBTRACT =
-            arithmetic("math.subtract", "-", "Subtracts the second number from the first");
-    public static final ExpressionDefinition MULTIPLY = arithmetic("math.multiply", "*", "Multiplies two numbers");
+            arithmetic(StdNodes.MATH_SUBTRACT, "-", "Subtracts the second number from the first");
+    public static final ExpressionDefinition MULTIPLY =
+            arithmetic(StdNodes.MATH_MULTIPLY, "*", "Multiplies two numbers");
     public static final ExpressionDefinition DIVIDE =
-            arithmetic("math.divide", "/", "Divides the first number by the second");
+            arithmetic(StdNodes.MATH_DIVIDE, "/", "Divides the first number by the second");
     public static final ExpressionDefinition ABS = unary(
-            "math.abs",
+            StdNodes.MATH_ABS,
             double.class,
             double.class,
             "Absolute value of a number",
             value -> CodeBlock.of("$T.abs($L)", Math.class, value));
     public static final ExpressionDefinition ABS_INTEGER = unary(
-            "math.abs_integer",
+            StdNodes.MATH_ABS_INTEGER,
             double.class,
             int.class,
             "Absolute value of a number as integer, decimals cut off",
             value -> CodeBlock.of("$T.abs((int) $L)", Math.class, value));
     public static final ExpressionDefinition CEIL = unary(
-            "math.ceil",
+            StdNodes.MATH_CEIL,
             double.class,
             int.class,
             "Rounds up to the next integer",
             value -> CodeBlock.of("(int) $T.ceil($L)", Math.class, value));
     public static final ExpressionDefinition FLOOR = unary(
-            "math.floor",
+            StdNodes.MATH_FLOOR,
             double.class,
             int.class,
             "Rounds down to the next integer",
             value -> CodeBlock.of("(int) $T.floor($L)", Math.class, value));
     public static final ExpressionDefinition ROUND = unary(
-            "math.round",
+            StdNodes.MATH_ROUND,
             double.class,
             int.class,
             "Rounds to the closest integer",
             value -> CodeBlock.of("(int) $T.round($L)", Math.class, value));
     public static final ExpressionDefinition CLAMP =
-            clamp("math.clamp", double.class, "Keeps a number within a lower and upper bound", "$L");
+            clamp(StdNodes.MATH_CLAMP, double.class, "Keeps a number within a lower and upper bound", "$L");
     public static final ExpressionDefinition CLAMP_INTEGER = clamp(
-            "math.clamp_integer",
+            StdNodes.MATH_CLAMP_INTEGER,
             int.class,
             "Keeps a number within bounds, as integer with decimals cut off",
             "(int) $L");
 
     public static final ExpressionDefinition AND =
-            binary("logic.and", boolean.class, boolean.class, "&&", "True when both are true");
+            binary(StdNodes.LOGIC_AND, boolean.class, boolean.class, "&&", "True when both are true");
     public static final ExpressionDefinition OR =
-            binary("logic.or", boolean.class, boolean.class, "||", "True when at least one is true");
-    public static final ExpressionDefinition NOT =
-            unary("logic.not", boolean.class, boolean.class, "Inverts a boolean", value -> CodeBlock.of("!$L", value));
+            binary(StdNodes.LOGIC_OR, boolean.class, boolean.class, "||", "True when at least one is true");
+    public static final ExpressionDefinition NOT = unary(
+            StdNodes.LOGIC_NOT, boolean.class, boolean.class, "Inverts a boolean", value -> CodeBlock.of("!$L", value));
     public static final ExpressionDefinition GREATER =
-            binary("logic.greater", double.class, boolean.class, ">", "True when the first number is greater");
+            binary(StdNodes.LOGIC_GREATER, double.class, boolean.class, ">", "True when the first number is greater");
     public static final ExpressionDefinition GREATER_OR_EQUAL = binary(
-            "logic.greater_or_equal",
+            StdNodes.LOGIC_GREATER_OR_EQUAL,
             double.class,
             boolean.class,
             ">=",
             "True when the first number is greater or equal");
     public static final ExpressionDefinition LESS =
-            binary("logic.less", double.class, boolean.class, "<", "True when the first number is less");
+            binary(StdNodes.LOGIC_LESS, double.class, boolean.class, "<", "True when the first number is less");
     public static final ExpressionDefinition LESS_OR_EQUAL = binary(
-            "logic.less_or_equal", double.class, boolean.class, "<=", "True when the first number is less or equal");
+            StdNodes.LOGIC_LESS_OR_EQUAL,
+            double.class,
+            boolean.class,
+            "<=",
+            "True when the first number is less or equal");
     public static final ExpressionDefinition EQUAL = new ExpressionDefinition(
-            NodeDescriptor.builder("logic.equal", NodeKind.PURE)
+            NodeDescriptor.builder(StdNodes.LOGIC_EQUAL, NodeKind.PURE)
                     .description("True when both values are equal; two missing values are equal")
                     .input(FIRST, Object.class)
                     .input(SECOND, Object.class)
@@ -128,14 +137,14 @@ public final class StandardNodes {
                     .build(),
             (port, ctx) -> CodeBlock.of("$T.equals($L, $L)", Objects.class, ctx.input(FIRST), ctx.input(SECOND)));
     public static final ExpressionDefinition IS_NULL = unary(
-            "logic.is_null",
+            StdNodes.LOGIC_IS_NULL,
             Object.class,
             boolean.class,
             "True when the value is missing",
             value -> CodeBlock.of("($L == null)", value));
 
     public static final ExpressionDefinition COOLDOWN = new ExpressionDefinition(
-            NodeDescriptor.builder("function.cooldown", NodeKind.PURE)
+            NodeDescriptor.builder(StdNodes.FUNCTION_COOLDOWN, NodeKind.PURE)
                     .description("True at most once every n milliseconds; the first evaluation is true")
                     .input(VALUE, "Milliseconds", PortType.of(int.class), false)
                     .output(RESULT, boolean.class)
@@ -145,7 +154,7 @@ public final class StandardNodes {
                     ctx.field("cooldown", ClassName.get(Cooldown.class), CodeBlock.of("new $T()", Cooldown.class)),
                     ctx.input(VALUE)));
     public static final ExpressionDefinition RANDOM_INTEGER = new ExpressionDefinition(
-            NodeDescriptor.builder("function.random_integer", NodeKind.PURE)
+            NodeDescriptor.builder(StdNodes.FUNCTION_RANDOM_INTEGER, NodeKind.PURE)
                     .description("A random integer between lower and upper, both inclusive")
                     .input(LOWER, int.class)
                     .input(UPPER, int.class)
@@ -154,7 +163,7 @@ public final class StandardNodes {
             (port, ctx) -> CodeBlock.of(
                     "$T.current().nextInt($L, $L + 1)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
     public static final ExpressionDefinition RANDOM_NUMBER = new ExpressionDefinition(
-            NodeDescriptor.builder("function.random_number", NodeKind.PURE)
+            NodeDescriptor.builder(StdNodes.FUNCTION_RANDOM_NUMBER, NodeKind.PURE)
                     .description("A random number from lower, inclusive, to upper, exclusive")
                     .input(LOWER, double.class)
                     .input(UPPER, double.class)
@@ -164,7 +173,7 @@ public final class StandardNodes {
                     "$T.current().nextDouble($L, $L)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
 
     public static final StatementDefinition BRANCH = new StatementDefinition(
-            NodeDescriptor.builder("flow.branch", NodeKind.CONTROL_FLOW)
+            NodeDescriptor.builder(StdNodes.FLOW_BRANCH, NodeKind.CONTROL_FLOW)
                     .description("Runs one of two chains depending on a condition, then continues")
                     .input("condition", boolean.class)
                     .execution("true")
@@ -180,7 +189,7 @@ public final class StandardNodes {
                     .add(ctx.chain(NEXT))
                     .build());
     public static final StatementDefinition BATCH = new StatementDefinition(
-            NodeDescriptor.builder("flow.batch", NodeKind.CONTROL_FLOW)
+            NodeDescriptor.builder(StdNodes.FLOW_BATCH, NodeKind.CONTROL_FLOW)
                     .description("Runs a chain several times, then continues")
                     .input("count", int.class)
                     .output("index", int.class)
@@ -197,7 +206,7 @@ public final class StandardNodes {
                         .build();
             });
     public static final StatementDefinition FOR_EACH = new StatementDefinition(
-            NodeDescriptor.builder("flow.for_each", NodeKind.CONTROL_FLOW)
+            NodeDescriptor.builder(StdNodes.FLOW_FOR_EACH, NodeKind.CONTROL_FLOW)
                     .description("Runs a chain for every element of a list, then continues")
                     .input("list", PortType.parameterized(Iterable.class, PortType.variable("T")))
                     .output("element", PortType.variable("T"))
@@ -214,8 +223,19 @@ public final class StandardNodes {
                         .build();
             });
 
+    public static final int SWITCH_CASES = 8;
+    public static final StatementDefinition SWITCH = switchNode();
+    public static final ExpressionDefinition CHANCE = new ExpressionDefinition(
+            NodeDescriptor.builder(StdNodes.FUNCTION_CHANCE, NodeKind.PURE)
+                    .description("True with the given probability in percent")
+                    .input("percent", double.class)
+                    .output(RESULT, boolean.class)
+                    .build(),
+            (port, ctx) ->
+                    CodeBlock.of("($T.current().nextDouble(100) < $L)", ThreadLocalRandom.class, ctx.input("percent")));
+
     public static final StatementDefinition PRINT = new StatementDefinition(
-            NodeDescriptor.builder("debug.print", NodeKind.ACTION)
+            NodeDescriptor.builder(StdNodes.DEBUG_PRINT, NodeKind.ACTION)
                     .description("Prints a value to the console")
                     .input(VALUE, Object.class)
                     .execution(NEXT)
@@ -225,7 +245,31 @@ public final class StandardNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
+    public static final StatementDefinition TIMER_RESET = new StatementDefinition(
+            NodeDescriptor.builder(StdNodes.TIMER_RESET, NodeKind.ACTION)
+                    .description("Starts a named timer again; every timer node with the same name shares it")
+                    .config(TIMER, String.class, StringNode.valueOf(DEFAULT_TIMER))
+                    .execution(NEXT)
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement("$L.reset()", timer(ctx))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final ExpressionDefinition TIMER_ELAPSED = new ExpressionDefinition(
+            NodeDescriptor.builder(StdNodes.TIMER_ELAPSED, NodeKind.PURE)
+                    .description("Seconds since the mob appeared or a named timer was last reset")
+                    .config(TIMER, String.class, StringNode.valueOf(DEFAULT_TIMER))
+                    .output("seconds", double.class)
+                    .build(),
+            (port, ctx) -> CodeBlock.of("$L.seconds()", timer(ctx)));
+
     private StandardNodes() {}
+
+    private static CodeBlock timer(EmitContext ctx) {
+        return ctx.sharedField(
+                "timer " + ctx.config(TIMER), ClassName.get(Timer.class), CodeBlock.of("new $T()", Timer.class));
+    }
 
     /**
      * Nodes that narrow a value to a more specific type, one per type users can select: {@code cast.<id>}, named
@@ -247,7 +291,7 @@ public final class StandardNodes {
             Class<?> raw = concrete.raw();
             String name = types.name(type);
             casts.add(new ExpressionDefinition(
-                    NodeDescriptor.builder("cast." + id, NodeKind.PURE)
+                    NodeDescriptor.builder(StdNodes.cast(id), NodeKind.PURE)
                             .category("logic")
                             .name("As " + name)
                             .description(
@@ -297,12 +341,36 @@ public final class StandardNodes {
                 EQUAL,
                 IS_NULL,
                 COOLDOWN,
+                TIMER_RESET,
+                TIMER_ELAPSED,
+                CHANCE,
                 RANDOM_INTEGER,
                 RANDOM_NUMBER,
                 BRANCH,
+                SWITCH,
                 BATCH,
                 FOR_EACH,
                 PRINT);
+    }
+
+    /**
+     * Runs the chain of the case matching the value, {@code default} for any other value, then {@code next}. Case
+     * ports are fixed per node type, so there are {@value #SWITCH_CASES}, {@code case_0} to {@code case_7}.
+     */
+    private static StatementDefinition switchNode() {
+        NodeDescriptor.Builder descriptor = NodeDescriptor.builder(StdNodes.FLOW_SWITCH, NodeKind.CONTROL_FLOW)
+                .description("Runs the chain of the case matching the value, default otherwise, then continues")
+                .input(VALUE, int.class);
+        for (int i = 0; i < SWITCH_CASES; i++) descriptor.execution("case_" + i, "Case " + i);
+        descriptor.execution("default").execution(NEXT);
+        return new StatementDefinition(descriptor.build(), ctx -> {
+            CodeBlock.Builder code = CodeBlock.builder().beginControlFlow("switch ($L)", ctx.input(VALUE));
+            for (int i = 0; i < SWITCH_CASES; i++) {
+                code.add("case $L -> {\n$>", i).add(ctx.chain("case_" + i)).add("$<}\n");
+            }
+            code.add("default -> {\n$>").add(ctx.chain("default")).add("$<}\n");
+            return code.endControlFlow().add(ctx.chain(NEXT)).build();
+        });
     }
 
     private static ExpressionDefinition value(String id, Class<?> type, JsonNode defaultValue, String description) {

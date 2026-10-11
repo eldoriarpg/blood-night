@@ -358,6 +358,17 @@ final class GraphEmitter {
         }
 
         @Override
+        public CodeBlock sharedField(String name, TypeName type, CodeBlock initializer) {
+            return fields.computeIfAbsent(Scope.key("", name), key -> {
+                String field = GraphEmitter.this.name("s", "shared", name);
+                fieldSpecs.add(FieldSpec.builder(type, field, Modifier.PRIVATE).build());
+                fieldInitializers.add(sourceMap.marker(node.id()));
+                fieldInitializers.addStatement("this.$N = $L", field, initializer);
+                return CodeBlock.of("this.$N", field);
+            });
+        }
+
+        @Override
         public CodeBlock context() {
             if (graph.platform().context().isEmpty())
                 throw new IllegalStateException("The platform has no context type");

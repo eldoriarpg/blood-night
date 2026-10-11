@@ -20,7 +20,7 @@ import java.util.Objects;
  * A custom mob as configured: looks, attributes, drops, extension and the node graph of its behaviour.
  *
  * @param id        unique lower-case id
- * @param equipment item ids per slot
+ * @param equipment item ids per slot; none keeps what the entity spawned with
  * @param attributes type, name, health and damage
  * @param behaviour the behaviour graph
  * @param mobDrops  drops on death
@@ -28,7 +28,7 @@ import java.util.Objects;
  */
 public record CustomMob(
         String id,
-        Equipment equipment,
+        @Nullable Equipment equipment,
         Attributes attributes,
         Graph behaviour,
         MobDrops mobDrops,
@@ -46,7 +46,7 @@ public record CustomMob(
     @JsonCreator
     static CustomMob read(
             @JsonProperty("id") String id,
-            @JsonProperty("equipment") Equipment equipment,
+            @JsonProperty("equipment") @Nullable Equipment equipment,
             @JsonProperty("attributes") Attributes attributes,
             @JsonProperty("behaviour") @Nullable Graph behaviour,
             @JsonProperty("mobDrops") MobDrops mobDrops,

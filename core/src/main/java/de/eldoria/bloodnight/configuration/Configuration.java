@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.configuration;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import dev.chojo.ocular.Configurations;
@@ -18,6 +19,7 @@ import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -34,7 +36,6 @@ import java.util.function.Supplier;
  * later {@link #reload()}. Keys are reloaded one by one, so a broken file does not stop the others from reloading.
  */
 public class Configuration {
-    // TODO: Register default mobs on creation
     public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new)
             .name("mobs")
             .strict()
@@ -89,6 +90,20 @@ public class Configuration {
 
     public MobRegistry mobs() {
         return userData(MOBS, MobRegistry::new);
+    }
+
+    /**
+     * Writes mobs to {@code mobs.yml} when the file does not exist yet, so the first start ships a set of mobs. An
+     * existing file is never touched, even when it is empty.
+     *
+     * @param defaults the mobs to write, only asked for when they are needed
+     */
+    public void seedMobs(Supplier<? extends Collection<CustomMob>> defaults) {
+        if (configurations.exists(MOBS)) return;
+        MobRegistry registry = new MobRegistry();
+        defaults.get().forEach(registry::add);
+        configurations.replace(MOBS, registry);
+        configurations.save(MOBS);
     }
 
     public ItemRegistry items() {

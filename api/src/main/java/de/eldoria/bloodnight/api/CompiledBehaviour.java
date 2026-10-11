@@ -24,6 +24,11 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
  */
 public interface CompiledBehaviour {
     /**
+     * Called once when the mob has been spawned and outfitted; not when it is taken over again after its chunk loaded.
+     */
+    default void onSpawn() {}
+
+    /**
      * Called once per server tick.
      */
     default void onTick() {}
