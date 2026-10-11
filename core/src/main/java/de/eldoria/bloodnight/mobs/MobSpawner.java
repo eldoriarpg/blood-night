@@ -43,6 +43,7 @@ public class MobSpawner implements Listener {
         if (MobTags.isExtended(entity)) return;
 
         WorldSettings worldSettings = configuration.worldConfig(entity.getWorld());
+        if (worldSettings.mobSettings().spawning().ignoredReasons().contains(entity.getEntitySpawnReason())) return;
         Set<String> active = worldSettings.mobSettings().spawning().activeTypes();
         if (active == null || active.isEmpty()) return;
         List<CustomMob> matching = configuration.mobs().getMatching(active, entity.getType());

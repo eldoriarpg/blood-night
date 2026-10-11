@@ -29,6 +29,7 @@ final class ReloadCommand {
         plugin.configuration().mobs();
         plugin.configuration().items();
         plugin.configuration().macros();
+        plugin.messages().fallback(plugin.configuration().main().announcements().fallbackLocale());
         plugin.configuration()
                 .problems()
                 .keySet()

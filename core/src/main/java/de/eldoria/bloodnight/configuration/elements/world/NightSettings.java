@@ -16,6 +16,9 @@ import java.util.List;
  * {@code begin} and {@code end} are times of day in ticks (0 is sunrise); a night may wrap past midnight, e.g. 18000
  * to 2000. Commands run from the console when a blood night begins and ends; {@code {world}} is replaced by the
  * world's name, and a command with {@code {player}} runs once for every player in the world.
+ * <p>
+ * {@code blockedCommands} cannot be used by players during a blood night, e.g. {@code home} or {@code gamemode
+ * creative}; aliases and namespaced forms of a command are blocked too.
  */
 public class NightSettings {
     private int begin = 13_000;
@@ -24,6 +27,7 @@ public class NightSettings {
     private NightLength length = new NightLength();
     private List<String> beginCommands = new ArrayList<>();
     private List<String> endCommands = new ArrayList<>();
+    private List<String> blockedCommands = new ArrayList<>();
 
     /**
      * @return the time of day nights begin, 0 to 23999
@@ -65,5 +69,9 @@ public class NightSettings {
      */
     public List<String> endCommands() {
         return endCommands;
+    }
+
+    public List<String> blockedCommands() {
+        return blockedCommands;
     }
 }

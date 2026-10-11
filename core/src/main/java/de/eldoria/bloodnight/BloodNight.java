@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight;
 
+import de.eldoria.bloodnight.announce.Announcer;
+import de.eldoria.bloodnight.announce.Messages;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
@@ -29,6 +31,11 @@ import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightSkipGuard;
 import de.eldoria.bloodnight.night.NightStretch;
 import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.rules.CommandBlocker;
+import de.eldoria.bloodnight.rules.CreeperGuard;
+import de.eldoria.bloodnight.rules.DeathActionHandler;
+import de.eldoria.bloodnight.rules.MobDamage;
+import de.eldoria.bloodnight.rules.PhantomForce;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,6 +48,7 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+import java.util.random.RandomGenerator;
 
 /**
  * Plugin entry point: loads the configuration, compiles every mob's behaviour in the background, and wires the
@@ -63,6 +71,10 @@ public final class BloodNight extends JavaPlugin {
     private BukkitTask nightTask;
     private BukkitTask stretchTask;
     private NightStretch stretch;
+    private BukkitTask announceTask;
+    private Announcer announcer;
+    private PhantomForce phantoms;
+    private final Messages messages = new Messages();
     private NightSelector selector;
     private BloodNights bloodNights;
     private Behaviours behaviours = Behaviours.empty();
@@ -133,6 +145,33 @@ public final class BloodNight extends JavaPlugin {
                         getServer(), world -> configuration.worldConfig(world).nightSettings()),
                 this);
         plugins.registerEvents(stretch, this);
+        messages.register(configuration.main().announcements().fallbackLocale());
+        announcer = new Announcer(
+                getServer(),
+                bloodNights,
+                () -> configuration.main().announcements(),
+                configuration::worldConfig,
+                selector::times);
+        plugins.registerEvents(announcer, this);
+        phantoms = new PhantomForce(
+                bloodNights,
+                world -> configuration.worldConfig(world).mobSettings().forcePhantoms());
+        plugins.registerEvents(phantoms, this);
+        plugins.registerEvents(new CreeperGuard(bloodNights, configuration::worldConfig), this);
+        plugins.registerEvents(
+                new MobDamage(
+                        bloodNights, world -> configuration.worldConfig(world).mobSettings()),
+                this);
+        plugins.registerEvents(
+                new CommandBlocker(bloodNights, getServer().getCommandMap(), world -> configuration
+                        .worldConfig(world)
+                        .nightSettings()
+                        .blockedCommands()),
+                this);
+        plugins.registerEvents(
+                new DeathActionHandler(this, bloodNights, configuration::worldConfig, RandomGenerator.getDefault()),
+                this);
+        announceTask = getServer().getScheduler().runTaskTimer(this, announcer::tick, 20, 20);
         stretchTask = getServer().getScheduler().runTaskTimer(this, stretch::tick, 1, 1);
         nightTask = getServer()
                 .getScheduler()
@@ -168,7 +207,11 @@ public final class BloodNight extends JavaPlugin {
         if (nightTask != null) nightTask.cancel();
         if (stretchTask != null) stretchTask.cancel();
         if (stretch != null) stretch.clear();
+        if (announceTask != null) announceTask.cancel();
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
+        if (announcer != null) announcer.clear();
+        if (phantoms != null) phantoms.restoreAll(getServer().getOnlinePlayers());
+        messages.unregister();
         if (dispatcher != null) dispatcher.unregister();
         if (behaviourService != null) behaviourService.close();
     }
@@ -244,5 +287,12 @@ public final class BloodNight extends JavaPlugin {
      */
     public BloodNights bloodNights() {
         return bloodNights;
+    }
+
+    /**
+     * @return the plugin's translated texts
+     */
+    public Messages messages() {
+        return messages;
     }
 }

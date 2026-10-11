@@ -21,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,6 +35,9 @@ import java.util.function.Supplier;
  * Files holding what users wrote (mobs, items, macros) use strict keys: a file that cannot be read is never replaced
  * by a default. It is reported in {@link #problems()}, treated as empty and left untouched until it reads again on a
  * later {@link #reload()}. Keys are reloaded one by one, so a broken file does not stop the others from reloading.
+ * <p>
+ * Settings files (the main configuration, global drops, worlds) are written back once read, so options added by a
+ * newer version appear in existing files with their defaults. User data files are never written back.
  */
 public class Configuration {
     public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new)
@@ -58,6 +62,7 @@ public class Configuration {
 
     private final Configurations<ConfigFile> configurations;
     private final Set<Key<?>> worlds = new LinkedHashSet<>();
+    private final Set<Key<?>> completed = new HashSet<>();
     private final Map<String, String> problems = new LinkedHashMap<>();
 
     public Configuration(Plugin plugin) {
@@ -77,7 +82,9 @@ public class Configuration {
     }
 
     public ConfigFile main() {
-        return configurations.main();
+        ConfigFile main = configurations.main();
+        complete(MAIN);
+        return main;
     }
 
     public WorldSettings worldConfig(World world) {
@@ -85,7 +92,7 @@ public class Configuration {
                 .name(world.getName() + " Configuration")
                 .build();
         worlds.add(key);
-        return configurations.secondary(key);
+        return settings(key);
     }
 
     public MobRegistry mobs() {
@@ -115,7 +122,7 @@ public class Configuration {
     }
 
     public GlobalDrops globalDrops() {
-        return configurations.secondary(GLOBAL_DROPS);
+        return settings(GLOBAL_DROPS);
     }
 
     /**
@@ -124,6 +131,7 @@ public class Configuration {
      */
     public void reload() {
         problems.clear();
+        completed.clear();
         if (configurations.loaded(MAIN)) configurations.reload(MAIN);
         if (configurations.loaded(GLOBAL_DROPS)) configurations.reload(GLOBAL_DROPS);
         worlds.stream().filter(configurations::loaded).forEach(configurations::reload);
@@ -142,6 +150,16 @@ public class Configuration {
      */
     public Map<String, String> problems() {
         return Collections.unmodifiableMap(problems);
+    }
+
+    private <V> V settings(Key<V> key) {
+        V settings = configurations.secondary(key);
+        complete(key);
+        return settings;
+    }
+
+    private void complete(Key<?> key) {
+        if (completed.add(key)) configurations.save(key);
     }
 
     private <V> V userData(Key<V> key, Supplier<V> empty) {

@@ -4,6 +4,7 @@ plugins {
     id("bloodnight.paper")
     alias(libs.plugins.shadow)
     alias(libs.plugins.plugin.yml.paper)
+    alias(libs.plugins.run.paper)
 }
 
 dependencies {
@@ -39,6 +40,10 @@ paper {
             description = "Every blood night command"
             default = BukkitPluginDescription.Permission.Default.OP
             children = subcommands.keys.map { "bloodnight.command.$it" } + "bloodnight.command.night.manage"
+        }
+        register("bloodnight.bypass.commands") {
+            description = "Use commands blocked during blood nights"
+            default = BukkitPluginDescription.Permission.Default.OP
         }
         register("bloodnight.command.night.manage") {
             description = "/bloodnight night force and cancel, decides the coming night of a world"
@@ -76,4 +81,9 @@ tasks {
     build {
         dependsOn(shadowJar)
     }
+}
+
+tasks.runServer {
+    minecraftVersion("26.3")
+    jvmArgs("-Dcom.mojang.eula.agree=true")
 }
