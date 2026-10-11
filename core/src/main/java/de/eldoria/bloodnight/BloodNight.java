@@ -99,6 +99,10 @@ public final class BloodNight extends JavaPlugin {
      * @return completes on the main thread once the new behaviours are active
      */
     CompletableFuture<Behaviours> recompile() {
+        configuration.mobs();
+        configuration.macros();
+        configuration.problems().forEach((file, problem) -> getLogger().severe(
+                "%s could not be read and was left untouched; its content is ignored until it is fixed and reloaded: %s".formatted(file, problem)));
         CompletableFuture<Behaviours> applied = new CompletableFuture<>();
         behaviourService.compile(configuration.mobs().all(), configuration.macros().macros()).whenComplete((result, error) -> {
             if (error != null) {
@@ -139,6 +143,10 @@ public final class BloodNight extends JavaPlugin {
     private void reload(CommandSender sender) {
         configuration.reload();
         sender.sendMessage("Compiling behaviours...");
+        configuration.mobs();
+        configuration.items();
+        configuration.macros();
+        configuration.problems().keySet().forEach(file -> sender.sendMessage("%s could not be read, see the console".formatted(file)));
         recompile().thenAccept(result -> sender.sendMessage("Compiled %d mobs (%d from cache), %d with problems".formatted(
                 result.compiled().size(), result.fromCache(), result.problems().size())));
     }
