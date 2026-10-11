@@ -307,6 +307,44 @@ class BloodNightPlatformTest {
     }
 
     @Test
+    void castsLetTheMobPoisonWhatItHits() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("hit", NodeInstance.of("event.hit").chain("next", "guard"))
+                .node("victim", NodeInstance.of("cast.living_entity").input("value", "hit", "entity"))
+                .node(
+                        "guard",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "victim", "matches")
+                                .chain("true", "poison"))
+                .node(
+                        "effect",
+                        NodeInstance.of("potion_effect.create")
+                                .literal("type", StringNode.valueOf("minecraft:poison"))
+                                .literal("duration", IntNode.valueOf(60))
+                                .literal("amplifier", IntNode.valueOf(0)))
+                .node(
+                        "poison",
+                        NodeInstance.of("living_entity.add_potion_effect")
+                                .input("target", "victim", "result")
+                                .input("effect", "effect", "result"))
+                .build();
+        Zombie zombie = zombie();
+        Skeleton skeleton = world.spawn(new Location(world, 1, 64, 0), Skeleton.class);
+        behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
+
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        zombie,
+                        skeleton,
+                        EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                        DamageSource.builder(DamageType.GENERIC).build(),
+                        1));
+
+        assertTrue(skeleton.hasPotionEffect(PotionEffectType.POISON));
+        assertTrue(errors.isEmpty(), errors.toString());
+    }
+
+    @Test
     void registryValuesResolve() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "print"))

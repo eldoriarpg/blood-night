@@ -14,12 +14,14 @@ import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.std.runtime.Cooldown;
+import de.eldoria.graph.types.TypeMapping;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.StringNode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -224,6 +226,46 @@ public final class StandardNodes {
                     .build());
 
     private StandardNodes() {}
+
+    /**
+     * Nodes that narrow a value to a more specific type, one per type users can select: {@code cast.<id>}, named
+     * "As <Name>". Output {@code result} is the value as that type, or missing when it is not one; {@code matches}
+     * tells which, so a branch can guard the use. Primitive and generic types are left out, since no value is an
+     * instance of them.
+     *
+     * @param types the platform's type mapping
+     * @return one cast node per selectable reference type
+     */
+    public static List<NodeDefinition> casts(TypeMapping types) {
+        List<NodeDefinition> casts = new ArrayList<>();
+        types.selectable().forEach((id, type) -> {
+            if (!(type instanceof PortType.Concrete concrete)
+                    || concrete.raw().isPrimitive()
+                    || !concrete.arguments().isEmpty()) {
+                return;
+            }
+            Class<?> raw = concrete.raw();
+            String name = types.name(type);
+            casts.add(new ExpressionDefinition(
+                    NodeDescriptor.builder("cast." + id, NodeKind.PURE)
+                            .category("logic")
+                            .name("As " + name)
+                            .description(
+                                    "The value as %s, missing when it is none; matches tells which".formatted(name))
+                            .input(VALUE, Object.class)
+                            .output(RESULT, type)
+                            .output("matches", boolean.class)
+                            .build(),
+                    (port, ctx) -> {
+                        CodeBlock value = ctx.input(VALUE);
+                        return port.equals("matches")
+                                ? CodeBlock.of("$T.class.isInstance($L)", raw, value)
+                                : CodeBlock.of(
+                                        "($T.class.isInstance($L) ? $T.class.cast($L) : null)", raw, value, raw, value);
+                    }));
+        });
+        return casts;
+    }
 
     /**
      * @return every standard node

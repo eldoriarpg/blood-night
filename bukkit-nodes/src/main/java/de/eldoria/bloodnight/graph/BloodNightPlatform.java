@@ -86,6 +86,7 @@ public final class BloodNightPlatform {
         ReflectionRules rules = BukkitRules.rules(documentation);
         List<NodeDefinition> nodes = new ArrayList<>(StandardNodes.all());
         nodes.addAll(BukkitNodes.all());
+        nodes.addAll(StandardNodes.casts(BukkitTypes.mapping()));
         nodes.addAll(ReflectedType.of(Entity.class, "entity")
                 .action("teleport", "teleport", Param.of("location", Location.class))
                 .query(

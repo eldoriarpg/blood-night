@@ -7,8 +7,10 @@ package de.eldoria.graph.std;
 
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
+import de.eldoria.graph.types.TypeMapping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,6 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -275,6 +278,35 @@ class StandardNodesTest {
                         .anyMatch(problem ->
                                 problem.severity() == GraphProblem.Severity.ERROR && "record".equals(problem.node())),
                 exception.getMessage());
+    }
+
+    @Test
+    void castsNarrowValues() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node(
+                        "run",
+                        NodeInstance.of("test.run")
+                                .chain("next", "text_matches", "text_result", "number_matches", "number_result"))
+                .node("text", Harness.literal("hello"))
+                .node("number", Harness.literal(4))
+                .node("as_text", NodeInstance.of("cast.text").input("value", "text", "value"))
+                .node("number_as_text", NodeInstance.of("cast.text").input("value", "number", "value"))
+                .node("text_matches", NodeInstance.of("test.record").input("value", "as_text", "matches"))
+                .node("text_result", NodeInstance.of("test.record").input("value", "as_text", "result"))
+                .node("number_matches", NodeInstance.of("test.record").input("value", "number_as_text", "matches"))
+                .node("number_result", NodeInstance.of("test.record").input("value", "number_as_text", "result"))
+                .build();
+
+        assertEquals(Arrays.asList(true, "hello", false, null), Harness.run(graph, 1));
+    }
+
+    @Test
+    void castsSkipPrimitiveTypes() {
+        assertEquals(
+                List.of("cast.text"),
+                StandardNodes.casts(TypeMapping.defaults()).stream()
+                        .map(NodeDefinition::id)
+                        .toList());
     }
 
     @Test

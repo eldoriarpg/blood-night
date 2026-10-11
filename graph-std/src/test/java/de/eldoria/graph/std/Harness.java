@@ -19,6 +19,7 @@ import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.runtime.Cooldown;
+import de.eldoria.graph.types.TypeMapping;
 import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.IntNode;
@@ -57,6 +58,7 @@ final class Harness {
         GraphPlatform platform = GraphPlatform.builder(StdHost.class)
                 .context(Recorder.class)
                 .define(StandardNodes.all())
+                .define(StandardNodes.casts(TypeMapping.defaults()))
                 .define(RUN, RECORD)
                 .define(extra)
                 .classpath(List.of(codeSource(StdHost.class), codeSource(Cooldown.class)))
