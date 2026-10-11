@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    api(project(":nodes"))
     api(project(":api"))
     api(project(":bukkit-nodes"))
     api(project(":graph-editor-payload"))
