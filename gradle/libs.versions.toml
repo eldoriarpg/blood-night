@@ -2,7 +2,7 @@
 jackson = "3.2.3"
 jackson-bukkit = "2.0.0"
 ocular = "2.3.0"
-eldoutil = "2.0.1"
+eldoutil = "2.1.11"
 paper = "26.3.build.175-stable"
 paper-test = "26.2.build.133-stable"
 jetbrains-annotations = "26.1.0"
