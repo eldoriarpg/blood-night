@@ -1,0 +1,45 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+package de.eldoria.bloodnight.command;
+
+import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.editor.EditorPayload;
+import de.eldoria.graph.payload.CatalogGenerator;
+import net.strokkur.commands.Executes;
+import org.bukkit.command.CommandSender;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+/**
+ * {@code /bloodnight export}: writes the editor payload and catalog to {@code debug/}.
+ */
+final class ExportCommand {
+    private final BloodNight plugin;
+
+    ExportCommand(BloodNight plugin) {
+        this.plugin = plugin;
+    }
+
+    @Executes
+    void export(CommandSender sender) {
+        try {
+            Path directory = DebugFolder.of(plugin);
+            Files.writeString(
+                    directory.resolve("payload.json"),
+                    EditorPayload.of(
+                                    plugin.configuration(),
+                                    plugin.behaviours(),
+                                    plugin.catalog().version())
+                            .asJson());
+            Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(plugin.catalog()));
+            sender.sendMessage("Editor payload and catalog written to " + directory);
+        } catch (IOException e) {
+            sender.sendMessage("Could not write the editor payload: " + e.getMessage());
+        }
+    }
+}
