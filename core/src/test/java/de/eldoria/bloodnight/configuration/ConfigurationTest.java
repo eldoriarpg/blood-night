@@ -128,6 +128,24 @@ class ConfigurationTest {
     }
 
     @Test
+    void settingsFilesGainMissingKeysAndKeepTheirValues() throws IOException {
+        World world = MockBukkit.getMock().addSimpleWorld("world");
+        Path file = plugin.getDataFolder().toPath().resolve("worlds").resolve(world.getUID() + ".yml");
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, """
+                enabled: false
+                soundSettings: {}
+                """);
+
+        new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).worldConfig(world);
+
+        String written = Files.readString(file);
+        assertTrue(written.contains("enabled: false"), written);
+        assertTrue(written.contains("announcement:"), written);
+        assertTrue(written.contains("minInterval:"), written);
+    }
+
+    @Test
     void worldSettingsAreReadFromTheirFile() throws IOException {
         World world = MockBukkit.getMock().addSimpleWorld("world");
         Path file = plugin.getDataFolder().toPath().resolve("worlds").resolve(world.getUID() + ".yml");

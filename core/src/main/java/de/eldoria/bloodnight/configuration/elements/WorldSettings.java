@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.configuration.elements;
 
+import de.eldoria.bloodnight.configuration.elements.world.AnnouncementSettings;
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
@@ -20,6 +21,7 @@ public class WorldSettings {
     private NightSelection nightSelection = new NightSelection();
     private NightSettings nightSettings = new NightSettings();
     private MobSettings mobSettings = new MobSettings();
+    private AnnouncementSettings announcement = new AnnouncementSettings();
     private SoundSettings soundSettings = new SoundSettings();
     private WorldDrops worldDrops = WorldDrops.defaultDrops();
 
@@ -40,6 +42,13 @@ public class WorldSettings {
 
     public MobSettings mobSettings() {
         return mobSettings;
+    }
+
+    /**
+     * @return how blood nights are shown to the players
+     */
+    public AnnouncementSettings announcement() {
+        return announcement;
     }
 
     public SoundSettings soundSettings() {
