@@ -16,7 +16,6 @@ import dev.chojo.ocular.exceptions.ConfigurationException;
 import dev.chojo.ocular.key.Key;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -60,7 +59,7 @@ public class Configuration {
     private final Set<Key<?>> worlds = new LinkedHashSet<>();
     private final Map<String, String> problems = new LinkedHashMap<>();
 
-    public Configuration(@NotNull Plugin plugin) {
+    public Configuration(Plugin plugin) {
         this(plugin.getDataFolder().toPath(), plugin.getClass().getClassLoader());
     }
 

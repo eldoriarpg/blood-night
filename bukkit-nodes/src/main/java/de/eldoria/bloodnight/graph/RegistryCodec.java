@@ -13,7 +13,7 @@ import io.papermc.paper.registry.TypedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.lang.reflect.Field;

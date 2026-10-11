@@ -12,7 +12,7 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;

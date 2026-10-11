@@ -6,6 +6,7 @@
 package de.eldoria.graph.definition;
 
 import de.eldoria.graph.model.Macro;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public record MacroDefinition(
         Macro macro,
         Map<String, String> inputNodes,
         Map<String, String> outputNodes,
-        String startNode,
+        @Nullable String startNode,
         Map<String, String> endNodes)
         implements NodeDefinition {
     public MacroDefinition {

@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.api.CompiledBehaviour;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public record Trigger<E extends Event>(
         String description,
         Class<E> event,
         String method,
-        Function<E, Entity> subject,
+        Function<E, @Nullable Entity> subject,
         Predicate<E> filter,
         EventPriority priority,
         boolean ignoreCancelled,

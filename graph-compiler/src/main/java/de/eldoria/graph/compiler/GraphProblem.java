@@ -5,6 +5,8 @@
  */
 package de.eldoria.graph.compiler;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -19,18 +21,19 @@ import java.util.Objects;
  * @param trace    path into macros when the problem lies inside one, outermost first; the last frame names the
  *                 offending node inside its macro, and {@link #port()} belongs to that node
  */
-public record GraphProblem(Severity severity, String node, String port, String message, List<MacroFrame> trace) {
+public record GraphProblem(
+        Severity severity, @Nullable String node, @Nullable String port, String message, List<MacroFrame> trace) {
     public GraphProblem {
         Objects.requireNonNull(severity, "severity");
         Objects.requireNonNull(message, "message");
         trace = trace == null ? List.of() : List.copyOf(trace);
     }
 
-    static GraphProblem error(String node, String port, String message) {
+    static GraphProblem error(@Nullable String node, @Nullable String port, String message) {
         return new GraphProblem(Severity.ERROR, node, port, message, List.of());
     }
 
-    static GraphProblem warning(String node, String port, String message) {
+    static GraphProblem warning(@Nullable String node, @Nullable String port, String message) {
         return new GraphProblem(Severity.WARNING, node, port, message, List.of());
     }
 
@@ -39,7 +42,7 @@ public record GraphProblem(Severity severity, String node, String port, String m
      * @param trace path into macros
      * @return this problem relocated
      */
-    GraphProblem at(String node, List<MacroFrame> trace) {
+    GraphProblem at(@Nullable String node, List<MacroFrame> trace) {
         return new GraphProblem(severity, node, port, message, trace);
     }
 

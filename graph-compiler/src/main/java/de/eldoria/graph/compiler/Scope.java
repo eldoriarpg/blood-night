@@ -6,6 +6,7 @@
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.CodeBlock;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,13 +22,13 @@ import java.util.Map;
  * Root scopes remember their entry node, because an entry's outputs are only readable inside its own method.
  */
 final class Scope {
-    private final Scope parent;
+    private final @Nullable Scope parent;
     private final boolean isolating;
-    private final String entry;
+    private final @Nullable String entry;
     private final Map<String, CodeBlock> computed = new HashMap<>();
     private final Map<String, CodeBlock> bound = new HashMap<>();
 
-    private Scope(Scope parent, boolean isolating, String entry) {
+    private Scope(@Nullable Scope parent, boolean isolating, @Nullable String entry) {
         this.parent = parent;
         this.isolating = isolating;
         this.entry = entry;
@@ -53,6 +54,7 @@ final class Scope {
         return node + '\u0000' + port;
     }
 
+    @Nullable
     CodeBlock findComputed(String key) {
         for (Scope scope = this; scope != null; scope = scope.parent) {
             CodeBlock value = scope.computed.get(key);
@@ -62,6 +64,7 @@ final class Scope {
         return null;
     }
 
+    @Nullable
     CodeBlock findBound(String key) {
         for (Scope scope = this; scope != null; scope = scope.parent) {
             CodeBlock value = scope.bound.get(key);

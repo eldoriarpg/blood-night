@@ -29,7 +29,8 @@ public final class CatalogMain {
         List<Path> sources = Arrays.stream(args).skip(1).map(Path::of).toList();
         try (JavadocDocumentation documentation = new JavadocDocumentation(sources)) {
             Catalog catalog = CatalogGenerator.generate(BloodNightPlatform.create(List.of(), documentation));
-            Files.createDirectories(output.getParent());
+            Path directory = output.toAbsolutePath().getParent();
+            if (directory != null) Files.createDirectories(directory);
             Files.writeString(output, CatalogGenerator.write(catalog));
             System.out.printf(
                     "Catalog %s: %d nodes, %d types -> %s%n",

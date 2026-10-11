@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -111,7 +112,7 @@ public final class BukkitTypes {
     }
 
     private static <T extends Keyed> RegistryCodec<T> registry(
-            Class<T> type, RegistryKey<T> key, String field, Class<?> keys) {
+            Class<T> type, RegistryKey<T> key, String field, @Nullable Class<?> keys) {
         return new RegistryCodec<>(type, key, field, keys);
     }
 }

@@ -5,6 +5,7 @@
  */
 package de.eldoria.graph.definition;
 
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
@@ -235,11 +236,11 @@ public record NodeDescriptor(
          *
          * @param defaultValue value used when the graph sets none, or {@code null} for a required field
          */
-        public Builder config(String id, Class<?> type, JsonNode defaultValue) {
+        public Builder config(String id, Class<?> type, @Nullable JsonNode defaultValue) {
             return config(id, Ids.humanize(id), PortType.of(type), defaultValue);
         }
 
-        public Builder config(String id, String name, PortType type, JsonNode defaultValue) {
+        public Builder config(String id, String name, PortType type, @Nullable JsonNode defaultValue) {
             config.add(new ConfigField(id, name, type, defaultValue));
             return this;
         }

@@ -126,7 +126,9 @@ public final class BytecodeCache {
         if (!Files.isDirectory(directory)) return;
         try (Stream<Path> files = Files.list(directory)) {
             for (Path file : files.toList()) {
-                String name = file.getFileName().toString();
+                Path fileName = file.getFileName();
+                if (fileName == null) continue;
+                String name = fileName.toString();
                 if (!name.endsWith(".json") || !keys.contains(name.substring(0, name.length() - ".json".length())))
                     Files.deleteIfExists(file);
             }

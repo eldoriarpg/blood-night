@@ -5,6 +5,8 @@
  */
 package de.eldoria.graph.compiler;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,9 +17,9 @@ import java.util.stream.Collectors;
  */
 public final class GraphCompilationException extends Exception {
     private final List<GraphProblem> problems;
-    private final String source;
+    private final @Nullable String source;
 
-    GraphCompilationException(List<GraphProblem> problems, String source) {
+    GraphCompilationException(List<GraphProblem> problems, @Nullable String source) {
         super(problems.stream()
                 .map(GraphProblem::toString)
                 .collect(Collectors.joining("\n", "Graph does not compile:\n", "")));

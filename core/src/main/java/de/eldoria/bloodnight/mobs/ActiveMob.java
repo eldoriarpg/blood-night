@@ -9,7 +9,7 @@ import de.eldoria.bloodnight.api.CompiledBehaviour;
 import de.eldoria.bloodnight.mob.CustomMob;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A custom mob alive in a world, with the behaviour instance that holds its state.

@@ -8,7 +8,7 @@ package de.eldoria.bloodnight.api;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * What a compiled behaviour knows about the mob it belongs to. Passed to the constructor of every generated class.

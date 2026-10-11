@@ -6,6 +6,7 @@
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 /**
@@ -17,4 +18,5 @@ import tools.jackson.databind.JsonNode;
  * @param defaultValue value used when none is set, absent for required fields
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ConfigInfo(String id, String name, TypeRef type, JsonNode defaultValue) {}
+public record ConfigInfo(
+        String id, String name, TypeRef type, @Nullable JsonNode defaultValue) {}

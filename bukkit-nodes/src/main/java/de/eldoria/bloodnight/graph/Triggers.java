@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -194,7 +195,7 @@ public final class Triggers {
         return event.getEntity() instanceof LivingEntity living && event.getFinalDamage() >= living.getHealth();
     }
 
-    private static Entity shooter(Projectile projectile) {
+    private static @Nullable Entity shooter(Projectile projectile) {
         return projectile.getShooter() instanceof Entity entity ? entity : null;
     }
 }

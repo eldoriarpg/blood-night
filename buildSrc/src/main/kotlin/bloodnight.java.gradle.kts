@@ -1,8 +1,12 @@
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
+import com.github.spotbugs.snom.SpotBugsTask
 import org.gradle.accessors.dm.LibrariesForLibs
 
 plugins {
     java
     id("com.diffplug.spotless")
+    id("com.github.spotbugs")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -25,7 +29,8 @@ repositories {
 
 dependencies {
     implementation(platform(libs.jackson.bom))
-    compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.spotbugs.annotations)
+    testCompileOnly(libs.spotbugs.annotations)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.bundles.junit)
     testRuntimeOnly(libs.junit.launcher)
@@ -47,3 +52,17 @@ spotless {
         encoding("UTF-8")
     }
 }
+
+spotbugs {
+    ignoreFailures = false
+    effort = Effort.MAX
+    reportLevel = Confidence.LOW
+    includeFilter = rootProject.layout.projectDirectory.file("config/spotbugs/null.xml")
+}
+
+tasks.named<SpotBugsTask>("spotbugsMain") {
+    reports.create("html") { required = true }
+    reports.create("xml") { required = true }
+}
+
+tasks.named("spotbugsTest") { enabled = false }

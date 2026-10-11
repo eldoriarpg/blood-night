@@ -5,6 +5,7 @@
  */
 package de.eldoria.graph.definition;
 
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.Objects;
@@ -21,7 +22,8 @@ import java.util.Optional;
  * @param type         Java type of the value; needs a literal codec
  * @param defaultValue value used when the graph sets none, or {@code null} when the field is required
  */
-public record ConfigField(String id, String name, PortType type, JsonNode defaultValue) {
+public record ConfigField(
+        String id, String name, PortType type, @Nullable JsonNode defaultValue) {
     public ConfigField {
         Ids.check(id, "config field");
         Objects.requireNonNull(name, "name");

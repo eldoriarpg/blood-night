@@ -6,6 +6,7 @@
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -23,7 +24,11 @@ import java.util.List;
  * @param arguments its type arguments
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record TypeRef(String id, String variable, String raw, List<TypeRef> arguments) {
+public record TypeRef(
+        @Nullable String id,
+        @Nullable String variable,
+        @Nullable String raw,
+        List<TypeRef> arguments) {
     public TypeRef {
         arguments = arguments == null ? List.of() : List.copyOf(arguments);
     }

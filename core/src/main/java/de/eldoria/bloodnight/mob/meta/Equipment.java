@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mob.meta;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record Equipment(
         @Nullable String head,

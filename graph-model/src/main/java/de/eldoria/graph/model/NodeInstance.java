@@ -6,6 +6,7 @@
 package de.eldoria.graph.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public record NodeInstance(
         Map<String, Edge> inputs,
         Map<String, JsonNode> literals,
         Map<String, List<String>> executions,
-        JsonNode editor) {
+        @Nullable JsonNode editor) {
     public NodeInstance {
         Objects.requireNonNull(type, "type");
         config = sorted(config);
@@ -73,7 +74,7 @@ public record NodeInstance(
         private final Map<String, Edge> inputs = new TreeMap<>();
         private final Map<String, JsonNode> literals = new TreeMap<>();
         private final Map<String, List<String>> executions = new TreeMap<>();
-        private JsonNode editor;
+        private @Nullable JsonNode editor;
 
         private Builder(String type) {
             this.type = type;

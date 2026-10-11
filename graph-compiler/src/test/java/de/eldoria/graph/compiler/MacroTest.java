@@ -85,7 +85,7 @@ class MacroTest {
                 "double_it",
                 "Double It",
                 "Adds a number to itself",
-                null,
+                "macro",
                 Graph.builder()
                         .node("x", named("macro.input.number", "x"))
                         .node(
@@ -101,11 +101,8 @@ class MacroTest {
      * Action with exits {@code high} and {@code low}, depending on whether {@code value} is greater than ten.
      */
     private static Macro check() {
-        return new Macro(
+        return Macro.of(
                 "check",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("start", NodeInstance.of("macro.start").chain("next", "branch"))
                         .node("value", named("macro.input.integer", "value"))
@@ -127,11 +124,8 @@ class MacroTest {
     }
 
     private static Macro quadruple() {
-        return new Macro(
+        return Macro.of(
                 "quadruple",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("x", named("macro.input.number", "x"))
                         .node("first", NodeInstance.of("macro.double_it").input("x", "x", "value"))
@@ -141,11 +135,8 @@ class MacroTest {
     }
 
     private static Macro counting() {
-        return new Macro(
+        return Macro.of(
                 "counting",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("counter", NodeInstance.of("state.counter"))
                         .node("out", named("macro.output", "count").input("value", "counter", "count"))
@@ -153,11 +144,8 @@ class MacroTest {
     }
 
     private static Macro brokenInside() {
-        return new Macro(
+        return Macro.of(
                 "broken_inside",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("oops", NodeInstance.of("debug.broken"))
                         .node("out", named("macro.output", "value").input("value", "oops", "value"))
@@ -354,11 +342,8 @@ class MacroTest {
 
     @Test
     void nestedProblemsCarryTheWholeTrace() {
-        Macro wrapper = new Macro(
+        Macro wrapper = Macro.of(
                 "wrapper",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("inner", NodeInstance.of("macro.broken_inside"))
                         .node("out", named("macro.output", "value").input("value", "inner", "value"))
@@ -396,40 +381,28 @@ class MacroTest {
 
     @Test
     void brokenMacrosAreLeftOutAndReported() {
-        Macro missingInput = new Macro(
+        Macro missingInput = Macro.of(
                 "missing_input",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("add", NodeInstance.of("math.add"))
                         .node("out", named("macro.output", "result").input("value", "add", "result"))
                         .build());
-        Macro unnamed = new Macro(
+        Macro unnamed = Macro.of(
                 "unnamed",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("x", NodeInstance.of("macro.input.number"))
                         .node("out", NodeInstance.of("macro.output").input("value", "x", "value"))
                         .build());
-        Macro empty = new Macro("empty", null, null, null, Graph.builder().build());
-        Macro withEntry = new Macro(
+        Macro empty = Macro.of("empty", Graph.builder().build());
+        Macro withEntry = Macro.of(
                 "with_entry",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("start", NodeInstance.of("entry.start"))
                         .node("x", named("macro.input.number", "x"))
                         .node("out", named("macro.output", "x").input("value", "x", "value"))
                         .build());
-        Macro uses = new Macro(
+        Macro uses = Macro.of(
                 "uses_broken",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("inner", NodeInstance.of("macro.missing_input"))
                         .node("out", named("macro.output", "result").input("value", "inner", "result"))
@@ -442,7 +415,7 @@ class MacroTest {
                 withEntry,
                 uses,
                 doubleIt(),
-                new Macro("input", null, null, null, Graph.builder().build()));
+                Macro.of("input", Graph.builder().build()));
 
         assertEquals(
                 List.of("macro.double_it"),
@@ -464,20 +437,14 @@ class MacroTest {
 
     @Test
     void cyclesAreRejected() {
-        Macro a = new Macro(
+        Macro a = Macro.of(
                 "a",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("b", NodeInstance.of("macro.b"))
                         .node("out", named("macro.output", "value").input("value", "b", "value"))
                         .build());
-        Macro b = new Macro(
+        Macro b = Macro.of(
                 "b",
-                null,
-                null,
-                null,
                 Graph.builder()
                         .node("a", NodeInstance.of("macro.a"))
                         .node("out", named("macro.output", "value").input("value", "a", "value"))

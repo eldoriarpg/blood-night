@@ -6,6 +6,7 @@
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.CodeBlock;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +25,14 @@ import java.util.regex.Pattern;
 final class SourceMap {
     private static final Pattern MARKER = Pattern.compile("^\\s*// node #(\\d+)$");
 
-    private final List<String> nodes = new ArrayList<>();
-    private final TreeMap<Long, String> lines = new TreeMap<>();
+    private final List<@Nullable String> nodes = new ArrayList<>();
+    private final TreeMap<Long, @Nullable String> lines = new TreeMap<>();
 
     /**
      * @param node node id, or {@code null} for code that belongs to no node
      * @return a marker comment line for the node
      */
-    CodeBlock marker(String node) {
+    CodeBlock marker(@Nullable String node) {
         nodes.add(node);
         return CodeBlock.of("// node #$L\n", nodes.size() - 1);
     }

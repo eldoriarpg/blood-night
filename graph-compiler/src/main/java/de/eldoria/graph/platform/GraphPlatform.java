@@ -11,6 +11,7 @@ import de.eldoria.graph.definition.EntryParameter;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.types.TypeMapping;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -226,7 +227,7 @@ public final class GraphPlatform {
             }
         }
 
-        private static Class<?> rawClass(PortType type) {
+        private static @Nullable Class<?> rawClass(PortType type) {
             return type instanceof PortType.Concrete concrete ? concrete.raw() : null;
         }
     }

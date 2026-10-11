@@ -75,11 +75,20 @@ class GraphJsonTest {
 
     @Test
     void macrosRoundTrip() {
-        Macro macro = new Macro("double_it", "Double It", "Adds a number to itself", null, sample());
+        Macro macro = new Macro("double_it", "Double It", "Adds a number to itself", "macro", sample());
 
         Macro read = GraphJson.readMacro(GraphJson.writeMacro(macro));
 
         assertEquals(macro, read);
+        assertEquals("macro", read.category());
+    }
+
+    @Test
+    void macrosFillInMissingFields() {
+        Macro read = GraphJson.readMacro("{\"id\":\"bare\",\"body\":{\"nodes\":{}}}");
+
+        assertEquals(Macro.of("bare", Graph.builder().build()), read);
+        assertEquals("bare", read.name());
         assertEquals("macro", read.category());
     }
 
