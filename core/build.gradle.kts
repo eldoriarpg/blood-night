@@ -7,6 +7,7 @@ dependencies {
     api(project(":nodes"))
     api(project(":api"))
     api(project(":bukkit-nodes"))
+    api(project(":graph-editor-payload"))
     api(libs.bundles.eldoria.utilities)
     api(libs.bundles.jackson.full)
     api(libs.jackson.bukkit.paper)

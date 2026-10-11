@@ -4,7 +4,7 @@ import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.configuration.Configuration;
-import de.eldoria.bloodnight.editor.BundledCatalog;
+import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
@@ -17,6 +17,8 @@ import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.payload.Catalog;
+import de.eldoria.graph.payload.CatalogGenerator;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -32,7 +34,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -55,11 +56,15 @@ public final class BloodNight extends JavaPlugin {
     private TriggerDispatcher dispatcher;
     private BukkitTask tickTask;
     private Behaviours behaviours = Behaviours.empty();
+    private Catalog catalog;
 
     @Override
     public void onEnable() {
         configuration = new Configuration(this);
         var platform = BloodNightPlatform.create(CompileClasspath.discover(getClassLoader()));
+        long start = System.nanoTime();
+        catalog = RuntimeCatalog.create(platform);
+        getLogger().info("Editor catalog %s: %d nodes in %d ms".formatted(catalog.version(), catalog.nodes().size(), (System.nanoTime() - start) / 1_000_000));
         behaviourService = new BehaviourService(platform, getClassLoader(), new BytecodeCache(getDataFolder().toPath().resolve("cache")),
                 buildFingerprint(), getLogger());
         coordinator = new MobCoordinator(new MobOutfitter(() -> configuration.items()), () -> configuration.items(),
@@ -177,9 +182,8 @@ public final class BloodNight extends JavaPlugin {
         try {
             Path directory = getDataFolder().toPath().resolve("debug");
             Files.createDirectories(directory);
-            Files.writeString(directory.resolve("payload.json"), EditorPayload.of(configuration, behaviours, BundledCatalog.version()).asJson());
-            Optional<String> catalog = BundledCatalog.json();
-            if (catalog.isPresent()) Files.writeString(directory.resolve("catalog.json"), catalog.get());
+            Files.writeString(directory.resolve("payload.json"), EditorPayload.of(configuration, behaviours, catalog.version()).asJson());
+            Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(catalog));
             sender.sendMessage("Editor payload and catalog written to " + directory);
         } catch (IOException e) {
             sender.sendMessage("Could not write the editor payload: " + e.getMessage());

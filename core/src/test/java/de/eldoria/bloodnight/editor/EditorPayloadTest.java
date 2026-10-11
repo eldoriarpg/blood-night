@@ -2,10 +2,14 @@ package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.behaviour.Behaviours;
+import de.eldoria.bloodnight.graph.BloodNightPlatform;
+import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.GraphJson;
 import de.eldoria.graph.model.NodeInstance;
+import de.eldoria.graph.payload.Catalog;
+import de.eldoria.graph.payload.NodeType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,9 +56,15 @@ class EditorPayloadTest {
 
     @Test
     void theBundledCatalogIsAvailable() {
-        String json = BundledCatalog.json().orElseThrow();
+        assertTrue(BundledCatalog.json().orElseThrow().contains("\"event.damage_by_player\""));
+    }
 
-        assertTrue(json.contains("\"event.damage_by_player\""));
-        assertEquals(16, BundledCatalog.version().length());
+    @Test
+    void theRuntimeCatalogKeepsTheBundledDescriptions() {
+        Catalog catalog = RuntimeCatalog.create(BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader())));
+
+        NodeType living = catalog.nodes().stream().filter(node -> node.id().equals("living_entity.get")).findFirst().orElseThrow();
+        assertTrue(living.outputs().stream().anyMatch(port -> port.id().equals("absorption_amount") && !port.description().isEmpty()));
+        assertEquals(16, catalog.version().length());
     }
 }

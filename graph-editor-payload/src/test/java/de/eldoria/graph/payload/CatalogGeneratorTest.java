@@ -54,6 +54,31 @@ class CatalogGeneratorTest {
     }
 
     @Test
+    void readsWhatItWrites() {
+        Catalog catalog = CatalogGenerator.generate(platform());
+
+        assertEquals(CatalogGenerator.write(catalog), CatalogGenerator.write(CatalogGenerator.read(CatalogGenerator.write(catalog))));
+    }
+
+    @Test
+    void descriptionsCanBeTakenFromAnotherCatalog() {
+        Catalog plain = CatalogGenerator.generate(platform());
+        NodeType add = node(plain, "math.add");
+        PortInfo first = add.inputs().getFirst();
+        NodeType documentedAdd = new NodeType(add.id(), add.kind(), add.category(), add.name(), "Documented add", add.macroOnly(),
+                List.of(new PortInfo(first.id(), first.name(), "The first summand", first.type(), first.optional(), first.literal())),
+                add.outputs(), add.executions(), add.config());
+        Catalog documented = new Catalog(plain.format(), "x", List.of(documentedAdd), List.of(), plain.selectable());
+
+        Catalog merged = CatalogGenerator.withDescriptions(plain, documented);
+
+        assertEquals("Adds two numbers", node(merged, "math.add").description(), "existing descriptions win");
+        assertEquals("The first summand", node(merged, "math.add").inputs().getFirst().description());
+        assertEquals(plain.nodes().size(), merged.nodes().size());
+        assertFalse(plain.version().equals(merged.version()));
+    }
+
+    @Test
     void isDeterministic() {
         assertEquals(CatalogGenerator.write(CatalogGenerator.generate(platform())), CatalogGenerator.write(CatalogGenerator.generate(platform())));
     }

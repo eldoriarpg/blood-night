@@ -1,7 +1,5 @@
 package de.eldoria.bloodnight.editor;
 
-import de.eldoria.graph.model.GraphJson;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -9,7 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
- * The editor catalog generated at build time and shipped inside the plugin jar.
+ * The editor catalog generated at build time and shipped inside the plugin jar. It describes the API the jar was
+ * built against and carries the javadoc texts; the server's own catalog is {@link RuntimeCatalog}.
  */
 public final class BundledCatalog {
     private static final String RESOURCE = "/catalog.json";
@@ -26,12 +25,5 @@ public final class BundledCatalog {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    /**
-     * @return the catalog's version, or {@code unknown} when the jar contains none
-     */
-    public static String version() {
-        return json().map(json -> GraphJson.mapper().readTree(json).path("version").asString("unknown")).orElse("unknown");
     }
 }
