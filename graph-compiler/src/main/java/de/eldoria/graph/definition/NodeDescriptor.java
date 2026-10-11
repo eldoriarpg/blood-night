@@ -29,6 +29,8 @@ import java.util.stream.Stream;
  * @param outputs     data outputs
  * @param executions  execution outputs that nodes are chained into
  * @param config      literal values set in the editor
+ * @param stateful    whether the node's value may change between two evaluations at the same point, e.g. random
+ *                    numbers; such values are never moved or merged when the code is tidied
  */
 public record NodeDescriptor(
         String id,
@@ -39,7 +41,8 @@ public record NodeDescriptor(
         List<Port> inputs,
         List<Port> outputs,
         List<ExecutionPort> executions,
-        List<ConfigField> config) {
+        List<ConfigField> config,
+        boolean stateful) {
     public NodeDescriptor {
         Ids.checkPath(id, "node");
         Objects.requireNonNull(kind, "kind");
@@ -128,6 +131,7 @@ public record NodeDescriptor(
         private String category;
         private String name;
         private String description = "";
+        private boolean stateful;
 
         private Builder(String id, NodeKind kind) {
             this.id = Ids.checkPath(id, "node");
@@ -246,10 +250,22 @@ public record NodeDescriptor(
         }
 
         /**
+         * Marks the node's value as one that may differ between two evaluations at the same point, such as a random
+         * number or a cooldown, so generated code never moves or merges it.
+         *
+         * @return this builder
+         */
+        public Builder stateful() {
+            this.stateful = true;
+            return this;
+        }
+
+        /**
          * @return the descriptor
          */
         public NodeDescriptor build() {
-            return new NodeDescriptor(id, kind, category, name, description, inputs, outputs, executions, config);
+            return new NodeDescriptor(
+                    id, kind, category, name, description, inputs, outputs, executions, config, stateful);
         }
     }
 }

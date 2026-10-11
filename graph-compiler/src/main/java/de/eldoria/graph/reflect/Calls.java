@@ -92,7 +92,7 @@ final class Calls {
         return new StatementDefinition(descriptor.build(), ctx -> {
             CodeBlock invocation = CodeBlock.of("$L.$N($L)", ctx.input(TARGET), name, arguments(inputs, ctx));
             CodeBlock.Builder code = CodeBlock.builder();
-            if (returns) {
+            if (returns && ctx.isRead(RESULT)) {
                 CodeBlock result = ctx.bind(RESULT, NEXT);
                 code.addStatement("final $T $L = $L", ctx.type(RESULT), result, invocation);
             } else {

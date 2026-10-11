@@ -326,7 +326,7 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob("fearful_enderman", "Fearful Enderman", EntityType.ENDERMAN, graph -> {
             graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.particles("minecraft:witch", 10));
             blindPlayersOnHit(graph, 7, 1);
-            graph.on(MOB_NIGHT_END, graph.particlesAround("minecraft:reverse_portal", 10));
+            graph.on(MOB_NIGHT_END, graph.particlesAroundWith("minecraft:dragon_breath", 10, graph.power(1), "power"));
         });
     }
 
@@ -338,7 +338,7 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.dust(0, 128, 0, 2, 5));
             String teleport = graph.entry(EVENT_TELEPORT);
             graph.on(EVENT_TELEPORT, graph.cloud(teleport, "from", "minecraft:strong_poison", 10, 4, 0, 128, 0));
-            graph.on(MOB_NIGHT_END, graph.particlesAround("minecraft:reverse_portal", 10));
+            graph.on(MOB_NIGHT_END, graph.particlesAroundWith("minecraft:dragon_breath", 10, graph.power(1), "power"));
         });
     }
 
@@ -424,7 +424,10 @@ public final class DefaultMobs implements BloodNightNodes {
                     .id();
             graph.on(
                     MOB_TICK,
-                    graph.particles("minecraft:electric_spark", 15),
+                    graph.every(
+                            250,
+                            graph.particlesAroundWith(
+                                    "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
                     graph.present(graph.selfMob(), TARGET, graph.every(4000, strike)));
             String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
             graph.on(EVENT_PROJECTILE_SHOOT, graph.cancel(shoot));
@@ -440,7 +443,10 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(MOB_SPAWN, graph.equip(EQUIPMENT_SET_ITEM_IN_MAIN_HAND, "minecraft:wither_skeleton_skull"));
             graph.on(
                     MOB_TICK,
-                    graph.particles("minecraft:large_smoke", 15),
+                    graph.every(
+                            250,
+                            graph.particlesAroundWith(
+                                    "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
                     graph.present(
                             graph.selfMob(),
                             TARGET,

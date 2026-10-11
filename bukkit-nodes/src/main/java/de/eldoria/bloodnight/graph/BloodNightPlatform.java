@@ -24,6 +24,7 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockType;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -76,6 +77,8 @@ public final class BloodNightPlatform {
                 .context(MobContext.class)
                 .types(BukkitTypes.mapping())
                 .define(nodes(documentation))
+                .rule(BloodNightNodes.WORLD_SPAWN_PARTICLE, ParticleData.WITHOUT_DATA)
+                .rule(BloodNightNodes.WORLD_SPAWN_PARTICLE_WITH_DATA, ParticleData.WITH_DATA)
                 .classpath(classpath)
                 .build();
     }
@@ -154,6 +157,36 @@ public final class BloodNightPlatform {
                 .category("world")
                 .name("Dust")
                 .constructor("create", Param.of("color", Color.class), Param.of("size", float.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(Particle.DustTransition.class, "dust_transition")
+                .category("world")
+                .name("Dust Transition")
+                .constructor(
+                        "create",
+                        Param.of("from", Color.class),
+                        Param.of("to", Color.class),
+                        Param.of("size", float.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(Particle.Spell.class, "spell")
+                .category("world")
+                .name("Spell")
+                .constructor("create", Param.of("color", Color.class), Param.of("power", float.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(Particle.Trail.class, "trail")
+                .category("world")
+                .name("Trail")
+                .constructor(
+                        "create",
+                        Param.of("target", Location.class),
+                        Param.of("color", Color.class),
+                        Param.of("duration", int.class))
+                .build(rules));
+        nodes.addAll(ReflectedType.of(BlockType.class, "block_type")
+                .category("world")
+                .name("Block Type")
+                .getter(false)
+                .setters(false)
+                .query("create_block_data", "createBlockData")
                 .build(rules));
         nodes.addAll(ReflectedType.of(Color.class, "color")
                 .category("value")

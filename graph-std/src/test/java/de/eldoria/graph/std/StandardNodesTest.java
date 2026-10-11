@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static de.eldoria.graph.std.Harness.evaluate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -386,5 +387,70 @@ class StandardNodesTest {
         assertEquals(List.of(true), Harness.run(graph, 1));
         String source = Harness.compile(graph).source();
         assertEquals(2, source.split("new Timer\\(\\)", -1).length - 1, source);
+    }
+
+    @Test
+    void branchWritesOnlyTheArmsThatRun() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "branch"))
+                .node(
+                        "never",
+                        NodeInstance.of("logic.greater")
+                                .literal("first", DoubleNode.valueOf(1))
+                                .literal("second", DoubleNode.valueOf(2)))
+                .node(
+                        "branch",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "never", "result")
+                                .chain("false", "record"))
+                .node("record", NodeInstance.of("test.record").literal("value", StringNode.valueOf("ran")))
+                .build();
+
+        String source = Harness.compile(graph).source();
+        assertEquals(List.of("ran"), Harness.run(graph, 1));
+        assertTrue(source.contains("if (!(1.0d > 2.0d))"), source);
+        assertFalse(source.contains("else"), source);
+    }
+
+    @Test
+    void valuesReadOnceGoStraightIntoTheirReader() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "record"))
+                .node("abs", NodeInstance.of("math.abs").literal("value", DoubleNode.valueOf(-2)))
+                .node("record", NodeInstance.of("test.record").input("value", "abs", "result"))
+                .build();
+
+        assertEquals(List.of(2.0), Harness.run(graph, 1));
+        assertTrue(Harness.compile(graph).source().contains("record(Math.abs(-2.0d))"));
+    }
+
+    @Test
+    void statefulValuesAndValuesReadInNestedBlocksStayLocals() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "branch"))
+                .node(
+                        "random",
+                        NodeInstance.of("function.random_number")
+                                .literal("lower", DoubleNode.valueOf(0))
+                                .literal("upper", DoubleNode.valueOf(1)))
+                .node("abs", NodeInstance.of("math.abs").input("value", "random", "result"))
+                .node(
+                        "small",
+                        NodeInstance.of("logic.less")
+                                .input("first", "abs", "result")
+                                .literal("second", DoubleNode.valueOf(2)))
+                .node(
+                        "branch",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "small", "result")
+                                .chain("true", "record"))
+                .node("record", NodeInstance.of("test.record").input("value", "abs", "result"))
+                .build();
+
+        String source = Harness.compile(graph).source();
+        assertEquals(1, Harness.run(graph, 1).size());
+        assertTrue(source.contains("final double randomNumber = "), source);
+        assertTrue(source.contains("final double abs = Math.abs(randomNumber);"), source);
+        assertTrue(source.contains("if (abs < 2.0d)"), source);
     }
 }

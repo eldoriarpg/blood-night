@@ -8,8 +8,12 @@ package de.eldoria.graph.compiler;
 import com.palantir.javapoet.CodeBlock;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Which values generated code can see at one point, mirroring the nesting of the emitted blocks.
@@ -27,19 +31,25 @@ final class Scope {
     private final @Nullable String entry;
     private final Map<String, CodeBlock> computed = new HashMap<>();
     private final Map<String, CodeBlock> bound = new HashMap<>();
+    private final Set<String> names;
+    private final List<Scope> children = new ArrayList<>();
+    private boolean open = true;
 
-    private Scope(@Nullable Scope parent, boolean isolating, @Nullable String entry) {
+    private Scope(@Nullable Scope parent, boolean isolating, @Nullable String entry, Set<String> names) {
         this.parent = parent;
         this.isolating = isolating;
         this.entry = entry;
+        this.names = names;
     }
 
     /**
-     * @param entry id of the entry node whose method body this scope is
+     * @param entry       id of the entry node whose method body this scope is
+     * @param methodNames names declared at the top level of the method, shared by every entry the method runs, so
+     *                    the method parameters and the locals of earlier entries stay taken
      * @return the root scope of an entry method
      */
-    static Scope root(String entry) {
-        return new Scope(null, false, entry);
+    static Scope root(String entry, Set<String> methodNames) {
+        return new Scope(null, false, entry, methodNames);
     }
 
     /**
@@ -47,7 +57,45 @@ final class Scope {
      * @return a nested scope
      */
     Scope child(boolean isolating) {
-        return new Scope(this, isolating, null);
+        Scope child = new Scope(this, isolating, null, new HashSet<>());
+        children.add(child);
+        return child;
+    }
+
+    /**
+     * Whether a local of that name can be declared here. Java forbids redeclaring a name that is visible, and
+     * declaring one that a nested block still to be closed declares as well. Blocks that are finished do not count,
+     * so sibling blocks reuse names.
+     *
+     * @param name a local name
+     * @return whether it is free here
+     */
+    boolean free(String name) {
+        for (Scope scope = this; scope != null; scope = scope.parent) {
+            if (scope.names.contains(name)) return false;
+        }
+        return freeBelow(name);
+    }
+
+    private boolean freeBelow(String name) {
+        for (Scope child : children) {
+            if (child.open && (child.names.contains(name) || !child.freeBelow(name))) return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param name a local name declared in this scope
+     */
+    void declare(String name) {
+        names.add(name);
+    }
+
+    /**
+     * Marks the nested blocks created so far as finished: the code that follows comes after them.
+     */
+    void closeChildren() {
+        children.forEach(child -> child.open = false);
     }
 
     static String key(String node, String port) {
@@ -82,6 +130,14 @@ final class Scope {
             if (entry.equals(scope.entry)) return true;
         }
         return false;
+    }
+
+    /**
+     * @param key value key
+     * @return whether this very scope, not an enclosing one, computed the value
+     */
+    boolean holds(String key) {
+        return computed.containsKey(key);
     }
 
     void compute(String key, CodeBlock local) {

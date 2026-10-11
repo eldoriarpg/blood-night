@@ -67,7 +67,7 @@ public final class GraphCompiler<T> {
      */
     public JavaFile generate(Graph graph, ClassName name) throws GraphCompilationException {
         MacroExpander.Expansion expansion = MacroExpander.expand(graph, macros.definitions());
-        return emit(expansion, validate(expansion), name).file();
+        return emit(expansion, validate(expansion), name, true).file();
     }
 
     /**
@@ -81,25 +81,40 @@ public final class GraphCompiler<T> {
     public CompiledGraph<T> compile(Graph graph, ClassName name) throws GraphCompilationException {
         MacroExpander.Expansion expansion = MacroExpander.expand(graph, macros.definitions());
         ValidatedGraph validated = validate(expansion);
-        GraphEmitter.Emitted emitted = emit(expansion, validated, name);
+        GraphEmitter.Emitted emitted = emit(expansion, validated, name, true);
         try {
             CompilationResult result = compiler.compile(emitted.file());
             return new CompiledGraph<>(
                     name, emitted.file().toString(), result, host, expansion.locate(validated.warnings()));
-        } catch (CompilationException e) {
-            List<GraphProblem> problems = new ArrayList<>(validated.warnings());
-            e.diagnostics().stream()
-                    .filter(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR)
-                    .forEach(diagnostic -> problems.add(GraphProblem.error(
-                            emitted.sourceMap()
-                                    .nodeAt(diagnostic.getLineNumber())
-                                    .orElse(null),
-                            null,
-                            "Generated code does not compile, line %d: %s"
-                                    .formatted(diagnostic.getLineNumber(), diagnostic.getMessage(Locale.ROOT)))));
-            throw new GraphCompilationException(
-                    expansion.locate(problems), emitted.file().toString());
+        } catch (CompilationException inlined) {
+            GraphEmitter.Emitted plain = emit(expansion, validated, name, false);
+            try {
+                compiler.compile(plain.file());
+                throw failure(expansion, validated, emitted, inlined);
+            } catch (CompilationException e) {
+                throw failure(expansion, validated, plain, e);
+            }
         }
+    }
+
+    /**
+     * Turns compiler errors into problems on the nodes whose code they are in.
+     */
+    private static GraphCompilationException failure(
+            MacroExpander.Expansion expansion,
+            ValidatedGraph validated,
+            GraphEmitter.Emitted emitted,
+            CompilationException e) {
+        List<GraphProblem> problems = new ArrayList<>(validated.warnings());
+        e.diagnostics().stream()
+                .filter(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR)
+                .forEach(diagnostic -> problems.add(GraphProblem.error(
+                        emitted.sourceMap().nodeAt(diagnostic.getLineNumber()).orElse(null),
+                        null,
+                        "Generated code does not compile, line %d: %s"
+                                .formatted(diagnostic.getLineNumber(), diagnostic.getMessage(Locale.ROOT)))));
+        return new GraphCompilationException(
+                expansion.locate(problems), emitted.file().toString());
     }
 
     /**
@@ -127,10 +142,15 @@ public final class GraphCompiler<T> {
         }
     }
 
-    private GraphEmitter.Emitted emit(MacroExpander.Expansion expansion, ValidatedGraph validated, ClassName name)
+    /**
+     * @param inline whether values read once are written into their reader; without, every value is a local behind its
+     *               own marker, which is what compiler errors are traced through when the inlined code fails
+     */
+    private GraphEmitter.Emitted emit(
+            MacroExpander.Expansion expansion, ValidatedGraph validated, ClassName name, boolean inline)
             throws GraphCompilationException {
         try {
-            return new GraphEmitter(validated).emit(name);
+            return new GraphEmitter(validated, inline).emit(name);
         } catch (GraphCompilationException e) {
             throw new GraphCompilationException(expansion.locate(e.problems()), null);
         }

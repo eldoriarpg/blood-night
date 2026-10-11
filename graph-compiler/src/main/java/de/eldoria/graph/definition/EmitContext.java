@@ -46,6 +46,21 @@ public interface EmitContext {
     CodeBlock config(String field);
 
     /**
+     * @param port output port id
+     * @return whether any node reads this output; an unread result need not be kept in a variable
+     */
+    boolean isRead(String port);
+
+    /**
+     * Java type of the value given to an input: the type of the connected output, or the port's own type when the
+     * value is typed in. Narrower than {@link #type(String)} when a port accepts a supertype, e.g. {@code Object}.
+     *
+     * @param port input port id
+     * @return the type as rendered into code
+     */
+    TypeName inputType(String port);
+
+    /**
      * Java type of a port after type variables are resolved for this instance.
      *
      * @param port input or output port id

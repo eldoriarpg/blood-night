@@ -8,13 +8,10 @@ package de.eldoria.bloodnight.mob.defaults;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
-import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.graph.platform.GraphPlatform;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -26,6 +23,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultMobsTest {
@@ -59,22 +57,23 @@ class DefaultMobsTest {
 
         assertEquals(Map.of(), behaviours.problems());
         mobs.forEach(mob -> assertTrue(behaviours.of(mob.id()).isPresent(), mob.id()));
+        String speedZombie = behaviours.of("speed_zombie").orElseThrow().source();
+        assertTrue(
+                speedZombie.contains(
+                        "private static final PotionEffectType SPEED = Registries.entry(RegistryKey.MOB_EFFECT, \"minecraft:speed\");"),
+                speedZombie);
+        mobs.forEach(mob -> {
+            String source = behaviours.of(mob.id()).orElseThrow().source();
+            assertFalse(source.contains("__v"), source);
+            assertFalse(source.matches("(?s).*else \\{\\s*}.*"), source);
+        });
     }
 
     @Test
-    void particlesWithoutDataNeedNone() {
+    void everyParticleGetsTheDataItNeeds() {
         MockBukkit.mock();
         try {
-            List<String> needData = mobs.stream()
-                    .flatMap(mob -> mob.behaviour().nodes().values().stream())
-                    .filter(node -> node.type().equals(BloodNightNodes.WORLD_SPAWN_PARTICLE))
-                    .map(node -> node.literals().get("particle").asString())
-                    .filter(key -> Registry.PARTICLE_TYPE
-                                    .getOrThrow(NamespacedKey.fromString(key))
-                                    .getDataType()
-                            != Void.class)
-                    .toList();
-            assertEquals(List.of(), needData);
+            assertEquals(24, DefaultMobs.create(platform).size());
         } finally {
             MockBukkit.unmock();
         }

@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.CodeBlock;
+import de.eldoria.bloodnight.graph.runtime.Registries;
 import de.eldoria.graph.types.LiteralCodec;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -63,13 +64,7 @@ public record RegistryCodec<T extends Keyed>(
 
     @Override
     public CodeBlock emit(NamespacedKey value) {
-        return CodeBlock.of(
-                "$T.registryAccess().getRegistry($T.$N).getOrThrow($T.fromString($S))",
-                RegistryAccess.class,
-                RegistryKey.class,
-                keyField,
-                NamespacedKey.class,
-                value.toString());
+        return CodeBlock.of("$T.entry($T.$N, $S)", Registries.class, RegistryKey.class, keyField, value.toString());
     }
 
     @Override

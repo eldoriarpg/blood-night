@@ -105,6 +105,13 @@ public interface BloodNightNodes extends StdNodes {
     String POTION_EFFECT_CREATE = "potion_effect.create";
     String VECTOR_CREATE = "vector.create";
     String DUST_CREATE = "dust.create";
+    String DUST_TRANSITION_CREATE = "dust_transition.create";
+    String SPELL_CREATE = "spell.create";
+    String TRAIL_CREATE = "trail.create";
+    String VIBRATION_CREATE = "vibration.create";
+    String PARTICLE_POWER = "particle.power";
+    String PARTICLE_DELAY = "particle.delay";
+    String BLOCK_TYPE_CREATE_BLOCK_DATA = "block_type.create_block_data";
     String COLOR_RGB = "color.rgb";
 
     String CANCELLABLE_SET_CANCELLED = "cancellable.set_cancelled";

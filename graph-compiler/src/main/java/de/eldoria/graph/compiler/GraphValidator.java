@@ -17,6 +17,7 @@ import de.eldoria.graph.model.Edge;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
+import de.eldoria.graph.platform.NodeRule;
 import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
@@ -89,6 +90,7 @@ final class GraphValidator {
             Map<String, String> parents = checkExecutions();
             checkReachability(parents);
             definitions.keySet().forEach(this::resolveTypes);
+            definitions.forEach(this::checkRules);
 
             if (problems.stream().anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR)) {
                 throw new GraphCompilationException(problems, null);
@@ -110,6 +112,36 @@ final class GraphValidator {
                     .map(Map.Entry::getKey)
                     .toList();
             return new ValidatedGraph(platform, nodes, entries, List.copyOf(problems));
+        }
+
+        private void checkRules(String id, NodeDefinition definition) {
+            List<NodeRule> rules = platform.rules(definition.id());
+            if (rules.isEmpty()) return;
+            NodeInstance instance = graph.nodes().get(id);
+            Map<String, PortType> sources = sourceTypes.getOrDefault(id, Map.of());
+            NodeRule.Node node = new NodeRule.Node() {
+                @Override
+                public String id() {
+                    return id;
+                }
+
+                @Override
+                public Optional<JsonNode> literal(String port) {
+                    return instance.inputs().containsKey(port)
+                            ? Optional.empty()
+                            : Optional.ofNullable(instance.literals().get(port));
+                }
+
+                @Override
+                public Optional<PortType> connected(String port) {
+                    return instance.inputs().containsKey(port)
+                            ? Optional.ofNullable(sources.get(port))
+                            : Optional.empty();
+                }
+            };
+            for (NodeRule rule : rules) {
+                rule.check(node, (port, message) -> problems.add(GraphProblem.error(id, port, message)));
+            }
         }
 
         private void checkConfig(String id, NodeDefinition definition) {

@@ -13,6 +13,7 @@ import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.NodeDescriptor;
 import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.std.runtime.Cooldown;
 import de.eldoria.graph.std.runtime.Timer;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Generic nodes every consumer can use: values, math, logic, functions, control flow and debugging.
@@ -50,6 +53,8 @@ public final class StandardNodes {
     private static final String NEXT = "next";
     private static final String BODY = "body";
     private static final String TIMER = "timer";
+    private static final Pattern EQUALITY = Pattern.compile("\\(([A-Za-z_$][A-Za-z0-9_$]*) == ([A-Za-z0-9_$]+)\\)");
+    private static final Pattern SIMPLE = Pattern.compile("[A-Za-z_$][A-Za-z0-9_$.]*(\\(\\))?");
     private static final String DEFAULT_TIMER = "timer";
 
     public static final ExpressionDefinition BOOLEAN =
@@ -145,6 +150,7 @@ public final class StandardNodes {
 
     public static final ExpressionDefinition COOLDOWN = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_COOLDOWN, NodeKind.PURE)
+                    .stateful()
                     .description("True at most once every n milliseconds; the first evaluation is true")
                     .input(VALUE, "Milliseconds", PortType.of(int.class), false)
                     .output(RESULT, boolean.class)
@@ -155,6 +161,7 @@ public final class StandardNodes {
                     ctx.input(VALUE)));
     public static final ExpressionDefinition RANDOM_INTEGER = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_RANDOM_INTEGER, NodeKind.PURE)
+                    .stateful()
                     .description("A random integer between lower and upper, both inclusive")
                     .input(LOWER, int.class)
                     .input(UPPER, int.class)
@@ -164,6 +171,7 @@ public final class StandardNodes {
                     "$T.current().nextInt($L, $L + 1)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
     public static final ExpressionDefinition RANDOM_NUMBER = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_RANDOM_NUMBER, NodeKind.PURE)
+                    .stateful()
                     .description("A random number from lower, inclusive, to upper, exclusive")
                     .input(LOWER, double.class)
                     .input(UPPER, double.class)
@@ -180,14 +188,7 @@ public final class StandardNodes {
                     .execution("false")
                     .execution(NEXT)
                     .build(),
-            ctx -> CodeBlock.builder()
-                    .beginControlFlow("if ($L)", ctx.input("condition"))
-                    .add(ctx.chain("true"))
-                    .nextControlFlow("else")
-                    .add(ctx.chain("false"))
-                    .endControlFlow()
-                    .add(ctx.chain(NEXT))
-                    .build());
+            StandardNodes::branch);
     public static final StatementDefinition BATCH = new StatementDefinition(
             NodeDescriptor.builder(StdNodes.FLOW_BATCH, NodeKind.CONTROL_FLOW)
                     .description("Runs a chain several times, then continues")
@@ -227,6 +228,7 @@ public final class StandardNodes {
     public static final StatementDefinition SWITCH = switchNode();
     public static final ExpressionDefinition CHANCE = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.FUNCTION_CHANCE, NodeKind.PURE)
+                    .stateful()
                     .description("True with the given probability in percent")
                     .input("percent", double.class)
                     .output(RESULT, boolean.class)
@@ -258,6 +260,7 @@ public final class StandardNodes {
 
     public static final ExpressionDefinition TIMER_ELAPSED = new ExpressionDefinition(
             NodeDescriptor.builder(StdNodes.TIMER_ELAPSED, NodeKind.PURE)
+                    .stateful()
                     .description("Seconds since the mob appeared or a named timer was last reset")
                     .config(TIMER, String.class, StringNode.valueOf(DEFAULT_TIMER))
                     .output("seconds", double.class)
@@ -267,8 +270,11 @@ public final class StandardNodes {
     private StandardNodes() {}
 
     private static CodeBlock timer(EmitContext ctx) {
+        String name = ctx.config(TIMER).toString().replace("\"", "");
         return ctx.sharedField(
-                "timer " + ctx.config(TIMER), ClassName.get(Timer.class), CodeBlock.of("new $T()", Timer.class));
+                name.equals(DEFAULT_TIMER) ? name : name + " timer",
+                ClassName.get(Timer.class),
+                CodeBlock.of("new $T()", Timer.class));
     }
 
     /**
@@ -302,10 +308,19 @@ public final class StandardNodes {
                             .build(),
                     (port, ctx) -> {
                         CodeBlock value = ctx.input(VALUE);
+                        if (ctx.inputType(VALUE).isPrimitive()) {
+                            return port.equals("matches")
+                                    ? CodeBlock.of("$T.class.isInstance($L)", raw, value)
+                                    : CodeBlock.of(
+                                            "($T.class.isInstance($L) ? $T.class.cast($L) : null)",
+                                            raw,
+                                            value,
+                                            raw,
+                                            value);
+                        }
                         return port.equals("matches")
-                                ? CodeBlock.of("$T.class.isInstance($L)", raw, value)
-                                : CodeBlock.of(
-                                        "($T.class.isInstance($L) ? $T.class.cast($L) : null)", raw, value, raw, value);
+                                ? CodeBlock.of("($L instanceof $T)", value, raw)
+                                : CodeBlock.of("($L instanceof $T ? ($T) $L : null)", value, raw, raw, value);
                     }));
         });
         return casts;
@@ -364,13 +379,67 @@ public final class StandardNodes {
         for (int i = 0; i < SWITCH_CASES; i++) descriptor.execution("case_" + i, "Case " + i);
         descriptor.execution("default").execution(NEXT);
         return new StatementDefinition(descriptor.build(), ctx -> {
-            CodeBlock.Builder code = CodeBlock.builder().beginControlFlow("switch ($L)", ctx.input(VALUE));
+            CodeBlock value = ctx.input(VALUE);
+            CodeBlock.Builder cases = CodeBlock.builder();
             for (int i = 0; i < SWITCH_CASES; i++) {
-                code.add("case $L -> {\n$>", i).add(ctx.chain("case_" + i)).add("$<}\n");
+                CodeBlock chain = ctx.chain("case_" + i);
+                if (!chain.isEmpty())
+                    cases.add("case $L -> {\n$>", i).add(chain).add("$<}\n");
             }
-            code.add("default -> {\n$>").add(ctx.chain("default")).add("$<}\n");
-            return code.endControlFlow().add(ctx.chain(NEXT)).build();
+            CodeBlock otherwise = ctx.chain("default");
+            if (!otherwise.isEmpty())
+                cases.add("default -> {\n$>").add(otherwise).add("$<}\n");
+            CodeBlock.Builder code = CodeBlock.builder();
+            if (!cases.isEmpty()) {
+                code.beginControlFlow("switch ($L)", value).add(cases.build()).endControlFlow();
+            }
+            return code.add(ctx.chain(NEXT)).build();
         });
+    }
+
+    /**
+     * Writes only the arms that run something: {@code if (c)}, {@code if (!c)} or both.
+     */
+    private static CodeBlock branch(StatementContext ctx) {
+        CodeBlock condition = ctx.input("condition");
+        CodeBlock whenTrue = ctx.chain("true");
+        CodeBlock whenFalse = ctx.chain("false");
+        CodeBlock.Builder code = CodeBlock.builder();
+        if (!whenTrue.isEmpty()) {
+            code.beginControlFlow("if $L", parenthesised(condition)).add(whenTrue);
+            if (!whenFalse.isEmpty()) code.nextControlFlow("else").add(whenFalse);
+            code.endControlFlow();
+        } else if (!whenFalse.isEmpty()) {
+            code.beginControlFlow("if $L", negated(condition)).add(whenFalse).endControlFlow();
+        }
+        return code.add(ctx.chain(NEXT)).build();
+    }
+
+    /**
+     * The condition in the parentheses an {@code if} needs, reusing its own when it is wrapped as a whole.
+     */
+    private static CodeBlock parenthesised(CodeBlock condition) {
+        return wrappedWhole(condition.toString()) ? condition : CodeBlock.of("($L)", condition);
+    }
+
+    private static CodeBlock negated(CodeBlock condition) {
+        String text = condition.toString();
+        Matcher equality = EQUALITY.matcher(text);
+        if (equality.matches()) return CodeBlock.of("($L != $L)", equality.group(1), equality.group(2));
+        if (SIMPLE.matcher(text).matches() || wrappedWhole(text)) return CodeBlock.of("(!$L)", condition);
+        return CodeBlock.of("(!($L))", condition);
+    }
+
+    private static boolean wrappedWhole(String expression) {
+        if (!expression.startsWith("(") || !expression.endsWith(")")) return false;
+        int depth = 0;
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if (c == '"') return false;
+            if (c == '(') depth++;
+            if (c == ')' && --depth == 0) return i == expression.length() - 1;
+        }
+        return false;
     }
 
     private static ExpressionDefinition value(String id, Class<?> type, JsonNode defaultValue, String description) {

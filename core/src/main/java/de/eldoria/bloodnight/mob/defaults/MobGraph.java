@@ -164,6 +164,42 @@ final class MobGraph implements BloodNightNodes {
     }
 
     /**
+     * Spawns particles that take data around the mob once.
+     *
+     * @param node the node providing the data
+     * @param port its output
+     */
+    String particlesAroundWith(String particle, int count, String node, String port) {
+        return node(WORLD_SPAWN_PARTICLE_WITH_DATA)
+                .input(TARGET, selfMob(), "world")
+                .literal("particle", particle)
+                .input("location", selfMob(), "eye_location")
+                .literal("count", count)
+                .literal("offset_x", 1.5)
+                .literal("offset_y", 1.0)
+                .literal("offset_z", 1.5)
+                .input("data", node, port)
+                .id();
+    }
+
+    /**
+     * Data for particles that take a strength.
+     */
+    String power(double power) {
+        return node(PARTICLE_POWER).literal("power", power).id();
+    }
+
+    /**
+     * Data for spell particles: a colour and a strength.
+     */
+    String spell(int red, int green, int blue, double power) {
+        return node(SPELL_CREATE)
+                .input("color", color(red, green, blue), RESULT)
+                .literal("power", power)
+                .id();
+    }
+
+    /**
      * Spawns coloured dust around the mob a few times a second.
      */
     String dust(int red, int green, int blue, double size, int count) {

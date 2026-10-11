@@ -39,18 +39,23 @@ public final class GraphPlatform {
     private final TypeMapping types;
     private final Map<String, NodeDefinition> nodes;
     private final List<Path> classpath;
+    private final Map<String, List<NodeRule>> rules;
 
     private GraphPlatform(
             Class<?> host,
             Class<?> context,
             TypeMapping types,
             Map<String, NodeDefinition> nodes,
-            List<Path> classpath) {
+            List<Path> classpath,
+            Map<String, List<NodeRule>> rules) {
         this.host = host;
         this.context = context;
         this.types = types;
         this.nodes = Map.copyOf(nodes);
         this.classpath = List.copyOf(classpath);
+        Map<String, List<NodeRule>> copy = new LinkedHashMap<>();
+        rules.forEach((type, list) -> copy.put(type, List.copyOf(list)));
+        this.rules = Map.copyOf(copy);
     }
 
     /**
@@ -107,6 +112,14 @@ public final class GraphPlatform {
     }
 
     /**
+     * @param type a node type id
+     * @return the platform's own checks for nodes of that type
+     */
+    public List<NodeRule> rules(String type) {
+        return rules.getOrDefault(type, List.of());
+    }
+
+    /**
      * Builder for {@link GraphPlatform}.
      */
     public static final class Builder {
@@ -114,6 +127,7 @@ public final class GraphPlatform {
         private final Map<String, NodeDefinition> nodes = new LinkedHashMap<>();
         private final List<String> problems = new ArrayList<>();
         private final List<Path> classpath = new ArrayList<>();
+        private final Map<String, List<NodeRule>> rules = new LinkedHashMap<>();
         private Class<?> context;
         private TypeMapping types = TypeMapping.defaults();
 
@@ -158,6 +172,18 @@ public final class GraphPlatform {
         }
 
         /**
+         * Adds a check run on every node of a type when a graph is validated.
+         *
+         * @param type node type id
+         * @param rule the check
+         * @return this builder
+         */
+        public Builder rule(String type, NodeRule rule) {
+            rules.computeIfAbsent(type, key -> new ArrayList<>()).add(rule);
+            return this;
+        }
+
+        /**
          * @return the platform
          * @throws PlatformException listing every problem found
          */
@@ -176,7 +202,10 @@ public final class GraphPlatform {
                 }
             }
             if (!found.isEmpty()) throw new PlatformException(found);
-            return new GraphPlatform(host, context, types, nodes, classpath);
+            for (String type : rules.keySet()) {
+                if (!nodes.containsKey(type)) found.add("Rule for unknown node type " + type);
+            }
+            return new GraphPlatform(host, context, types, nodes, classpath, rules);
         }
 
         private void checkConfig(NodeDefinition definition, ConfigField field, List<String> found) {

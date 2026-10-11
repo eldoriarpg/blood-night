@@ -18,30 +18,32 @@ import java.util.regex.Pattern;
 /**
  * Maps lines of generated source back to node ids.
  * <p>
- * Before the code of each node the emitter writes a marker comment holding an index, never the node id itself: ids
- * come from the graph and must not reach the source. After rendering, every marker's line is recorded, and a compiler
+ * Before the code of each node the emitter writes a marker comment holding an index and the node's type, never the
+ * node id itself: ids come from the graph and must not reach the source, types come from the platform. After rendering, every marker's line is recorded, and a compiler
  * error on some line belongs to the nearest marker above it.
  */
 final class SourceMap {
-    private static final Pattern MARKER = Pattern.compile("^\\s*// node #(\\d+)$");
+    private static final Pattern MARKER = Pattern.compile("^\\s*// node #(\\d+)(?: [A-Za-z0-9_.]+)?$");
 
     private final List<@Nullable String> nodes = new ArrayList<>();
     private final TreeMap<Long, @Nullable String> lines = new TreeMap<>();
 
     /**
-     * @param node node id, or {@code null} for code that belongs to no node
+     * @param node node id
+     * @param type id of the node's type, shown to readers of the source
      * @return a marker comment line for the node
      */
-    CodeBlock marker(@Nullable String node) {
+    CodeBlock marker(String node, String type) {
         nodes.add(node);
-        return CodeBlock.of("// node #$L\n", nodes.size() - 1);
+        return CodeBlock.of("// node #$L $L\n", nodes.size() - 1, type.replaceAll("[^A-Za-z0-9_.]", ""));
     }
 
     /**
      * @return a marker for code that belongs to no node, ending the previous node's range
      */
     CodeBlock boundary() {
-        return marker(null);
+        nodes.add(null);
+        return CodeBlock.of("// node #$L\n", nodes.size() - 1);
     }
 
     /**

@@ -17,6 +17,7 @@ import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Vibration;
 import org.bukkit.World;
 import org.bukkit.block.BlockType;
 import org.bukkit.entity.Entity;
@@ -238,6 +239,40 @@ public final class BukkitNodes {
                     ctx.input("radius"),
                     ctx.connected("survival_only") ? ctx.input("survival_only") : CodeBlock.of("true")));
 
+    public static final ExpressionDefinition PARTICLE_POWER = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.PARTICLE_POWER, NodeKind.PURE)
+                    .category("world")
+                    .description("Data for particles that take a strength, such as dragon breath and sculk charge")
+                    .input("power", double.class)
+                    .output("power", PortType.of(Float.class))
+                    .build(),
+            (port, ctx) -> CodeBlock.of("$T.valueOf((float) $L)", Float.class, ctx.input("power")));
+
+    public static final ExpressionDefinition PARTICLE_DELAY = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.PARTICLE_DELAY, NodeKind.PURE)
+                    .category("world")
+                    .description("Data for particles that appear after a delay in ticks, such as shriek")
+                    .input("ticks", int.class)
+                    .output("delay", PortType.of(Integer.class))
+                    .build(),
+            (port, ctx) -> CodeBlock.of("$T.valueOf($L)", Integer.class, ctx.input("ticks")));
+
+    public static final ExpressionDefinition VIBRATION = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.VIBRATION_CREATE, NodeKind.PURE)
+                    .category("world")
+                    .name("Vibration")
+                    .description("Data for the vibration particle: travels to a location within some ticks")
+                    .input("destination", Location.class)
+                    .input("ticks", int.class)
+                    .output("vibration", Vibration.class)
+                    .build(),
+            (port, ctx) -> CodeBlock.of(
+                    "new $T(new $T($L), $L)",
+                    Vibration.class,
+                    Vibration.Destination.BlockDestination.class,
+                    ctx.input("destination"),
+                    ctx.input("ticks")));
+
     public static final ExpressionDefinition DAMAGE_CAUSE = value(
             BloodNightNodes.VALUE_DAMAGE_CAUSE,
             EntityDamageEvent.DamageCause.class,
@@ -263,6 +298,9 @@ public final class BukkitNodes {
                 LAUNCH_PROJECTILE,
                 SPAWN_POTION_CLOUD,
                 NEAREST_PLAYER,
+                PARTICLE_POWER,
+                PARTICLE_DELAY,
+                VIBRATION,
                 NORMALIZE,
                 DIRECTION,
                 DISTANCE,

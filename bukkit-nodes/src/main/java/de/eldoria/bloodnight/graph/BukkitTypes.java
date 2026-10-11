@@ -20,12 +20,14 @@ import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.Vibration;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockType;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -73,6 +75,12 @@ public final class BukkitTypes {
             EntityEquipment.class,
             AttributeInstance.class,
             Color.class,
+            Particle.DustOptions.class,
+            Particle.DustTransition.class,
+            Particle.Spell.class,
+            Particle.Trail.class,
+            Vibration.class,
+            BlockData.class,
             EntityType.class,
             ItemType.class,
             BlockType.class,
@@ -103,6 +111,12 @@ public final class BukkitTypes {
                 .name(Mob.class, "Mob")
                 .name(Creeper.class, "Creeper")
                 .name(Color.class, "Color")
+                .name(Particle.DustOptions.class, "Dust")
+                .name(Particle.DustTransition.class, "Dust Transition")
+                .name(Particle.Spell.class, "Spell")
+                .name(Particle.Trail.class, "Trail")
+                .name(Vibration.class, "Vibration")
+                .name(BlockData.class, "Block Data")
                 .name(EntityType.class, "Entity Type")
                 .name(ItemType.class, "Item Type")
                 .name(BlockType.class, "Block Type")
