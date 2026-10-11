@@ -5,8 +5,17 @@
  */
 package de.eldoria.bloodnight.configuration.elements.world.nightselection.type;
 
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionCheck;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.Night;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightProbability;
 
-public class Random implements NightSelectionCheck {
-    int probability = 60;
+/**
+ * The same probability every night.
+ */
+public class Random implements NightProbability {
+    private int probability = 60;
+
+    @Override
+    public int probability(Night night) {
+        return NightProbability.percent(probability);
+    }
 }
