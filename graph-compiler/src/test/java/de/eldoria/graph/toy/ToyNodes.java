@@ -1,6 +1,7 @@
 package de.eldoria.graph.toy;
 
 import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.TypeName;
 import de.eldoria.graph.definition.EntryDefinition;
 import de.eldoria.graph.definition.EntryParameter;
 import de.eldoria.graph.definition.ExpressionDefinition;
@@ -11,6 +12,7 @@ import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.platform.GraphPlatform;
 import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.IntNode;
 
 import java.util.List;
 
@@ -75,7 +77,55 @@ public final class ToyNodes {
                     .add(ctx.chain("next"))
                     .build());
 
-    public static final List<NodeDefinition> ALL = List.of(START, SCORE, NUMBER, ADD, PRINT, BRANCH);
+    public static final ExpressionDefinition TEXT = new ExpressionDefinition(
+            NodeDescriptor.builder("value.text", NodeKind.VALUE)
+                    .config("value", String.class, null)
+                    .output("value", String.class)
+                    .build(),
+            (port, ctx) -> ctx.config("value"));
+
+    public static final ExpressionDefinition COUNTER = new ExpressionDefinition(
+            NodeDescriptor.builder("state.counter", NodeKind.PURE)
+                    .description("Counts how often it is evaluated")
+                    .output("count", int.class)
+                    .build(),
+            (port, ctx) -> CodeBlock.of("++$L", ctx.field("count", TypeName.INT, CodeBlock.of("0"))));
+
+    public static final ExpressionDefinition PICK = new ExpressionDefinition(
+            NodeDescriptor.builder("logic.pick", NodeKind.PURE)
+                    .input("condition", boolean.class)
+                    .input("when_true", PortType.variable("T"))
+                    .input("when_false", PortType.variable("T"))
+                    .output("result", PortType.variable("T"))
+                    .build(),
+            (port, ctx) -> CodeBlock.of("($L ? $L : $L)", ctx.input("condition"), ctx.input("when_true"), ctx.input("when_false")));
+
+    public static final ExpressionDefinition GREATER = new ExpressionDefinition(
+            NodeDescriptor.builder("logic.greater", NodeKind.PURE)
+                    .input("a", double.class)
+                    .input("b", double.class)
+                    .output("result", boolean.class)
+                    .build(),
+            (port, ctx) -> CodeBlock.of("($L > $L)", ctx.input("a"), ctx.input("b")));
+
+    public static final StatementDefinition REPEAT = new StatementDefinition(
+            NodeDescriptor.builder("flow.repeat", NodeKind.CONTROL_FLOW)
+                    .config("times", int.class, IntNode.valueOf(3))
+                    .output("index", int.class)
+                    .repeatingExecution("body")
+                    .execution("next")
+                    .build(),
+            ctx -> {
+                CodeBlock index = ctx.bind("index", "body");
+                return CodeBlock.builder()
+                        .beginControlFlow("for (int $L = 0; $L < $L; $L++)", index, index, ctx.config("times"), index)
+                        .add(ctx.chain("body"))
+                        .endControlFlow()
+                        .add(ctx.chain("next"))
+                        .build();
+            });
+
+    public static final List<NodeDefinition> ALL = List.of(START, SCORE, NUMBER, TEXT, ADD, GREATER, PICK, COUNTER, PRINT, BRANCH, REPEAT);
 
     private ToyNodes() {
     }

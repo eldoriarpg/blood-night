@@ -17,10 +17,12 @@ public interface StatementContext extends EmitContext {
 
     /**
      * Reserves a local variable name for an output. The definition declares and assigns the variable itself, e.g. as
-     * a loop variable, before chaining code that reads it.
+     * a loop variable, and names the execution ports whose chained code can see it. Reads from anywhere else are
+     * reported as errors on the reading node.
      *
-     * @param port output port id
+     * @param port      output port id
+     * @param visibleIn execution ports whose chains are placed where the variable is in scope
      * @return the variable name
      */
-    CodeBlock bind(String port);
+    CodeBlock bind(String port, String... visibleIn);
 }

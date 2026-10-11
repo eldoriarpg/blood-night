@@ -9,4 +9,6 @@ public interface ToyHost {
 
     default void onScore(int points, String player) {
     }
+
+    void onStop();
 }

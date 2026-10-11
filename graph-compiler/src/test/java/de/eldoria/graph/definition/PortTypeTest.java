@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +70,20 @@ class PortTypeTest {
         assertTrue(PortType.of(List.class).accepts(strings));
         assertTrue(PortType.parameterized(List.class, PortType.variable("T")).accepts(strings));
         assertTrue(strings.accepts(PortType.of(ArrayList.class)));
+    }
+
+    @Test
+    void typeArgumentsFollowSupertypes() {
+        PortType arrayListOfStrings = PortType.parameterized(ArrayList.class, STRING);
+        PortType map = PortType.parameterized(Map.class, STRING, PortType.of(Integer.class));
+
+        assertEquals("java.util.Collection<java.lang.String>",
+                ((PortType.Concrete) arrayListOfStrings).asSupertype(Collection.class).orElseThrow().id());
+        assertTrue(PortType.parameterized(Iterable.class, STRING).accepts(arrayListOfStrings));
+        assertFalse(PortType.parameterized(Iterable.class, OBJECT).accepts(arrayListOfStrings));
+        assertTrue(PortType.parameterized(Map.class, STRING, PortType.of(Integer.class))
+                .accepts(PortType.parameterized(HashMap.class, STRING, PortType.of(Integer.class))));
+        assertFalse(map.accepts(PortType.parameterized(HashMap.class, PortType.of(Integer.class), STRING)));
     }
 
     @Test

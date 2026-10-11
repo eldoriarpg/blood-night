@@ -198,7 +198,15 @@ public record NodeDescriptor(String id,
         }
 
         public Builder execution(String id, String name) {
-            executions.add(new ExecutionPort(id, name));
+            executions.add(new ExecutionPort(id, name, false));
+            return this;
+        }
+
+        /**
+         * Adds an execution port whose chained code may run several times, named after its id.
+         */
+        public Builder repeatingExecution(String id) {
+            executions.add(new ExecutionPort(id, Ids.humanize(id), true));
             return this;
         }
 

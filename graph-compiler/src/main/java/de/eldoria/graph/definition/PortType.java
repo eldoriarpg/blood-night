@@ -10,10 +10,13 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -94,6 +97,16 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
     String id();
 
     /**
+     * @return the wrapper type for primitives, otherwise this type
+     */
+    PortType boxed();
+
+    /**
+     * @return whether a type variable occurs anywhere in this type
+     */
+    boolean hasVariables();
+
+    /**
      * Replaces variables.
      *
      * @param bindings type for each variable name
@@ -125,15 +138,52 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
         public boolean accepts(PortType source) {
             if (!(source instanceof Concrete concrete)) return true;
             if (!acceptsRaw(concrete.raw)) return false;
-            if (arguments.isEmpty() || concrete.arguments.isEmpty()) return true;
-            if (arguments.size() != concrete.arguments.size()) return false;
+            if (arguments.isEmpty() || raw.isPrimitive()) return true;
+            Optional<Concrete> lifted = concrete.asSupertype(raw);
+            if (lifted.isEmpty() || lifted.get().arguments.isEmpty()) return true;
             for (int i = 0; i < arguments.size(); i++) {
                 PortType expected = arguments.get(i);
-                PortType actual = concrete.arguments.get(i);
-                if (expected instanceof Variable || actual instanceof Variable) continue;
+                PortType actual = lifted.get().arguments.get(i);
+                if (expected.hasVariables() || actual.hasVariables()) continue;
                 if (!expected.equals(actual)) return false;
             }
             return true;
+        }
+
+        /**
+         * Views this type as one of its supertypes, carrying type arguments over, e.g. {@code ArrayList<String>} as
+         * {@code Collection<String>}.
+         *
+         * @param target a superclass or interface of {@link #raw()}
+         * @return the supertype with arguments, without arguments when this type is used raw, or empty when
+         * {@code target} is not a supertype
+         */
+        public Optional<Concrete> asSupertype(Class<?> target) {
+            if (raw == target) return Optional.of(this);
+            if (!target.isAssignableFrom(Primitives.box(raw))) return Optional.empty();
+            if (arguments.isEmpty() && raw.getTypeParameters().length > 0) return Optional.of(new Concrete(target, List.of()));
+            Map<String, PortType> bindings = new HashMap<>();
+            TypeVariable<?>[] parameters = raw.getTypeParameters();
+            for (int i = 0; i < parameters.length && i < arguments.size(); i++) bindings.put(parameters[i].getName(), arguments.get(i));
+            List<Type> supertypes = new ArrayList<>(Arrays.asList(raw.getGenericInterfaces()));
+            if (raw.getGenericSuperclass() != null) supertypes.add(raw.getGenericSuperclass());
+            for (Type supertype : supertypes) {
+                if (!(PortType.of(supertype).resolve(bindings) instanceof Concrete parent)) continue;
+                if (!target.isAssignableFrom(parent.raw)) continue;
+                Optional<Concrete> found = parent.asSupertype(target);
+                if (found.isPresent()) return found;
+            }
+            return Optional.of(new Concrete(target, List.of()));
+        }
+
+        @Override
+        public PortType boxed() {
+            return raw.isPrimitive() ? new Concrete(Primitives.box(raw), List.of()) : this;
+        }
+
+        @Override
+        public boolean hasVariables() {
+            return arguments.stream().anyMatch(PortType::hasVariables);
         }
 
         private boolean acceptsRaw(Class<?> source) {
@@ -197,6 +247,16 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
         @Override
         public PortType resolve(Map<String, PortType> bindings) {
             return bindings.getOrDefault(name, this);
+        }
+
+        @Override
+        public PortType boxed() {
+            return this;
+        }
+
+        @Override
+        public boolean hasVariables() {
+            return true;
         }
 
         @Override
