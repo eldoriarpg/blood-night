@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.util.MobTags;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
@@ -129,6 +130,22 @@ public final class MobCoordinator {
             }
             guard(mob, () -> mob.behaviour().onTick());
         }
+    }
+
+    /**
+     * Runs the night end entry of every valid mob in a world.
+     *
+     * @param world the world whose night ended
+     * @return how many mobs were triggered
+     */
+    public int endNight(World world) {
+        int count = 0;
+        for (ActiveMob mob : new ArrayList<>(mobs.values())) {
+            if (!mob.entity().isValid() || !mob.entity().getWorld().equals(world)) continue;
+            guard(mob, () -> mob.behaviour().onNightEnd());
+            count++;
+        }
+        return count;
     }
 
     /**

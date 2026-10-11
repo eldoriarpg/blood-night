@@ -17,6 +17,7 @@ import de.eldoria.graph.std.StdNodes;
 public interface BloodNightNodes extends StdNodes {
     String MOB_TICK = "mob.tick";
     String MOB_SPAWN = "mob.spawn";
+    String MOB_NIGHT_END = "mob.night_end";
 
     String EVENT_DAMAGE = "event.damage";
     String EVENT_DAMAGE_BY_ENTITY = "event.damage_by_entity";

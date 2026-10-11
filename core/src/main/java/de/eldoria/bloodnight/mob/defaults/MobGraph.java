@@ -138,7 +138,14 @@ final class MobGraph implements BloodNightNodes {
      * Spawns particles around the mob a few times a second.
      */
     String particles(String particle, int count) {
-        return every(PARTICLE_MILLIS, particlesAt(particle, count, selfMob(), "eye_location"));
+        return every(PARTICLE_MILLIS, particlesAround(particle, count));
+    }
+
+    /**
+     * Spawns particles around the mob once.
+     */
+    String particlesAround(String particle, int count) {
+        return particlesAt(particle, count, selfMob(), "eye_location");
     }
 
     /**

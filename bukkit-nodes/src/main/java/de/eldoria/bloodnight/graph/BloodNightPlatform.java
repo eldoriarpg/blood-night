@@ -230,6 +230,10 @@ public final class BloodNightPlatform {
                 .name("On Spawn")
                 .description("Runs once when the mob has spawned, after its equipment and extension are set up")
                 .build(rules));
+        nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onNightEnd", BloodNightNodes.MOB_NIGHT_END)
+                .name("On Night End")
+                .description("Runs once when the night ends in the mob's world")
+                .build(rules));
         nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onTick", BloodNightNodes.MOB_TICK)
                 .name("On Tick")
                 .description("Runs every server tick")

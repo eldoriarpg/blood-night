@@ -173,11 +173,10 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     private CustomMob invisibleSkeleton() {
-        return mob(
-                "invisible_skeleton",
-                "Invisible Skeleton",
-                EntityType.SKELETON,
-                graph -> graph.on(MOB_TICK, graph.keepEffect("minecraft:invisibility", 1, false)));
+        return mob("invisible_skeleton", "Invisible Skeleton", EntityType.SKELETON, graph -> {
+            graph.on(MOB_TICK, graph.keepEffect("minecraft:invisibility", 1, false));
+            smokeAtNightEnd(graph);
+        });
     }
 
     /**
@@ -202,6 +201,7 @@ public final class DefaultMobs implements BloodNightNodes {
             choice.chain("case_6", graph.effect(victim, RESULT, "minecraft:poison", 6, 1));
             choice.chain("case_7", graph.effect(victim, RESULT, "minecraft:poison", 4, 2));
             graph.on(EVENT_PROJECTILE_HIT, graph.when(victim, "matches", choice.id()));
+            smokeAtNightEnd(graph);
         });
     }
 
@@ -219,6 +219,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             .input(TARGET, prime, "event")
                             .literal(VALUE, true)
                             .id());
+            igniteAtNightEnd(graph);
         });
     }
 
@@ -267,6 +268,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 1),
                     graph.dustOnce(255, 0, 0, 4, 10));
             graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 2, false));
+            igniteAtNightEnd(graph);
         });
     }
 
@@ -324,6 +326,7 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob("fearful_enderman", "Fearful Enderman", EntityType.ENDERMAN, graph -> {
             graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.particles("minecraft:witch", 10));
             blindPlayersOnHit(graph, 7, 1);
+            graph.on(MOB_NIGHT_END, graph.particlesAround("minecraft:reverse_portal", 10));
         });
     }
 
@@ -335,6 +338,7 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.dust(0, 128, 0, 2, 5));
             String teleport = graph.entry(EVENT_TELEPORT);
             graph.on(EVENT_TELEPORT, graph.cloud(teleport, "from", "minecraft:strong_poison", 10, 4, 0, 128, 0));
+            graph.on(MOB_NIGHT_END, graph.particlesAround("minecraft:reverse_portal", 10));
         });
     }
 
@@ -345,15 +349,22 @@ public final class DefaultMobs implements BloodNightNodes {
             String victim = graph.as("player", hit, "entity");
             graph.on(
                     EVENT_HIT, graph.when(victim, "matches", graph.effect(victim, RESULT, "minecraft:slowness", 7, 2)));
+            smokeAtNightEnd(graph);
         });
     }
 
     /**
-     * Carries a blaze that attacks whatever the phantom targets.
+     * Carries a blaze that attacks whatever the phantom targets, and drops it when the night ends.
      */
     private CustomMob firePhantom() {
         Extension blaze = new Extension(ExtensionType.CARRIER, EntityType.BLAZE, null);
-        return mob("fire_phantom", "Fire Phantom", EntityType.PHANTOM, blaze, MobGraph::forwardTargetToExtension);
+        return mob("fire_phantom", "Fire Phantom", EntityType.PHANTOM, blaze, graph -> {
+            graph.forwardTargetToExtension();
+            String extension = graph.node(MOB_EXTENSION).id();
+            String remove =
+                    graph.node(ENTITY_REMOVE).input(TARGET, extension, "entity").id();
+            graph.on(MOB_NIGHT_END, graph.present(extension, "entity", remove));
+        });
     }
 
     private CustomMob phantomSoul() {
@@ -363,6 +374,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.keepEffect("minecraft:glowing", 1, true),
                     graph.keepEffect("minecraft:invisibility", 1, false));
             blindPlayersOnHit(graph, 0.5, 1);
+            smokeAtNightEnd(graph);
         });
     }
 
@@ -396,6 +408,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     .input("source", graph.self(), "entity")
                     .id();
             graph.on(EVENT_PROJECTILE_HIT, graph.when(victim, "matches", graph.present(attribute, RESULT, damage)));
+            smokeAtNightEnd(graph);
         });
     }
 
@@ -415,6 +428,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.present(graph.selfMob(), TARGET, graph.every(4000, strike)));
             String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
             graph.on(EVENT_PROJECTILE_SHOOT, graph.cancel(shoot));
+            smokeAtNightEnd(graph);
         });
     }
 
@@ -432,6 +446,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             TARGET,
                             graph.every(5000, graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4))));
             onlyShoot(graph, "minecraft:wither_skull");
+            smokeAtNightEnd(graph);
         });
     }
 
@@ -455,6 +470,7 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob(id, name, EntityType.SPIDER, extension, graph -> {
             graph.forwardTargetToExtension();
             if (fast) graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 1, true));
+            smokeAtNightEnd(graph);
         });
     }
 
@@ -552,6 +568,23 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("y", y, RESULT)
                 .input("z", z, RESULT)
                 .id();
+    }
+
+    /**
+     * Puffs smoke around the mob when the night ends.
+     */
+    private static void smokeAtNightEnd(MobGraph graph) {
+        graph.on(MOB_NIGHT_END, graph.particlesAround("minecraft:campfire_cosy_smoke", 30));
+    }
+
+    /**
+     * Lights the creeper's fuse when the night ends, so it explodes at once.
+     */
+    private static void igniteAtNightEnd(MobGraph graph) {
+        String ignite = graph.node(CREEPER_IGNITE)
+                .input(TARGET, graph.selfAs("creeper"), RESULT)
+                .id();
+        graph.on(MOB_NIGHT_END, graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 0), ignite);
     }
 
     private static String causeIs(MobGraph graph, String trigger, String cause) {

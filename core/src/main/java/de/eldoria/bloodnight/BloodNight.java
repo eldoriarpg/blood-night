@@ -21,6 +21,7 @@ import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
+import de.eldoria.bloodnight.mobs.NightWatch;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.graph.compiler.GraphProblem;
 import de.eldoria.graph.payload.Catalog;
@@ -60,6 +61,7 @@ public final class BloodNight extends JavaPlugin {
     private MobCoordinator coordinator;
     private TriggerDispatcher dispatcher;
     private BukkitTask tickTask;
+    private BukkitTask nightTask;
     private Behaviours behaviours = Behaviours.empty();
     private Catalog catalog;
 
@@ -94,6 +96,10 @@ public final class BloodNight extends JavaPlugin {
         plugins.registerEvents(new MobLifecycle(coordinator), this);
         getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));
         tickTask = getServer().getScheduler().runTaskTimer(this, coordinator::tick, 1, 1);
+        NightWatch nights = new NightWatch(coordinator::endNight);
+        nightTask = getServer()
+                .getScheduler()
+                .runTaskTimer(this, () -> nights.check(getServer().getWorlds()), 20, 20);
         recompile();
     }
 
@@ -121,6 +127,7 @@ public final class BloodNight extends JavaPlugin {
     @Override
     public void onDisable() {
         if (tickTask != null) tickTask.cancel();
+        if (nightTask != null) nightTask.cancel();
         if (dispatcher != null) dispatcher.unregister();
         if (behaviourService != null) behaviourService.close();
     }

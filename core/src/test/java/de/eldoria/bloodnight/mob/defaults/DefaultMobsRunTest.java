@@ -164,6 +164,19 @@ class DefaultMobsRunTest {
         assertTrue(creeper.isDead());
     }
 
+    @Test
+    void speedCreeperIgnitesWhenTheNightEndsInItsWorld() {
+        Creeper creeper = spawn("speed_creeper", Creeper.class);
+        World other = server.addSimpleWorld("other");
+        Creeper elsewhere = other.spawn(new Location(other, 0, 64, 0), Creeper.class);
+        coordinator.register(elsewhere, mobs.get("speed_creeper"));
+
+        assertEquals(1, coordinator.endNight(world));
+
+        assertTrue(creeper.isIgnited());
+        assertFalse(elsewhere.isIgnited());
+    }
+
     private static EntityDamageByEntityEvent hit(org.bukkit.entity.Entity damager, org.bukkit.entity.Entity victim) {
         return new EntityDamageByEntityEvent(
                 damager,

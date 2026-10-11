@@ -29,6 +29,11 @@ public interface CompiledBehaviour {
     default void onSpawn() {}
 
     /**
+     * Called once when the night ends in the mob's world, while the mob is still alive.
+     */
+    default void onNightEnd() {}
+
+    /**
      * Called once per server tick.
      */
     default void onTick() {}
