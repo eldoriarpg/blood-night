@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.editor;
 
-import de.eldoria.bloodnight.editor.api.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;

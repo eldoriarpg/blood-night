@@ -9,9 +9,11 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Drop;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,11 +65,33 @@ public final class EditorChecks {
      * @return the files that changed since the session opened, sorted; every file when the result has no hashes
      */
     public static List<String> changedFiles(EditorResult result, Map<String, String> current) {
+        return changedFiles(result.hashes(), current);
+    }
+
+    /**
+     * @param opened  the hashes of the files when the session opened
+     * @param current the hashes of the files now
+     * @return the files that changed, sorted; every file when no hashes were opened with
+     */
+    public static List<String> changedFiles(Map<String, String> opened, Map<String, String> current) {
         return current.entrySet().stream()
-                .filter(file -> !file.getValue().equals(result.hashes().get(file.getKey())))
+                .filter(file -> !file.getValue().equals(opened.get(file.getKey())))
                 .map(Map.Entry::getKey)
                 .sorted()
                 .toList();
+    }
+
+    /**
+     * @param payload a session's payload
+     * @return the file hashes it carries, empty when it lost them
+     */
+    public static Map<String, String> hashes(JsonNode payload) {
+        Map<String, String> hashes = new HashMap<>();
+        for (var entry : payload.path("hashes").properties()) {
+            if (entry.getValue().isString())
+                hashes.put(entry.getKey(), entry.getValue().asString());
+        }
+        return hashes;
     }
 
     private static List<String> usedItems(CustomMob mob) {

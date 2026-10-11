@@ -12,8 +12,8 @@ import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.editor.EditorResult;
 import de.eldoria.bloodnight.editor.EditorSessionFile;
 import de.eldoria.bloodnight.editor.SettingsPayload;
-import de.eldoria.bloodnight.editor.api.SessionCreated;
-import de.eldoria.bloodnight.editor.api.SessionView;
+import de.eldoria.bloodnight.web.api.editor.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.SessionView;
 import de.eldoria.graph.payload.CatalogGenerator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -23,6 +23,7 @@ import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -36,8 +37,13 @@ import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 /**
- * {@code /bloodnight editor [apply [force] | cancel]}: opens a web editor session with the server's mobs, macros,
- * items and settings, applies the session once it is marked as done in the editor, or closes it.
+ * {@code /bloodnight editor [new | apply [force] | cancel]}: opens a web editor session with the server's mobs,
+ * macros, items and settings, applies the session once it is marked as done in the editor, or closes it.
+ * <p>
+ * A server keeps its session until it is applied or cancelled. Everyone who runs {@code /bloodnight editor} while it is
+ * open joins it with a personal link under their name, so several players can edit at once, each holding the sections
+ * they work on; they are told about files that changed on the server since it was opened. {@code new} replaces the
+ * session with a fresh one.
  * <p>
  * Applying is the confirmation: nothing changes on the server before. The result is checked first (mob ids, items,
  * readable files, and that no file it replaces changed on disk since the session opened; {@code force} skips the
@@ -70,6 +76,35 @@ final class EditorCommand {
 
     @Executes
     void open(CommandSender sender) {
+        Optional<SessionCreated> open = sessions().load();
+        if (open.isEmpty()) {
+            openNew(sender, Optional.empty());
+            return;
+        }
+        client().addParticipant(open.get(), participant(sender))
+                .whenComplete((joined, error) -> sync(() -> {
+                    if (error != null) {
+                        sender.sendMessage(Component.text(reason(error), NamedTextColor.RED));
+                        return;
+                    }
+                    if (joined.isEmpty()) {
+                        sender.sendMessage("The last editor session expired, opening a new one");
+                        openNew(sender, Optional.empty());
+                        return;
+                    }
+                    sender.sendMessage(
+                            link("Continue editing here: ", joined.get().editorUrl()));
+                    client().view(open.get())
+                            .thenAccept(view -> view.ifPresent(found -> sync(() -> warnChanged(sender, found))));
+                }));
+    }
+
+    @Executes("new")
+    void openFresh(CommandSender sender) {
+        openNew(sender, sessions().load());
+    }
+
+    private void openNew(CommandSender sender, Optional<SessionCreated> previous) {
         String payload;
         try {
             payload = EditorPayload.of(
@@ -84,8 +119,7 @@ final class EditorCommand {
         }
         String catalog = CatalogGenerator.write(plugin.catalog());
         sender.sendMessage("Opening an editor session...");
-        Optional<SessionCreated> previous = sessions().load();
-        client().open(plugin.catalog().version(), catalog, payload)
+        client().open(plugin.catalog().version(), catalog, payload, participant(sender))
                 .whenComplete((session, error) -> sync(() -> {
                     if (error != null) {
                         sender.sendMessage(Component.text(reason(error), NamedTextColor.RED));
@@ -93,14 +127,36 @@ final class EditorCommand {
                     }
                     previous.ifPresent(old -> client().close(old));
                     sessions().save(session);
-                    sender.sendMessage(
-                            Component.text("Edit here: ")
-                                    .append(Component.text(session.editorUrl(), NamedTextColor.AQUA)
-                                            .clickEvent(ClickEvent.openUrl(session.editorUrl())))
-                                    .append(
-                                            Component.text(
-                                                    ". When you are done, mark the session as done and run /bloodnight editor apply.")));
+                    sender.sendMessage(link("Edit here: ", session.editorUrl()));
                 }));
+    }
+
+    private static String participant(CommandSender sender) {
+        return sender instanceof Player player ? player.getName() : "Console";
+    }
+
+    private static Component link(String prefix, String editorUrl) {
+        return Component.text(prefix)
+                .append(Component.text(editorUrl, NamedTextColor.AQUA).clickEvent(ClickEvent.openUrl(editorUrl)))
+                .append(Component.text(
+                        ". When you are done, mark the session as done and run /bloodnight editor apply."));
+    }
+
+    private void warnChanged(CommandSender sender, SessionView view) {
+        List<String> changed;
+        try {
+            changed = EditorChecks.changedFiles(
+                    EditorChecks.hashes(view.payload()),
+                    plugin.configuration().fileHashes(plugin.getServer().getWorlds()));
+        } catch (IOException e) {
+            return;
+        }
+        if (changed.isEmpty()) return;
+        sender.sendMessage(Component.text(
+                "These files changed on the server since the session was opened:", NamedTextColor.YELLOW));
+        changed.forEach(file -> sender.sendMessage(" - " + file));
+        sender.sendMessage("Applying the session would overwrite them; /bloodnight editor new starts over from the"
+                + " server's files.");
     }
 
     @Executes("apply")

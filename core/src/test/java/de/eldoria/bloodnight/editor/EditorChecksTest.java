@@ -64,4 +64,11 @@ class EditorChecksTest {
         EditorResult lost = new EditorResult(Map.of(), List.of(), null, Map.of());
         assertEquals(List.of("config.yml", "mobs.yml"), EditorChecks.changedFiles(lost, opened));
     }
+
+    @Test
+    void hashesAreReadFromThePayload() {
+        var payload = EditorPayload.MAPPER.readTree("{\"hashes\":{\"mobs.yml\":\"a\",\"broken\":1}}");
+        assertEquals(Map.of("mobs.yml", "a"), EditorChecks.hashes(payload));
+        assertEquals(Map.of(), EditorChecks.hashes(EditorPayload.MAPPER.readTree("{}")));
+    }
 }

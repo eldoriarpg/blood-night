@@ -10,14 +10,14 @@ services:
       interval: 5s
       retries: 10
 
-  editor-service:
+  web:
     build:
       context: ..
-      dockerfile: .docker/editor-service.Dockerfile
+      dockerfile: .docker/web.Dockerfile
     environment:
       DB_HOST: postgres
       DB_PASSWORD: ${DB_PASSWORD}
-      EDITOR_URL: ${EDITOR_URL:-http://localhost:3000/session/{id}}
+      EDITOR_URL: ${EDITOR_URL:-http://localhost:3000/session/{id}#{token}}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
     ports:
       - "${PORT:-8080}:8080"
