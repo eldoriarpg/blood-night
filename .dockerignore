@@ -1,0 +1,7 @@
+**/build
+**/.gradle
+.gradle
+core/run
+.concept
+.git
+.idea

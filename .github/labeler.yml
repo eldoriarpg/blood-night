@@ -32,6 +32,8 @@
       - any-glob-to-any-file:
           - "graph-editor-payload/**"
           - "catalog/**"
+          - "editor-api/**"
+          - "editor-service/**"
 "a:build":
   - changed-files:
       - any-glob-to-any-file:

@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.night.LengthMode;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
+import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -125,6 +126,27 @@ class ConfigurationTest {
         Files.writeString(mobs, "mobs: {}\n");
         new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).seedMobs(() -> defaults);
         assertEquals("mobs: {}\n", Files.readString(mobs));
+    }
+
+    @Test
+    void editedFilesReplaceTheOldOnesAfterABackup() throws IOException {
+        World world = MockBukkit.getMock().addSimpleWorld("world");
+        Configuration configuration =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        configuration.worldConfig(world);
+        configuration.replaceMobs(List.of(Mobs.zombie("edited", Graph.builder().build())));
+
+        Path backup = configuration.backup();
+        configuration.replaceWorld(world, EditorPayload.MAPPER.readValue("{\"enabled\":false}", WorldSettings.class));
+        configuration.replaceMobs(List.of());
+
+        assertTrue(Files.exists(backup.resolve("mobs.yml")));
+        assertTrue(Files.readString(backup.resolve("mobs.yml")).contains("edited"));
+        assertTrue(Files.exists(backup.resolve("worlds").resolve(world.getUID() + ".yml")));
+        Configuration reread =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        assertFalse(reread.worldConfig(world).enabled());
+        assertTrue(reread.mobs().all().isEmpty());
     }
 
     @Test

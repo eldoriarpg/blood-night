@@ -1,4 +1,8 @@
 [versions]
+javalin = "7.2.3"
+sadu = "2.3.9"
+logback = "1.6.3"
+testcontainers = "2.0.5"
 run-paper = "3.1.0"
 plugin-yml = "0.9.0"
 strokkcommands = "2.3.1"
@@ -50,7 +54,19 @@ javaparser = { module = "com.github.javaparser:javaparser-core", version.ref = "
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs-annotations" }
 
+javalin = { module = "io.javalin:javalin", version.ref = "javalin" }
+sadu-postgresql = { module = "de.chojo.sadu:sadu-postgresql", version.ref = "sadu" }
+sadu-datasource = { module = "de.chojo.sadu:sadu-datasource", version.ref = "sadu" }
+sadu-queries = { module = "de.chojo.sadu:sadu-queries", version.ref = "sadu" }
+sadu-mapper = { module = "de.chojo.sadu:sadu-mapper", version.ref = "sadu" }
+sadu-updater = { module = "de.chojo.sadu:sadu-updater", version.ref = "sadu" }
+postgresql = { module = "org.postgresql:postgresql", version = "42.7.13" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
+testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
+
 [bundles]
+sadu = ["sadu-postgresql", "sadu-datasource", "sadu-queries", "sadu-mapper", "sadu-updater"]
 jackson-lite = ["jackson-core", "jackson-databind", "jackson-annotations"]
 jackson-full = ["jackson-core", "jackson-databind", "jackson-annotations", "jackson-yaml"]
 eldoria-utilities = ["eldoutil-items", "eldoutil-entities"]

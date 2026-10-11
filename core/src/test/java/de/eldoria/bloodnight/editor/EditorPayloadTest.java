@@ -7,6 +7,8 @@ package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.behaviour.Behaviours;
+import de.eldoria.bloodnight.configuration.ConfigFile;
+import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -54,7 +56,8 @@ class EditorPayloadTest {
                 Map.of(),
                 Behaviours.empty().problems(),
                 Map.of(),
-                Map.of("items.yml", "broken"));
+                Map.of("items.yml", "broken"),
+                new SettingsPayload(new ConfigFile(), GlobalDrops.defaultDrops(), Map.of()));
 
         JsonNode json = GraphJson.mapper().readTree(payload.asJson());
 

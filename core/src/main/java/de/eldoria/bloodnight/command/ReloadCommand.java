@@ -25,6 +25,16 @@ final class ReloadCommand {
 
     @Executes
     void reload(CommandSender sender) {
+        reload(plugin, sender);
+    }
+
+    /**
+     * Reads the configuration again, reports files that could not be read and recompiles every mob.
+     *
+     * @param plugin the plugin
+     * @param sender who hears about it
+     */
+    static void reload(BloodNight plugin, CommandSender sender) {
         plugin.configuration().reload();
         plugin.configuration().mobs();
         plugin.configuration().items();
