@@ -1,9 +1,14 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mob.serialization.deserializer;
 
+import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
-import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +32,6 @@ public abstract class BaseAttributeDeserializer<T> extends ValueDeserializer<T> 
 
     protected abstract T[] values();
 
-
     protected T map(String hash) {
         if (mappings.containsKey(hash)) return mappings.get(hash);
         for (T value : values()) {
@@ -37,5 +41,4 @@ public abstract class BaseAttributeDeserializer<T> extends ValueDeserializer<T> 
         }
         throw new IllegalArgumentException("No enchantment found for %s".formatted(hash));
     }
-
 }

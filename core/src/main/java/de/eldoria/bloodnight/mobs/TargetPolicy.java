@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.util.MobTags;
@@ -14,11 +19,15 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 public final class TargetPolicy implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onTarget(EntityTargetLivingEntityEvent event) {
-        if (event.getTarget() != null && MobTags.isCustomMob(event.getTarget()) && MobTags.isCustomMob(event.getEntity())) {
+        if (event.getTarget() != null
+                && MobTags.isCustomMob(event.getTarget())
+                && MobTags.isCustomMob(event.getEntity())) {
             event.setCancelled(true);
             return;
         }
-        if (MobTags.isCustomMob(event.getEntity()) && event.getTarget() != null && !(event.getTarget() instanceof Player)) {
+        if (MobTags.isCustomMob(event.getEntity())
+                && event.getTarget() != null
+                && !(event.getTarget() instanceof Player)) {
             event.setCancelled(true);
         }
     }

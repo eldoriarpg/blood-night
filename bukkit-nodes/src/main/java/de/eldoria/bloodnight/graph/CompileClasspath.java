@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
@@ -26,10 +31,10 @@ import java.util.Set;
  * sources of a few anchor classes in case one of those loaders hides its URLs.
  */
 public final class CompileClasspath {
-    private static final List<Class<?>> ANCHORS = List.of(Bukkit.class, Component.class, CompiledBehaviour.class, Cooldown.class);
+    private static final List<Class<?>> ANCHORS =
+            List.of(Bukkit.class, Component.class, CompiledBehaviour.class, Cooldown.class);
 
-    private CompileClasspath() {
-    }
+    private CompileClasspath() {}
 
     /**
      * Discovers the classpath as seen from a class loader.

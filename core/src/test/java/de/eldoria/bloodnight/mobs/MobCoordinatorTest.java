@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.Mobs;
@@ -14,9 +19,9 @@ import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
-import org.bukkit.World;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
@@ -64,8 +69,10 @@ class MobCoordinatorTest {
         Plugin plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
         ItemRegistry items = new ItemRegistry();
-        coordinator = new MobCoordinator(new MobOutfitter(() -> items), () -> items, definitions::get, Logger.getLogger("test"));
-        service = new BehaviourService(platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
+        coordinator = new MobCoordinator(
+                new MobOutfitter(() -> items), () -> items, definitions::get, Logger.getLogger("test"));
+        service = new BehaviourService(
+                platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
         dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, error) -> {
             throw error;
         });
@@ -83,9 +90,17 @@ class MobCoordinatorTest {
         return Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "burn"))
                 .node("self", NodeInstance.of("mob.self"))
-                .node("burn", NodeInstance.of("entity.set_fire_ticks").input("target", "self", "entity").literal("value", IntNode.valueOf(ticks)))
+                .node(
+                        "burn",
+                        NodeInstance.of("entity.set_fire_ticks")
+                                .input("target", "self", "entity")
+                                .literal("value", IntNode.valueOf(ticks)))
                 .node("damage", NodeInstance.of("event.damage").chain("next", "cancel"))
-                .node("cancel", NodeInstance.of("cancellable.set_cancelled").input("target", "damage", "event").literal("value", BooleanNode.TRUE))
+                .node(
+                        "cancel",
+                        NodeInstance.of("cancellable.set_cancelled")
+                                .input("target", "damage", "event")
+                                .literal("value", BooleanNode.TRUE))
                 .build();
     }
 
@@ -108,7 +123,11 @@ class MobCoordinatorTest {
         coordinator.register(zombie, definitions.get("burner"));
 
         coordinator.tick();
-        EntityDamageEvent damage = new EntityDamageEvent(zombie, EntityDamageEvent.DamageCause.FALL, DamageSource.builder(DamageType.GENERIC).build(), 3);
+        EntityDamageEvent damage = new EntityDamageEvent(
+                zombie,
+                EntityDamageEvent.DamageCause.FALL,
+                DamageSource.builder(DamageType.GENERIC).build(),
+                3);
         server.getPluginManager().callEvent(damage);
 
         assertEquals(100, zombie.getFireTicks());
@@ -122,7 +141,11 @@ class MobCoordinatorTest {
         Zombie plain = zombie();
 
         coordinator.tick();
-        EntityDamageEvent damage = new EntityDamageEvent(plain, EntityDamageEvent.DamageCause.FALL, DamageSource.builder(DamageType.GENERIC).build(), 3);
+        EntityDamageEvent damage = new EntityDamageEvent(
+                plain,
+                EntityDamageEvent.DamageCause.FALL,
+                DamageSource.builder(DamageType.GENERIC).build(),
+                3);
         server.getPluginManager().callEvent(damage);
 
         assertFalse(damage.isCancelled());
@@ -140,7 +163,8 @@ class MobCoordinatorTest {
         coordinator.tick();
 
         assertEquals(250, zombie.getFireTicks());
-        assertFalse(before.getClass() == coordinator.behaviour(zombie).orElseThrow().getClass());
+        assertFalse(
+                before.getClass() == coordinator.behaviour(zombie).orElseThrow().getClass());
     }
 
     @Test
@@ -176,7 +200,11 @@ class MobCoordinatorTest {
         Graph throwing = Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "boom"))
                 .node("extension", NodeInstance.of("mob.extension"))
-                .node("boom", NodeInstance.of("entity.set_fire_ticks").input("target", "extension", "entity").literal("value", IntNode.valueOf(1)))
+                .node(
+                        "boom",
+                        NodeInstance.of("entity.set_fire_ticks")
+                                .input("target", "extension", "entity")
+                                .literal("value", IntNode.valueOf(1)))
                 .build();
         define(Mobs.zombie("broken", throwing), Mobs.zombie("burner", fireTicks(100)));
         Zombie broken = zombie();

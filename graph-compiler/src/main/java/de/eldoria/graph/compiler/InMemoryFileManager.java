@@ -1,4 +1,16 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -6,12 +18,6 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * File manager that keeps class files in memory instead of writing them to disk.
@@ -33,7 +39,8 @@ final class InMemoryFileManager extends ForwardingJavaFileManager<JavaFileManage
     }
 
     @Override
-    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) {
+    public JavaFileObject getJavaFileForOutput(
+            Location location, String className, JavaFileObject.Kind kind, FileObject sibling) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         outputs.put(binaryName(className, kind), buffer);
         return new SimpleJavaFileObject(URI.create("mem:///" + className.replace('.', '/') + kind.extension), kind) {
@@ -48,7 +55,9 @@ final class InMemoryFileManager extends ForwardingJavaFileManager<JavaFileManage
      * The Eclipse compiler passes a path relative to the output root instead of a binary name.
      */
     private static String binaryName(String className, JavaFileObject.Kind kind) {
-        String name = className.endsWith(kind.extension) ? className.substring(0, className.length() - kind.extension.length()) : className;
+        String name = className.endsWith(kind.extension)
+                ? className.substring(0, className.length() - kind.extension.length())
+                : className;
         return name.replace('/', '.').replace('\\', '.');
     }
 

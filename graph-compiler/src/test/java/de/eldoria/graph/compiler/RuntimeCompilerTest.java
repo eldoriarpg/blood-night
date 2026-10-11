@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
@@ -7,11 +12,12 @@ import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec;
 import org.junit.jupiter.api.Test;
 
-import javax.lang.model.element.Modifier;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.IntUnaryOperator;
+
+import javax.lang.model.element.Modifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -34,9 +40,13 @@ class RuntimeCompilerTest {
                         .build())
                 .build();
 
-        CompilationResult result = compiler().compile(JavaFile.builder("generated.test", type).build());
+        CompilationResult result =
+                compiler().compile(JavaFile.builder("generated.test", type).build());
 
-        assertEquals(42, result.instantiate("generated.test.Twice", IntUnaryOperator.class).applyAsInt(21));
+        assertEquals(
+                42,
+                result.instantiate("generated.test.Twice", IntUnaryOperator.class)
+                        .applyAsInt(21));
     }
 
     @Test
@@ -44,7 +54,8 @@ class RuntimeCompilerTest {
         TypeSpec type = TypeSpec.classBuilder("StartingCounter")
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(ClassName.get(Counter.class))
-                .addField(FieldSpec.builder(int.class, "count", Modifier.PRIVATE).build())
+                .addField(
+                        FieldSpec.builder(int.class, "count", Modifier.PRIVATE).build())
                 .addMethod(MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(Integer.class, "start")
@@ -58,7 +69,8 @@ class RuntimeCompilerTest {
                         .build())
                 .build();
 
-        CompilationResult result = compiler().compile(JavaFile.builder("generated.test", type).build());
+        CompilationResult result =
+                compiler().compile(JavaFile.builder("generated.test", type).build());
         Counter first = result.instantiate("generated.test.StartingCounter", Counter.class, 10);
         Counter second = result.instantiate("generated.test.StartingCounter", Counter.class, 0);
 
@@ -69,7 +81,12 @@ class RuntimeCompilerTest {
 
     @Test
     void eachCompilationGetsItsOwnLoader() throws CompilationException {
-        JavaFile file = JavaFile.builder("generated.test", TypeSpec.classBuilder("Empty").addModifiers(Modifier.PUBLIC).build()).build();
+        JavaFile file = JavaFile.builder(
+                        "generated.test",
+                        TypeSpec.classBuilder("Empty")
+                                .addModifiers(Modifier.PUBLIC)
+                                .build())
+                .build();
 
         Class<?> first = compiler().compile(file).load("generated.test.Empty", Object.class);
         Class<?> second = compiler().compile(file).load("generated.test.Empty", Object.class);
@@ -86,8 +103,8 @@ class RuntimeCompilerTest {
                         .build())
                 .build();
 
-        CompilationException exception = assertThrows(CompilationException.class,
-                () -> compiler().compile(JavaFile.builder("generated.test", type).build()));
+        CompilationException exception = assertThrows(CompilationException.class, () -> compiler()
+                .compile(JavaFile.builder("generated.test", type).build()));
 
         assertTrue(exception.getMessage().contains("generated.test.Broken"), exception.getMessage());
         assertTrue(exception.getMessage().contains("line 5"), exception.getMessage());
@@ -100,7 +117,8 @@ class RuntimeCompilerTest {
 
     private static Path codeSource(Class<?> clazz) {
         try {
-            return Path.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Path.of(
+                    clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }

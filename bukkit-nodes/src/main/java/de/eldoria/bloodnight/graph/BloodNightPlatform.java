@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
@@ -39,8 +44,7 @@ import java.util.List;
  * once, on {@link Cancellable}, instead of once per event.
  */
 public final class BloodNightPlatform {
-    private BloodNightPlatform() {
-    }
+    private BloodNightPlatform() {}
 
     /**
      * @param classpath jars and directories generated code compiles against
@@ -80,7 +84,9 @@ public final class BloodNightPlatform {
         List<NodeDefinition> nodes = new ArrayList<>(StandardNodes.all());
         nodes.addAll(BukkitNodes.all());
         nodes.addAll(ReflectedType.of(Entity.class, "entity").build(rules));
-        nodes.addAll(ReflectedType.of(LivingEntity.class, "living_entity").name("Living Entity").build(rules));
+        nodes.addAll(ReflectedType.of(LivingEntity.class, "living_entity")
+                .name("Living Entity")
+                .build(rules));
         nodes.addAll(ReflectedType.of(Player.class, "player").build(rules));
         nodes.addAll(ReflectedType.of(Projectile.class, "projectile").build(rules));
         nodes.addAll(ReflectedType.of(Location.class, "location").build(rules));
@@ -88,9 +94,17 @@ public final class BloodNightPlatform {
         nodes.addAll(ReflectedType.of(World.class, "world").build(rules));
         nodes.addAll(ReflectedType.of(ItemStack.class, "item").name("Item").build(rules));
         nodes.addAll(ReflectedType.of(Block.class, "block").build(rules));
-        nodes.addAll(ReflectedType.of(Cancellable.class, "cancellable").name("Event").category("event").build(rules));
-        for (Class<?> event : List.of(EntityDamageEvent.class, EntityDeathEvent.class, EntityTeleportEvent.class, EntityTargetEvent.class,
-                ExplosionPrimeEvent.class, EntityExplodeEvent.class)) {
+        nodes.addAll(ReflectedType.of(Cancellable.class, "cancellable")
+                .name("Event")
+                .category("event")
+                .build(rules));
+        for (Class<?> event : List.of(
+                EntityDamageEvent.class,
+                EntityDeathEvent.class,
+                EntityTeleportEvent.class,
+                EntityTargetEvent.class,
+                ExplosionPrimeEvent.class,
+                EntityExplodeEvent.class)) {
             String name = event.getSimpleName().replace("Event", "");
             nodes.addAll(ReflectedType.of(event, "event_data." + Names.snakeCase(name))
                     .name(name)
@@ -108,9 +122,13 @@ public final class BloodNightPlatform {
                     .build(rules));
         }
         nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onTick", "mob.tick")
-                .name("On Tick").description("Runs every server tick").build(rules));
+                .name("On Tick")
+                .description("Runs every server tick")
+                .build(rules));
         nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onDebug", "debug.trigger")
-                .name("Debug Trigger").description("Runs when fired by command").build(rules));
+                .name("Debug Trigger")
+                .description("Runs when fired by command")
+                .build(rules));
         return nodes;
     }
 }

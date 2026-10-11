@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -22,12 +27,13 @@ import java.util.TreeMap;
  * @param editor     editor state such as position or colour, or {@code null}; never read by the framework
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record NodeInstance(String type,
-                           Map<String, JsonNode> config,
-                           Map<String, Edge> inputs,
-                           Map<String, JsonNode> literals,
-                           Map<String, List<String>> executions,
-                           JsonNode editor) {
+public record NodeInstance(
+        String type,
+        Map<String, JsonNode> config,
+        Map<String, Edge> inputs,
+        Map<String, JsonNode> literals,
+        Map<String, List<String>> executions,
+        JsonNode editor) {
     public NodeInstance {
         Objects.requireNonNull(type, "type");
         config = sorted(config);

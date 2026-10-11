@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.ClassName;
@@ -49,8 +54,10 @@ class BukkitNodesTest {
 
     private List<String> tick(Graph graph) throws GraphCompilationException {
         CompiledBehaviour behaviour = new GraphCompiler<>(
-                BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader())),
-                CompiledBehaviour.class, getClass().getClassLoader())
+                        BloodNightPlatform.create(
+                                CompileClasspath.discover(getClass().getClassLoader())),
+                        CompiledBehaviour.class,
+                        getClass().getClassLoader())
                 .compile(graph, ClassName.get("generated.bukkit", "Test"))
                 .instantiate(new TestContext(zombie));
         PrintStream original = System.out;
@@ -70,8 +77,13 @@ class BukkitNodesTest {
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "x", "world"))
                 .node("self", NodeInstance.of("mob.self"))
                 .node("self_get", NodeInstance.of("entity.get").input("target", "self", "entity"))
-                .node("location", NodeInstance.of("location.create").input("world", "self_get", "world")
-                        .input("x", "two", "value").input("y", "two", "value").input("z", "two", "value"))
+                .node(
+                        "location",
+                        NodeInstance.of("location.create")
+                                .input("world", "self_get", "world")
+                                .input("x", "two", "value")
+                                .input("y", "two", "value")
+                                .input("z", "two", "value"))
                 .node("two", number(2.5))
                 .node("parts", NodeInstance.of("location.get").input("target", "location", "result"))
                 .node("x", print("parts", "x"))
@@ -87,13 +99,38 @@ class BukkitNodesTest {
     @Test
     void vectorMath() throws GraphCompilationException {
         Graph graph = Graph.builder()
-                .node("tick", NodeInstance.of("mob.tick").chain("next", "distance", "squared", "normalized", "direction", "unchanged"))
-                .node("a", NodeInstance.of("vector.create").literal("x", DoubleNode.valueOf(0)).literal("y", DoubleNode.valueOf(0)).literal("z", DoubleNode.valueOf(0)))
-                .node("b", NodeInstance.of("vector.create").literal("x", DoubleNode.valueOf(3)).literal("y", DoubleNode.valueOf(4)).literal("z", DoubleNode.valueOf(0)))
-                .node("dist", NodeInstance.of("vector.distance").input("first", "a", "result").input("second", "b", "result"))
-                .node("sq", NodeInstance.of("vector.distance_squared").input("first", "a", "result").input("second", "b", "result"))
+                .node(
+                        "tick",
+                        NodeInstance.of("mob.tick")
+                                .chain("next", "distance", "squared", "normalized", "direction", "unchanged"))
+                .node(
+                        "a",
+                        NodeInstance.of("vector.create")
+                                .literal("x", DoubleNode.valueOf(0))
+                                .literal("y", DoubleNode.valueOf(0))
+                                .literal("z", DoubleNode.valueOf(0)))
+                .node(
+                        "b",
+                        NodeInstance.of("vector.create")
+                                .literal("x", DoubleNode.valueOf(3))
+                                .literal("y", DoubleNode.valueOf(4))
+                                .literal("z", DoubleNode.valueOf(0)))
+                .node(
+                        "dist",
+                        NodeInstance.of("vector.distance")
+                                .input("first", "a", "result")
+                                .input("second", "b", "result"))
+                .node(
+                        "sq",
+                        NodeInstance.of("vector.distance_squared")
+                                .input("first", "a", "result")
+                                .input("second", "b", "result"))
                 .node("norm", NodeInstance.of("vector.normalize").input("value", "b", "result"))
-                .node("dir", NodeInstance.of("vector.direction").input("from", "b", "result").input("to", "a", "result"))
+                .node(
+                        "dir",
+                        NodeInstance.of("vector.direction")
+                                .input("from", "b", "result")
+                                .input("to", "a", "result"))
                 .node("distance", print("dist", "result"))
                 .node("squared", print("sq", "result"))
                 .node("normalized", print("norm", "result"))
@@ -110,9 +147,18 @@ class BukkitNodesTest {
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "loop"))
                 .node("self", NodeInstance.of("mob.self"))
                 .node("self_get", NodeInstance.of("entity.get").input("target", "self", "entity"))
-                .node("nearby", NodeInstance.of("world.nearby_entities").input("location", "self_get", "location")
-                        .literal("x", DoubleNode.valueOf(5)).literal("y", DoubleNode.valueOf(5)).literal("z", DoubleNode.valueOf(5)))
-                .node("loop", NodeInstance.of("flow.for_each").input("list", "nearby", "result").chain("body", "print"))
+                .node(
+                        "nearby",
+                        NodeInstance.of("world.nearby_entities")
+                                .input("location", "self_get", "location")
+                                .literal("x", DoubleNode.valueOf(5))
+                                .literal("y", DoubleNode.valueOf(5))
+                                .literal("z", DoubleNode.valueOf(5)))
+                .node(
+                        "loop",
+                        NodeInstance.of("flow.for_each")
+                                .input("list", "nearby", "result")
+                                .chain("body", "print"))
                 .node("element", NodeInstance.of("entity.get").input("target", "loop", "element"))
                 .node("print", print("element", "type"))
                 .build();

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import java.util.List;
@@ -12,10 +17,9 @@ import java.util.Objects;
  * @param parameters parameters of that method, in order
  * @param emitter    expression for each output, usually derived from a parameter
  */
-public record EntryDefinition(NodeDescriptor descriptor,
-                              String method,
-                              List<EntryParameter> parameters,
-                              OutputEmitter<EntryContext> emitter) implements NodeDefinition {
+public record EntryDefinition(
+        NodeDescriptor descriptor, String method, List<EntryParameter> parameters, OutputEmitter<EntryContext> emitter)
+        implements NodeDefinition {
     public EntryDefinition {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(emitter, "emitter");
@@ -24,6 +28,7 @@ public record EntryDefinition(NodeDescriptor descriptor,
         if (!descriptor.inputs().isEmpty() || !descriptor.config().isEmpty()) {
             throw new IllegalArgumentException(descriptor.id() + ": entry points take no inputs or config");
         }
-        if (descriptor.executions().isEmpty()) throw new IllegalArgumentException(descriptor.id() + ": entry points need an execution port");
+        if (descriptor.executions().isEmpty())
+            throw new IllegalArgumentException(descriptor.id() + ": entry points need an execution port");
     }
 }

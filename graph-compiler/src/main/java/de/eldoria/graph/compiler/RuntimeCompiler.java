@@ -1,13 +1,13 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.JavaFile;
 import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +17,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
 
 /**
  * Compiles generated Java source in memory and loads the result into a child class loader.
@@ -72,13 +78,22 @@ public final class RuntimeCompiler {
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         List<SourceFile> sources = Arrays.stream(files).map(SourceFile::of).toList();
 
-        try (StandardJavaFileManager standard = compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8);
-             InMemoryFileManager fileManager = new InMemoryFileManager(standard)) {
+        try (StandardJavaFileManager standard =
+                        compiler.getStandardFileManager(diagnostics, Locale.ROOT, StandardCharsets.UTF_8);
+                InMemoryFileManager fileManager = new InMemoryFileManager(standard)) {
             standard.setLocationFromPaths(StandardLocation.CLASS_PATH, classpath);
             standard.setLocationFromPaths(StandardLocation.SOURCE_PATH, List.of());
-            List<String> options = List.of("-source", String.valueOf(RELEASE), "-target", String.valueOf(RELEASE),
-                    "-proc:none", "-nowarn", "-encoding", "UTF-8");
-            boolean success = compiler.getTask(null, fileManager, diagnostics, options, null, sources).call();
+            List<String> options = List.of(
+                    "-source",
+                    String.valueOf(RELEASE),
+                    "-target",
+                    String.valueOf(RELEASE),
+                    "-proc:none",
+                    "-nowarn",
+                    "-encoding",
+                    "UTF-8");
+            boolean success = compiler.getTask(null, fileManager, diagnostics, options, null, sources)
+                    .call();
             if (!success) throw new CompilationException(diagnostics.getDiagnostics(), sources);
             GeneratedClassLoader loader = new GeneratedClassLoader(fileManager.bytecode(), parent);
             return new CompilationResult(loader, sources, Duration.ofNanos(System.nanoTime() - start));

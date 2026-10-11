@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.configuration.elements.world;
 
 import de.eldoria.bloodnight.configuration.elements.ConfigurationScope;
@@ -20,19 +25,34 @@ import java.util.Map;
  * @param xpValue
  */
 public record WorldDrops(
-        ConfigurationScope weightsScope, Map<Integer, Integer> weights,
-        List<ConfigurationScope> dropTables, List<Drop> dropList,
-        ConfigurationScope xpScope, ValueModifier xpModifier, double xpValue) {
+        ConfigurationScope weightsScope,
+        Map<Integer, Integer> weights,
+        List<ConfigurationScope> dropTables,
+        List<Drop> dropList,
+        ConfigurationScope xpScope,
+        ValueModifier xpModifier,
+        double xpValue) {
     public static WorldDrops defaultDrops() {
-        Map<Integer, Integer> weights = new HashMap<>() {{
-            put(1, 90);
-            put(2, 50);
-            put(3, 10);
-        }};
-        ArrayList<ConfigurationScope> dropTables = new ArrayList<>() {{
-            add(ConfigurationScope.GLOBAL);
-            add(ConfigurationScope.WORLD);
-        }};
-        return new WorldDrops(ConfigurationScope.GLOBAL, weights, dropTables, new ArrayList<>(), ConfigurationScope.GLOBAL, ValueModifier.MULTIPLY, 4);
+        Map<Integer, Integer> weights = new HashMap<>() {
+            {
+                put(1, 90);
+                put(2, 50);
+                put(3, 10);
+            }
+        };
+        ArrayList<ConfigurationScope> dropTables = new ArrayList<>() {
+            {
+                add(ConfigurationScope.GLOBAL);
+                add(ConfigurationScope.WORLD);
+            }
+        };
+        return new WorldDrops(
+                ConfigurationScope.GLOBAL,
+                weights,
+                dropTables,
+                new ArrayList<>(),
+                ConfigurationScope.GLOBAL,
+                ValueModifier.MULTIPLY,
+                4);
     }
 }

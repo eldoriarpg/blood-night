@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import org.junit.jupiter.api.Test;
@@ -77,8 +82,12 @@ class PortTypeTest {
         PortType arrayListOfStrings = PortType.parameterized(ArrayList.class, STRING);
         PortType map = PortType.parameterized(Map.class, STRING, PortType.of(Integer.class));
 
-        assertEquals("java.util.Collection<java.lang.String>",
-                ((PortType.Concrete) arrayListOfStrings).asSupertype(Collection.class).orElseThrow().id());
+        assertEquals(
+                "java.util.Collection<java.lang.String>",
+                ((PortType.Concrete) arrayListOfStrings)
+                        .asSupertype(Collection.class)
+                        .orElseThrow()
+                        .id());
         assertTrue(PortType.parameterized(Iterable.class, STRING).accepts(arrayListOfStrings));
         assertFalse(PortType.parameterized(Iterable.class, OBJECT).accepts(arrayListOfStrings));
         assertTrue(PortType.parameterized(Map.class, STRING, PortType.of(Integer.class))
@@ -97,16 +106,22 @@ class PortTypeTest {
         Type wildcard = PortTypeTest.class.getDeclaredMethod("wildcard").getGenericReturnType();
         Type variable = PortTypeTest.class.getDeclaredMethod("variable").getGenericReturnType();
 
-        assertEquals("java.util.List<java.lang.CharSequence>", PortType.of(wildcard).id());
+        assertEquals(
+                "java.util.List<java.lang.CharSequence>", PortType.of(wildcard).id());
         PortType map = PortType.of(variable);
-        assertInstanceOf(PortType.Variable.class, ((PortType.Concrete) map).arguments().get(1));
-        assertEquals("java.util.Map<java.lang.String,java.lang.Integer>", map.resolve(Map.of("T", BOXED_INT)).id());
+        assertInstanceOf(
+                PortType.Variable.class, ((PortType.Concrete) map).arguments().get(1));
+        assertEquals(
+                "java.util.Map<java.lang.String,java.lang.Integer>",
+                map.resolve(Map.of("T", BOXED_INT)).id());
     }
 
     @Test
     void rendersJavaPoetTypes() {
         assertEquals("double", DOUBLE.typeName().toString());
-        assertEquals("java.util.List<java.lang.String>", PortType.parameterized(List.class, STRING).typeName().toString());
+        assertEquals(
+                "java.util.List<java.lang.String>",
+                PortType.parameterized(List.class, STRING).typeName().toString());
         assertEquals("T", PortType.variable("T").typeName().toString());
     }
 

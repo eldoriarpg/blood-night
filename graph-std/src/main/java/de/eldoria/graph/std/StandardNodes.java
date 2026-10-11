@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.std;
 
 import com.palantir.javapoet.ClassName;
@@ -41,36 +46,77 @@ public final class StandardNodes {
     private static final String NEXT = "next";
     private static final String BODY = "body";
 
-    public static final ExpressionDefinition BOOLEAN = value("value.boolean", boolean.class, BooleanNode.FALSE, "A fixed true or false");
-    public static final ExpressionDefinition INTEGER = value("value.integer", int.class, IntNode.valueOf(0), "A fixed integer number");
-    public static final ExpressionDefinition NUMBER = value("value.number", double.class, DoubleNode.valueOf(0), "A fixed decimal number");
-    public static final ExpressionDefinition TEXT = value("value.text", String.class, StringNode.valueOf(""), "A fixed text");
+    public static final ExpressionDefinition BOOLEAN =
+            value("value.boolean", boolean.class, BooleanNode.FALSE, "A fixed true or false");
+    public static final ExpressionDefinition INTEGER =
+            value("value.integer", int.class, IntNode.valueOf(0), "A fixed integer number");
+    public static final ExpressionDefinition NUMBER =
+            value("value.number", double.class, DoubleNode.valueOf(0), "A fixed decimal number");
+    public static final ExpressionDefinition TEXT =
+            value("value.text", String.class, StringNode.valueOf(""), "A fixed text");
 
     public static final ExpressionDefinition ADD = arithmetic("math.add", "+", "Adds two numbers");
-    public static final ExpressionDefinition SUBTRACT = arithmetic("math.subtract", "-", "Subtracts the second number from the first");
+    public static final ExpressionDefinition SUBTRACT =
+            arithmetic("math.subtract", "-", "Subtracts the second number from the first");
     public static final ExpressionDefinition MULTIPLY = arithmetic("math.multiply", "*", "Multiplies two numbers");
-    public static final ExpressionDefinition DIVIDE = arithmetic("math.divide", "/", "Divides the first number by the second");
-    public static final ExpressionDefinition ABS = unary("math.abs", double.class, double.class, "Absolute value of a number",
+    public static final ExpressionDefinition DIVIDE =
+            arithmetic("math.divide", "/", "Divides the first number by the second");
+    public static final ExpressionDefinition ABS = unary(
+            "math.abs",
+            double.class,
+            double.class,
+            "Absolute value of a number",
             value -> CodeBlock.of("$T.abs($L)", Math.class, value));
-    public static final ExpressionDefinition ABS_INTEGER = unary("math.abs_integer", double.class, int.class, "Absolute value of a number as integer, decimals cut off",
+    public static final ExpressionDefinition ABS_INTEGER = unary(
+            "math.abs_integer",
+            double.class,
+            int.class,
+            "Absolute value of a number as integer, decimals cut off",
             value -> CodeBlock.of("$T.abs((int) $L)", Math.class, value));
-    public static final ExpressionDefinition CEIL = unary("math.ceil", double.class, int.class, "Rounds up to the next integer",
+    public static final ExpressionDefinition CEIL = unary(
+            "math.ceil",
+            double.class,
+            int.class,
+            "Rounds up to the next integer",
             value -> CodeBlock.of("(int) $T.ceil($L)", Math.class, value));
-    public static final ExpressionDefinition FLOOR = unary("math.floor", double.class, int.class, "Rounds down to the next integer",
+    public static final ExpressionDefinition FLOOR = unary(
+            "math.floor",
+            double.class,
+            int.class,
+            "Rounds down to the next integer",
             value -> CodeBlock.of("(int) $T.floor($L)", Math.class, value));
-    public static final ExpressionDefinition ROUND = unary("math.round", double.class, int.class, "Rounds to the closest integer",
+    public static final ExpressionDefinition ROUND = unary(
+            "math.round",
+            double.class,
+            int.class,
+            "Rounds to the closest integer",
             value -> CodeBlock.of("(int) $T.round($L)", Math.class, value));
-    public static final ExpressionDefinition CLAMP = clamp("math.clamp", double.class, "Keeps a number within a lower and upper bound", "$L");
-    public static final ExpressionDefinition CLAMP_INTEGER = clamp("math.clamp_integer", int.class, "Keeps a number within bounds, as integer with decimals cut off", "(int) $L");
+    public static final ExpressionDefinition CLAMP =
+            clamp("math.clamp", double.class, "Keeps a number within a lower and upper bound", "$L");
+    public static final ExpressionDefinition CLAMP_INTEGER = clamp(
+            "math.clamp_integer",
+            int.class,
+            "Keeps a number within bounds, as integer with decimals cut off",
+            "(int) $L");
 
-    public static final ExpressionDefinition AND = binary("logic.and", boolean.class, boolean.class, "&&", "True when both are true");
-    public static final ExpressionDefinition OR = binary("logic.or", boolean.class, boolean.class, "||", "True when at least one is true");
-    public static final ExpressionDefinition NOT = unary("logic.not", boolean.class, boolean.class, "Inverts a boolean",
-            value -> CodeBlock.of("!$L", value));
-    public static final ExpressionDefinition GREATER = binary("logic.greater", double.class, boolean.class, ">", "True when the first number is greater");
-    public static final ExpressionDefinition GREATER_OR_EQUAL = binary("logic.greater_or_equal", double.class, boolean.class, ">=", "True when the first number is greater or equal");
-    public static final ExpressionDefinition LESS = binary("logic.less", double.class, boolean.class, "<", "True when the first number is less");
-    public static final ExpressionDefinition LESS_OR_EQUAL = binary("logic.less_or_equal", double.class, boolean.class, "<=", "True when the first number is less or equal");
+    public static final ExpressionDefinition AND =
+            binary("logic.and", boolean.class, boolean.class, "&&", "True when both are true");
+    public static final ExpressionDefinition OR =
+            binary("logic.or", boolean.class, boolean.class, "||", "True when at least one is true");
+    public static final ExpressionDefinition NOT =
+            unary("logic.not", boolean.class, boolean.class, "Inverts a boolean", value -> CodeBlock.of("!$L", value));
+    public static final ExpressionDefinition GREATER =
+            binary("logic.greater", double.class, boolean.class, ">", "True when the first number is greater");
+    public static final ExpressionDefinition GREATER_OR_EQUAL = binary(
+            "logic.greater_or_equal",
+            double.class,
+            boolean.class,
+            ">=",
+            "True when the first number is greater or equal");
+    public static final ExpressionDefinition LESS =
+            binary("logic.less", double.class, boolean.class, "<", "True when the first number is less");
+    public static final ExpressionDefinition LESS_OR_EQUAL = binary(
+            "logic.less_or_equal", double.class, boolean.class, "<=", "True when the first number is less or equal");
     public static final ExpressionDefinition EQUAL = new ExpressionDefinition(
             NodeDescriptor.builder("logic.equal", NodeKind.PURE)
                     .description("True when both values are equal; two missing values are equal")
@@ -79,7 +125,11 @@ public final class StandardNodes {
                     .output(RESULT, boolean.class)
                     .build(),
             (port, ctx) -> CodeBlock.of("$T.equals($L, $L)", Objects.class, ctx.input(FIRST), ctx.input(SECOND)));
-    public static final ExpressionDefinition IS_NULL = unary("logic.is_null", Object.class, boolean.class, "True when the value is missing",
+    public static final ExpressionDefinition IS_NULL = unary(
+            "logic.is_null",
+            Object.class,
+            boolean.class,
+            "True when the value is missing",
             value -> CodeBlock.of("($L == null)", value));
 
     public static final ExpressionDefinition COOLDOWN = new ExpressionDefinition(
@@ -88,8 +138,10 @@ public final class StandardNodes {
                     .input(VALUE, "Milliseconds", PortType.of(int.class), false)
                     .output(RESULT, boolean.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of("$L.ready($L)",
-                    ctx.field("cooldown", ClassName.get(Cooldown.class), CodeBlock.of("new $T()", Cooldown.class)), ctx.input(VALUE)));
+            (port, ctx) -> CodeBlock.of(
+                    "$L.ready($L)",
+                    ctx.field("cooldown", ClassName.get(Cooldown.class), CodeBlock.of("new $T()", Cooldown.class)),
+                    ctx.input(VALUE)));
     public static final ExpressionDefinition RANDOM_INTEGER = new ExpressionDefinition(
             NodeDescriptor.builder("function.random_integer", NodeKind.PURE)
                     .description("A random integer between lower and upper, both inclusive")
@@ -97,7 +149,8 @@ public final class StandardNodes {
                     .input(UPPER, int.class)
                     .output(RESULT, int.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of("$T.current().nextInt($L, $L + 1)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
+            (port, ctx) -> CodeBlock.of(
+                    "$T.current().nextInt($L, $L + 1)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
     public static final ExpressionDefinition RANDOM_NUMBER = new ExpressionDefinition(
             NodeDescriptor.builder("function.random_number", NodeKind.PURE)
                     .description("A random number from lower, inclusive, to upper, exclusive")
@@ -105,7 +158,8 @@ public final class StandardNodes {
                     .input(UPPER, double.class)
                     .output(RESULT, double.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of("$T.current().nextDouble($L, $L)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
+            (port, ctx) -> CodeBlock.of(
+                    "$T.current().nextDouble($L, $L)", ThreadLocalRandom.class, ctx.input(LOWER), ctx.input(UPPER)));
 
     public static final StatementDefinition BRANCH = new StatementDefinition(
             NodeDescriptor.builder("flow.branch", NodeKind.CONTROL_FLOW)
@@ -169,18 +223,43 @@ public final class StandardNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
-    private StandardNodes() {
-    }
+    private StandardNodes() {}
 
     /**
      * @return every standard node
      */
     public static List<NodeDefinition> all() {
-        return List.of(BOOLEAN, INTEGER, NUMBER, TEXT,
-                ADD, SUBTRACT, MULTIPLY, DIVIDE, ABS, ABS_INTEGER, CEIL, FLOOR, ROUND, CLAMP, CLAMP_INTEGER,
-                AND, OR, NOT, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL, EQUAL, IS_NULL,
-                COOLDOWN, RANDOM_INTEGER, RANDOM_NUMBER,
-                BRANCH, BATCH, FOR_EACH,
+        return List.of(
+                BOOLEAN,
+                INTEGER,
+                NUMBER,
+                TEXT,
+                ADD,
+                SUBTRACT,
+                MULTIPLY,
+                DIVIDE,
+                ABS,
+                ABS_INTEGER,
+                CEIL,
+                FLOOR,
+                ROUND,
+                CLAMP,
+                CLAMP_INTEGER,
+                AND,
+                OR,
+                NOT,
+                GREATER,
+                GREATER_OR_EQUAL,
+                LESS,
+                LESS_OR_EQUAL,
+                EQUAL,
+                IS_NULL,
+                COOLDOWN,
+                RANDOM_INTEGER,
+                RANDOM_NUMBER,
+                BRANCH,
+                BATCH,
+                FOR_EACH,
                 PRINT);
     }
 
@@ -198,7 +277,8 @@ public final class StandardNodes {
         return binary(id, double.class, double.class, operator, description);
     }
 
-    private static ExpressionDefinition binary(String id, Class<?> operands, Class<?> result, String operator, String description) {
+    private static ExpressionDefinition binary(
+            String id, Class<?> operands, Class<?> result, String operator, String description) {
         return new ExpressionDefinition(
                 NodeDescriptor.builder(id, NodeKind.PURE)
                         .description(description)
@@ -209,7 +289,8 @@ public final class StandardNodes {
                 (port, ctx) -> CodeBlock.of("($L " + operator + " $L)", ctx.input(FIRST), ctx.input(SECOND)));
     }
 
-    private static ExpressionDefinition unary(String id, Class<?> input, Class<?> result, String description, Function<CodeBlock, CodeBlock> expression) {
+    private static ExpressionDefinition unary(
+            String id, Class<?> input, Class<?> result, String description, Function<CodeBlock, CodeBlock> expression) {
         return new ExpressionDefinition(
                 NodeDescriptor.builder(id, NodeKind.PURE)
                         .description(description)
@@ -228,7 +309,14 @@ public final class StandardNodes {
                         .input(UPPER, double.class)
                         .output(RESULT, result)
                         .build(),
-                (port, ctx) -> CodeBlock.of(cast, CodeBlock.of("$T.max($L, $T.min($L, $L))",
-                        Math.class, ctx.input(LOWER), Math.class, ctx.input(UPPER), ctx.input(VALUE))));
+                (port, ctx) -> CodeBlock.of(
+                        cast,
+                        CodeBlock.of(
+                                "$T.max($L, $T.min($L, $L))",
+                                Math.class,
+                                ctx.input(LOWER),
+                                Math.class,
+                                ctx.input(UPPER),
+                                ctx.input(VALUE))));
     }
 }

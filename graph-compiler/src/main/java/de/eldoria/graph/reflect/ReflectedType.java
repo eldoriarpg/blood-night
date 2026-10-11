@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.reflect;
 
 import com.palantir.javapoet.CodeBlock;
@@ -32,8 +37,7 @@ public final class ReflectedType {
     private static final String TARGET = "target";
     private static final String NEXT = "next";
 
-    private ReflectedType() {
-    }
+    private ReflectedType() {}
 
     /**
      * Starts deriving nodes for a class.
@@ -162,11 +166,16 @@ public final class ReflectedType {
                     .name("Get " + name)
                     .description("Reads the properties of a " + name)
                     .input(TARGET, name, target, false, docs.of(type).orElse(""));
-            getters.forEach(property -> descriptor.output(property.id(), displayName(property.id()), property.type(),
+            getters.forEach(property -> descriptor.output(
+                    property.id(),
+                    displayName(property.id()),
+                    property.type(),
                     docs.of(property.method()).orElse("")));
-            Map<String, String> methods = getters.stream().collect(Collectors.toMap(Properties.Getter::id, property -> property.method().getName()));
-            return new ExpressionDefinition(descriptor.build(),
-                    (port, ctx) -> CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port)));
+            Map<String, String> methods = getters.stream()
+                    .collect(Collectors.toMap(
+                            Properties.Getter::id, property -> property.method().getName()));
+            return new ExpressionDefinition(
+                    descriptor.build(), (port, ctx) -> CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port)));
         }
 
         private StatementDefinition setNode(PortType target, Properties.Setter setter, Documentation docs) {
@@ -175,7 +184,11 @@ public final class ReflectedType {
             NodeDescriptor descriptor = NodeDescriptor.builder(prefix + "." + setter.id(), NodeKind.ACTION)
                     .category(category)
                     .name("Set %s %s".formatted(name, displayName(property)))
-                    .description(doc.isEmpty() ? "Calls %s on a %s".formatted(setter.method().getName(), name) : doc)
+                    .description(
+                            doc.isEmpty()
+                                    ? "Calls %s on a %s"
+                                            .formatted(setter.method().getName(), name)
+                                    : doc)
                     .input(TARGET, name, target, false, docs.of(type).orElse(""))
                     .input("value", displayName(property), setter.type(), false, doc)
                     .execution(NEXT)

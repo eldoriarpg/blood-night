@@ -1,9 +1,15 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.JavaFile;
 
-import javax.tools.SimpleJavaFileObject;
 import java.net.URI;
+
+import javax.tools.SimpleJavaFileObject;
 
 /**
  * A compilation unit held in memory.
@@ -35,7 +41,9 @@ public final class SourceFile extends SimpleJavaFileObject {
      */
     public static SourceFile of(JavaFile file) {
         String packageName = file.packageName();
-        String binaryName = packageName.isEmpty() ? file.typeSpec().name() : packageName + "." + file.typeSpec().name();
+        String binaryName = packageName.isEmpty()
+                ? file.typeSpec().name()
+                : packageName + "." + file.typeSpec().name();
         return new SourceFile(binaryName, file.toString());
     }
 

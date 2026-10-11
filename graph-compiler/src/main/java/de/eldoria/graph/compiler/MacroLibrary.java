@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import de.eldoria.graph.definition.EntryDefinition;
@@ -91,7 +96,9 @@ public final class MacroLibrary {
                     problem(macro.id(), GraphProblem.error(null, null, "Duplicate macro id"));
                 }
             }
-            platform.nodes().values().stream().filter(node -> !(node instanceof EntryDefinition)).forEach(analysisNodes::add);
+            platform.nodes().values().stream()
+                    .filter(node -> !(node instanceof EntryDefinition))
+                    .forEach(analysisNodes::add);
             analysisNodes.addAll(MacroBoundary.definitions(platform.types()));
         }
 
@@ -107,7 +114,10 @@ public final class MacroLibrary {
                 List<String> cycle = new ArrayList<>(path.subList(path.indexOf(id), path.size()));
                 cycle.add(id);
                 for (String member : cycle.subList(0, cycle.size() - 1)) {
-                    problem(member, GraphProblem.error(null, null, "Macros use each other in a cycle: " + String.join(" > ", cycle)));
+                    problem(
+                            member,
+                            GraphProblem.error(
+                                    null, null, "Macros use each other in a cycle: " + String.join(" > ", cycle)));
                     done.add(member);
                 }
                 return;
@@ -120,7 +130,9 @@ public final class MacroLibrary {
             done.add(id);
             for (String dependency : dependencies) {
                 if (!definitions.containsKey(TYPE_PREFIX + dependency)) {
-                    problem(id, GraphProblem.error(null, null, "Uses macro %s, which has errors".formatted(dependency)));
+                    problem(
+                            id,
+                            GraphProblem.error(null, null, "Uses macro %s, which has errors".formatted(dependency)));
                     return;
                 }
             }
@@ -149,7 +161,8 @@ public final class MacroLibrary {
                 if (type.startsWith(MacroBoundary.INPUT_PREFIX)) {
                     name(nodeId, node, found).ifPresent(name -> {
                         register(inputNodes, name, nodeId, found);
-                        PortType portType = platform.types().selectable().get(type.substring(MacroBoundary.INPUT_PREFIX.length()));
+                        PortType portType =
+                                platform.types().selectable().get(type.substring(MacroBoundary.INPUT_PREFIX.length()));
                         if (portType != null) inputTypes.put(name, portType);
                     });
                 } else if (type.equals(MacroBoundary.OUTPUT)) {
@@ -160,15 +173,19 @@ public final class MacroLibrary {
                     starts.add(nodeId);
                 }
             });
-            if (starts.size() > 1) starts.forEach(start -> found.add(GraphProblem.error(start, null, "A macro has at most one start")));
-            if (starts.isEmpty() && outputNodes.isEmpty()) found.add(GraphProblem.error(null, null, "A macro needs a start or at least one output"));
-            if (starts.isEmpty() && !endNodes.isEmpty()) endNodes.values().forEach(end -> found.add(GraphProblem.error(end, null, "Exits need a start")));
+            if (starts.size() > 1)
+                starts.forEach(start -> found.add(GraphProblem.error(start, null, "A macro has at most one start")));
+            if (starts.isEmpty() && outputNodes.isEmpty())
+                found.add(GraphProblem.error(null, null, "A macro needs a start or at least one output"));
+            if (starts.isEmpty() && !endNodes.isEmpty())
+                endNodes.values().forEach(end -> found.add(GraphProblem.error(end, null, "Exits need a start")));
 
             ValidatedGraph validated = null;
             try {
                 MacroExpander.Expansion expansion = MacroExpander.expand(macro.body(), definitions);
                 try {
-                    validated = new GraphValidator(analysisPlatform(), MacroBoundary.passDefinitions(platform.types())).validate(expansion.graph());
+                    validated = new GraphValidator(analysisPlatform(), MacroBoundary.passDefinitions(platform.types()))
+                            .validate(expansion.graph());
                     found.addAll(expansion.locate(validated.warnings()));
                 } catch (GraphCompilationException e) {
                     found.addAll(expansion.locate(e.problems()));
@@ -177,22 +194,28 @@ public final class MacroLibrary {
                 found.addAll(e.problems());
             }
 
-            if (validated == null || found.stream().anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR)) {
+            if (validated == null
+                    || found.stream().anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR)) {
                 problems.computeIfAbsent(macro.id(), key -> new ArrayList<>()).addAll(found);
                 return;
             }
-            if (!found.isEmpty()) problems.computeIfAbsent(macro.id(), key -> new ArrayList<>()).addAll(found);
+            if (!found.isEmpty())
+                problems.computeIfAbsent(macro.id(), key -> new ArrayList<>()).addAll(found);
 
             String start = starts.isEmpty() ? null : starts.getFirst();
-            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(TYPE_PREFIX + macro.id(), start == null ? NodeKind.PURE : NodeKind.ACTION)
+            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(
+                            TYPE_PREFIX + macro.id(), start == null ? NodeKind.PURE : NodeKind.ACTION)
                     .category(macro.category())
                     .name(macro.name())
                     .description(macro.description());
             inputTypes.forEach(descriptor::input);
             ValidatedGraph checked = validated;
-            outputNodes.forEach((name, node) -> descriptor.output(name, checked.nodes().get(node).sourceTypes().get(MacroBoundary.VALUE)));
+            outputNodes.forEach((name, node) -> descriptor.output(
+                    name, checked.nodes().get(node).sourceTypes().get(MacroBoundary.VALUE)));
             endNodes.keySet().forEach(descriptor::execution);
-            definitions.put(TYPE_PREFIX + macro.id(), new MacroDefinition(descriptor.build(), macro, inputNodes, outputNodes, start, endNodes));
+            definitions.put(
+                    TYPE_PREFIX + macro.id(),
+                    new MacroDefinition(descriptor.build(), macro, inputNodes, outputNodes, start, endNodes));
         }
 
         private GraphPlatform analysisPlatform() {
@@ -210,7 +233,8 @@ public final class MacroLibrary {
         private static Optional<String> name(String nodeId, NodeInstance node, List<GraphProblem> found) {
             JsonNode name = node.config().get(MacroBoundary.NAME);
             if (name == null || !name.isString() || !name.stringValue().matches("[a-z][a-z0-9_]*")) {
-                found.add(GraphProblem.error(nodeId, MacroBoundary.NAME, "Needs a name made of lower-case letters, digits and underscores"));
+                found.add(GraphProblem.error(
+                        nodeId, MacroBoundary.NAME, "Needs a name made of lower-case letters, digits and underscores"));
                 return Optional.empty();
             }
             return Optional.of(name.stringValue());
@@ -218,7 +242,9 @@ public final class MacroLibrary {
 
         private static void register(Map<String, String> ports, String name, String nodeId, List<GraphProblem> found) {
             String previous = ports.putIfAbsent(name, nodeId);
-            if (previous != null) found.add(GraphProblem.error(nodeId, MacroBoundary.NAME, "Name %s is already used by %s".formatted(name, previous)));
+            if (previous != null)
+                found.add(GraphProblem.error(
+                        nodeId, MacroBoundary.NAME, "Name %s is already used by %s".formatted(name, previous)));
         }
 
         private void problem(String macro, GraphProblem problem) {

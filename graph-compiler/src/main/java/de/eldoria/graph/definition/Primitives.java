@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import java.util.Map;
@@ -18,8 +23,7 @@ final class Primitives {
             double.class, Double.class,
             void.class, Void.class);
 
-    private Primitives() {
-    }
+    private Primitives() {}
 
     /**
      * @param type a primitive class

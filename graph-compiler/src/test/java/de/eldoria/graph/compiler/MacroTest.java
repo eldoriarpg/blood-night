@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
@@ -33,7 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MacroTest {
     private static final ExpressionDefinition BROKEN = new ExpressionDefinition(
-            NodeDescriptor.builder("debug.broken", NodeKind.VALUE).output("value", int.class).build(),
+            NodeDescriptor.builder("debug.broken", NodeKind.VALUE)
+                    .output("value", int.class)
+                    .build(),
             (port, ctx) -> CodeBlock.of("undefinedVariable"));
     private static final GraphPlatform PLATFORM = GraphPlatform.builder(ToyHost.class)
             .context(ToyContext.class)
@@ -44,7 +51,11 @@ class MacroTest {
 
     private static Path codeSource() {
         try {
-            return Path.of(ToyHost.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Path.of(ToyHost.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
@@ -70,49 +81,87 @@ class MacroTest {
      * {@code double_it(x: number) -> result}
      */
     private static Macro doubleIt() {
-        return new Macro("double_it", "Double It", "Adds a number to itself", null, Graph.builder()
-                .node("x", named("macro.input.number", "x"))
-                .node("add", NodeInstance.of("math.add").input("a", "x", "value").input("b", "x", "value"))
-                .node("out", named("macro.output", "result").input("value", "add", "result"))
-                .build());
+        return new Macro(
+                "double_it",
+                "Double It",
+                "Adds a number to itself",
+                null,
+                Graph.builder()
+                        .node("x", named("macro.input.number", "x"))
+                        .node(
+                                "add",
+                                NodeInstance.of("math.add")
+                                        .input("a", "x", "value")
+                                        .input("b", "x", "value"))
+                        .node("out", named("macro.output", "result").input("value", "add", "result"))
+                        .build());
     }
 
     /**
      * Action with exits {@code high} and {@code low}, depending on whether {@code value} is greater than ten.
      */
     private static Macro check() {
-        return new Macro("check", null, null, null, Graph.builder()
-                .node("start", NodeInstance.of("macro.start").chain("next", "branch"))
-                .node("value", named("macro.input.integer", "value"))
-                .node("ten", number(10))
-                .node("greater", NodeInstance.of("logic.greater").input("a", "value", "value").input("b", "ten", "value"))
-                .node("branch", NodeInstance.of("flow.branch").input("condition", "greater", "result").chain("true", "high").chain("false", "low"))
-                .node("high", named("macro.end", "high"))
-                .node("low", named("macro.end", "low"))
-                .build());
+        return new Macro(
+                "check",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("start", NodeInstance.of("macro.start").chain("next", "branch"))
+                        .node("value", named("macro.input.integer", "value"))
+                        .node("ten", number(10))
+                        .node(
+                                "greater",
+                                NodeInstance.of("logic.greater")
+                                        .input("a", "value", "value")
+                                        .input("b", "ten", "value"))
+                        .node(
+                                "branch",
+                                NodeInstance.of("flow.branch")
+                                        .input("condition", "greater", "result")
+                                        .chain("true", "high")
+                                        .chain("false", "low"))
+                        .node("high", named("macro.end", "high"))
+                        .node("low", named("macro.end", "low"))
+                        .build());
     }
 
     private static Macro quadruple() {
-        return new Macro("quadruple", null, null, null, Graph.builder()
-                .node("x", named("macro.input.number", "x"))
-                .node("first", NodeInstance.of("macro.double_it").input("x", "x", "value"))
-                .node("second", NodeInstance.of("macro.double_it").input("x", "first", "result"))
-                .node("out", named("macro.output", "result").input("value", "second", "result"))
-                .build());
+        return new Macro(
+                "quadruple",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("x", named("macro.input.number", "x"))
+                        .node("first", NodeInstance.of("macro.double_it").input("x", "x", "value"))
+                        .node("second", NodeInstance.of("macro.double_it").input("x", "first", "result"))
+                        .node("out", named("macro.output", "result").input("value", "second", "result"))
+                        .build());
     }
 
     private static Macro counting() {
-        return new Macro("counting", null, null, null, Graph.builder()
-                .node("counter", NodeInstance.of("state.counter"))
-                .node("out", named("macro.output", "count").input("value", "counter", "count"))
-                .build());
+        return new Macro(
+                "counting",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("counter", NodeInstance.of("state.counter"))
+                        .node("out", named("macro.output", "count").input("value", "counter", "count"))
+                        .build());
     }
 
     private static Macro brokenInside() {
-        return new Macro("broken_inside", null, null, null, Graph.builder()
-                .node("oops", NodeInstance.of("debug.broken"))
-                .node("out", named("macro.output", "value").input("value", "oops", "value"))
-                .build());
+        return new Macro(
+                "broken_inside",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("oops", NodeInstance.of("debug.broken"))
+                        .node("out", named("macro.output", "value").input("value", "oops", "value"))
+                        .build());
     }
 
     private static MacroLibrary library(Macro... macros) {
@@ -124,7 +173,8 @@ class MacroTest {
                 .compile(graph, ClassName.get("generated.macro", "Behaviour"));
     }
 
-    private static List<String> run(Graph graph, MacroLibrary library, Consumer<ToyHost> calls) throws GraphCompilationException {
+    private static List<String> run(Graph graph, MacroLibrary library, Consumer<ToyHost> calls)
+            throws GraphCompilationException {
         ToyContext context = new ToyContext();
         calls.accept(compile(graph, library).instantiate(context));
         return context.printed();
@@ -134,7 +184,8 @@ class MacroTest {
         return exception.problems().stream()
                 .filter(problem -> Objects.equals(problem.node(), node) && Objects.equals(problem.port(), port))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("No problem on %s.%s:\n%s".formatted(node, port, exception.getMessage())));
+                .orElseThrow(() ->
+                        new AssertionError("No problem on %s.%s:\n%s".formatted(node, port, exception.getMessage())));
     }
 
     @Test
@@ -145,13 +196,21 @@ class MacroTest {
         assertEquals(NodeKind.PURE, doubled.descriptor().kind());
         assertEquals("Double It", doubled.descriptor().name());
         assertEquals("macro", doubled.descriptor().category());
-        assertEquals(List.of("x"), doubled.descriptor().inputs().stream().map(Port::id).toList());
-        assertEquals(PortType.of(double.class), doubled.descriptor().output("result").orElseThrow().type());
+        assertEquals(
+                List.of("x"),
+                doubled.descriptor().inputs().stream().map(Port::id).toList());
+        assertEquals(
+                PortType.of(double.class),
+                doubled.descriptor().output("result").orElseThrow().type());
 
         MacroDefinition check = library.definitions().get("macro.check");
         assertEquals(NodeKind.ACTION, check.descriptor().kind());
-        assertEquals(PortType.of(int.class), check.descriptor().input("value").orElseThrow().type());
-        assertEquals(List.of("high", "low"), check.descriptor().executions().stream().map(port -> port.id()).toList());
+        assertEquals(
+                PortType.of(int.class),
+                check.descriptor().input("value").orElseThrow().type());
+        assertEquals(
+                List.of("high", "low"),
+                check.descriptor().executions().stream().map(port -> port.id()).toList());
         assertTrue(library.problems().isEmpty(), library.problems().toString());
     }
 
@@ -182,7 +241,12 @@ class MacroTest {
     void actionMacroWithExits() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("score", NodeInstance.of("entry.score").chain("next", "check", "done"))
-                .node("check", NodeInstance.of("macro.check").input("value", "score", "points").chain("high", "high").chain("low", "low"))
+                .node(
+                        "check",
+                        NodeInstance.of("macro.check")
+                                .input("value", "score", "points")
+                                .chain("high", "high")
+                                .chain("low", "low"))
                 .node("high", print("high_text", "value"))
                 .node("low", print("low_text", "value"))
                 .node("done", print("score", "player"))
@@ -248,7 +312,8 @@ class MacroTest {
                 .node("print", print("twice", "result"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph, library(doubleIt())));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> compile(graph, library(doubleIt())));
 
         GraphProblem problem = problem(exception, "twice", "x");
         assertTrue(problem.message().contains("Expected Number but word provides Text"), problem.message());
@@ -265,7 +330,8 @@ class MacroTest {
                 .node("print", print("twice", "result"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph, library(doubleIt(), check())));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> compile(graph, library(doubleIt(), check())));
 
         assertTrue(problem(exception, "twice", "x").message().contains("only available in the chain it starts"));
     }
@@ -278,7 +344,8 @@ class MacroTest {
                 .node("print", print("use", "value"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph, library(brokenInside())));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> compile(graph, library(brokenInside())));
 
         GraphProblem problem = problem(exception, "use", null);
         assertEquals(List.of(new MacroFrame("broken_inside", "oops")), problem.trace());
@@ -287,19 +354,27 @@ class MacroTest {
 
     @Test
     void nestedProblemsCarryTheWholeTrace() {
-        Macro wrapper = new Macro("wrapper", null, null, null, Graph.builder()
-                .node("inner", NodeInstance.of("macro.broken_inside"))
-                .node("out", named("macro.output", "value").input("value", "inner", "value"))
-                .build());
+        Macro wrapper = new Macro(
+                "wrapper",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("inner", NodeInstance.of("macro.broken_inside"))
+                        .node("out", named("macro.output", "value").input("value", "inner", "value"))
+                        .build());
         Graph graph = Graph.builder()
                 .node("start", NodeInstance.of("entry.start").chain("next", "print"))
                 .node("use", NodeInstance.of("macro.wrapper"))
                 .node("print", print("use", "value"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph, library(wrapper, brokenInside())));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> compile(graph, library(wrapper, brokenInside())));
 
-        assertEquals(List.of(new MacroFrame("wrapper", "inner"), new MacroFrame("broken_inside", "oops")), problem(exception, "use", null).trace());
+        assertEquals(
+                List.of(new MacroFrame("wrapper", "inner"), new MacroFrame("broken_inside", "oops")),
+                problem(exception, "use", null).trace());
     }
 
     @Test
@@ -310,7 +385,8 @@ class MacroTest {
                 .node("print", print("twice", "missing"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph, library(doubleIt())));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> compile(graph, library(doubleIt())));
 
         assertTrue(problem(exception, "twice", "x").message().contains("not connected"));
         assertTrue(problem(exception, "twice", "y").message().contains("no input y"));
@@ -320,46 +396,92 @@ class MacroTest {
 
     @Test
     void brokenMacrosAreLeftOutAndReported() {
-        Macro missingInput = new Macro("missing_input", null, null, null, Graph.builder()
-                .node("add", NodeInstance.of("math.add"))
-                .node("out", named("macro.output", "result").input("value", "add", "result"))
-                .build());
-        Macro unnamed = new Macro("unnamed", null, null, null, Graph.builder()
-                .node("x", NodeInstance.of("macro.input.number"))
-                .node("out", NodeInstance.of("macro.output").input("value", "x", "value"))
-                .build());
+        Macro missingInput = new Macro(
+                "missing_input",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("add", NodeInstance.of("math.add"))
+                        .node("out", named("macro.output", "result").input("value", "add", "result"))
+                        .build());
+        Macro unnamed = new Macro(
+                "unnamed",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("x", NodeInstance.of("macro.input.number"))
+                        .node("out", NodeInstance.of("macro.output").input("value", "x", "value"))
+                        .build());
         Macro empty = new Macro("empty", null, null, null, Graph.builder().build());
-        Macro withEntry = new Macro("with_entry", null, null, null, Graph.builder()
-                .node("start", NodeInstance.of("entry.start"))
-                .node("x", named("macro.input.number", "x"))
-                .node("out", named("macro.output", "x").input("value", "x", "value"))
-                .build());
-        Macro uses = new Macro("uses_broken", null, null, null, Graph.builder()
-                .node("inner", NodeInstance.of("macro.missing_input"))
-                .node("out", named("macro.output", "result").input("value", "inner", "result"))
-                .build());
+        Macro withEntry = new Macro(
+                "with_entry",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("start", NodeInstance.of("entry.start"))
+                        .node("x", named("macro.input.number", "x"))
+                        .node("out", named("macro.output", "x").input("value", "x", "value"))
+                        .build());
+        Macro uses = new Macro(
+                "uses_broken",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("inner", NodeInstance.of("macro.missing_input"))
+                        .node("out", named("macro.output", "result").input("value", "inner", "result"))
+                        .build());
 
-        MacroLibrary library = library(missingInput, unnamed, empty, withEntry, uses, doubleIt(), new Macro("input", null, null, null, Graph.builder().build()));
+        MacroLibrary library = library(
+                missingInput,
+                unnamed,
+                empty,
+                withEntry,
+                uses,
+                doubleIt(),
+                new Macro("input", null, null, null, Graph.builder().build()));
 
-        assertEquals(List.of("macro.double_it"), new ArrayList<>(library.definitions().keySet()));
-        assertTrue(library.problems().get("missing_input").stream().anyMatch(problem -> "add".equals(problem.node()) && "b".equals(problem.port())));
-        assertTrue(library.problems().get("unnamed").stream().anyMatch(problem -> "x".equals(problem.node()) && "name".equals(problem.port())));
-        assertTrue(library.problems().get("empty").stream().anyMatch(problem -> problem.message().contains("needs a start or at least one output")));
-        assertTrue(library.problems().get("with_entry").stream().anyMatch(problem -> "start".equals(problem.node()) && problem.message().contains("Unknown node type")));
-        assertTrue(library.problems().get("uses_broken").stream().anyMatch(problem -> problem.message().contains("missing_input, which has errors")));
-        assertTrue(library.problems().get("input").stream().anyMatch(problem -> problem.message().contains("Invalid macro id")));
+        assertEquals(
+                List.of("macro.double_it"),
+                new ArrayList<>(library.definitions().keySet()));
+        assertTrue(library.problems().get("missing_input").stream()
+                .anyMatch(problem -> "add".equals(problem.node()) && "b".equals(problem.port())));
+        assertTrue(library.problems().get("unnamed").stream()
+                .anyMatch(problem -> "x".equals(problem.node()) && "name".equals(problem.port())));
+        assertTrue(library.problems().get("empty").stream()
+                .anyMatch(problem -> problem.message().contains("needs a start or at least one output")));
+        assertTrue(library.problems().get("with_entry").stream()
+                .anyMatch(problem ->
+                        "start".equals(problem.node()) && problem.message().contains("Unknown node type")));
+        assertTrue(library.problems().get("uses_broken").stream()
+                .anyMatch(problem -> problem.message().contains("missing_input, which has errors")));
+        assertTrue(library.problems().get("input").stream()
+                .anyMatch(problem -> problem.message().contains("Invalid macro id")));
     }
 
     @Test
     void cyclesAreRejected() {
-        Macro a = new Macro("a", null, null, null, Graph.builder()
-                .node("b", NodeInstance.of("macro.b"))
-                .node("out", named("macro.output", "value").input("value", "b", "value"))
-                .build());
-        Macro b = new Macro("b", null, null, null, Graph.builder()
-                .node("a", NodeInstance.of("macro.a"))
-                .node("out", named("macro.output", "value").input("value", "a", "value"))
-                .build());
+        Macro a = new Macro(
+                "a",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("b", NodeInstance.of("macro.b"))
+                        .node("out", named("macro.output", "value").input("value", "b", "value"))
+                        .build());
+        Macro b = new Macro(
+                "b",
+                null,
+                null,
+                null,
+                Graph.builder()
+                        .node("a", NodeInstance.of("macro.a"))
+                        .node("out", named("macro.output", "value").input("value", "a", "value"))
+                        .build());
 
         MacroLibrary library = library(a, b);
 

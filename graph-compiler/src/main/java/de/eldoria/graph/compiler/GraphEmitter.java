@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
@@ -20,7 +25,6 @@ import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.model.Edge;
 
-import javax.lang.model.element.Modifier;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,6 +34,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.lang.model.element.Modifier;
 
 /**
  * Turns a validated graph into the source of one class implementing the platform's host interface.
@@ -68,8 +74,7 @@ final class GraphEmitter {
      * @param file      the source
      * @param sourceMap marker positions, indexed against the rendered source
      */
-    record Emitted(JavaFile file, SourceMap sourceMap) {
-    }
+    record Emitted(JavaFile file, SourceMap sourceMap) {}
 
     /**
      * @param name name of the generated class
@@ -84,8 +89,11 @@ final class GraphEmitter {
 
         Map<Method, List<String>> entriesByMethod = new LinkedHashMap<>();
         for (String entry : graph.entries()) {
-            EntryDefinition definition = (EntryDefinition) graph.nodes().get(entry).definition();
-            entriesByMethod.computeIfAbsent(hostMethod(definition), key -> new ArrayList<>()).add(entry);
+            EntryDefinition definition =
+                    (EntryDefinition) graph.nodes().get(entry).definition();
+            entriesByMethod
+                    .computeIfAbsent(hostMethod(definition), key -> new ArrayList<>())
+                    .add(entry);
         }
         entriesByMethod.forEach((method, entries) -> type.addMethod(entryMethod(method, entries)));
         for (Method method : host.getMethods()) {
@@ -94,15 +102,20 @@ final class GraphEmitter {
             }
         }
 
-        graph.platform().context().ifPresent(context ->
-                type.addField(FieldSpec.builder(context, CONTEXT_FIELD, Modifier.PRIVATE, Modifier.FINAL).build()));
+        graph.platform()
+                .context()
+                .ifPresent(context ->
+                        type.addField(FieldSpec.builder(context, CONTEXT_FIELD, Modifier.PRIVATE, Modifier.FINAL)
+                                .build()));
         type.addFields(fieldSpecs);
         type.addMethod(constructor());
 
         List<GraphProblem> all = new ArrayList<>(graph.warnings());
         all.addAll(problems);
         if (!problems.isEmpty()) throw new GraphCompilationException(all, null);
-        JavaFile file = JavaFile.builder(name.packageName(), type.build()).skipJavaLangImports(true).build();
+        JavaFile file = JavaFile.builder(name.packageName(), type.build())
+                .skipJavaLangImports(true)
+                .build();
         sourceMap.index(file.toString());
         return new Emitted(file, sourceMap);
     }
@@ -128,8 +141,11 @@ final class GraphEmitter {
     }
 
     private MethodSpec entryMethod(Method method, List<String> entries) {
-        EntryDefinition definition = (EntryDefinition) graph.nodes().get(entries.getFirst()).definition();
-        MethodSpec.Builder builder = override(method, definition.parameters().stream().map(EntryParameter::name).toList());
+        EntryDefinition definition =
+                (EntryDefinition) graph.nodes().get(entries.getFirst()).definition();
+        MethodSpec.Builder builder = override(
+                method,
+                definition.parameters().stream().map(EntryParameter::name).toList());
         for (String entry : entries) {
             Scope root = Scope.root(entry);
             builder.addCode(sourceMap.marker(entry));
@@ -153,7 +169,8 @@ final class GraphEmitter {
                 .returns(TypeName.get(method.getGenericReturnType()));
         Type[] types = method.getGenericParameterTypes();
         for (int i = 0; i < types.length; i++) {
-            builder.addParameter(ParameterSpec.builder(TypeName.get(types[i]), parameterNames.get(i)).build());
+            builder.addParameter(ParameterSpec.builder(TypeName.get(types[i]), parameterNames.get(i))
+                    .build());
         }
         for (Type exception : method.getGenericExceptionTypes()) builder.addException(TypeName.get(exception));
         return builder;
@@ -177,10 +194,17 @@ final class GraphEmitter {
         try {
             body = ((StatementDefinition) info.definition()).emitter().emit(context);
         } catch (RuntimeException e) {
-            report(GraphProblem.error(node, null, "Definition %s failed: %s".formatted(info.definition().id(), e.getMessage())));
+            report(GraphProblem.error(
+                    node,
+                    null,
+                    "Definition %s failed: %s".formatted(info.definition().id(), e.getMessage())));
             body = CodeBlock.of("");
         }
-        return CodeBlock.builder().add(sourceMap.marker(node)).add(prelude.build()).add(body).build();
+        return CodeBlock.builder()
+                .add(sourceMap.marker(node))
+                .add(prelude.build())
+                .add(body)
+                .build();
     }
 
     /**
@@ -194,29 +218,44 @@ final class GraphEmitter {
 
         ValidatedGraph.Node source = graph.nodes().get(edge.node());
         return switch (source.definition()) {
-            case ExpressionDefinition expression -> compute(source, edge.port(), scope, prelude,
-                    () -> expression.emitter().output(edge.port(), new Expression(source, scope, prelude)));
+            case ExpressionDefinition expression ->
+                compute(source, edge.port(), scope, prelude, () -> expression
+                        .emitter()
+                        .output(edge.port(), new Expression(source, scope, prelude)));
             case EntryDefinition entry -> {
                 if (!scope.within(source.id())) {
-                    yield fail(reader, readerPort, "Output %s of entry %s is only available in the chain it starts".formatted(edge.port(), source.id()));
+                    yield fail(
+                            reader,
+                            readerPort,
+                            "Output %s of entry %s is only available in the chain it starts"
+                                    .formatted(edge.port(), source.id()));
                 }
-                yield compute(source, edge.port(), scope, prelude,
-                        () -> entry.emitter().output(edge.port(), new Entry(source, scope, prelude)));
+                yield compute(source, edge.port(), scope, prelude, () -> entry.emitter()
+                        .output(edge.port(), new Entry(source, scope, prelude)));
             }
-            case MacroDefinition macro -> throw new IllegalStateException("Macro %s was not expanded".formatted(source.id()));
-            case StatementDefinition statement -> fail(reader, readerPort,
-                    "Output %s of %s is only available in the code %s runs itself".formatted(edge.port(), source.id(), source.id()));
+            case MacroDefinition macro ->
+                throw new IllegalStateException("Macro %s was not expanded".formatted(source.id()));
+            case StatementDefinition statement ->
+                fail(
+                        reader,
+                        readerPort,
+                        "Output %s of %s is only available in the code %s runs itself"
+                                .formatted(edge.port(), source.id(), source.id()));
         };
     }
 
-    private CodeBlock compute(ValidatedGraph.Node source, String port, Scope scope, CodeBlock.Builder prelude, EmitterCall call) {
+    private CodeBlock compute(
+            ValidatedGraph.Node source, String port, Scope scope, CodeBlock.Builder prelude, EmitterCall call) {
         PortType type = source.outputTypes().get(port);
         if (type.hasVariables()) return fail(source.id(), port, "Type of output %s cannot be inferred".formatted(port));
         CodeBlock expression;
         try {
             expression = call.emit();
         } catch (RuntimeException e) {
-            return fail(source.id(), port, "Definition %s failed: %s".formatted(source.definition().id(), e.getMessage()));
+            return fail(
+                    source.id(),
+                    port,
+                    "Definition %s failed: %s".formatted(source.definition().id(), e.getMessage()));
         }
         CodeBlock local = CodeBlock.of("$N", name("v", source.id(), port));
         prelude.add(sourceMap.marker(source.id()));
@@ -271,12 +310,15 @@ final class GraphEmitter {
         @Override
         public CodeBlock input(String port) {
             if (node.definition().descriptor().input(port).isEmpty()) {
-                throw new IllegalArgumentException("%s has no input %s".formatted(node.definition().id(), port));
+                throw new IllegalArgumentException(
+                        "%s has no input %s".formatted(node.definition().id(), port));
             }
             CodeBlock literal = node.literals().get(port);
             if (literal != null) return literal;
             Edge edge = node.instance().inputs().get(port);
-            if (edge == null) throw new IllegalArgumentException("Optional input %s is not connected; check connected() first".formatted(port));
+            if (edge == null)
+                throw new IllegalArgumentException(
+                        "Optional input %s is not connected; check connected() first".formatted(port));
             return read(node.id(), port, edge, scope, prelude);
         }
 
@@ -288,7 +330,9 @@ final class GraphEmitter {
         @Override
         public CodeBlock config(String field) {
             CodeBlock literal = node.config().get(field);
-            if (literal == null) throw new IllegalArgumentException("%s has no config field %s".formatted(node.definition().id(), field));
+            if (literal == null)
+                throw new IllegalArgumentException(
+                        "%s has no config field %s".formatted(node.definition().id(), field));
             return literal;
         }
 
@@ -296,7 +340,9 @@ final class GraphEmitter {
         public TypeName type(String port) {
             PortType type = node.inputTypes().get(port);
             if (type == null) type = node.outputTypes().get(port);
-            if (type == null) throw new IllegalArgumentException("%s has no port %s".formatted(node.definition().id(), port));
+            if (type == null)
+                throw new IllegalArgumentException(
+                        "%s has no port %s".formatted(node.definition().id(), port));
             return type.typeName();
         }
 
@@ -313,7 +359,8 @@ final class GraphEmitter {
 
         @Override
         public CodeBlock context() {
-            if (graph.platform().context().isEmpty()) throw new IllegalStateException("The platform has no context type");
+            if (graph.platform().context().isEmpty())
+                throw new IllegalStateException("The platform has no context type");
             return CodeBlock.of("this.$N", CONTEXT_FIELD);
         }
     }
@@ -332,7 +379,8 @@ final class GraphEmitter {
         @Override
         public CodeBlock parameter(String name) {
             EntryDefinition definition = (EntryDefinition) node.definition();
-            if (definition.parameters().stream().noneMatch(parameter -> parameter.name().equals(name))) {
+            if (definition.parameters().stream()
+                    .noneMatch(parameter -> parameter.name().equals(name))) {
                 throw new IllegalArgumentException("%s has no parameter %s".formatted(definition.id(), name));
             }
             return CodeBlock.of("$N", name);
@@ -354,19 +402,26 @@ final class GraphEmitter {
         @Override
         public CodeBlock bind(String port, String... visibleIn) {
             if (node.definition().descriptor().output(port).isEmpty()) {
-                throw new IllegalArgumentException("%s has no output %s".formatted(node.definition().id(), port));
+                throw new IllegalArgumentException(
+                        "%s has no output %s".formatted(node.definition().id(), port));
             }
-            if (visibleIn.length == 0) throw new IllegalArgumentException("Output %s must be visible in at least one execution port".formatted(port));
+            if (visibleIn.length == 0)
+                throw new IllegalArgumentException(
+                        "Output %s must be visible in at least one execution port".formatted(port));
             CodeBlock local = CodeBlock.of("$N", name("v", node.id(), port));
             for (String execution : visibleIn) {
-                bindings.computeIfAbsent(execution(execution).id(), key -> new HashMap<>()).put(Scope.key(node.id(), port), local);
+                bindings.computeIfAbsent(execution(execution).id(), key -> new HashMap<>())
+                        .put(Scope.key(node.id(), port), local);
             }
             return local;
         }
 
         private ExecutionPort execution(String port) {
-            return node.definition().descriptor().execution(port)
-                    .orElseThrow(() -> new IllegalArgumentException("%s has no execution port %s".formatted(node.definition().id(), port)));
+            return node.definition()
+                    .descriptor()
+                    .execution(port)
+                    .orElseThrow(() -> new IllegalArgumentException("%s has no execution port %s"
+                            .formatted(node.definition().id(), port)));
         }
     }
 }

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import de.eldoria.graph.definition.MacroDefinition;
@@ -31,8 +36,7 @@ import java.util.stream.Stream;
 final class MacroExpander {
     private static final int MAX_DEPTH = 16;
 
-    private MacroExpander() {
-    }
+    private MacroExpander() {}
 
     /**
      * Where an expanded node came from.
@@ -40,8 +44,7 @@ final class MacroExpander {
      * @param node  the node in the graph as stored, i.e. the outermost macro use
      * @param trace path into the macros
      */
-    record Origin(String node, List<MacroFrame> trace) {
-    }
+    record Origin(String node, List<MacroFrame> trace) {}
 
     /**
      * A graph without macro uses, and the origin of every node that came out of a macro.
@@ -61,7 +64,8 @@ final class MacroExpander {
             GraphProblem located = problem.at(origin.node(), trace);
             String input = inputs.get(problem.node());
             if (input != null && MacroBoundary.VALUE.equals(problem.port())) {
-                located = new GraphProblem(located.severity(), located.node(), input, located.message(), located.trace());
+                located =
+                        new GraphProblem(located.severity(), located.node(), input, located.message(), located.trace());
             }
             return located;
         }
@@ -89,10 +93,12 @@ final class MacroExpander {
                     .toList();
             if (uses.isEmpty()) break;
             if (depth == MAX_DEPTH) {
-                uses.forEach(use -> problems.add(GraphProblem.error(use, null, "Macros are nested deeper than " + MAX_DEPTH)));
+                uses.forEach(use ->
+                        problems.add(GraphProblem.error(use, null, "Macros are nested deeper than " + MAX_DEPTH)));
                 break;
             }
-            for (String use : uses) new Splice(use, macros.get(nodes.get(use).type()), nodes, origins, inputs, problems).run();
+            for (String use : uses)
+                new Splice(use, macros.get(nodes.get(use).type()), nodes, origins, inputs, problems).run();
         }
         Expansion expansion = new Expansion(new Graph(nodes), Map.copyOf(origins), Map.copyOf(inputs));
         if (!problems.isEmpty()) throw new GraphCompilationException(expansion.locate(List.copyOf(problems)), null);
@@ -111,8 +117,13 @@ final class MacroExpander {
         private final Map<String, String> endNames = new HashMap<>();
         private final Graph body;
 
-        Splice(String useId, MacroDefinition definition, Map<String, NodeInstance> nodes, Map<String, Origin> origins,
-               Map<String, String> inputs, Set<GraphProblem> problems) {
+        Splice(
+                String useId,
+                MacroDefinition definition,
+                Map<String, NodeInstance> nodes,
+                Map<String, Origin> origins,
+                Map<String, String> inputs,
+                Set<GraphProblem> problems) {
             this.useId = useId;
             this.use = nodes.get(useId);
             this.definition = definition;
@@ -136,7 +147,10 @@ final class MacroExpander {
                 node.inputs().forEach((port, edge) -> inner(edge).ifPresent(resolved -> inputs.put(port, resolved)));
                 Map<String, List<String>> executions = new LinkedHashMap<>();
                 node.executions().forEach((port, targets) -> executions.put(port, chain(targets)));
-                nodes.put(prefix + id, new NodeInstance(node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
+                nodes.put(
+                        prefix + id,
+                        new NodeInstance(
+                                node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
                 List<MacroFrame> trace = new ArrayList<>(useOrigin.trace());
                 trace.add(new MacroFrame(definition.macro().id(), id));
                 origins.put(prefix + id, new Origin(useOrigin.node(), trace));
@@ -157,7 +171,9 @@ final class MacroExpander {
             String type = body.nodes().get(node).type().substring(MacroBoundary.INPUT_PREFIX.length());
             Map<String, Edge> edges = connected == null ? Map.of() : Map.of(MacroBoundary.VALUE, connected);
             Map<String, JsonNode> literals = literal == null ? Map.of() : Map.of(MacroBoundary.VALUE, literal);
-            nodes.put(prefix + node, new NodeInstance(MacroBoundary.PASS_PREFIX + type, Map.of(), edges, literals, Map.of(), null));
+            nodes.put(
+                    prefix + node,
+                    new NodeInstance(MacroBoundary.PASS_PREFIX + type, Map.of(), edges, literals, Map.of(), null));
             origins.put(prefix + node, useOrigin);
             inputs.put(prefix + node, name);
         }
@@ -165,11 +181,21 @@ final class MacroExpander {
         private void checkUse() {
             Stream.concat(use.inputs().keySet().stream(), use.literals().keySet().stream())
                     .filter(port -> !definition.inputNodes().containsKey(port))
-                    .forEach(port -> problems.add(GraphProblem.error(useId, port, "Macro %s has no input %s".formatted(definition.macro().id(), port))));
+                    .forEach(port -> problems.add(GraphProblem.error(
+                            useId,
+                            port,
+                            "Macro %s has no input %s"
+                                    .formatted(definition.macro().id(), port))));
             use.executions().keySet().stream()
                     .filter(port -> !definition.endNodes().containsKey(port))
-                    .forEach(port -> problems.add(GraphProblem.error(useId, port, "Macro %s has no exit %s".formatted(definition.macro().id(), port))));
-            use.config().keySet().forEach(field -> problems.add(GraphProblem.error(useId, field, "Macros have no config")));
+                    .forEach(port -> problems.add(GraphProblem.error(
+                            useId,
+                            port,
+                            "Macro %s has no exit %s"
+                                    .formatted(definition.macro().id(), port))));
+            use.config()
+                    .keySet()
+                    .forEach(field -> problems.add(GraphProblem.error(useId, field, "Macros have no config")));
         }
 
         private Optional<Edge> inner(Edge edge) {
@@ -196,10 +222,12 @@ final class MacroExpander {
                     if (!input.getValue().node().equals(useId)) continue;
                     changed = true;
                     inputs.remove(input.getKey());
-                    output(id, input.getKey(), input.getValue().port()).ifPresent(edge -> inputs.put(input.getKey(), edge));
+                    output(id, input.getKey(), input.getValue().port())
+                            .ifPresent(edge -> inputs.put(input.getKey(), edge));
                 }
                 Map<String, List<String>> executions = new LinkedHashMap<>(node.executions());
-                for (Map.Entry<String, List<String>> execution : node.executions().entrySet()) {
+                for (Map.Entry<String, List<String>> execution :
+                        node.executions().entrySet()) {
                     if (!execution.getValue().contains(useId)) continue;
                     changed = true;
                     List<String> replaced = new ArrayList<>();
@@ -209,14 +237,21 @@ final class MacroExpander {
                     }
                     executions.put(execution.getKey(), replaced);
                 }
-                if (changed) nodes.put(id, new NodeInstance(node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
+                if (changed)
+                    nodes.put(
+                            id,
+                            new NodeInstance(
+                                    node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
             }
         }
 
         private Optional<Edge> output(String reader, String readerPort, String port) {
             String outputNode = definition.outputNodes().get(port);
             if (outputNode == null) {
-                problems.add(GraphProblem.error(reader, readerPort, "Macro %s has no output %s".formatted(definition.macro().id(), port)));
+                problems.add(GraphProblem.error(
+                        reader,
+                        readerPort,
+                        "Macro %s has no output %s".formatted(definition.macro().id(), port)));
                 return Optional.empty();
             }
             Edge value = body.nodes().get(outputNode).inputs().get(MacroBoundary.VALUE);
@@ -225,10 +260,15 @@ final class MacroExpander {
 
         private List<String> entered(String chainer, String port) {
             if (definition.startNode() == null) {
-                problems.add(GraphProblem.error(chainer, port, "Macro %s has no start and cannot be chained".formatted(definition.macro().id())));
+                problems.add(GraphProblem.error(
+                        chainer,
+                        port,
+                        "Macro %s has no start and cannot be chained"
+                                .formatted(definition.macro().id())));
                 return List.of();
             }
-            return chain(body.nodes().get(definition.startNode()).executions().getOrDefault(MacroBoundary.NEXT, List.of()));
+            return chain(
+                    body.nodes().get(definition.startNode()).executions().getOrDefault(MacroBoundary.NEXT, List.of()));
         }
     }
 }

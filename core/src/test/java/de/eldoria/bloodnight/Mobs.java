@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight;
 
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -13,13 +18,15 @@ import org.bukkit.entity.EntityType;
  * Mob definitions for tests.
  */
 public final class Mobs {
-    private Mobs() {
-    }
+    private Mobs() {}
 
     public static CustomMob zombie(String id, Graph behaviour) {
-        return new CustomMob(id,
+        return new CustomMob(
+                id,
                 new Equipment(null, null, null, null, null, null),
                 new Attributes(id, EntityType.ZOMBIE, false, ValueModifier.DEFAULT, 20, ValueModifier.DEFAULT, 1),
-                behaviour, null, new Extension(ExtensionType.NONE, null, null));
+                behaviour,
+                null,
+                new Extension(ExtensionType.NONE, null, null));
     }
 }

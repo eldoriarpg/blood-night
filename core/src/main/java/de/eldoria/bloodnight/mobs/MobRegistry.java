@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -66,6 +71,10 @@ public class MobRegistry {
      * @return an immutable list containing all mobs that are matching. May be empty.
      */
     public List<CustomMob> getMatching(Set<String> active, EntityType type) {
-        return active.stream().map(mobs::get).filter(Objects::nonNull).filter(mob -> mob.attributes().isAssignable(type)).toList();
+        return active.stream()
+                .map(mobs::get)
+                .filter(Objects::nonNull)
+                .filter(mob -> mob.attributes().isAssignable(type))
+                .toList();
     }
 }

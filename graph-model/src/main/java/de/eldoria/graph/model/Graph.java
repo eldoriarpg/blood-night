@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.model;
 
 import java.util.Collections;
@@ -45,8 +50,7 @@ public record Graph(Map<String, NodeInstance> nodes) {
     public static final class Builder {
         private final Map<String, NodeInstance> nodes = new TreeMap<>();
 
-        private Builder() {
-        }
+        private Builder() {}
 
         /**
          * Adds a node.

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.graph.definition.PortType;
@@ -41,15 +46,28 @@ import java.util.UUID;
  * absent, items and blocks use {@link ItemType} and {@link BlockType}.
  */
 public final class BukkitTypes {
-    private BukkitTypes() {
-    }
+    private BukkitTypes() {}
 
     /**
      * Types reflection may turn into ports, besides primitives, strings, enums and collections of accepted types.
      */
-    static final List<Class<?>> KNOWN = List.of(Entity.class, Location.class, Vector.class, World.class, ItemStack.class,
-            Block.class, UUID.class, PotionEffectType.class, EntityType.class, ItemType.class, BlockType.class,
-            Particle.class, Sound.class, Enchantment.class, Attribute.class, Biome.class);
+    static final List<Class<?>> KNOWN = List.of(
+            Entity.class,
+            Location.class,
+            Vector.class,
+            World.class,
+            ItemStack.class,
+            Block.class,
+            UUID.class,
+            PotionEffectType.class,
+            EntityType.class,
+            ItemType.class,
+            BlockType.class,
+            Particle.class,
+            Sound.class,
+            Enchantment.class,
+            Attribute.class,
+            Biome.class);
 
     /**
      * @return the type mapping of the blood-night platform
@@ -92,7 +110,8 @@ public final class BukkitTypes {
                 .build();
     }
 
-    private static <T extends Keyed> RegistryCodec<T> registry(Class<T> type, RegistryKey<T> key, String field, Class<?> keys) {
+    private static <T extends Keyed> RegistryCodec<T> registry(
+            Class<T> type, RegistryKey<T> key, String field, Class<?> keys) {
         return new RegistryCodec<>(type, key, field, keys);
     }
 }

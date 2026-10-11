@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.graph.payload.Catalog;
@@ -10,8 +15,7 @@ import de.eldoria.graph.platform.GraphPlatform;
  * API's javadoc; nodes the bundled catalog does not know keep empty descriptions.
  */
 public final class RuntimeCatalog {
-    private RuntimeCatalog() {
-    }
+    private RuntimeCatalog() {}
 
     /**
      * @param platform the platform the server compiles with

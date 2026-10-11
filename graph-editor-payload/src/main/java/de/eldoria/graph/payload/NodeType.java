@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,6 +24,14 @@ import java.util.List;
  * @param config      values set on the node
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public record NodeType(String id, String kind, String category, String name, String description, boolean macroOnly,
-                       List<PortInfo> inputs, List<PortInfo> outputs, List<ExecutionInfo> executions, List<ConfigInfo> config) {
-}
+public record NodeType(
+        String id,
+        String kind,
+        String category,
+        String name,
+        String description,
+        boolean macroOnly,
+        List<PortInfo> inputs,
+        List<PortInfo> outputs,
+        List<ExecutionInfo> executions,
+        List<ConfigInfo> config) {}

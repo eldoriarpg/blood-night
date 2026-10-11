@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.catalog;
 
 import org.bukkit.entity.LivingEntity;
@@ -18,7 +23,10 @@ class JavadocDocumentationTest {
 
     @BeforeAll
     static void open() {
-        docs = new JavadocDocumentation(Arrays.stream(System.getProperty("catalog.sources").split(File.pathSeparator)).map(Path::of).toList());
+        docs = new JavadocDocumentation(
+                Arrays.stream(System.getProperty("catalog.sources").split(File.pathSeparator))
+                        .map(Path::of)
+                        .toList());
     }
 
     @AfterAll
@@ -28,7 +36,8 @@ class JavadocDocumentationTest {
 
     @Test
     void methodsAreDescribedByTheirFirstSentence() throws NoSuchMethodException {
-        String text = docs.of(LivingEntity.class.getMethod("getAbsorptionAmount")).orElseThrow();
+        String text =
+                docs.of(LivingEntity.class.getMethod("getAbsorptionAmount")).orElseThrow();
 
         assertTrue(text.toLowerCase().contains("absorption"), text);
         assertTrue(text.endsWith("."), text);
@@ -47,7 +56,8 @@ class JavadocDocumentationTest {
 
     @Test
     void inlineTagsBecomeText() throws NoSuchMethodException {
-        String text = docs.of(EntityDamageEvent.class.getMethod("setDamage", double.class)).orElseThrow();
+        String text = docs.of(EntityDamageEvent.class.getMethod("setDamage", double.class))
+                .orElseThrow();
         assertEquals(-1, text.indexOf('{'), text);
     }
 }

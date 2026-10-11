@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.behaviour;
 
 import com.palantir.javapoet.ClassName;
@@ -60,7 +65,8 @@ public final class BehaviourService implements AutoCloseable {
      * @param version  plugin version, part of every cache key
      * @param logger   receives compile summaries and failures
      */
-    public BehaviourService(GraphPlatform platform, ClassLoader parent, BytecodeCache cache, String version, Logger logger) {
+    public BehaviourService(
+            GraphPlatform platform, ClassLoader parent, BytecodeCache cache, String version, Logger logger) {
         this.platform = platform;
         this.parent = parent;
         this.cache = cache;
@@ -92,7 +98,8 @@ public final class BehaviourService implements AutoCloseable {
         long start = System.nanoTime();
         MacroLibrary library = MacroLibrary.compile(platform, macros);
         library.problems().forEach((macro, problems) -> logger.warning("Macro %s: %s".formatted(macro, problems)));
-        GraphCompiler<CompiledBehaviour> compiler = new GraphCompiler<>(platform, CompiledBehaviour.class, parent, library);
+        GraphCompiler<CompiledBehaviour> compiler =
+                new GraphCompiler<>(platform, CompiledBehaviour.class, parent, library);
 
         Map<String, CompiledGraph<CompiledBehaviour>> compiled = new HashMap<>();
         Map<String, List<GraphProblem>> problems = new HashMap<>();
@@ -107,15 +114,25 @@ public final class BehaviourService implements AutoCloseable {
                 CompiledGraph<CompiledBehaviour> graph;
                 var cached = cache.read(key).filter(entry -> entry.name().equals(name.reflectionName()));
                 if (cached.isPresent()) {
-                    graph = compiler.load(name, cached.get().source(), cached.get().bytecode(), cached.get().warnings());
+                    graph = compiler.load(
+                            name,
+                            cached.get().source(),
+                            cached.get().bytecode(),
+                            cached.get().warnings());
                     fromCache++;
                 } else {
                     graph = compiler.compile(mob.behaviour(), name);
-                    cache.write(key, BytecodeCache.Entry.of(name.reflectionName(), graph.source(), graph.bytecode(), graph.warnings()));
+                    cache.write(
+                            key,
+                            BytecodeCache.Entry.of(
+                                    name.reflectionName(), graph.source(), graph.bytecode(), graph.warnings()));
                 }
                 compiled.put(mob.id(), graph);
                 if (!graph.warnings().isEmpty()) problems.put(mob.id(), graph.warnings());
-                mob.behaviour().nodes().values().stream().map(NodeInstance::type).filter(TRIGGERS::contains).forEach(used::add);
+                mob.behaviour().nodes().values().stream()
+                        .map(NodeInstance::type)
+                        .filter(TRIGGERS::contains)
+                        .forEach(used::add);
             } catch (GraphCompilationException e) {
                 problems.put(mob.id(), e.problems());
                 logger.warning("Mob %s does not compile:\n%s".formatted(mob.id(), e.getMessage()));
@@ -125,8 +142,8 @@ public final class BehaviourService implements AutoCloseable {
             }
         }
         cache.retain(keys);
-        logger.info("Compiled %d of %d mob behaviours (%d from cache) in %d ms".formatted(
-                compiled.size(), mobs.size(), fromCache, (System.nanoTime() - start) / 1_000_000));
+        logger.info("Compiled %d of %d mob behaviours (%d from cache) in %d ms"
+                .formatted(compiled.size(), mobs.size(), fromCache, (System.nanoTime() - start) / 1_000_000));
         return new Behaviours(compiled, problems, Map.of(), used, fromCache).withMacros(library);
     }
 

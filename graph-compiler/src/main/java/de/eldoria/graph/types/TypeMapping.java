@@ -1,10 +1,14 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.types;
 
 import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.definition.PortType;
 import tools.jackson.databind.JsonNode;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,14 +24,23 @@ import java.util.Optional;
  */
 public final class TypeMapping {
     private static final Map<Class<?>, Class<?>> WRAPPERS = Map.of(
-            Boolean.class, boolean.class, Integer.class, int.class, Long.class, long.class,
-            Double.class, double.class, Float.class, float.class);
+            Boolean.class,
+            boolean.class,
+            Integer.class,
+            int.class,
+            Long.class,
+            long.class,
+            Double.class,
+            double.class,
+            Float.class,
+            float.class);
 
     private final Map<Class<?>, String> names;
     private final Map<Class<?>, LiteralCodec<?>> codecs;
     private final Map<String, PortType> selectable;
 
-    private TypeMapping(Map<Class<?>, String> names, Map<Class<?>, LiteralCodec<?>> codecs, Map<String, PortType> selectable) {
+    private TypeMapping(
+            Map<Class<?>, String> names, Map<Class<?>, LiteralCodec<?>> codecs, Map<String, PortType> selectable) {
         this.names = Map.copyOf(names);
         this.codecs = Map.copyOf(codecs);
         this.selectable = Collections.unmodifiableMap(new LinkedHashMap<>(selectable));
@@ -57,7 +70,13 @@ public final class TypeMapping {
             case PortType.Concrete concrete -> {
                 String base = names.getOrDefault(concrete.raw(), concrete.raw().getSimpleName());
                 if (concrete.arguments().isEmpty()) yield base;
-                yield base + concrete.arguments().stream().map(this::name).toList().toString().replace('[', '<').replace(']', '>');
+                yield base
+                        + concrete.arguments().stream()
+                                .map(this::name)
+                                .toList()
+                                .toString()
+                                .replace('[', '<')
+                                .replace(']', '>');
             }
         };
     }
@@ -68,7 +87,8 @@ public final class TypeMapping {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<LiteralCodec<?>> codec(PortType type) {
-        if (!(type instanceof PortType.Concrete concrete) || !concrete.arguments().isEmpty()) return Optional.empty();
+        if (!(type instanceof PortType.Concrete concrete)
+                || !concrete.arguments().isEmpty()) return Optional.empty();
         Class<?> raw = WRAPPERS.getOrDefault(concrete.raw(), concrete.raw());
         LiteralCodec<?> codec = codecs.get(raw);
         if (codec == null && raw.isEnum()) codec = Codecs.forEnum((Class) raw);
@@ -84,7 +104,8 @@ public final class TypeMapping {
      * @throws IllegalArgumentException when the type has no codec or the value is invalid
      */
     public CodeBlock literal(PortType type, JsonNode value) {
-        LiteralCodec<?> codec = codec(type).orElseThrow(() -> new IllegalArgumentException("No literal codec for " + type.id()));
+        LiteralCodec<?> codec =
+                codec(type).orElseThrow(() -> new IllegalArgumentException("No literal codec for " + type.id()));
         return codec.literal(value);
     }
 
@@ -116,10 +137,16 @@ public final class TypeMapping {
 
         private Builder() {
             Codecs.DEFAULTS.forEach(this::codec);
-            name(boolean.class, "Boolean").name(int.class, "Integer").name(long.class, "Long")
-                    .name(double.class, "Number").name(float.class, "Float").name(String.class, "Text");
-            selectable("boolean", PortType.of(boolean.class)).selectable("integer", PortType.of(int.class))
-                    .selectable("number", PortType.of(double.class)).selectable("text", PortType.of(String.class));
+            name(boolean.class, "Boolean")
+                    .name(int.class, "Integer")
+                    .name(long.class, "Long")
+                    .name(double.class, "Number")
+                    .name(float.class, "Float")
+                    .name(String.class, "Text");
+            selectable("boolean", PortType.of(boolean.class))
+                    .selectable("integer", PortType.of(int.class))
+                    .selectable("number", PortType.of(double.class))
+                    .selectable("text", PortType.of(String.class));
         }
 
         /**
@@ -127,7 +154,8 @@ public final class TypeMapping {
          */
         public Builder selectable(String id, PortType type) {
             if (!id.matches("[a-z][a-z0-9_]*")) throw new IllegalArgumentException("Invalid type id " + id);
-            if (type.hasVariables()) throw new IllegalArgumentException("Selectable types must be concrete: " + type.id());
+            if (type.hasVariables())
+                throw new IllegalArgumentException("Selectable types must be concrete: " + type.id());
             selectable.put(id, type);
             return this;
         }

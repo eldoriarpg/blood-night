@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
@@ -31,11 +36,24 @@ import java.util.function.Supplier;
  */
 public class Configuration {
     // TODO: Register default mobs on creation
-    public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new).name("mobs").strict().build();
-    public static final Key<ItemRegistry> ITEMS = Key.builder(Path.of("items.yml"), ItemRegistry::new).name("items").strict().build();
-    public static final Key<GlobalDrops> GLOBAL_DROPS = Key.builder(Path.of("global_drops.yml"), GlobalDrops::defaultDrops).name("Global Drops").build();
-    public static final Key<MacroFile> MACROS = Key.builder(Path.of("macros.yml"), MacroFile::new).name("macros").strict().build();
-    private static final Key<ConfigFile> MAIN = Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
+    public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new)
+            .name("mobs")
+            .strict()
+            .build();
+    public static final Key<ItemRegistry> ITEMS = Key.builder(Path.of("items.yml"), ItemRegistry::new)
+            .name("items")
+            .strict()
+            .build();
+    public static final Key<GlobalDrops> GLOBAL_DROPS = Key.builder(
+                    Path.of("global_drops.yml"), GlobalDrops::defaultDrops)
+            .name("Global Drops")
+            .build();
+    public static final Key<MacroFile> MACROS = Key.builder(Path.of("macros.yml"), MacroFile::new)
+            .name("macros")
+            .strict()
+            .build();
+    private static final Key<ConfigFile> MAIN =
+            Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
     private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS);
 
     private final Configurations<ConfigFile> configurations;

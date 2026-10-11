@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
@@ -25,8 +30,7 @@ import java.util.stream.Collectors;
  * list, so each trigger checks the event class itself. A failing behaviour is reported and does not stop the event.
  */
 public final class TriggerDispatcher {
-    private final Listener owner = new Listener() {
-    };
+    private final Listener owner = new Listener() {};
     private final Function<Entity, Optional<CompiledBehaviour>> behaviours;
     private final BiConsumer<Trigger<?>, RuntimeException> errors;
 
@@ -34,7 +38,8 @@ public final class TriggerDispatcher {
      * @param behaviours the behaviour of a custom mob entity, empty for other entities
      * @param errors     receives exceptions thrown by behaviours
      */
-    public TriggerDispatcher(Function<Entity, Optional<CompiledBehaviour>> behaviours, BiConsumer<Trigger<?>, RuntimeException> errors) {
+    public TriggerDispatcher(
+            Function<Entity, Optional<CompiledBehaviour>> behaviours, BiConsumer<Trigger<?>, RuntimeException> errors) {
         this.behaviours = behaviours;
         this.errors = errors;
     }
@@ -50,8 +55,15 @@ public final class TriggerDispatcher {
         Map<Group, List<Trigger<?>>> groups = Triggers.EVENTS.stream()
                 .filter(trigger -> used.contains(trigger.id()))
                 .collect(Collectors.groupingBy(Group::of, LinkedHashMap::new, Collectors.toList()));
-        groups.forEach((group, triggers) -> plugin.getServer().getPluginManager().registerEvent(group.event(), owner, group.priority(),
-                (listener, event) -> triggers.forEach(trigger -> dispatch(trigger, event)), plugin, group.ignoreCancelled()));
+        groups.forEach((group, triggers) -> plugin.getServer()
+                .getPluginManager()
+                .registerEvent(
+                        group.event(),
+                        owner,
+                        group.priority(),
+                        (listener, event) -> triggers.forEach(trigger -> dispatch(trigger, event)),
+                        plugin,
+                        group.ignoreCancelled()));
     }
 
     /**

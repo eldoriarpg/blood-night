@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.std;
 
 import de.eldoria.graph.compiler.GraphCompilationException;
@@ -42,11 +47,11 @@ class StandardNodesTest {
 
     @ParameterizedTest
     @CsvSource({
-            "math.add, 5.0, 2.0, 7.0",
-            "math.subtract, 5.0, 2.0, 3.0",
-            "math.multiply, 5.0, 2.0, 10.0",
-            "math.divide, 5.0, 2.0, 2.5",
-            "math.divide, 1.0, 0.0, Infinity"
+        "math.add, 5.0, 2.0, 7.0",
+        "math.subtract, 5.0, 2.0, 3.0",
+        "math.multiply, 5.0, 2.0, 10.0",
+        "math.divide, 5.0, 2.0, 2.5",
+        "math.divide, 1.0, 0.0, Infinity"
     })
     void arithmetic(String type, double first, double second, double result) throws GraphCompilationException {
         assertEquals(result, evaluate(type, Map.of("first", first, "second", second)));
@@ -59,13 +64,13 @@ class StandardNodesTest {
 
     @ParameterizedTest
     @CsvSource({
-            "math.abs, -2.5, 2.5",
-            "math.abs_integer, -2.7, 2",
-            "math.ceil, 2.1, 3",
-            "math.floor, 2.9, 2",
-            "math.floor, -2.1, -3",
-            "math.round, 2.5, 3",
-            "math.round, 2.4, 2"
+        "math.abs, -2.5, 2.5",
+        "math.abs_integer, -2.7, 2",
+        "math.ceil, 2.1, 3",
+        "math.floor, 2.9, 2",
+        "math.floor, -2.1, -3",
+        "math.round, 2.5, 3",
+        "math.round, 2.4, 2"
     })
     void rounding(String type, double value, String result) throws GraphCompilationException {
         Object actual = evaluate(type, Map.of("value", value));
@@ -74,11 +79,11 @@ class StandardNodesTest {
 
     @ParameterizedTest
     @CsvSource({
-            "math.clamp, 5.0, 0.0, 10.0, 5.0",
-            "math.clamp, -5.0, 0.0, 10.0, 0.0",
-            "math.clamp, 15.0, 0.0, 10.0, 10.0",
-            "math.clamp_integer, 7.9, 0.0, 10.0, 7",
-            "math.clamp_integer, 15.0, 0.0, 10.0, 10"
+        "math.clamp, 5.0, 0.0, 10.0, 5.0",
+        "math.clamp, -5.0, 0.0, 10.0, 0.0",
+        "math.clamp, 15.0, 0.0, 10.0, 10.0",
+        "math.clamp_integer, 7.9, 0.0, 10.0, 7",
+        "math.clamp_integer, 15.0, 0.0, 10.0, 10"
     })
     void clamp(String type, double value, double lower, double upper, String result) throws GraphCompilationException {
         assertEquals(result, String.valueOf(evaluate(type, Map.of("value", value, "lower", lower, "upper", upper))));
@@ -86,10 +91,10 @@ class StandardNodesTest {
 
     @ParameterizedTest
     @CsvSource({
-            "logic.and, true, true, true",
-            "logic.and, true, false, false",
-            "logic.or, false, true, true",
-            "logic.or, false, false, false"
+        "logic.and, true, true, true",
+        "logic.and, true, false, false",
+        "logic.or, false, true, true",
+        "logic.or, false, false, false"
     })
     void booleans(String type, boolean first, boolean second, boolean result) throws GraphCompilationException {
         assertEquals(result, evaluate(type, Map.of("first", first, "second", second)));
@@ -102,12 +107,12 @@ class StandardNodesTest {
 
     @ParameterizedTest
     @CsvSource({
-            "logic.greater, 2.0, 1.0, true",
-            "logic.greater, 1.0, 1.0, false",
-            "logic.greater_or_equal, 1.0, 1.0, true",
-            "logic.less, 1.0, 2.0, true",
-            "logic.less, 1.0, 1.0, false",
-            "logic.less_or_equal, 1.0, 1.0, true"
+        "logic.greater, 2.0, 1.0, true",
+        "logic.greater, 1.0, 1.0, false",
+        "logic.greater_or_equal, 1.0, 1.0, true",
+        "logic.less, 1.0, 2.0, true",
+        "logic.less, 1.0, 1.0, false",
+        "logic.less_or_equal, 1.0, 1.0, true"
     })
     void comparisons(String type, double first, double second, boolean result) throws GraphCompilationException {
         assertEquals(result, evaluate(type, Map.of("first", first, "second", second)));
@@ -127,8 +132,16 @@ class StandardNodesTest {
                 .node("run", NodeInstance.of("test.run").chain("next", "int", "number"))
                 .node("int", NodeInstance.of("test.record").input("value", "random_int", "result"))
                 .node("number", NodeInstance.of("test.record").input("value", "random_number", "result"))
-                .node("random_int", NodeInstance.of("function.random_integer").input("lower", "low_int", "value").input("upper", "high_int", "value"))
-                .node("random_number", NodeInstance.of("function.random_number").input("lower", "low", "value").input("upper", "high", "value"))
+                .node(
+                        "random_int",
+                        NodeInstance.of("function.random_integer")
+                                .input("lower", "low_int", "value")
+                                .input("upper", "high_int", "value"))
+                .node(
+                        "random_number",
+                        NodeInstance.of("function.random_number")
+                                .input("lower", "low", "value")
+                                .input("upper", "high", "value"))
                 .node("low_int", Harness.literal(1))
                 .node("high_int", Harness.literal(3))
                 .node("low", Harness.literal(1.0))
@@ -136,8 +149,14 @@ class StandardNodesTest {
                 .build();
 
         List<Object> values = Harness.run(graph, 200);
-        List<Integer> integers = values.stream().filter(Integer.class::isInstance).map(Integer.class::cast).toList();
-        List<Double> numbers = values.stream().filter(Double.class::isInstance).map(Double.class::cast).toList();
+        List<Integer> integers = values.stream()
+                .filter(Integer.class::isInstance)
+                .map(Integer.class::cast)
+                .toList();
+        List<Double> numbers = values.stream()
+                .filter(Double.class::isInstance)
+                .map(Double.class::cast)
+                .toList();
 
         assertEquals(List.of(1, 2, 3), integers.stream().distinct().sorted().toList());
         assertTrue(numbers.stream().allMatch(number -> number >= 1.0 && number < 2.0));
@@ -178,8 +197,13 @@ class StandardNodesTest {
     void branch() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "branch"))
-                .node("branch", NodeInstance.of("flow.branch").input("condition", "yes", "value")
-                        .chain("true", "on_true").chain("false", "on_false").chain("next", "after"))
+                .node(
+                        "branch",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "yes", "value")
+                                .chain("true", "on_true")
+                                .chain("false", "on_false")
+                                .chain("next", "after"))
                 .node("yes", Harness.literal(true))
                 .node("on_true", NodeInstance.of("test.record").input("value", "t", "value"))
                 .node("on_false", NodeInstance.of("test.record").input("value", "f", "value"))
@@ -196,7 +220,12 @@ class StandardNodesTest {
     void batchRepeatsBodyWithIndex() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "batch"))
-                .node("batch", NodeInstance.of("flow.batch").input("count", "three", "value").chain("body", "index").chain("next", "done"))
+                .node(
+                        "batch",
+                        NodeInstance.of("flow.batch")
+                                .input("count", "three", "value")
+                                .chain("body", "index")
+                                .chain("next", "done"))
                 .node("three", Harness.literal(3))
                 .node("index", NodeInstance.of("test.record").input("value", "batch", "index"))
                 .node("done", NodeInstance.of("test.record").input("value", "end", "value"))
@@ -212,7 +241,11 @@ class StandardNodesTest {
                 .node("run", NodeInstance.of("test.run").chain("next", "loop"))
                 .node("text", Harness.literal("a,b,c"))
                 .node("split", NodeInstance.of("test.split").input("value", "text", "value"))
-                .node("loop", NodeInstance.of("flow.for_each").input("list", "split", "result").chain("body", "record"))
+                .node(
+                        "loop",
+                        NodeInstance.of("flow.for_each")
+                                .input("list", "split", "result")
+                                .chain("body", "record"))
                 .node("record", NodeInstance.of("test.record").input("value", "upper", "result"))
                 .node("upper", NodeInstance.of("test.upper").input("value", "loop", "element"))
                 .build();
@@ -226,14 +259,22 @@ class StandardNodesTest {
                 .node("run", NodeInstance.of("test.run").chain("next", "loop"))
                 .node("text", Harness.literal("a"))
                 .node("split", NodeInstance.of("test.split").input("value", "text", "value"))
-                .node("loop", NodeInstance.of("flow.for_each").input("list", "split", "result").chain("next", "record"))
+                .node(
+                        "loop",
+                        NodeInstance.of("flow.for_each")
+                                .input("list", "split", "result")
+                                .chain("next", "record"))
                 .node("record", NodeInstance.of("test.record").input("value", "loop", "element"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> Harness.runWith(graph, ListNodes.ALL));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> Harness.runWith(graph, ListNodes.ALL));
 
-        assertTrue(exception.problems().stream().anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR
-                && "record".equals(problem.node())), exception.getMessage());
+        assertTrue(
+                exception.problems().stream()
+                        .anyMatch(problem ->
+                                problem.severity() == GraphProblem.Severity.ERROR && "record".equals(problem.node())),
+                exception.getMessage());
     }
 
     @Test

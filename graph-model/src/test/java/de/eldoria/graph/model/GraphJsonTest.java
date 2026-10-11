@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.model;
 
 import org.junit.jupiter.api.Test;
@@ -20,9 +25,17 @@ class GraphJsonTest {
         return Graph.builder()
                 .node("tick", NodeInstance.of("entry.tick").chain("next", "print", "other"))
                 .node("five", NodeInstance.of("value.number").config("value", DoubleNode.valueOf(5)))
-                .node("text", NodeInstance.of("value.text").config("value", StringNode.valueOf("\"); System.exit(0); //")))
-                .node("add", NodeInstance.of("math.add").input("a", "five", "value").literal("b", DoubleNode.valueOf(2)))
-                .node("print", NodeInstance.of("debug.print").input("value", "add", "result").editor(position))
+                .node(
+                        "text",
+                        NodeInstance.of("value.text").config("value", StringNode.valueOf("\"); System.exit(0); //")))
+                .node(
+                        "add",
+                        NodeInstance.of("math.add").input("a", "five", "value").literal("b", DoubleNode.valueOf(2)))
+                .node(
+                        "print",
+                        NodeInstance.of("debug.print")
+                                .input("value", "add", "result")
+                                .editor(position))
                 .node("other", NodeInstance.of("debug.print"))
                 .build();
     }
@@ -56,7 +69,8 @@ class GraphJsonTest {
     void executionOrderIsKept() {
         Graph read = GraphJson.read(GraphJson.write(sample()));
 
-        assertEquals(List.of("print", "other"), read.nodes().get("tick").executions().get("next"));
+        assertEquals(
+                List.of("print", "other"), read.nodes().get("tick").executions().get("next"));
     }
 
     @Test
@@ -71,7 +85,9 @@ class GraphJsonTest {
 
     @Test
     void rejectsUnknownProperties() {
-        assertThrows(JacksonException.class, () -> GraphJson.read("{\"nodes\":{\"a\":{\"type\":\"x\",\"nodeClass\":\"y\"}}}"));
+        assertThrows(
+                JacksonException.class,
+                () -> GraphJson.read("{\"nodes\":{\"a\":{\"type\":\"x\",\"nodeClass\":\"y\"}}}"));
     }
 
     @Test

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.ClassName;
@@ -12,9 +17,9 @@ import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
-import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
@@ -57,7 +62,8 @@ class BloodNightPlatformTest {
         server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
-        dispatcher = new TriggerDispatcher(entity -> Optional.ofNullable(behaviours.get(entity.getEntityId())), (trigger, e) -> errors.add(e));
+        dispatcher = new TriggerDispatcher(
+                entity -> Optional.ofNullable(behaviours.get(entity.getEntityId())), (trigger, e) -> errors.add(e));
         dispatcher.register(plugin, Triggers.EVENTS.stream().map(Trigger::id).toList());
     }
 
@@ -89,8 +95,11 @@ class BloodNightPlatformTest {
         }
         assertTrue(platform.node("mob.tick").isPresent());
         NodeDefinition damage = platform.node("event.damage_by_player").orElseThrow();
-        List<String> outputs = damage.descriptor().outputs().stream().map(Port::id).toList();
-        assertTrue(outputs.containsAll(List.of("event", "damage", "final_damage", "cause", "entity", "damager")), outputs.toString());
+        List<String> outputs =
+                damage.descriptor().outputs().stream().map(Port::id).toList();
+        assertTrue(
+                outputs.containsAll(List.of("event", "damage", "final_damage", "cause", "entity", "damager")),
+                outputs.toString());
     }
 
     @Test
@@ -98,12 +107,17 @@ class BloodNightPlatformTest {
         GraphPlatform platform = platform();
 
         NodeDefinition location = platform.node("location.get").orElseThrow();
-        List<String> outputs = location.descriptor().outputs().stream().map(Port::id).toList();
-        assertTrue(outputs.containsAll(List.of("x", "y", "z", "world", "direction", "yaw", "pitch")), outputs.toString());
+        List<String> outputs =
+                location.descriptor().outputs().stream().map(Port::id).toList();
+        assertTrue(
+                outputs.containsAll(List.of("x", "y", "z", "world", "direction", "yaw", "pitch")), outputs.toString());
         assertTrue(platform.node("cancellable.set_cancelled").isPresent());
         assertTrue(platform.node("event_data.entity_damage.set_damage").isPresent());
         assertTrue(platform.node("event_data.entity_damage.set_cancelled").isEmpty());
-        platform.node("living_entity.get").orElseThrow().descriptor().outputs()
+        platform.node("living_entity.get")
+                .orElseThrow()
+                .descriptor()
+                .outputs()
                 .forEach(port -> assertTrue(BukkitRules.accepted(port.type()), port.id() + ": " + port.type()));
     }
 
@@ -116,13 +130,54 @@ class BloodNightPlatformTest {
         behaviours.put(zombie.getEntityId(), recorder("zombie", calls));
         behaviours.put(skeleton.getEntityId(), recorder("skeleton", calls));
 
-        server.getPluginManager().callEvent(new EntityDamageEvent(zombie, EntityDamageEvent.DamageCause.FALL, DamageSource.builder(DamageType.GENERIC).build(), 1));
-        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(skeleton, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(skeleton).withDirectEntity(skeleton).build(), 1));
-        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(player, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(player).withDirectEntity(player).build(), 1));
-        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(zombie, skeleton, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(zombie).withDirectEntity(zombie).build(), 1000));
+        server.getPluginManager()
+                .callEvent(new EntityDamageEvent(
+                        zombie,
+                        EntityDamageEvent.DamageCause.FALL,
+                        DamageSource.builder(DamageType.GENERIC).build(),
+                        1));
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        skeleton,
+                        zombie,
+                        EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                        DamageSource.builder(DamageType.GENERIC)
+                                .withCausingEntity(skeleton)
+                                .withDirectEntity(skeleton)
+                                .build(),
+                        1));
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        player,
+                        zombie,
+                        EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                        DamageSource.builder(DamageType.GENERIC)
+                                .withCausingEntity(player)
+                                .withDirectEntity(player)
+                                .build(),
+                        1));
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        zombie,
+                        skeleton,
+                        EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                        DamageSource.builder(DamageType.GENERIC)
+                                .withCausingEntity(zombie)
+                                .withDirectEntity(zombie)
+                                .build(),
+                        1000));
 
-        assertTrue(calls.containsAll(List.of("zombie:damage", "skeleton:hit", "zombie:damage_by_entity", "zombie:damage_by_player",
-                "zombie:hit", "zombie:kill", "zombie:entity_kill", "skeleton:damage_by_entity")), calls.toString());
+        assertTrue(
+                calls.containsAll(List.of(
+                        "zombie:damage",
+                        "skeleton:hit",
+                        "zombie:damage_by_entity",
+                        "zombie:damage_by_player",
+                        "zombie:hit",
+                        "zombie:kill",
+                        "zombie:entity_kill",
+                        "skeleton:damage_by_entity")),
+                calls.toString());
         assertEquals(8, calls.size(), calls.toString());
         assertTrue(errors.isEmpty());
     }
@@ -171,20 +226,40 @@ class BloodNightPlatformTest {
         Graph graph = Graph.builder()
                 .node("on_damage", NodeInstance.of("event.damage_by_player").chain("next", "set_damage"))
                 .node("two", NodeInstance.of("value.number").config("value", DoubleNode.valueOf(2)))
-                .node("double", NodeInstance.of("math.multiply").input("first", "on_damage", "damage").input("second", "two", "value"))
-                .node("set_damage", NodeInstance.of("event_data.entity_damage.set_damage")
-                        .input("target", "on_damage", "event").input("value", "double", "result"))
+                .node(
+                        "double",
+                        NodeInstance.of("math.multiply")
+                                .input("first", "on_damage", "damage")
+                                .input("second", "two", "value"))
+                .node(
+                        "set_damage",
+                        NodeInstance.of("event_data.entity_damage.set_damage")
+                                .input("target", "on_damage", "event")
+                                .input("value", "double", "result"))
                 .node("on_teleport", NodeInstance.of("event.teleport").chain("next", "cancel"))
                 .node("yes", NodeInstance.of("value.boolean").config("value", BooleanNode.TRUE))
-                .node("cancel", NodeInstance.of("cancellable.set_cancelled").input("target", "on_teleport", "event").input("value", "yes", "value"))
+                .node(
+                        "cancel",
+                        NodeInstance.of("cancellable.set_cancelled")
+                                .input("target", "on_teleport", "event")
+                                .input("value", "yes", "value"))
                 .build();
         Zombie zombie = zombie();
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
         PlayerMock player = server.addPlayer();
 
-        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(player, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(player).withDirectEntity(player).build(), 3);
+        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(
+                player,
+                zombie,
+                EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                DamageSource.builder(DamageType.GENERIC)
+                        .withCausingEntity(player)
+                        .withDirectEntity(player)
+                        .build(),
+                3);
         server.getPluginManager().callEvent(damage);
-        EntityTeleportEvent teleport = new EntityTeleportEvent(zombie, zombie.getLocation(), zombie.getLocation().add(5, 0, 0));
+        EntityTeleportEvent teleport = new EntityTeleportEvent(
+                zombie, zombie.getLocation(), zombie.getLocation().add(5, 0, 0));
         server.getPluginManager().callEvent(teleport);
 
         assertEquals(6, damage.getDamage());
@@ -196,9 +271,15 @@ class BloodNightPlatformTest {
     void registryValuesResolve() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "print"))
-                .node("type", NodeInstance.of("value.entity_type").config("value", StringNode.valueOf("minecraft:zombie")))
+                .node(
+                        "type",
+                        NodeInstance.of("value.entity_type").config("value", StringNode.valueOf("minecraft:zombie")))
                 .node("self", NodeInstance.of("mob.self"))
-                .node("same", NodeInstance.of("logic.equal").input("first", "type", "value").input("second", "self_type", "type"))
+                .node(
+                        "same",
+                        NodeInstance.of("logic.equal")
+                                .input("first", "type", "value")
+                                .input("second", "self_type", "type"))
                 .node("self_type", NodeInstance.of("entity.get").input("target", "self", "entity"))
                 .node("print", NodeInstance.of("debug.print").input("value", "same", "result"))
                 .build();
@@ -220,6 +301,9 @@ class BloodNightPlatformTest {
 
         GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph));
 
-        assertTrue(exception.problems().stream().anyMatch(problem -> "type".equals(problem.node()) && "value".equals(problem.port())), exception.getMessage());
+        assertTrue(
+                exception.problems().stream()
+                        .anyMatch(problem -> "type".equals(problem.node()) && "value".equals(problem.port())),
+                exception.getMessage());
     }
 }

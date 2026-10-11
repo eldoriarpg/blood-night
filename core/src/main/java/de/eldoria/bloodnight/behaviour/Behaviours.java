@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.behaviour;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
@@ -20,11 +25,12 @@ import java.util.Set;
  * @param usedTriggers  ids of the entry nodes the compiled graphs contain
  * @param fromCache     how many mobs were restored from the cache instead of compiled
  */
-public record Behaviours(Map<String, CompiledGraph<CompiledBehaviour>> compiled,
-                         Map<String, List<GraphProblem>> problems,
-                         Map<String, List<GraphProblem>> macroProblems,
-                         Set<String> usedTriggers,
-                         int fromCache) {
+public record Behaviours(
+        Map<String, CompiledGraph<CompiledBehaviour>> compiled,
+        Map<String, List<GraphProblem>> problems,
+        Map<String, List<GraphProblem>> macroProblems,
+        Set<String> usedTriggers,
+        int fromCache) {
     public Behaviours {
         compiled = Map.copyOf(compiled);
         problems = Map.copyOf(problems);

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import de.eldoria.graph.model.Macro;
@@ -17,12 +22,14 @@ import java.util.Objects;
  * @param startNode   body node where the execution enters, or {@code null} for a pure macro
  * @param endNodes    body node standing for each execution port
  */
-public record MacroDefinition(NodeDescriptor descriptor,
-                              Macro macro,
-                              Map<String, String> inputNodes,
-                              Map<String, String> outputNodes,
-                              String startNode,
-                              Map<String, String> endNodes) implements NodeDefinition {
+public record MacroDefinition(
+        NodeDescriptor descriptor,
+        Macro macro,
+        Map<String, String> inputNodes,
+        Map<String, String> outputNodes,
+        String startNode,
+        Map<String, String> endNodes)
+        implements NodeDefinition {
     public MacroDefinition {
         Objects.requireNonNull(macro, "macro");
         inputNodes = Map.copyOf(inputNodes);

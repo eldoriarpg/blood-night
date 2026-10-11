@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.platform;
 
 import de.eldoria.graph.definition.ConfigField;
@@ -34,7 +39,12 @@ public final class GraphPlatform {
     private final Map<String, NodeDefinition> nodes;
     private final List<Path> classpath;
 
-    private GraphPlatform(Class<?> host, Class<?> context, TypeMapping types, Map<String, NodeDefinition> nodes, List<Path> classpath) {
+    private GraphPlatform(
+            Class<?> host,
+            Class<?> context,
+            TypeMapping types,
+            Map<String, NodeDefinition> nodes,
+            List<Path> classpath) {
         this.host = host;
         this.context = context;
         this.types = types;
@@ -135,7 +145,8 @@ public final class GraphPlatform {
          */
         public Builder define(Collection<? extends NodeDefinition> definitions) {
             for (NodeDefinition definition : definitions) {
-                if (nodes.putIfAbsent(definition.id(), definition) != null) problems.add("Duplicate node id " + definition.id());
+                if (nodes.putIfAbsent(definition.id(), definition) != null)
+                    problems.add("Duplicate node id " + definition.id());
             }
             return this;
         }
@@ -158,7 +169,8 @@ public final class GraphPlatform {
                 if (definition instanceof EntryDefinition entry) {
                     checkEntry(entry, found).ifPresent(method -> {
                         String previous = entryMethods.putIfAbsent(method, entry.id());
-                        if (previous != null) found.add("%s and %s both implement %s".formatted(previous, entry.id(), method.getName()));
+                        if (previous != null)
+                            found.add("%s and %s both implement %s".formatted(previous, entry.id(), method.getName()));
                     });
                 }
             }
@@ -169,32 +181,47 @@ public final class GraphPlatform {
         private void checkConfig(NodeDefinition definition, ConfigField field, List<String> found) {
             var codec = types.codec(field.type());
             if (codec.isEmpty()) {
-                found.add("%s: config field '%s' has type %s without a literal codec".formatted(definition.id(), field.id(), field.type().id()));
+                found.add("%s: config field '%s' has type %s without a literal codec"
+                        .formatted(definition.id(), field.id(), field.type().id()));
                 return;
             }
             field.defaultIfAbsent().ifPresent(value -> {
                 try {
                     codec.get().read(value);
                 } catch (IllegalArgumentException e) {
-                    found.add("%s: default of config field '%s' is invalid: %s".formatted(definition.id(), field.id(), e.getMessage()));
+                    found.add("%s: default of config field '%s' is invalid: %s"
+                            .formatted(definition.id(), field.id(), e.getMessage()));
                 }
             });
         }
 
         private Optional<Method> checkEntry(EntryDefinition entry, List<String> found) {
-            Class<?>[] parameterTypes = entry.parameters().stream().map(EntryParameter::type).map(Builder::rawClass).toArray(Class<?>[]::new);
+            Class<?>[] parameterTypes = entry.parameters().stream()
+                    .map(EntryParameter::type)
+                    .map(Builder::rawClass)
+                    .toArray(Class<?>[]::new);
             if (Arrays.asList(parameterTypes).contains(null)) {
                 found.add("%s: entry parameters must have concrete types".formatted(entry.id()));
                 return Optional.empty();
             }
             try {
                 Method method = host.getMethod(entry.method(), parameterTypes);
-                if (method.getReturnType() != void.class) found.add("%s: host method %s must return void".formatted(entry.id(), entry.method()));
-                if (Modifier.isStatic(method.getModifiers())) found.add("%s: host method %s must not be static".formatted(entry.id(), entry.method()));
+                if (method.getReturnType() != void.class)
+                    found.add("%s: host method %s must return void".formatted(entry.id(), entry.method()));
+                if (Modifier.isStatic(method.getModifiers()))
+                    found.add("%s: host method %s must not be static".formatted(entry.id(), entry.method()));
                 return Optional.of(method);
             } catch (NoSuchMethodException e) {
-                found.add("%s: host %s has no method %s(%s)".formatted(entry.id(), host.getSimpleName(), entry.method(),
-                        String.join(", ", Arrays.stream(parameterTypes).map(Class::getSimpleName).toList())));
+                found.add("%s: host %s has no method %s(%s)"
+                        .formatted(
+                                entry.id(),
+                                host.getSimpleName(),
+                                entry.method(),
+                                String.join(
+                                        ", ",
+                                        Arrays.stream(parameterTypes)
+                                                .map(Class::getSimpleName)
+                                                .toList())));
                 return Optional.empty();
             }
         }

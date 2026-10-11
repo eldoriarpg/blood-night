@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.ClassName;
@@ -47,7 +52,8 @@ class LegacyGraphsTest {
             editor = JSON.readTree(in);
         }
 
-        LegacyGraphs.Migration migration = LegacyGraphs.migrate(editor.path("mobs").path("mobs").path("test").path("nodes"));
+        LegacyGraphs.Migration migration = LegacyGraphs.migrate(
+                editor.path("mobs").path("mobs").path("test").path("nodes"));
         Graph graph = migration.graph();
 
         assertTrue(migration.warnings().isEmpty(), migration.warnings().toString());
@@ -55,11 +61,14 @@ class LegacyGraphsTest {
         assertEquals(5, graph.nodes().get("0").config().get("value").asInt());
         assertEquals("mob.tick", graph.nodes().get("4").type());
         assertEquals(List.of("3"), graph.nodes().get("4").executions().get("next"));
-        assertEquals(0, graph.nodes().get("4").editor().path("position").path("x").asInt());
+        assertEquals(
+                0, graph.nodes().get("4").editor().path("position").path("x").asInt());
 
         CompiledBehaviour behaviour = new GraphCompiler<>(
-                BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader())),
-                CompiledBehaviour.class, getClass().getClassLoader())
+                        BloodNightPlatform.create(
+                                CompileClasspath.discover(getClass().getClassLoader())),
+                        CompiledBehaviour.class,
+                        getClass().getClassLoader())
                 .compile(graph, ClassName.get("generated.legacy", "Test"))
                 .instantiate(new TestContext(null));
         PrintStream original = System.out;
@@ -97,8 +106,10 @@ class LegacyGraphsTest {
         assertEquals("count", batch.inputs().keySet().iterator().next());
         assertEquals(List.of("3"), batch.executions().get("body"));
         assertEquals("cause", graph.nodes().get("3").inputs().get("value").port());
-        assertEquals("minecraft:zombie", graph.nodes().get("4").config().get("value").asString());
-        assertEquals("target", graph.nodes().get("5").inputs().keySet().iterator().next());
+        assertEquals(
+                "minecraft:zombie", graph.nodes().get("4").config().get("value").asString());
+        assertEquals(
+                "target", graph.nodes().get("5").inputs().keySet().iterator().next());
         assertEquals("entity", graph.nodes().get("5").inputs().get("target").port());
         assertEquals("type", graph.nodes().get("6").inputs().get("value").port());
     }
@@ -116,6 +127,7 @@ class LegacyGraphsTest {
 
         assertEquals(2, migration.warnings().size(), migration.warnings().toString());
         assertTrue(migration.graph().nodes().get("1").inputs().isEmpty());
-        assertEquals("com.example.CustomNode", migration.graph().nodes().get("2").type());
+        assertEquals(
+                "com.example.CustomNode", migration.graph().nodes().get("2").type());
     }
 }

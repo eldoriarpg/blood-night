@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.CodeBlock;
@@ -34,8 +39,11 @@ import java.util.regex.Pattern;
  * @param keys     Paper's generated key class for the registry, or {@code null} for enum-backed registries
  * @param <T>      the registered type
  */
-public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, String keyField, @Nullable Class<?> keys)
-        implements LiteralCodec<NamespacedKey> {
+public record RegistryCodec<T extends Keyed>(
+        Class<T> type,
+        RegistryKey<T> key,
+        String keyField,
+        @Nullable Class<?> keys) implements LiteralCodec<NamespacedKey> {
     private static final Pattern KEY = Pattern.compile("([a-z0-9_.-]+:)?[a-z0-9_./-]+");
 
     @Override
@@ -44,7 +52,8 @@ public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, 
             throw new IllegalArgumentException("Not a valid %s key: %s".formatted(type.getSimpleName(), node));
         }
         NamespacedKey namespaced = NamespacedKey.fromString(node.stringValue());
-        if (namespaced == null) throw new IllegalArgumentException("Not a valid %s key: %s".formatted(type.getSimpleName(), node));
+        if (namespaced == null)
+            throw new IllegalArgumentException("Not a valid %s key: %s".formatted(type.getSimpleName(), node));
         List<String> known = values();
         if (!known.isEmpty() && !known.contains(namespaced.toString())) {
             throw new IllegalArgumentException("Unknown %s %s".formatted(type.getSimpleName(), namespaced));
@@ -54,14 +63,24 @@ public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, 
 
     @Override
     public CodeBlock emit(NamespacedKey value) {
-        return CodeBlock.of("$T.registryAccess().getRegistry($T.$N).getOrThrow($T.fromString($S))",
-                RegistryAccess.class, RegistryKey.class, keyField, NamespacedKey.class, value.toString());
+        return CodeBlock.of(
+                "$T.registryAccess().getRegistry($T.$N).getOrThrow($T.fromString($S))",
+                RegistryAccess.class,
+                RegistryKey.class,
+                keyField,
+                NamespacedKey.class,
+                value.toString());
     }
 
     @Override
     public List<String> values() {
         if (Bukkit.getServer() != null) {
-            return RegistryAccess.registryAccess().getRegistry(key).keyStream().map(NamespacedKey::toString).sorted().toList();
+            return RegistryAccess.registryAccess()
+                    .getRegistry(key)
+                    .keyStream()
+                    .map(NamespacedKey::toString)
+                    .sorted()
+                    .toList();
         }
         return keys == null ? enumKeys() : generatedKeys();
     }

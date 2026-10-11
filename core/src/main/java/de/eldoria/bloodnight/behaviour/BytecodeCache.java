@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.behaviour;
 
 import de.eldoria.graph.compiler.GraphProblem;
@@ -50,13 +55,15 @@ public final class BytecodeCache {
     public record Entry(String name, String source, Map<String, String> classes, List<GraphProblem> warnings) {
         static Entry of(String name, String source, Map<String, byte[]> bytecode, List<GraphProblem> warnings) {
             Map<String, String> encoded = new HashMap<>();
-            bytecode.forEach((className, bytes) -> encoded.put(className, Base64.getEncoder().encodeToString(bytes)));
+            bytecode.forEach((className, bytes) ->
+                    encoded.put(className, Base64.getEncoder().encodeToString(bytes)));
             return new Entry(name, source, encoded, warnings);
         }
 
         Map<String, byte[]> bytecode() {
             Map<String, byte[]> decoded = new HashMap<>();
-            classes.forEach((className, text) -> decoded.put(className, Base64.getDecoder().decode(text)));
+            classes.forEach((className, text) ->
+                    decoded.put(className, Base64.getDecoder().decode(text)));
             return decoded;
         }
     }
@@ -120,7 +127,8 @@ public final class BytecodeCache {
         try (Stream<Path> files = Files.list(directory)) {
             for (Path file : files.toList()) {
                 String name = file.getFileName().toString();
-                if (!name.endsWith(".json") || !keys.contains(name.substring(0, name.length() - ".json".length()))) Files.deleteIfExists(file);
+                if (!name.endsWith(".json") || !keys.contains(name.substring(0, name.length() - ".json".length())))
+                    Files.deleteIfExists(file);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);

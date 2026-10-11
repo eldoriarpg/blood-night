@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.CodeBlock;
@@ -46,8 +51,13 @@ public final class BukkitNodes {
                     .optionalInput("pitch", double.class)
                     .output(RESULT, Location.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of("new $T($L, $L, $L, $L, (float) $L, (float) $L)", Location.class,
-                    ctx.input("world"), ctx.input("x"), ctx.input("y"), ctx.input("z"),
+            (port, ctx) -> CodeBlock.of(
+                    "new $T($L, $L, $L, $L, (float) $L, (float) $L)",
+                    Location.class,
+                    ctx.input("world"),
+                    ctx.input("x"),
+                    ctx.input("y"),
+                    ctx.input("z"),
                     ctx.connected("yaw") ? ctx.input("yaw") : CodeBlock.of("0"),
                     ctx.connected("pitch") ? ctx.input("pitch") : CodeBlock.of("0")));
 
@@ -59,7 +69,8 @@ public final class BukkitNodes {
                     .input("z", double.class)
                     .output(RESULT, Vector.class)
                     .build(),
-            (port, ctx) -> CodeBlock.of("new $T($L, $L, $L)", Vector.class, ctx.input("x"), ctx.input("y"), ctx.input("z")));
+            (port, ctx) ->
+                    CodeBlock.of("new $T($L, $L, $L)", Vector.class, ctx.input("x"), ctx.input("y"), ctx.input("z")));
 
     public static final ExpressionDefinition NORMALIZE = new ExpressionDefinition(
             NodeDescriptor.builder("vector.normalize", NodeKind.PURE)
@@ -80,7 +91,8 @@ public final class BukkitNodes {
 
     public static final ExpressionDefinition DISTANCE = new ExpressionDefinition(
             NodeDescriptor.builder("vector.distance", NodeKind.PURE)
-                    .description("Distance between two points. Uses a square root; prefer Distance Squared for comparisons")
+                    .description(
+                            "Distance between two points. Uses a square root; prefer Distance Squared for comparisons")
                     .input(FIRST, Vector.class)
                     .input(SECOND, Vector.class)
                     .output(RESULT, double.class)
@@ -105,8 +117,13 @@ public final class BukkitNodes {
                     .input("z", double.class)
                     .output(RESULT, PortType.parameterized(Collection.class, PortType.of(Entity.class)))
                     .build(),
-            (port, ctx) -> CodeBlock.of("$L.getWorld().getNearbyEntities($L, $L, $L, $L)",
-                    ctx.input("location"), ctx.input("location"), ctx.input("x"), ctx.input("y"), ctx.input("z")));
+            (port, ctx) -> CodeBlock.of(
+                    "$L.getWorld().getNearbyEntities($L, $L, $L, $L)",
+                    ctx.input("location"),
+                    ctx.input("location"),
+                    ctx.input("x"),
+                    ctx.input("y"),
+                    ctx.input("z")));
 
     public static final ExpressionDefinition SELF = new ExpressionDefinition(
             NodeDescriptor.builder("mob.self", NodeKind.PURE)
@@ -130,21 +147,39 @@ public final class BukkitNodes {
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.item($L)", ctx.context(), ctx.config("item")));
 
-    public static final ExpressionDefinition DAMAGE_CAUSE = value("value.damage_cause", EntityDamageEvent.DamageCause.class, StringNode.valueOf("ENTITY_ATTACK"));
-    public static final ExpressionDefinition ENTITY_TYPE = value("value.entity_type", EntityType.class, StringNode.valueOf("minecraft:zombie"));
-    public static final ExpressionDefinition ITEM_TYPE = value("value.item_type", ItemType.class, StringNode.valueOf("minecraft:stone"));
-    public static final ExpressionDefinition BLOCK_TYPE = value("value.block_type", BlockType.class, StringNode.valueOf("minecraft:stone"));
-    public static final ExpressionDefinition POTION_EFFECT = value("value.potion_effect", PotionEffectType.class, StringNode.valueOf("minecraft:speed"));
+    public static final ExpressionDefinition DAMAGE_CAUSE =
+            value("value.damage_cause", EntityDamageEvent.DamageCause.class, StringNode.valueOf("ENTITY_ATTACK"));
+    public static final ExpressionDefinition ENTITY_TYPE =
+            value("value.entity_type", EntityType.class, StringNode.valueOf("minecraft:zombie"));
+    public static final ExpressionDefinition ITEM_TYPE =
+            value("value.item_type", ItemType.class, StringNode.valueOf("minecraft:stone"));
+    public static final ExpressionDefinition BLOCK_TYPE =
+            value("value.block_type", BlockType.class, StringNode.valueOf("minecraft:stone"));
+    public static final ExpressionDefinition POTION_EFFECT =
+            value("value.potion_effect", PotionEffectType.class, StringNode.valueOf("minecraft:speed"));
 
-    private BukkitNodes() {
-    }
+    private BukkitNodes() {}
 
     /**
      * @return every hand-written Bukkit node
      */
     public static List<NodeDefinition> all() {
-        return List.of(CREATE_LOCATION, CREATE_VECTOR, NORMALIZE, DIRECTION, DISTANCE, DISTANCE_SQUARED, NEARBY_ENTITIES,
-                SELF, EXTENSION, ITEM, DAMAGE_CAUSE, ENTITY_TYPE, ITEM_TYPE, BLOCK_TYPE, POTION_EFFECT);
+        return List.of(
+                CREATE_LOCATION,
+                CREATE_VECTOR,
+                NORMALIZE,
+                DIRECTION,
+                DISTANCE,
+                DISTANCE_SQUARED,
+                NEARBY_ENTITIES,
+                SELF,
+                EXTENSION,
+                ITEM,
+                DAMAGE_CAUSE,
+                ENTITY_TYPE,
+                ITEM_TYPE,
+                BLOCK_TYPE,
+                POTION_EFFECT);
     }
 
     private static ExpressionDefinition value(String id, Class<?> type, JsonNode defaultValue) {

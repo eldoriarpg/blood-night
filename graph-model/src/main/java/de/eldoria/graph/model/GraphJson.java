@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.model;
 
 import tools.jackson.core.JacksonException;
@@ -15,8 +20,7 @@ public final class GraphJson {
             .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .build();
 
-    private GraphJson() {
-    }
+    private GraphJson() {}
 
     /**
      * @return the mapper used for graphs, for embedding graphs into larger documents

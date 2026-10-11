@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import com.palantir.javapoet.ClassName;
@@ -45,11 +50,16 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
     static PortType of(Type type) {
         return switch (type) {
             case Class<?> clazz -> of(clazz);
-            case ParameterizedType parameterized -> new Concrete((Class<?>) parameterized.getRawType(),
-                    Arrays.stream(parameterized.getActualTypeArguments()).map(PortType::of).toList());
+            case ParameterizedType parameterized ->
+                new Concrete(
+                        (Class<?>) parameterized.getRawType(),
+                        Arrays.stream(parameterized.getActualTypeArguments())
+                                .map(PortType::of)
+                                .toList());
             case TypeVariable<?> variable -> new Variable(variable.getName());
             case WildcardType wildcard -> of(wildcard.getUpperBounds()[0]);
-            case GenericArrayType array -> throw new IllegalArgumentException("Array ports are not supported: " + array);
+            case GenericArrayType array ->
+                throw new IllegalArgumentException("Array ports are not supported: " + array);
             default -> throw new IllegalArgumentException("Unsupported type " + type);
         };
     }
@@ -61,8 +71,8 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
      */
     static PortType parameterized(Class<?> raw, PortType... arguments) {
         if (raw.getTypeParameters().length != arguments.length) {
-            throw new IllegalArgumentException("%s takes %d type arguments, got %d".formatted(
-                    raw.getName(), raw.getTypeParameters().length, arguments.length));
+            throw new IllegalArgumentException("%s takes %d type arguments, got %d"
+                    .formatted(raw.getName(), raw.getTypeParameters().length, arguments.length));
         }
         return new Concrete(raw, List.of(arguments));
     }
@@ -121,7 +131,8 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
      * @param arguments type arguments; empty for non-generic or raw use
      */
     record Concrete(Class<?> raw, List<PortType> arguments) implements PortType {
-        private static final List<Class<?>> WIDENING = List.of(byte.class, short.class, int.class, long.class, float.class, double.class);
+        private static final List<Class<?>> WIDENING =
+                List.of(byte.class, short.class, int.class, long.class, float.class, double.class);
 
         public Concrete {
             Objects.requireNonNull(raw, "raw");
@@ -131,7 +142,9 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
         @Override
         public TypeName typeName() {
             if (arguments.isEmpty()) return TypeName.get(raw);
-            return ParameterizedTypeName.get(ClassName.get(raw), arguments.stream().map(PortType::typeName).toArray(TypeName[]::new));
+            return ParameterizedTypeName.get(
+                    ClassName.get(raw),
+                    arguments.stream().map(PortType::typeName).toArray(TypeName[]::new));
         }
 
         @Override
@@ -161,10 +174,12 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
         public Optional<Concrete> asSupertype(Class<?> target) {
             if (raw == target) return Optional.of(this);
             if (!target.isAssignableFrom(Primitives.box(raw))) return Optional.empty();
-            if (arguments.isEmpty() && raw.getTypeParameters().length > 0) return Optional.of(new Concrete(target, List.of()));
+            if (arguments.isEmpty() && raw.getTypeParameters().length > 0)
+                return Optional.of(new Concrete(target, List.of()));
             Map<String, PortType> bindings = new HashMap<>();
             TypeVariable<?>[] parameters = raw.getTypeParameters();
-            for (int i = 0; i < parameters.length && i < arguments.size(); i++) bindings.put(parameters[i].getName(), arguments.get(i));
+            for (int i = 0; i < parameters.length && i < arguments.size(); i++)
+                bindings.put(parameters[i].getName(), arguments.get(i));
             List<Type> supertypes = new ArrayList<>(Arrays.asList(raw.getGenericInterfaces()));
             if (raw.getGenericSuperclass() != null) supertypes.add(raw.getGenericSuperclass());
             for (Type supertype : supertypes) {
@@ -189,7 +204,10 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
         private boolean acceptsRaw(Class<?> source) {
             if (raw.equals(source)) return true;
             if (raw.isPrimitive() && source.isPrimitive()) return widens(source, raw);
-            if (raw.isPrimitive()) return Primitives.unbox(source).map(unboxed -> unboxed == raw || widens(unboxed, raw)).orElse(false);
+            if (raw.isPrimitive())
+                return Primitives.unbox(source)
+                        .map(unboxed -> unboxed == raw || widens(unboxed, raw))
+                        .orElse(false);
             if (source.isPrimitive()) return raw.isAssignableFrom(Primitives.box(source));
             return raw.isAssignableFrom(source);
         }
@@ -210,7 +228,11 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
         @Override
         public PortType resolve(Map<String, PortType> bindings) {
             if (arguments.isEmpty()) return this;
-            return new Concrete(raw, arguments.stream().map(argument -> argument.resolve(bindings)).toList());
+            return new Concrete(
+                    raw,
+                    arguments.stream()
+                            .map(argument -> argument.resolve(bindings))
+                            .toList());
         }
 
         @Override

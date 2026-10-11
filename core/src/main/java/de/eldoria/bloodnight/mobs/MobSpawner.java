@@ -1,10 +1,14 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.util.MobTags;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -42,13 +46,13 @@ public class MobSpawner implements Listener {
         Set<String> active = worldSettings.mobSettings().spawning().activeTypes();
         if (active == null || active.isEmpty()) return;
         List<CustomMob> matching = configuration.mobs().getMatching(active, entity.getType());
-        if(matching.isEmpty()) return;
-        if (worldSettings.mobSettings().spawning().spawnPercentage() < ThreadLocalRandom.current().nextInt(100)) return;
+        if (matching.isEmpty()) return;
+        if (worldSettings.mobSettings().spawning().spawnPercentage()
+                < ThreadLocalRandom.current().nextInt(100)) return;
         // TODO: This doesnt factor in the spawn percentage of matching active mobs itself.
         // TODO: Per mob spawn rate is not yet implemented.
         CustomMob customMob = matching.get(ThreadLocalRandom.current().nextInt(matching.size()));
         // TODO Building the mob with changed attributes, equipment, extensions etc is missing.
         coordinator.register(entity, customMob);
     }
-
 }

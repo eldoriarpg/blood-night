@@ -1,10 +1,16 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
 /**
  * Thrown when generated source does not compile. Carries the compiler errors and the offending sources.

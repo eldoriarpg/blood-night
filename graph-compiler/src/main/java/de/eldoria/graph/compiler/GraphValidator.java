@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.CodeBlock;
@@ -74,9 +79,11 @@ final class GraphValidator {
         }
 
         ValidatedGraph run() throws GraphCompilationException {
-            graph.nodes().forEach((id, node) -> platform.node(node.type()).or(() -> Optional.ofNullable(extra.get(node.type()))).ifPresentOrElse(
-                    definition -> definitions.put(id, definition),
-                    () -> problems.add(GraphProblem.error(id, null, "Unknown node type " + node.type()))));
+            graph.nodes().forEach((id, node) -> platform.node(node.type())
+                    .or(() -> Optional.ofNullable(extra.get(node.type())))
+                    .ifPresentOrElse(
+                            definition -> definitions.put(id, definition),
+                            () -> problems.add(GraphProblem.error(id, null, "Unknown node type " + node.type()))));
             definitions.forEach(this::checkConfig);
             definitions.forEach(this::checkInputs);
             Map<String, String> parents = checkExecutions();
@@ -87,8 +94,17 @@ final class GraphValidator {
                 throw new GraphCompilationException(problems, null);
             }
             Map<String, ValidatedGraph.Node> nodes = new LinkedHashMap<>();
-            definitions.forEach((id, definition) -> nodes.put(id, new ValidatedGraph.Node(id, graph.nodes().get(id), definition,
-                    Map.copyOf(inputTypes.get(id)), Map.copyOf(outputTypes.get(id)), Map.copyOf(sourceTypes.get(id)), Map.copyOf(literals.get(id)), Map.copyOf(config.get(id)))));
+            definitions.forEach((id, definition) -> nodes.put(
+                    id,
+                    new ValidatedGraph.Node(
+                            id,
+                            graph.nodes().get(id),
+                            definition,
+                            Map.copyOf(inputTypes.get(id)),
+                            Map.copyOf(outputTypes.get(id)),
+                            Map.copyOf(sourceTypes.get(id)),
+                            Map.copyOf(literals.get(id)),
+                            Map.copyOf(config.get(id)))));
             List<String> entries = definitions.entrySet().stream()
                     .filter(entry -> entry.getValue() instanceof EntryDefinition)
                     .map(Map.Entry::getKey)
@@ -128,20 +144,26 @@ final class GraphValidator {
                 }
                 NodeDefinition source = definitions.get(edge.node());
                 if (source == null) {
-                    if (!graph.nodes().containsKey(edge.node())) problems.add(GraphProblem.error(id, port, "Connected to missing node " + edge.node()));
+                    if (!graph.nodes().containsKey(edge.node()))
+                        problems.add(GraphProblem.error(id, port, "Connected to missing node " + edge.node()));
                     return;
                 }
                 if (source.descriptor().output(edge.port()).isEmpty()) {
-                    problems.add(GraphProblem.error(id, port, "Node %s has no output %s".formatted(edge.node(), edge.port())));
+                    problems.add(GraphProblem.error(
+                            id, port, "Node %s has no output %s".formatted(edge.node(), edge.port())));
                 }
             });
             instance.literals().keySet().forEach(port -> {
                 if (descriptor.input(port).isEmpty()) problems.add(GraphProblem.error(id, port, "Unknown input"));
-                else if (instance.inputs().containsKey(port)) problems.add(GraphProblem.error(id, port, "Input has both a connection and a value"));
+                else if (instance.inputs().containsKey(port))
+                    problems.add(GraphProblem.error(id, port, "Input has both a connection and a value"));
             });
             descriptor.inputs().stream()
-                    .filter(port -> !port.optional() && !instance.inputs().containsKey(port.id()) && !instance.literals().containsKey(port.id()))
-                    .forEach(port -> problems.add(GraphProblem.error(id, port.id(), "Required input is not connected")));
+                    .filter(port -> !port.optional()
+                            && !instance.inputs().containsKey(port.id())
+                            && !instance.literals().containsKey(port.id()))
+                    .forEach(
+                            port -> problems.add(GraphProblem.error(id, port.id(), "Required input is not connected")));
         }
 
         /**
@@ -149,27 +171,31 @@ final class GraphValidator {
          */
         private Map<String, String> checkExecutions() {
             Map<String, String> parents = new HashMap<>();
-            definitions.forEach((id, definition) -> graph.nodes().get(id).executions().forEach((port, targets) -> {
-                if (definition.descriptor().execution(port).isEmpty()) {
-                    problems.add(GraphProblem.error(id, port, "Unknown execution port"));
-                    return;
-                }
-                for (String target : targets) {
-                    NodeDefinition targetDefinition = definitions.get(target);
-                    if (targetDefinition == null) {
-                        if (!graph.nodes().containsKey(target)) problems.add(GraphProblem.error(id, port, "Chains missing node " + target));
-                        continue;
-                    }
-                    if (!(targetDefinition instanceof StatementDefinition)) {
-                        problems.add(GraphProblem.error(id, port, "Node %s cannot be chained, it is not an action".formatted(target)));
-                        continue;
-                    }
-                    String previous = parents.putIfAbsent(target, id);
-                    if (previous != null) {
-                        problems.add(GraphProblem.error(target, null, "Chained more than once, by %s and %s".formatted(previous, id)));
-                    }
-                }
-            }));
+            definitions.forEach(
+                    (id, definition) -> graph.nodes().get(id).executions().forEach((port, targets) -> {
+                        if (definition.descriptor().execution(port).isEmpty()) {
+                            problems.add(GraphProblem.error(id, port, "Unknown execution port"));
+                            return;
+                        }
+                        for (String target : targets) {
+                            NodeDefinition targetDefinition = definitions.get(target);
+                            if (targetDefinition == null) {
+                                if (!graph.nodes().containsKey(target))
+                                    problems.add(GraphProblem.error(id, port, "Chains missing node " + target));
+                                continue;
+                            }
+                            if (!(targetDefinition instanceof StatementDefinition)) {
+                                problems.add(GraphProblem.error(
+                                        id, port, "Node %s cannot be chained, it is not an action".formatted(target)));
+                                continue;
+                            }
+                            String previous = parents.putIfAbsent(target, id);
+                            if (previous != null) {
+                                problems.add(GraphProblem.error(
+                                        target, null, "Chained more than once, by %s and %s".formatted(previous, id)));
+                            }
+                        }
+                    }));
             return parents;
         }
 
@@ -194,7 +220,11 @@ final class GraphValidator {
         private Optional<PortType> literal(String id, Port port, JsonNode value, Map<String, CodeBlock> code) {
             Optional<PortType> type = literalType(port, value);
             if (type.isEmpty()) {
-                problems.add(GraphProblem.error(id, port.id(), "Input of type %s cannot be typed in, connect a node".formatted(platform.types().name(port.type()))));
+                problems.add(GraphProblem.error(
+                        id,
+                        port.id(),
+                        "Input of type %s cannot be typed in, connect a node"
+                                .formatted(platform.types().name(port.type()))));
                 return Optional.empty();
             }
             try {
@@ -221,7 +251,11 @@ final class GraphValidator {
                     literal(id, port, literal, literalCode).ifPresent(type -> {
                         sources.put(port.id(), type);
                         if (!TypeInference.unify(port.type(), type, bindings)) {
-                            problems.add(GraphProblem.error(id, port.id(), "Conflicting types for %s: %s".formatted(port.type().id(), type.id())));
+                            problems.add(GraphProblem.error(
+                                    id,
+                                    port.id(),
+                                    "Conflicting types for %s: %s"
+                                            .formatted(port.type().id(), type.id())));
                         }
                     });
                     continue;
@@ -229,19 +263,24 @@ final class GraphValidator {
                 Edge edge = instance.inputs().get(port.id());
                 if (edge == null || !definitions.containsKey(edge.node())) continue;
                 if (resolving.contains(edge.node())) {
-                    problems.add(GraphProblem.error(id, port.id(), "Data edges form a cycle through node " + edge.node()));
+                    problems.add(
+                            GraphProblem.error(id, port.id(), "Data edges form a cycle through node " + edge.node()));
                     continue;
                 }
                 resolveTypes(edge.node());
                 PortType source = outputTypes.get(edge.node()).get(edge.port());
                 if (source == null) continue;
                 if (source.hasVariables()) {
-                    problems.add(GraphProblem.error(id, port.id(), "Type of %s.%s cannot be inferred".formatted(edge.node(), edge.port())));
+                    problems.add(GraphProblem.error(
+                            id, port.id(), "Type of %s.%s cannot be inferred".formatted(edge.node(), edge.port())));
                     continue;
                 }
                 sources.put(port.id(), source);
                 if (!TypeInference.unify(port.type(), source, bindings)) {
-                    problems.add(GraphProblem.error(id, port.id(), "Conflicting types for %s: %s".formatted(port.type().id(), source.id())));
+                    problems.add(GraphProblem.error(
+                            id,
+                            port.id(),
+                            "Conflicting types for %s: %s".formatted(port.type().id(), source.id())));
                 }
             }
 
@@ -251,12 +290,21 @@ final class GraphValidator {
                 inputs.put(port.id(), expected);
                 PortType source = sources.get(port.id());
                 if (source != null && !literalCode.containsKey(port.id()) && !expected.accepts(source)) {
-                    problems.add(GraphProblem.error(id, port.id(), "Expected %s but %s provides %s".formatted(
-                            platform.types().name(expected), instance.inputs().get(port.id()).node(), platform.types().name(source))));
+                    problems.add(GraphProblem.error(
+                            id,
+                            port.id(),
+                            "Expected %s but %s provides %s"
+                                    .formatted(
+                                            platform.types().name(expected),
+                                            instance.inputs().get(port.id()).node(),
+                                            platform.types().name(source))));
                 }
             }
             Map<String, PortType> outputs = new HashMap<>();
-            definition.descriptor().outputs().forEach(port -> outputs.put(port.id(), port.type().resolve(bindings)));
+            definition
+                    .descriptor()
+                    .outputs()
+                    .forEach(port -> outputs.put(port.id(), port.type().resolve(bindings)));
             inputTypes.put(id, inputs);
             outputTypes.put(id, outputs);
             sourceTypes.put(id, sources);
@@ -285,8 +333,7 @@ final class GraphValidator {
      * Infers type variables of a node from the types connected to its inputs.
      */
     static final class TypeInference {
-        private TypeInference() {
-        }
+        private TypeInference() {}
 
         /**
          * Binds the variables in {@code expected} so that it matches {@code actual}. Variables bind to boxed types,
@@ -304,10 +351,15 @@ final class GraphValidator {
                 case PortType.Concrete concrete -> {
                     if (!concrete.hasVariables() || !(actual instanceof PortType.Concrete source)) yield true;
                     Optional<PortType.Concrete> lifted = source.asSupertype(concrete.raw());
-                    if (lifted.isEmpty() || lifted.get().arguments().size() != concrete.arguments().size()) yield true;
+                    if (lifted.isEmpty()
+                            || lifted.get().arguments().size()
+                                    != concrete.arguments().size()) yield true;
                     boolean consistent = true;
                     for (int i = 0; i < concrete.arguments().size(); i++) {
-                        consistent &= unify(concrete.arguments().get(i), lifted.get().arguments().get(i), bindings);
+                        consistent &= unify(
+                                concrete.arguments().get(i),
+                                lifted.get().arguments().get(i),
+                                bindings);
                     }
                     yield consistent;
                 }

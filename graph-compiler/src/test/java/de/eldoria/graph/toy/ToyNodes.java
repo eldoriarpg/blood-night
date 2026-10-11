@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.toy;
 
 import com.palantir.javapoet.CodeBlock;
@@ -21,8 +26,12 @@ import java.util.List;
  */
 public final class ToyNodes {
     public static final EntryDefinition START = new EntryDefinition(
-            NodeDescriptor.builder("entry.start", NodeKind.ENTRY).execution("next").build(),
-            "onStart", List.of(), (port, ctx) -> {
+            NodeDescriptor.builder("entry.start", NodeKind.ENTRY)
+                    .execution("next")
+                    .build(),
+            "onStart",
+            List.of(),
+            (port, ctx) -> {
                 throw new IllegalArgumentException("entry.start has no output " + port);
             });
 
@@ -33,7 +42,9 @@ public final class ToyNodes {
                     .execution("next")
                     .build(),
             "onScore",
-            List.of(new EntryParameter("points", PortType.of(int.class)), new EntryParameter("player", PortType.of(String.class))),
+            List.of(
+                    new EntryParameter("points", PortType.of(int.class)),
+                    new EntryParameter("player", PortType.of(String.class))),
             (port, ctx) -> ctx.parameter(port));
 
     public static final ExpressionDefinition NUMBER = new ExpressionDefinition(
@@ -105,7 +116,8 @@ public final class ToyNodes {
                     .input("when_false", PortType.variable("T"))
                     .output("result", PortType.variable("T"))
                     .build(),
-            (port, ctx) -> CodeBlock.of("($L ? $L : $L)", ctx.input("condition"), ctx.input("when_true"), ctx.input("when_false")));
+            (port, ctx) -> CodeBlock.of(
+                    "($L ? $L : $L)", ctx.input("condition"), ctx.input("when_true"), ctx.input("when_false")));
 
     public static final ExpressionDefinition GREATER = new ExpressionDefinition(
             NodeDescriptor.builder("logic.greater", NodeKind.PURE)
@@ -132,12 +144,15 @@ public final class ToyNodes {
                         .build();
             });
 
-    public static final List<NodeDefinition> ALL = List.of(START, SCORE, NUMBER, INTEGER, TEXT, ADD, GREATER, PICK, COUNTER, PRINT, BRANCH, REPEAT);
+    public static final List<NodeDefinition> ALL =
+            List.of(START, SCORE, NUMBER, INTEGER, TEXT, ADD, GREATER, PICK, COUNTER, PRINT, BRANCH, REPEAT);
 
-    private ToyNodes() {
-    }
+    private ToyNodes() {}
 
     public static GraphPlatform platform() {
-        return GraphPlatform.builder(ToyHost.class).context(ToyContext.class).define(ALL).build();
+        return GraphPlatform.builder(ToyHost.class)
+                .context(ToyContext.class)
+                .define(ALL)
+                .build();
     }
 }

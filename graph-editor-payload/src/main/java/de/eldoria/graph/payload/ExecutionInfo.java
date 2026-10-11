@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -10,5 +15,4 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @param repeating whether the chain may run several times, as in a loop body
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public record ExecutionInfo(String id, String name, boolean repeating) {
-}
+public record ExecutionInfo(String id, String name, boolean repeating) {}

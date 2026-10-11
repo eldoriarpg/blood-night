@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
@@ -15,7 +20,8 @@ import java.util.Map;
  * @param warnings problems that did not prevent compilation
  * @param <T>      the host type
  */
-public record CompiledGraph<T>(ClassName name, String source, CompilationResult result, Class<T> host, List<GraphProblem> warnings) {
+public record CompiledGraph<T>(
+        ClassName name, String source, CompilationResult result, Class<T> host, List<GraphProblem> warnings) {
 
     /**
      * @return class files by binary name, for caching

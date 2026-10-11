@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.editor;
 
 import java.io.IOException;
@@ -13,8 +18,7 @@ import java.util.Optional;
 public final class BundledCatalog {
     private static final String RESOURCE = "/catalog.json";
 
-    private BundledCatalog() {
-    }
+    private BundledCatalog() {}
 
     /**
      * @return the catalog JSON, if the jar contains one

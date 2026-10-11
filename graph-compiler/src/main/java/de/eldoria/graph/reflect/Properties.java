@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.reflect;
 
 import de.eldoria.graph.definition.PortType;
@@ -21,10 +26,10 @@ import java.util.TreeMap;
  */
 final class Properties {
 
-    private static final Set<String> OBJECT_METHODS = Set.of("toString", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
+    private static final Set<String> OBJECT_METHODS =
+            Set.of("toString", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
 
-    private Properties() {
-    }
+    private Properties() {}
 
     /**
      * Which methods besides {@code getX}, {@code isX} and {@code setX} count as accessors.
@@ -52,8 +57,7 @@ final class Properties {
      * @param method the getter
      * @param type   its return type
      */
-    record Getter(String id, Method method, PortType type) {
-    }
+    record Getter(String id, Method method, PortType type) {}
 
     /**
      * A writable property.
@@ -63,8 +67,7 @@ final class Properties {
      * @param method   the setter
      * @param type     its parameter type
      */
-    record Setter(String id, String property, Method method, PortType type) {
-    }
+    record Setter(String id, String property, Method method, PortType type) {}
 
     /**
      * Public getters: {@code getX()}, {@code isX()} returning boolean, and record component accessors. Where a class
@@ -117,7 +120,10 @@ final class Properties {
             if (method.getParameterCount() != 0 || method.getReturnType() == void.class) continue;
             if (OBJECT_METHODS.contains(name) || propertyOf(method, type).isPresent()) continue;
             boolean qualifies = style.manual().contains(name)
-                    || style.fluent() && (hasField(type, name, method.getReturnType()) || fluentSetter(type, name, method.getReturnType()).isPresent());
+                    || style.fluent()
+                            && (hasField(type, name, method.getReturnType())
+                                    || fluentSetter(type, name, method.getReturnType())
+                                            .isPresent());
             if (qualifies) byName.merge(name, method, Properties::moreSpecific);
         }
         return byName;
@@ -134,7 +140,9 @@ final class Properties {
 
     private static Optional<Method> fluentSetter(Class<?> type, String name, Class<?> valueType) {
         return Arrays.stream(type.getMethods())
-                .filter(method -> method.getName().equals(name) && method.getParameterCount() == 1 && method.getParameterTypes()[0] == valueType)
+                .filter(method -> method.getName().equals(name)
+                        && method.getParameterCount() == 1
+                        && method.getParameterTypes()[0] == valueType)
                 .findFirst();
     }
 
@@ -160,7 +168,9 @@ final class Properties {
         for (Method method : type.getMethods()) {
             if (method.getParameterCount() != 1 || !isAccessor(method.getName(), "set")) continue;
             if (!rules.accepts(method)) continue;
-            byProperty.computeIfAbsent(Names.snakeCase(method.getName().substring(3)), key -> new ArrayList<>()).add(method);
+            byProperty
+                    .computeIfAbsent(Names.snakeCase(method.getName().substring(3)), key -> new ArrayList<>())
+                    .add(method);
         }
         Map<String, Setter> byId = new TreeMap<>();
         byProperty.forEach((property, methods) -> {
@@ -169,18 +179,21 @@ final class Properties {
                 Optional<PortType> portType = portType(method.getGenericParameterTypes()[0], rules);
                 if (portType.isEmpty()) continue;
                 String id = byId.containsKey("set_" + property)
-                        ? "set_%s_%s".formatted(property, Names.snakeCase(method.getParameterTypes()[0].getSimpleName()))
+                        ? "set_%s_%s"
+                                .formatted(property, Names.snakeCase(method.getParameterTypes()[0].getSimpleName()))
                         : "set_" + property;
                 byId.putIfAbsent(id, new Setter(id, property, method, portType.get()));
             }
         });
         if (style.active()) {
-            fluentGetters(type, style).values().forEach(getter -> fluentSetter(type, getter.getName(), getter.getReturnType())
+            fluentGetters(type, style).values().forEach(getter -> fluentSetter(
+                            type, getter.getName(), getter.getReturnType())
                     .filter(rules::accepts)
                     .ifPresent(setter -> {
                         String property = Names.snakeCase(getter.getName());
                         portType(setter.getGenericParameterTypes()[0], rules)
-                                .ifPresent(portType -> byId.putIfAbsent("set_" + property, new Setter("set_" + property, property, setter, portType)));
+                                .ifPresent(portType -> byId.putIfAbsent(
+                                        "set_" + property, new Setter("set_" + property, property, setter, portType)));
                     }));
         }
         return List.copyOf(byId.values());
@@ -189,7 +202,8 @@ final class Properties {
     private static Optional<String> propertyOf(Method method, Class<?> owner) {
         String name = method.getName();
         if (isAccessor(name, "get")) return Optional.of(Names.snakeCase(name.substring(3)));
-        if (isAccessor(name, "is") && (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class)) {
+        if (isAccessor(name, "is")
+                && (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class)) {
             return Optional.of(Names.snakeCase(name.substring(2)));
         }
         if (owner.isRecord()) {
@@ -201,7 +215,9 @@ final class Properties {
     }
 
     private static boolean isAccessor(String name, String prefix) {
-        return name.length() > prefix.length() && name.startsWith(prefix) && Character.isUpperCase(name.charAt(prefix.length()));
+        return name.length() > prefix.length()
+                && name.startsWith(prefix)
+                && Character.isUpperCase(name.charAt(prefix.length()));
     }
 
     private static Method moreSpecific(Method a, Method b) {

@@ -2,6 +2,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 
 plugins {
     java
+    id("com.diffplug.spotless")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -32,4 +33,17 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        licenseHeaderFile(rootProject.file("HEADER.txt"))
+        trimTrailingWhitespace()
+        endWithNewline()
+        palantirJavaFormat(libs.versions.palantir.get()).formatJavadoc(false)
+        removeUnusedImports()
+        importOrder("", "java", "javax", "\\#")
+        encoding("UTF-8")
+    }
 }

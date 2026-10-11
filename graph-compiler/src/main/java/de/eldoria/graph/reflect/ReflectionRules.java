@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.reflect;
 
 import de.eldoria.graph.definition.PortType;
@@ -24,8 +29,12 @@ public final class ReflectionRules {
     private final Predicate<PortType> types;
     private final Documentation documentation;
 
-    private ReflectionRules(boolean excludeDeprecated, Set<String> excludedMethods, Set<Class<?>> excludedDeclarers, Predicate<PortType> types,
-                            Documentation documentation) {
+    private ReflectionRules(
+            boolean excludeDeprecated,
+            Set<String> excludedMethods,
+            Set<Class<?>> excludedDeclarers,
+            Predicate<PortType> types,
+            Documentation documentation) {
         this.excludeDeprecated = excludeDeprecated;
         this.excludedMethods = Set.copyOf(excludedMethods);
         this.excludedDeclarers = Set.copyOf(excludedDeclarers);
@@ -89,8 +98,7 @@ public final class ReflectionRules {
         private Predicate<PortType> types = type -> true;
         private Documentation documentation = Documentation.NONE;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         /**
          * Whether deprecated methods are skipped. Defaults to true.

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.reflect;
 
 import com.palantir.javapoet.CodeBlock;
@@ -34,8 +39,7 @@ import java.util.Set;
 public final class ReflectedEntry {
     private static final String NEXT = "next";
 
-    private ReflectedEntry() {
-    }
+    private ReflectedEntry() {}
 
     /**
      * Starts deriving an entry point.
@@ -171,11 +175,15 @@ public final class ReflectedEntry {
             if (flatten) {
                 for (int i = 0; i < genericTypes.length; i++) {
                     String parameter = parameters.get(i);
-                    for (Properties.Getter getter : Properties.getters(target.getParameterTypes()[i], rules, new Properties.Style(fluent, accessors))) {
+                    for (Properties.Getter getter : Properties.getters(
+                            target.getParameterTypes()[i], rules, new Properties.Style(fluent, accessors))) {
                         String output = genericTypes.length == 1 ? getter.id() : parameter + "_" + getter.id();
                         if (types.containsKey(output)) continue;
                         types.put(output, getter.type());
-                        outputs.put(output, CodeBlock.of("$N.$N()", parameter, getter.method().getName()));
+                        outputs.put(
+                                output,
+                                CodeBlock.of(
+                                        "$N.$N()", parameter, getter.method().getName()));
                         rules.documentation().of(getter.method()).ifPresent(doc -> docs.put(output, doc));
                     }
                 }
@@ -187,7 +195,12 @@ public final class ReflectedEntry {
                     .description(description)
                     .execution(NEXT);
             types.forEach((output, type) -> {
-                if (!excluded.contains(output)) descriptor.output(output, names.getOrDefault(output, Names.humanize(output)), type, docs.getOrDefault(output, ""));
+                if (!excluded.contains(output))
+                    descriptor.output(
+                            output,
+                            names.getOrDefault(output, Names.humanize(output)),
+                            type,
+                            docs.getOrDefault(output, ""));
             });
             return new EntryDefinition(descriptor.build(), method, entryParameters, (port, ctx) -> {
                 CodeBlock code = outputs.get(port);
@@ -201,12 +214,17 @@ public final class ReflectedEntry {
                 try {
                     return host.getMethod(method, parameterTypes);
                 } catch (NoSuchMethodException e) {
-                    throw new IllegalArgumentException("%s has no method %s%s".formatted(host.getName(), method, Arrays.toString(parameterTypes)), e);
+                    throw new IllegalArgumentException(
+                            "%s has no method %s%s".formatted(host.getName(), method, Arrays.toString(parameterTypes)),
+                            e);
                 }
             }
-            List<Method> candidates = Arrays.stream(host.getMethods()).filter(candidate -> candidate.getName().equals(method)).toList();
+            List<Method> candidates = Arrays.stream(host.getMethods())
+                    .filter(candidate -> candidate.getName().equals(method))
+                    .toList();
             if (candidates.size() != 1) {
-                throw new IllegalArgumentException("%s has %d methods named %s; select one with parameterTypes".formatted(host.getName(), candidates.size(), method));
+                throw new IllegalArgumentException("%s has %d methods named %s; select one with parameterTypes"
+                        .formatted(host.getName(), candidates.size(), method));
             }
             return candidates.getFirst();
         }
@@ -214,13 +232,17 @@ public final class ReflectedEntry {
         private List<String> parameterIds(Method target) {
             if (parameterNames != null) {
                 if (parameterNames.size() != target.getParameterCount()) {
-                    throw new IllegalArgumentException("%s takes %d parameters, %d names given".formatted(method, target.getParameterCount(), parameterNames.size()));
+                    throw new IllegalArgumentException("%s takes %d parameters, %d names given"
+                            .formatted(method, target.getParameterCount(), parameterNames.size()));
                 }
                 return parameterNames;
             }
             List<String> ids = new ArrayList<>();
             for (Parameter parameter : target.getParameters()) {
-                String base = Names.snakeCase(parameter.isNamePresent() ? parameter.getName() : parameter.getType().getSimpleName());
+                String base = Names.snakeCase(
+                        parameter.isNamePresent()
+                                ? parameter.getName()
+                                : parameter.getType().getSimpleName());
                 String unique = base;
                 for (int suffix = 2; ids.contains(unique); suffix++) unique = base + suffix;
                 ids.add(unique);

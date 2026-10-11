@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -28,8 +33,14 @@ import java.util.Objects;
  * @param extension      entity riding or carrying the mob
  * @param migrationNotes problems found while migrating an old behaviour; never written
  */
-public record CustomMob(String id, Equipment equipment, Attributes attributes, Graph behaviour, MobDrops mobDrops,
-                        Extension extension, @JsonIgnore List<String> migrationNotes) {
+public record CustomMob(
+        String id,
+        Equipment equipment,
+        Attributes attributes,
+        Graph behaviour,
+        MobDrops mobDrops,
+        Extension extension,
+        @JsonIgnore List<String> migrationNotes) {
     public CustomMob {
         Objects.requireNonNull(id, "Mob id can not be null");
         if (!id.equals(id.toLowerCase())) throw new IllegalArgumentException("Mob id must be lower case.");
@@ -38,7 +49,13 @@ public record CustomMob(String id, Equipment equipment, Attributes attributes, G
         migrationNotes = migrationNotes == null ? List.of() : List.copyOf(migrationNotes);
     }
 
-    public CustomMob(String id, Equipment equipment, Attributes attributes, Graph behaviour, MobDrops mobDrops, Extension extension) {
+    public CustomMob(
+            String id,
+            Equipment equipment,
+            Attributes attributes,
+            Graph behaviour,
+            MobDrops mobDrops,
+            Extension extension) {
         this(id, equipment, attributes, behaviour, mobDrops, extension, List.of());
     }
 
@@ -46,16 +63,18 @@ public record CustomMob(String id, Equipment equipment, Attributes attributes, G
      * Reads a mob, migrating an old behaviour stored under {@code nodes} when no {@code behaviour} is present.
      */
     @JsonCreator
-    static CustomMob read(@JsonProperty("id") String id,
-                          @JsonProperty("equipment") Equipment equipment,
-                          @JsonProperty("attributes") Attributes attributes,
-                          @JsonProperty("behaviour") Graph behaviour,
-                          @JsonProperty("nodes") JsonNode legacy,
-                          @JsonProperty("mobDrops") MobDrops mobDrops,
-                          @JsonProperty("extension") Extension extension) {
+    static CustomMob read(
+            @JsonProperty("id") String id,
+            @JsonProperty("equipment") Equipment equipment,
+            @JsonProperty("attributes") Attributes attributes,
+            @JsonProperty("behaviour") Graph behaviour,
+            @JsonProperty("nodes") JsonNode legacy,
+            @JsonProperty("mobDrops") MobDrops mobDrops,
+            @JsonProperty("extension") Extension extension) {
         if (behaviour == null && legacy != null && !legacy.isNull()) {
             LegacyGraphs.Migration migration = LegacyGraphs.migrate(legacy);
-            return new CustomMob(id, equipment, attributes, migration.graph(), mobDrops, extension, migration.warnings());
+            return new CustomMob(
+                    id, equipment, attributes, migration.graph(), mobDrops, extension, migration.warnings());
         }
         return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, List.of());
     }

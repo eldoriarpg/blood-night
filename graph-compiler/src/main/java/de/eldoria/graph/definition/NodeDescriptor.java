@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import tools.jackson.databind.JsonNode;
@@ -24,15 +29,16 @@ import java.util.stream.Stream;
  * @param executions  execution outputs that nodes are chained into
  * @param config      literal values set in the editor
  */
-public record NodeDescriptor(String id,
-                             NodeKind kind,
-                             String category,
-                             String name,
-                             String description,
-                             List<Port> inputs,
-                             List<Port> outputs,
-                             List<ExecutionPort> executions,
-                             List<ConfigField> config) {
+public record NodeDescriptor(
+        String id,
+        NodeKind kind,
+        String category,
+        String name,
+        String description,
+        List<Port> inputs,
+        List<Port> outputs,
+        List<ExecutionPort> executions,
+        List<ConfigField> config) {
     public NodeDescriptor {
         Ids.checkPath(id, "node");
         Objects.requireNonNull(kind, "kind");
@@ -43,10 +49,15 @@ public record NodeDescriptor(String id,
         outputs = List.copyOf(outputs);
         executions = List.copyOf(executions);
         config = List.copyOf(config);
-        unique(id, "input or config field", inputs.stream().map(Port::id), config.stream().map(ConfigField::id));
+        unique(
+                id,
+                "input or config field",
+                inputs.stream().map(Port::id),
+                config.stream().map(ConfigField::id));
         unique(id, "output", outputs.stream().map(Port::id));
         unique(id, "execution port", executions.stream().map(ExecutionPort::id));
-        if (outputs.stream().anyMatch(Port::optional)) throw new IllegalArgumentException(id + ": outputs cannot be optional");
+        if (outputs.stream().anyMatch(Port::optional))
+            throw new IllegalArgumentException(id + ": outputs cannot be optional");
     }
 
     /**
@@ -97,7 +108,8 @@ public record NodeDescriptor(String id,
         Set<String> seen = new HashSet<>();
         for (var stream : ids) {
             stream.forEach(id -> {
-                if (!seen.add(id)) throw new IllegalArgumentException("%s: duplicate %s id '%s'".formatted(node, what, id));
+                if (!seen.add(id))
+                    throw new IllegalArgumentException("%s: duplicate %s id '%s'".formatted(node, what, id));
             });
         }
     }

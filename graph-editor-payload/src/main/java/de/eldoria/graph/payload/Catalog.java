@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.payload;
 
 import java.util.List;
@@ -15,7 +20,8 @@ import java.util.Map;
  * @param types      every concrete type used by a port, ordered by id
  * @param selectable types users can pick themselves, e.g. for macro inputs, by id
  */
-public record Catalog(int format, String version, List<NodeType> nodes, List<TypeInfo> types, Map<String, String> selectable) {
+public record Catalog(
+        int format, String version, List<NodeType> nodes, List<TypeInfo> types, Map<String, String> selectable) {
     /**
      * Current value of {@link #format()}.
      */

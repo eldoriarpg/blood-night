@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.CodeBlock;
@@ -36,8 +41,7 @@ public final class MacroBoundary {
     static final String VALUE = "value";
     static final String NEXT = "next";
 
-    private MacroBoundary() {
-    }
+    private MacroBoundary() {}
 
     /**
      * @param types the platform's type mapping; one input node is created per selectable type
@@ -45,15 +49,16 @@ public final class MacroBoundary {
      */
     public static List<NodeDefinition> definitions(TypeMapping types) {
         List<NodeDefinition> definitions = new ArrayList<>();
-        types.selectable().forEach((id, type) -> definitions.add(new ExpressionDefinition(
-                NodeDescriptor.builder(INPUT_PREFIX + id, NodeKind.VALUE)
-                        .category("macro")
-                        .name("Macro Input (%s)".formatted(types.name(type)))
-                        .description("A value passed into the macro")
-                        .config(NAME, String.class, null)
-                        .output(VALUE, type)
-                        .build(),
-                MacroBoundary::neverEmitted)));
+        types.selectable()
+                .forEach((id, type) -> definitions.add(new ExpressionDefinition(
+                        NodeDescriptor.builder(INPUT_PREFIX + id, NodeKind.VALUE)
+                                .category("macro")
+                                .name("Macro Input (%s)".formatted(types.name(type)))
+                                .description("A value passed into the macro")
+                                .config(NAME, String.class, null)
+                                .output(VALUE, type)
+                                .build(),
+                        MacroBoundary::neverEmitted)));
         definitions.add(new ExpressionDefinition(
                 NodeDescriptor.builder(OUTPUT, NodeKind.PURE)
                         .category("macro")
@@ -71,7 +76,9 @@ public final class MacroBoundary {
                         .description("Where the macro starts running when it is chained")
                         .execution(NEXT)
                         .build(),
-                "start", List.of(), MacroBoundary::neverEmitted));
+                "start",
+                List.of(),
+                MacroBoundary::neverEmitted));
         definitions.add(new StatementDefinition(
                 NodeDescriptor.builder(END, NodeKind.ACTION)
                         .category("macro")
@@ -92,13 +99,16 @@ public final class MacroBoundary {
      */
     static Map<String, NodeDefinition> passDefinitions(TypeMapping types) {
         Map<String, NodeDefinition> definitions = new LinkedHashMap<>();
-        types.selectable().forEach((id, type) -> definitions.put(PASS_PREFIX + id, new ExpressionDefinition(
-                NodeDescriptor.builder(PASS_PREFIX + id, NodeKind.PURE)
-                        .category("macro")
-                        .input(VALUE, type)
-                        .output(VALUE, type)
-                        .build(),
-                (port, context) -> context.input(VALUE))));
+        types.selectable()
+                .forEach((id, type) -> definitions.put(
+                        PASS_PREFIX + id,
+                        new ExpressionDefinition(
+                                NodeDescriptor.builder(PASS_PREFIX + id, NodeKind.PURE)
+                                        .category("macro")
+                                        .input(VALUE, type)
+                                        .output(VALUE, type)
+                                        .build(),
+                                (port, context) -> context.input(VALUE))));
         return definitions;
     }
 

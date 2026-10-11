@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.types;
 
 import com.palantir.javapoet.CodeBlock;
@@ -15,10 +20,11 @@ import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.LongNode;
 import tools.jackson.databind.node.StringNode;
 
-import javax.lang.model.element.Modifier;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import javax.lang.model.element.Modifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -67,30 +73,45 @@ class CodecsTest {
     @Test
     void enumsEmitConstants() throws Exception {
         assertEquals(DayOfWeek.FRIDAY, evaluate(DayOfWeek.class, StringNode.valueOf("FRIDAY")));
-        assertEquals(List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"),
+        assertEquals(
+                List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"),
                 TYPES.enumValues(PortType.of(DayOfWeek.class)));
     }
 
     @Test
     void rejectsValuesOfTheWrongShape() {
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(int.class), DoubleNode.valueOf(1.5)));
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(int.class), LongNode.valueOf(Long.MAX_VALUE)));
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(double.class), StringNode.valueOf("1")));
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(String.class), IntNode.valueOf(1)));
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(DayOfWeek.class), StringNode.valueOf("FRIDAY; System.exit(1)")));
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(DayOfWeek.class), StringNode.valueOf("friday")));
+        assertThrows(
+                IllegalArgumentException.class, () -> TYPES.literal(PortType.of(int.class), DoubleNode.valueOf(1.5)));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TYPES.literal(PortType.of(int.class), LongNode.valueOf(Long.MAX_VALUE)));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TYPES.literal(PortType.of(double.class), StringNode.valueOf("1")));
+        assertThrows(
+                IllegalArgumentException.class, () -> TYPES.literal(PortType.of(String.class), IntNode.valueOf(1)));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TYPES.literal(PortType.of(DayOfWeek.class), StringNode.valueOf("FRIDAY; System.exit(1)")));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TYPES.literal(PortType.of(DayOfWeek.class), StringNode.valueOf("friday")));
     }
 
     @Test
     void typesWithoutCodecHaveNoLiteral() {
         assertTrue(TYPES.codec(PortType.of(Object.class)).isEmpty());
-        assertTrue(TYPES.codec(PortType.parameterized(List.class, PortType.of(String.class))).isEmpty());
-        assertThrows(IllegalArgumentException.class, () -> TYPES.literal(PortType.of(Object.class), StringNode.valueOf("x")));
+        assertTrue(TYPES.codec(PortType.parameterized(List.class, PortType.of(String.class)))
+                .isEmpty());
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TYPES.literal(PortType.of(Object.class), StringNode.valueOf("x")));
     }
 
     @Test
     void editorNames() {
-        TypeMapping types = TypeMapping.builder().name(DayOfWeek.class, "Weekday").build();
+        TypeMapping types =
+                TypeMapping.builder().name(DayOfWeek.class, "Weekday").build();
 
         assertEquals("Number", types.name(PortType.of(double.class)));
         assertEquals("Weekday", types.name(PortType.of(DayOfWeek.class)));

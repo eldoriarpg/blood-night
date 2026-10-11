@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.payload;
 
 import com.palantir.javapoet.CodeBlock;
@@ -24,23 +29,37 @@ class CatalogGeneratorTest {
     private static final String SNAPSHOT = "catalog-snapshot.json";
 
     private static GraphPlatform platform() {
-        EntryDefinition run = new EntryDefinition(NodeDescriptor.builder("entry.run", NodeKind.ENTRY).execution("next").build(),
-                "run", List.of(), (port, ctx) -> CodeBlock.of(""));
+        EntryDefinition run = new EntryDefinition(
+                NodeDescriptor.builder("entry.run", NodeKind.ENTRY)
+                        .execution("next")
+                        .build(),
+                "run",
+                List.of(),
+                (port, ctx) -> CodeBlock.of(""));
         ExpressionDefinition weekday = new ExpressionDefinition(
                 NodeDescriptor.builder("value.weekday", NodeKind.VALUE)
                         .config("value", DayOfWeek.class, StringNode.valueOf("MONDAY"))
                         .output("value", DayOfWeek.class)
                         .build(),
                 (port, ctx) -> ctx.config("value"));
-        return GraphPlatform.builder(SnapshotHost.class).define(StandardNodes.all()).define(run, weekday).build();
+        return GraphPlatform.builder(SnapshotHost.class)
+                .define(StandardNodes.all())
+                .define(run, weekday)
+                .build();
     }
 
     private static NodeType node(Catalog catalog, String id) {
-        return catalog.nodes().stream().filter(node -> node.id().equals(id)).findFirst().orElseThrow();
+        return catalog.nodes().stream()
+                .filter(node -> node.id().equals(id))
+                .findFirst()
+                .orElseThrow();
     }
 
     private static TypeInfo type(Catalog catalog, String id) {
-        return catalog.types().stream().filter(type -> type.id().equals(id)).findFirst().orElseThrow();
+        return catalog.types().stream()
+                .filter(type -> type.id().equals(id))
+                .findFirst()
+                .orElseThrow();
     }
 
     @Test
@@ -49,7 +68,9 @@ class CatalogGeneratorTest {
         Path snapshot = Path.of(System.getProperty("snapshot.dir"), SNAPSHOT);
         if (Boolean.getBoolean("snapshot.update") || !Files.exists(snapshot)) Files.writeString(snapshot, json);
 
-        assertEquals(Files.readString(snapshot), json,
+        assertEquals(
+                Files.readString(snapshot),
+                json,
                 "The catalog is the editor contract. If the change is intended, run with -Dsnapshot.update=true and review the diff.");
     }
 
@@ -57,7 +78,9 @@ class CatalogGeneratorTest {
     void readsWhatItWrites() {
         Catalog catalog = CatalogGenerator.generate(platform());
 
-        assertEquals(CatalogGenerator.write(catalog), CatalogGenerator.write(CatalogGenerator.read(CatalogGenerator.write(catalog))));
+        assertEquals(
+                CatalogGenerator.write(catalog),
+                CatalogGenerator.write(CatalogGenerator.read(CatalogGenerator.write(catalog))));
     }
 
     @Test
@@ -65,22 +88,40 @@ class CatalogGeneratorTest {
         Catalog plain = CatalogGenerator.generate(platform());
         NodeType add = node(plain, "math.add");
         PortInfo first = add.inputs().getFirst();
-        NodeType documentedAdd = new NodeType(add.id(), add.kind(), add.category(), add.name(), "Documented add", add.macroOnly(),
-                List.of(new PortInfo(first.id(), first.name(), "The first summand", first.type(), first.optional(), first.literal())),
-                add.outputs(), add.executions(), add.config());
+        NodeType documentedAdd = new NodeType(
+                add.id(),
+                add.kind(),
+                add.category(),
+                add.name(),
+                "Documented add",
+                add.macroOnly(),
+                List.of(new PortInfo(
+                        first.id(),
+                        first.name(),
+                        "The first summand",
+                        first.type(),
+                        first.optional(),
+                        first.literal())),
+                add.outputs(),
+                add.executions(),
+                add.config());
         Catalog documented = new Catalog(plain.format(), "x", List.of(documentedAdd), List.of(), plain.selectable());
 
         Catalog merged = CatalogGenerator.withDescriptions(plain, documented);
 
         assertEquals("Adds two numbers", node(merged, "math.add").description(), "existing descriptions win");
-        assertEquals("The first summand", node(merged, "math.add").inputs().getFirst().description());
+        assertEquals(
+                "The first summand",
+                node(merged, "math.add").inputs().getFirst().description());
         assertEquals(plain.nodes().size(), merged.nodes().size());
         assertFalse(plain.version().equals(merged.version()));
     }
 
     @Test
     void isDeterministic() {
-        assertEquals(CatalogGenerator.write(CatalogGenerator.generate(platform())), CatalogGenerator.write(CatalogGenerator.generate(platform())));
+        assertEquals(
+                CatalogGenerator.write(CatalogGenerator.generate(platform())),
+                CatalogGenerator.write(CatalogGenerator.generate(platform())));
     }
 
     @Test
@@ -97,7 +138,8 @@ class CatalogGeneratorTest {
 
         NodeType forEach = node(catalog, "flow.for_each");
         assertEquals("java.lang.Iterable", forEach.inputs().getFirst().type().raw());
-        assertEquals("T", forEach.inputs().getFirst().type().arguments().getFirst().variable());
+        assertEquals(
+                "T", forEach.inputs().getFirst().type().arguments().getFirst().variable());
         assertFalse(forEach.inputs().getFirst().literal(), "Lists cannot be typed in");
         assertTrue(forEach.executions().stream().anyMatch(port -> port.id().equals("body") && port.repeating()));
 

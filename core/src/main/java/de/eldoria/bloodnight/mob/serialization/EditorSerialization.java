@@ -1,9 +1,10 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mob.serialization;
 
-import tools.jackson.core.Version;
-import tools.jackson.databind.JacksonModule;
-import tools.jackson.databind.module.SimpleDeserializers;
-import tools.jackson.databind.module.SimpleSerializers;
 import de.eldoria.bloodnight.mob.serialization.deserializer.EnchantmentDeserializer;
 import de.eldoria.bloodnight.mob.serialization.deserializer.PotionEffectTypeDeserializer;
 import de.eldoria.bloodnight.mob.serialization.serializer.EnchantmentSerializer;
@@ -12,6 +13,10 @@ import de.eldoria.bloodnight.mob.serialization.serializer.SimpleItemStackSeriali
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import tools.jackson.core.Version;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.module.SimpleDeserializers;
+import tools.jackson.databind.module.SimpleSerializers;
 
 public class EditorSerialization extends JacksonModule {
     @Override

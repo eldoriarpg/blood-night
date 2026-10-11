@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.items.ItemRegistry;
@@ -41,17 +46,20 @@ public final class MobOutfitter {
     }
 
     private Entity spawnExtension(LivingEntity base, CustomMob mob) {
-        Entity extension = base.getWorld().spawnEntity(base.getLocation(), mob.extension().entityType());
+        Entity extension =
+                base.getWorld().spawnEntity(base.getLocation(), mob.extension().entityType());
         if (!(extension instanceof LivingEntity living)) {
             extension.remove();
-            throw new IllegalStateException("Extension of %s is no living entity: %s".formatted(mob.id(), mob.extension().entityType()));
+            throw new IllegalStateException("Extension of %s is no living entity: %s"
+                    .formatted(mob.id(), mob.extension().entityType()));
         }
         if (mob.extension().equipment() != null) equip(living, mob.extension().equipment());
-        boolean added = switch (mob.extension().type()) {
-            case RIDER -> extension.addPassenger(base);
-            case CARRIER -> base.addPassenger(extension);
-            case NONE -> throw new IllegalStateException("No extension expected");
-        };
+        boolean added =
+                switch (mob.extension().type()) {
+                    case RIDER -> extension.addPassenger(base);
+                    case CARRIER -> base.addPassenger(extension);
+                    case NONE -> throw new IllegalStateException("No extension expected");
+                };
         if (!added) {
             extension.remove();
             throw new IllegalStateException("Extension of %s could not be attached".formatted(mob.id()));

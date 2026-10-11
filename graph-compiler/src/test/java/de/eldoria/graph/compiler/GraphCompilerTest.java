@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
@@ -44,14 +49,20 @@ class GraphCompilerTest {
 
     private static Path codeSource() {
         try {
-            return Path.of(ToyHost.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Path.of(ToyHost.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private static CompiledGraph<ToyHost> compile(Graph graph, ExpressionDefinition... extra) throws GraphCompilationException {
-        return new GraphCompiler<>(platform(extra), ToyHost.class, GraphCompilerTest.class.getClassLoader()).compile(graph, NAME);
+    private static CompiledGraph<ToyHost> compile(Graph graph, ExpressionDefinition... extra)
+            throws GraphCompilationException {
+        return new GraphCompiler<>(platform(extra), ToyHost.class, GraphCompilerTest.class.getClassLoader())
+                .compile(graph, NAME);
     }
 
     private static List<String> run(Graph graph, Consumer<ToyHost> calls) throws GraphCompilationException {
@@ -61,16 +72,27 @@ class GraphCompilerTest {
     }
 
     private static List<GraphProblem> problems(Graph graph, ExpressionDefinition... extra) {
-        return assertThrows(GraphCompilationException.class, () -> compile(graph, extra)).problems();
+        return assertThrows(GraphCompilationException.class, () -> compile(graph, extra))
+                .problems();
     }
 
     private static void assertProblem(List<GraphProblem> problems, String node, String port, String messagePart) {
-        assertTrue(problems.stream().anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR
-                        && Objects.equals(problem.node(), node)
-                        && Objects.equals(problem.port(), port)
-                        && problem.message().contains(messagePart)),
-                () -> "Expected error on %s.%s containing '%s', got:\n%s".formatted(node, port, messagePart,
-                        String.join("\n", problems.stream().map(GraphProblem::toString).toList())));
+        assertTrue(
+                problems.stream()
+                        .anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR
+                                && Objects.equals(problem.node(), node)
+                                && Objects.equals(problem.port(), port)
+                                && problem.message().contains(messagePart)),
+                () -> "Expected error on %s.%s containing '%s', got:\n%s"
+                        .formatted(
+                                node,
+                                port,
+                                messagePart,
+                                String.join(
+                                        "\n",
+                                        problems.stream()
+                                                .map(GraphProblem::toString)
+                                                .toList())));
     }
 
     private static NodeInstance.Builder number(double value) {
@@ -87,7 +109,9 @@ class GraphCompilerTest {
                 .node("start", NodeInstance.of("entry.start").chain("next", "print"))
                 .node("two", number(2))
                 .node("three", number(3))
-                .node("add", NodeInstance.of("math.add").input("a", "two", "value").input("b", "three", "value"))
+                .node(
+                        "add",
+                        NodeInstance.of("math.add").input("a", "two", "value").input("b", "three", "value"))
                 .node("print", print("add", "result"))
                 .build();
 
@@ -103,7 +127,8 @@ class GraphCompilerTest {
                 .build();
         CompiledGraph<ToyHost> compiled = compile(graph);
 
-        CompiledGraph<ToyHost> restored = new GraphCompiler<>(platform(), ToyHost.class, GraphCompilerTest.class.getClassLoader())
+        CompiledGraph<ToyHost> restored = new GraphCompiler<>(
+                        platform(), ToyHost.class, GraphCompilerTest.class.getClassLoader())
                 .load(compiled.name(), compiled.source(), compiled.bytecode(), compiled.warnings());
         ToyContext context = new ToyContext();
         ToyHost host = restored.instantiate(context);
@@ -146,9 +171,18 @@ class GraphCompilerTest {
         Graph graph = Graph.builder()
                 .node("score", NodeInstance.of("entry.score").chain("next", "branch"))
                 .node("ten", number(10))
-                .node("greater", NodeInstance.of("logic.greater").input("a", "score", "points").input("b", "ten", "value"))
-                .node("branch", NodeInstance.of("flow.branch").input("condition", "greater", "result")
-                        .chain("true", "high").chain("false", "low").chain("next", "done"))
+                .node(
+                        "greater",
+                        NodeInstance.of("logic.greater")
+                                .input("a", "score", "points")
+                                .input("b", "ten", "value"))
+                .node(
+                        "branch",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "greater", "result")
+                                .chain("true", "high")
+                                .chain("false", "low")
+                                .chain("next", "done"))
                 .node("high", print("high_text", "value"))
                 .node("low", print("low_text", "value"))
                 .node("done", print("score", "player"))
@@ -207,8 +241,12 @@ class GraphCompilerTest {
                 .node("start", NodeInstance.of("entry.start").chain("next", "before", "repeat"))
                 .node("counter", NodeInstance.of("state.counter"))
                 .node("before", print("counter", "count"))
-                .node("repeat", NodeInstance.of("flow.repeat").config("times", IntNode.valueOf(3))
-                        .chain("body", "index", "inside").chain("next", "after"))
+                .node(
+                        "repeat",
+                        NodeInstance.of("flow.repeat")
+                                .config("times", IntNode.valueOf(3))
+                                .chain("body", "index", "inside")
+                                .chain("next", "after"))
                 .node("index", print("repeat", "index"))
                 .node("inside", print("counter", "count"))
                 .node("after", print("counter", "count"))
@@ -222,9 +260,17 @@ class GraphCompilerTest {
         Graph graph = Graph.builder()
                 .node("score", NodeInstance.of("entry.score").chain("next", "print"))
                 .node("ten", number(10))
-                .node("greater", NodeInstance.of("logic.greater").input("a", "score", "points").input("b", "ten", "value"))
-                .node("pick", NodeInstance.of("logic.pick").input("condition", "greater", "result")
-                        .input("when_true", "score", "player").input("when_false", "nobody", "value"))
+                .node(
+                        "greater",
+                        NodeInstance.of("logic.greater")
+                                .input("a", "score", "points")
+                                .input("b", "ten", "value"))
+                .node(
+                        "pick",
+                        NodeInstance.of("logic.pick")
+                                .input("condition", "greater", "result")
+                                .input("when_true", "score", "player")
+                                .input("when_false", "nobody", "value"))
                 .node("nobody", NodeInstance.of("value.text").config("value", StringNode.valueOf("nobody")))
                 .node("print", print("pick", "result"))
                 .build();
@@ -237,7 +283,8 @@ class GraphCompilerTest {
 
     @Test
     void emptyBodiesForUncoveredAbstractMethods() throws GraphCompilationException {
-        Graph graph = Graph.builder().node("start", NodeInstance.of("entry.start")).build();
+        Graph graph =
+                Graph.builder().node("start", NodeInstance.of("entry.start")).build();
 
         ToyHost host = compile(graph).instantiate(new ToyContext());
         host.onStop();
@@ -267,12 +314,24 @@ class GraphCompilerTest {
     void inputsTakeTypedInValues() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("score", NodeInstance.of("entry.score").chain("next", "sum", "hello", "picked"))
-                .node("add", NodeInstance.of("math.add").input("a", "score", "points").literal("b", IntNode.valueOf(3)))
+                .node(
+                        "add",
+                        NodeInstance.of("math.add")
+                                .input("a", "score", "points")
+                                .literal("b", IntNode.valueOf(3)))
                 .node("sum", print("add", "result"))
                 .node("hello", NodeInstance.of("debug.print").literal("value", StringNode.valueOf("hello")))
-                .node("big", NodeInstance.of("logic.greater").input("a", "score", "points").literal("b", DoubleNode.valueOf(10)))
-                .node("pick", NodeInstance.of("logic.pick").input("condition", "big", "result")
-                        .input("when_true", "score", "player").literal("when_false", StringNode.valueOf("nobody")))
+                .node(
+                        "big",
+                        NodeInstance.of("logic.greater")
+                                .input("a", "score", "points")
+                                .literal("b", DoubleNode.valueOf(10)))
+                .node(
+                        "pick",
+                        NodeInstance.of("logic.pick")
+                                .input("condition", "big", "result")
+                                .input("when_true", "score", "player")
+                                .literal("when_false", StringNode.valueOf("nobody")))
                 .node("picked", print("pick", "result"))
                 .build();
 
@@ -284,10 +343,17 @@ class GraphCompilerTest {
         Graph graph = Graph.builder()
                 .node("start", NodeInstance.of("entry.start").chain("next", "print", "print_object"))
                 .node("one", number(1))
-                .node("add", NodeInstance.of("math.add").literal("a", StringNode.valueOf("five"))
-                        .input("b", "one", "value").literal("b", IntNode.valueOf(2)).literal("c", IntNode.valueOf(2)))
+                .node(
+                        "add",
+                        NodeInstance.of("math.add")
+                                .literal("a", StringNode.valueOf("five"))
+                                .input("b", "one", "value")
+                                .literal("b", IntNode.valueOf(2))
+                                .literal("c", IntNode.valueOf(2)))
                 .node("print", print("add", "result"))
-                .node("print_object", NodeInstance.of("debug.print").literal("value", JsonNodeFactory.instance.objectNode()))
+                .node(
+                        "print_object",
+                        NodeInstance.of("debug.print").literal("value", JsonNodeFactory.instance.objectNode()))
                 .build();
 
         List<GraphProblem> problems = problems(graph);
@@ -323,15 +389,33 @@ class GraphCompilerTest {
     @Test
     void validationErrorsAreLocated() {
         Graph graph = Graph.builder()
-                .node("start", NodeInstance.of("entry.start").chain("next", "print", "add", "missing").chain("later", "print"))
+                .node(
+                        "start",
+                        NodeInstance.of("entry.start")
+                                .chain("next", "print", "add", "missing")
+                                .chain("later", "print"))
                 .node("unknown", NodeInstance.of("math.divide"))
-                .node("add", NodeInstance.of("math.add").input("a", "text", "value").input("c", "text", "value"))
+                .node(
+                        "add",
+                        NodeInstance.of("math.add").input("a", "text", "value").input("c", "text", "value"))
                 .node("text", NodeInstance.of("value.text"))
-                .node("bad_number", NodeInstance.of("value.number").config("value", StringNode.valueOf("five")).config("unit", StringNode.valueOf("m")))
+                .node(
+                        "bad_number",
+                        NodeInstance.of("value.number")
+                                .config("value", StringNode.valueOf("five"))
+                                .config("unit", StringNode.valueOf("m")))
                 .node("print", print("ghost", "value"))
                 .node("print_twice", print("bad_number", "nothing"))
-                .node("loop_a", NodeInstance.of("math.add").input("a", "loop_b", "result").input("b", "loop_b", "result"))
-                .node("loop_b", NodeInstance.of("math.add").input("a", "loop_a", "result").input("b", "loop_a", "result"))
+                .node(
+                        "loop_a",
+                        NodeInstance.of("math.add")
+                                .input("a", "loop_b", "result")
+                                .input("b", "loop_b", "result"))
+                .node(
+                        "loop_b",
+                        NodeInstance.of("math.add")
+                                .input("a", "loop_a", "result")
+                                .input("b", "loop_a", "result"))
                 .build();
 
         List<GraphProblem> problems = problems(graph);
@@ -380,9 +464,17 @@ class GraphCompilerTest {
     void conflictingTypeVariablesAreRejected() {
         Graph graph = Graph.builder()
                 .node("score", NodeInstance.of("entry.score").chain("next", "print"))
-                .node("yes", NodeInstance.of("logic.greater").input("a", "score", "points").input("b", "score", "points"))
-                .node("pick", NodeInstance.of("logic.pick").input("condition", "yes", "result")
-                        .input("when_true", "score", "player").input("when_false", "score", "points"))
+                .node(
+                        "yes",
+                        NodeInstance.of("logic.greater")
+                                .input("a", "score", "points")
+                                .input("b", "score", "points"))
+                .node(
+                        "pick",
+                        NodeInstance.of("logic.pick")
+                                .input("condition", "yes", "result")
+                                .input("when_true", "score", "player")
+                                .input("when_false", "score", "points"))
                 .node("print", print("pick", "result"))
                 .build();
 
@@ -407,7 +499,9 @@ class GraphCompilerTest {
     @Test
     void compilerErrorsPointAtTheFaultyNode() {
         ExpressionDefinition broken = new ExpressionDefinition(
-                NodeDescriptor.builder("debug.broken", NodeKind.VALUE).output("value", int.class).build(),
+                NodeDescriptor.builder("debug.broken", NodeKind.VALUE)
+                        .output("value", int.class)
+                        .build(),
                 (port, ctx) -> CodeBlock.of("undefinedVariable"));
         Graph graph = Graph.builder()
                 .node("start", NodeInstance.of("entry.start").chain("next", "print"))
@@ -415,7 +509,8 @@ class GraphCompilerTest {
                 .node("oops", NodeInstance.of("debug.broken"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compile(graph, broken));
+        GraphCompilationException exception =
+                assertThrows(GraphCompilationException.class, () -> compile(graph, broken));
 
         assertProblem(exception.problems(), "oops", null, "undefinedVariable");
         assertTrue(exception.source().orElseThrow().contains("undefinedVariable"));

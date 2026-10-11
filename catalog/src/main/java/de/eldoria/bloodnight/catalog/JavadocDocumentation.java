@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.catalog;
 
 import com.github.javaparser.JavaParser;
@@ -39,7 +44,8 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
     private static final Pattern SENTENCE_END = Pattern.compile("(?<=[.!?])\\s");
 
     private final List<ZipFile> jars;
-    private final JavaParser parser = new JavaParser(new ParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.BLEEDING_EDGE));
+    private final JavaParser parser =
+            new JavaParser(new ParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.BLEEDING_EDGE));
     private final Map<String, Optional<CompilationUnit>> units = new HashMap<>();
 
     /**
@@ -47,13 +53,15 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
      */
     public JavadocDocumentation(List<Path> sources) {
         try {
-            this.jars = sources.stream().map(path -> {
-                try {
-                    return new ZipFile(path.toFile());
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }).toList();
+            this.jars = sources.stream()
+                    .map(path -> {
+                        try {
+                            return new ZipFile(path.toFile());
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    })
+                    .toList();
         } catch (UncheckedIOException e) {
             throw new IllegalArgumentException("Cannot open sources jar", e.getCause());
         }
@@ -61,7 +69,10 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
 
     @Override
     public Optional<String> of(Class<?> type) {
-        return declaration(type).flatMap(TypeDeclaration::getJavadocComment).map(JavadocDocumentation::summary).filter(text -> !text.isEmpty());
+        return declaration(type)
+                .flatMap(TypeDeclaration::getJavadocComment)
+                .map(JavadocDocumentation::summary)
+                .filter(text -> !text.isEmpty());
     }
 
     @Override
@@ -93,7 +104,12 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
         if (declaration.getParameters().size() != method.getParameterCount()) return false;
         Class<?>[] types = method.getParameterTypes();
         for (int i = 0; i < types.length; i++) {
-            String declared = declaration.getParameter(i).getType().asString().replaceAll("<.*>", "").replace("...", "[]");
+            String declared = declaration
+                    .getParameter(i)
+                    .getType()
+                    .asString()
+                    .replaceAll("<.*>", "")
+                    .replace("...", "[]");
             String simple = declared.substring(declared.lastIndexOf('.') + 1);
             if (!simple.equals(types[i].getSimpleName())) return false;
         }
@@ -113,7 +129,8 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
         for (String part : nested.split("\\$")) {
             if (part.isEmpty() || current.isEmpty()) continue;
             current = current.get().getMembers().stream()
-                    .filter(member -> member instanceof TypeDeclaration<?> declaration && declaration.getNameAsString().equals(part))
+                    .filter(member -> member instanceof TypeDeclaration<?> declaration
+                            && declaration.getNameAsString().equals(part))
                     .map(member -> (TypeDeclaration<?>) member)
                     .findFirst();
         }
@@ -144,11 +161,14 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
         StringBuilder plain = new StringBuilder();
         while (tags.find()) {
             String target = tags.group(1).trim();
-            String label = target.contains(" ") ? target.substring(target.indexOf(' ') + 1) : target.substring(target.lastIndexOf('#') + 1);
+            String label = target.contains(" ")
+                    ? target.substring(target.indexOf(' ') + 1)
+                    : target.substring(target.lastIndexOf('#') + 1);
             tags.appendReplacement(plain, Matcher.quoteReplacement(label));
         }
         tags.appendTail(plain);
-        String cleaned = HTML.matcher(plain).replaceAll("").replaceAll("\\s+", " ").trim();
+        String cleaned =
+                HTML.matcher(plain).replaceAll("").replaceAll("\\s+", " ").trim();
         String[] sentences = SENTENCE_END.split(cleaned, 2);
         return sentences[0].trim();
     }

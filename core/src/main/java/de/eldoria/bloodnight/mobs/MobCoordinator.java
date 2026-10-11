@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
@@ -30,8 +35,7 @@ import java.util.logging.Logger;
  * message, then swallowed, so one broken graph cannot stop the tick loop.
  */
 public final class MobCoordinator {
-    private static final CompiledBehaviour NONE = new CompiledBehaviour() {
-    };
+    private static final CompiledBehaviour NONE = new CompiledBehaviour() {};
 
     private final Map<Integer, ActiveMob> mobs = new HashMap<>();
     private final Set<String> reported = new HashSet<>();
@@ -47,7 +51,11 @@ public final class MobCoordinator {
      * @param definitions mob definition by id, or {@code null}
      * @param logger      receives behaviour failures
      */
-    public MobCoordinator(MobOutfitter outfitter, Supplier<ItemRegistry> items, Function<String, CustomMob> definitions, Logger logger) {
+    public MobCoordinator(
+            MobOutfitter outfitter,
+            Supplier<ItemRegistry> items,
+            Function<String, CustomMob> definitions,
+            Logger logger) {
         this.outfitter = outfitter;
         this.items = items;
         this.definitions = definitions;
@@ -76,7 +84,9 @@ public final class MobCoordinator {
         if (mobs.containsKey(entity.getEntityId())) return Optional.of(mobs.get(entity.getEntityId()));
         Optional<CustomMob> mob = MobTags.getCustomMobId(entity).map(definitions);
         if (mob.isEmpty()) return Optional.empty();
-        Entity extension = MobTags.getExtension(entity).map(id -> entity.getServer().getEntity(id)).orElse(null);
+        Entity extension = MobTags.getExtension(entity)
+                .map(id -> entity.getServer().getEntity(id))
+                .orElse(null);
         return Optional.of(track(entity, mob.get(), extension));
     }
 
@@ -144,8 +154,15 @@ public final class MobCoordinator {
         this.behaviours = behaviours;
         reported.clear();
         for (ActiveMob mob : new ArrayList<>(mobs.values())) {
-            CustomMob definition = Optional.ofNullable(definitions.apply(mob.mob().id())).orElse(mob.mob());
-            mobs.put(mob.entity().getEntityId(), new ActiveMob(definition, mob.entity(), mob.extension(), instantiate(definition, mob.entity(), mob.extension())));
+            CustomMob definition =
+                    Optional.ofNullable(definitions.apply(mob.mob().id())).orElse(mob.mob());
+            mobs.put(
+                    mob.entity().getEntityId(),
+                    new ActiveMob(
+                            definition,
+                            mob.entity(),
+                            mob.extension(),
+                            instantiate(definition, mob.entity(), mob.extension())));
         }
     }
 
@@ -163,7 +180,8 @@ public final class MobCoordinator {
     }
 
     private CompiledBehaviour instantiate(CustomMob mob, LivingEntity entity, @Nullable Entity extension) {
-        return behaviours.of(mob.id())
+        return behaviours
+                .of(mob.id())
                 .map(compiled -> compiled.instantiate(new LivingMobContext(entity, extension, items)))
                 .orElse(NONE);
     }
@@ -173,7 +191,9 @@ public final class MobCoordinator {
             call.run();
         } catch (RuntimeException e) {
             String key = mob.mob().id() + ":" + e;
-            if (reported.add(key)) logger.warning("Behaviour of mob %s failed: %s".formatted(mob.mob().id(), e));
+            if (reported.add(key))
+                logger.warning(
+                        "Behaviour of mob %s failed: %s".formatted(mob.mob().id(), e));
         }
     }
 }

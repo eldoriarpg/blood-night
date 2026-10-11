@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.api.MobContext;
@@ -16,7 +21,8 @@ import java.util.function.Supplier;
  * @param extension its extension, if any
  * @param items     the current item registry
  */
-record LivingMobContext(LivingEntity entity, @Nullable Entity extension, Supplier<ItemRegistry> items) implements MobContext {
+record LivingMobContext(LivingEntity entity, @Nullable Entity extension, Supplier<ItemRegistry> items)
+        implements MobContext {
     @Override
     @Nullable
     public ItemStack item(String id) {

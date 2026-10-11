@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.behaviour.Behaviours;
@@ -30,13 +35,14 @@ import java.util.TreeMap;
  * @param macroProblems  problems per macro id
  * @param configProblems files that could not be read, with the reason
  */
-public record EditorPayload(String catalog,
-                            Map<String, CustomMob> mobs,
-                            List<Macro> macros,
-                            Map<String, ItemStack> items,
-                            Map<String, List<GraphProblem>> problems,
-                            Map<String, List<GraphProblem>> macroProblems,
-                            Map<String, String> configProblems) {
+public record EditorPayload(
+        String catalog,
+        Map<String, CustomMob> mobs,
+        List<Macro> macros,
+        Map<String, ItemStack> items,
+        Map<String, List<GraphProblem>> problems,
+        Map<String, List<GraphProblem>> macroProblems,
+        Map<String, String> configProblems) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
             .addModule(new EditorSerialization())
@@ -52,8 +58,14 @@ public record EditorPayload(String catalog,
     public static EditorPayload of(Configuration configuration, Behaviours behaviours, String catalog) {
         Map<String, CustomMob> mobs = new TreeMap<>();
         configuration.mobs().all().forEach(mob -> mobs.put(mob.id(), mob));
-        return new EditorPayload(catalog, mobs, configuration.macros().macros(), new TreeMap<>(configuration.items().registrations()),
-                behaviours.problems(), behaviours.macroProblems(), configuration.problems());
+        return new EditorPayload(
+                catalog,
+                mobs,
+                configuration.macros().macros(),
+                new TreeMap<>(configuration.items().registrations()),
+                behaviours.problems(),
+                behaviours.macroProblems(),
+                configuration.problems());
     }
 
     /**

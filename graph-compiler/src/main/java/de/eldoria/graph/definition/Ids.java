@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.definition;
 
 import java.util.regex.Pattern;
@@ -10,8 +15,7 @@ final class Ids {
     private static final Pattern SEGMENT = Pattern.compile("[a-z][a-z0-9_]*");
     private static final Pattern PATH = Pattern.compile("[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*");
 
-    private Ids() {
-    }
+    private Ids() {}
 
     static String check(String id, String what) {
         if (id == null || !SEGMENT.matcher(id).matches()) {

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.api;
 
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -21,96 +26,80 @@ public interface CompiledBehaviour {
     /**
      * Called once per server tick.
      */
-    default void onTick() {
-    }
+    default void onTick() {}
 
     /**
      * Called when a debug trigger is fired by command.
      */
-    default void onDebug() {
-    }
+    default void onDebug() {}
 
     /**
      * The mob took damage from something other than an entity.
      */
-    default void onDamage(EntityDamageEvent event) {
-    }
+    default void onDamage(EntityDamageEvent event) {}
 
     /**
      * The mob took damage from an entity that is not a player.
      */
-    default void onDamageByEntity(EntityDamageByEntityEvent event) {
-    }
+    default void onDamageByEntity(EntityDamageByEntityEvent event) {}
 
     /**
      * The mob took damage from a player.
      */
-    default void onDamageByPlayer(EntityDamageByEntityEvent event) {
-    }
+    default void onDamageByPlayer(EntityDamageByEntityEvent event) {}
 
     /**
      * The mob damaged another entity.
      */
-    default void onHit(EntityDamageByEntityEvent event) {
-    }
+    default void onHit(EntityDamageByEntityEvent event) {}
 
     /**
      * The mob is about to kill an entity or player.
      */
-    default void onKill(EntityDamageByEntityEvent event) {
-    }
+    default void onKill(EntityDamageByEntityEvent event) {}
 
     /**
      * The mob is about to kill a player.
      */
-    default void onPlayerKill(EntityDamageByEntityEvent event) {
-    }
+    default void onPlayerKill(EntityDamageByEntityEvent event) {}
 
     /**
      * The mob is about to kill an entity that is not a player.
      */
-    default void onEntityKill(EntityDamageByEntityEvent event) {
-    }
+    default void onEntityKill(EntityDamageByEntityEvent event) {}
 
     /**
      * The mob died.
      */
-    default void onDeath(EntityDeathEvent event) {
-    }
+    default void onDeath(EntityDeathEvent event) {}
 
     /**
      * The mob teleports.
      */
-    default void onTeleport(EntityTeleportEvent event) {
-    }
+    default void onTeleport(EntityTeleportEvent event) {}
 
     /**
      * The mob gets or loses a target.
      */
-    default void onTargetChange(EntityTargetLivingEntityEvent event) {
-    }
+    default void onTargetChange(EntityTargetLivingEntityEvent event) {}
 
     /**
      * The mob launched a projectile.
      */
-    default void onProjectileShoot(ProjectileLaunchEvent event) {
-    }
+    default void onProjectileShoot(ProjectileLaunchEvent event) {}
 
     /**
      * A projectile launched by the mob hit something.
      */
-    default void onProjectileHit(ProjectileHitEvent event) {
-    }
+    default void onProjectileHit(ProjectileHitEvent event) {}
 
     /**
      * The mob is about to explode.
      */
-    default void onExplosionPrime(ExplosionPrimeEvent event) {
-    }
+    default void onExplosionPrime(ExplosionPrimeEvent event) {}
 
     /**
      * The mob explodes.
      */
-    default void onExplode(EntityExplodeEvent event) {
-    }
+    default void onExplode(EntityExplodeEvent event) {}
 }

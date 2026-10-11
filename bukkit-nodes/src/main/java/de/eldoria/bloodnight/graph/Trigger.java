@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
@@ -29,16 +34,17 @@ import java.util.function.Predicate;
  * @param invoke          calls the behaviour method
  * @param <E>             the event type
  */
-public record Trigger<E extends Event>(String id,
-                                       String name,
-                                       String description,
-                                       Class<E> event,
-                                       String method,
-                                       Function<E, Entity> subject,
-                                       Predicate<E> filter,
-                                       EventPriority priority,
-                                       boolean ignoreCancelled,
-                                       BiConsumer<CompiledBehaviour, E> invoke) {
+public record Trigger<E extends Event>(
+        String id,
+        String name,
+        String description,
+        Class<E> event,
+        String method,
+        Function<E, Entity> subject,
+        Predicate<E> filter,
+        EventPriority priority,
+        boolean ignoreCancelled,
+        BiConsumer<CompiledBehaviour, E> invoke) {
     public Trigger {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(event, "event");

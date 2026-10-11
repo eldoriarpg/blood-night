@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.graph.model.Edge;
@@ -70,32 +75,45 @@ public final class LegacyGraphs {
 
         map("BranchNode", "flow.branch").input("value", "condition");
         map("BatchNode", "flow.batch").input("value", "count").execution("next", "body");
-        map("ForEachNode", "flow.for_each").input("value", "list").output("current", "element").execution("next", "body");
+        map("ForEachNode", "flow.for_each")
+                .input("value", "list")
+                .output("current", "element")
+                .execution("next", "body");
         map("PrintNode", "debug.print");
         map("CurrentEntityNode", "mob.self").output("value", "entity");
 
         map("TickNode", "mob.tick");
         map("DebugNode", "debug.trigger");
-        for (String damage : List.of("OnDamageNode:event.damage", "OnDamageByEntityNode:event.damage_by_entity",
-                "OnDamageByPlayerNode:event.damage_by_player", "OnHitNode:event.hit")) {
+        for (String damage : List.of(
+                "OnDamageNode:event.damage",
+                "OnDamageByEntityNode:event.damage_by_entity",
+                "OnDamageByPlayerNode:event.damage_by_player",
+                "OnHitNode:event.hit")) {
             String[] parts = damage.split(":");
-            map(parts[0], parts[1]).output("target", "entity").output("damage_cause", "cause").output("cancelable_event", "event");
+            map(parts[0], parts[1])
+                    .output("target", "entity")
+                    .output("damage_cause", "cause")
+                    .output("cancelable_event", "event");
         }
-        for (String kill : List.of("OnKillNode:event.kill", "OnPlayerKillNode:event.player_kill", "OnEntityKillNode:event.entity_kill")) {
+        for (String kill : List.of(
+                "OnKillNode:event.kill", "OnPlayerKillNode:event.player_kill", "OnEntityKillNode:event.entity_kill")) {
             String[] parts = kill.split(":");
             map(parts[0], parts[1]).output("killed_entity", "entity").output("cancelable_event", "event");
         }
         map("OnDeathNode", "event.death").drop("killer").drop("damage_cause");
         map("OnTeleportNode", "event.teleport").output("cancelable_event", "event");
         map("OnTargetChangeNode", "event.target_change").output("cancelable_event", "event");
-        map("OnProjectileShoot", "event.projectile_shoot").output("projectile", "entity").output("cancelable_event", "event");
-        map("OnProjectileHit", "event.projectile_hit").output("projectile", "entity").output("cancelable_event", "event");
+        map("OnProjectileShoot", "event.projectile_shoot")
+                .output("projectile", "entity")
+                .output("cancelable_event", "event");
+        map("OnProjectileHit", "event.projectile_hit")
+                .output("projectile", "entity")
+                .output("cancelable_event", "event");
         map("OnExplosionPrimeNode", "event.explosion_prime").output("cancelable_event", "event");
         map("OnExplosionNode", "event.explode").output("cancelable_event", "event");
     }
 
-    private LegacyGraphs() {
-    }
+    private LegacyGraphs() {}
 
     /**
      * A converted graph.
@@ -103,8 +121,7 @@ public final class LegacyGraphs {
      * @param graph    the graph in the current model
      * @param warnings what could not be carried over
      */
-    public record Migration(Graph graph, List<String> warnings) {
-    }
+    public record Migration(Graph graph, List<String> warnings) {}
 
     /**
      * @param legacy an old {@code NodeContainer}: an object with a {@code nodes} map
@@ -115,7 +132,8 @@ public final class LegacyGraphs {
         JsonNode nodes = legacy.path("nodes");
         Map<String, Mapping> mappings = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : nodes.properties()) {
-            mappings.put(entry.getKey(), mapping(entry.getValue().path("nodeClass").asString("")));
+            mappings.put(
+                    entry.getKey(), mapping(entry.getValue().path("nodeClass").asString("")));
         }
 
         Graph.Builder graph = Graph.builder();
@@ -128,7 +146,9 @@ public final class LegacyGraphs {
             Mapping effective = mapping == null ? new Mapping(nodeClass) : mapping;
 
             NodeInstance.Builder instance = NodeInstance.of(effective.type);
-            if (effective.valueField != null && node.has("value") && !node.get("value").isNull()) {
+            if (effective.valueField != null
+                    && node.has("value")
+                    && !node.get("value").isNull()) {
                 instance.config(effective.valueField, effective.valueConversion.apply(node.get("value")));
             }
             for (Map.Entry<String, JsonNode> input : node.path("input").properties()) {
@@ -140,17 +160,22 @@ public final class LegacyGraphs {
                 }
                 Mapping sourceMapping = mappings.get(source);
                 if (sourceMapping != null && sourceMapping.dropped.contains(sourcePort)) {
-                    warnings.add("%s: output %s of %s no longer exists, edge to %s dropped".formatted(source, sourcePort, source, id));
+                    warnings.add("%s: output %s of %s no longer exists, edge to %s dropped"
+                            .formatted(source, sourcePort, source, id));
                     continue;
                 }
-                String renamed = sourceMapping == null ? sourcePort : sourceMapping.outputs.getOrDefault(sourcePort, sourcePort);
+                String renamed =
+                        sourceMapping == null ? sourcePort : sourceMapping.outputs.getOrDefault(sourcePort, sourcePort);
                 Edge edge = Edge.to(source, renamed);
                 instance.input(effective.inputs.getOrDefault(input.getKey(), input.getKey()), edge.node(), edge.port());
             }
-            for (Map.Entry<String, JsonNode> execution : node.path("executions").path("nextNodes").properties()) {
+            for (Map.Entry<String, JsonNode> execution :
+                    node.path("executions").path("nextNodes").properties()) {
                 List<String> targets = new ArrayList<>();
                 execution.getValue().forEach(target -> targets.add(target.asString()));
-                instance.chain(effective.executions.getOrDefault(execution.getKey(), execution.getKey()), targets.toArray(String[]::new));
+                instance.chain(
+                        effective.executions.getOrDefault(execution.getKey(), execution.getKey()),
+                        targets.toArray(String[]::new));
             }
             Optional.ofNullable(node.get("meta")).filter(meta -> !meta.isNull()).ifPresent(instance::editor);
             graph.node(id, instance);

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.behaviour;
 
 import de.eldoria.bloodnight.Mobs;
@@ -37,13 +42,18 @@ class BehaviourServiceTest {
     }
 
     private BehaviourService service(String version) {
-        return new BehaviourService(platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), version, Logger.getLogger("test"));
+        return new BehaviourService(
+                platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), version, Logger.getLogger("test"));
     }
 
     private static Graph cancelDamage() {
         return Graph.builder()
                 .node("damage", NodeInstance.of("event.damage").chain("next", "cancel"))
-                .node("cancel", NodeInstance.of("cancellable.set_cancelled").input("target", "damage", "event").literal("value", BooleanNode.TRUE))
+                .node(
+                        "cancel",
+                        NodeInstance.of("cancellable.set_cancelled")
+                                .input("target", "damage", "event")
+                                .literal("value", BooleanNode.TRUE))
                 .build();
     }
 
@@ -62,11 +72,13 @@ class BehaviourServiceTest {
 
     @Test
     void compilesEachMobOnItsOwn() {
-        Behaviours result = service("1").compileNow(List.of(Mobs.zombie("good", cancelDamage()), Mobs.zombie("bad", broken())), List.of());
+        Behaviours result = service("1")
+                .compileNow(List.of(Mobs.zombie("good", cancelDamage()), Mobs.zombie("bad", broken())), List.of());
 
         assertTrue(result.of("good").isPresent());
         assertTrue(result.of("bad").isEmpty());
-        assertTrue(result.problems().get("bad").stream().anyMatch(problem -> "print".equals(problem.node()) && "value".equals(problem.port())));
+        assertTrue(result.problems().get("bad").stream()
+                .anyMatch(problem -> "print".equals(problem.node()) && "value".equals(problem.port())));
         assertEquals(Set.of("event.damage"), result.usedTriggers());
     }
 
@@ -79,7 +91,9 @@ class BehaviourServiceTest {
 
         assertEquals(0, first.fromCache());
         assertEquals(1, second.fromCache());
-        assertEquals(first.of("good").orElseThrow().source(), second.of("good").orElseThrow().source());
+        assertEquals(
+                first.of("good").orElseThrow().source(),
+                second.of("good").orElseThrow().source());
         assertEquals(1, cacheFiles());
     }
 

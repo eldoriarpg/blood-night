@@ -1,11 +1,16 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight;
 
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.configuration.Configuration;
-import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.editor.EditorPayload;
+import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
@@ -64,13 +69,22 @@ public final class BloodNight extends JavaPlugin {
         var platform = BloodNightPlatform.create(CompileClasspath.discover(getClassLoader()));
         long start = System.nanoTime();
         catalog = RuntimeCatalog.create(platform);
-        getLogger().info("Editor catalog %s: %d nodes in %d ms".formatted(catalog.version(), catalog.nodes().size(), (System.nanoTime() - start) / 1_000_000));
-        behaviourService = new BehaviourService(platform, getClassLoader(), new BytecodeCache(getDataFolder().toPath().resolve("cache")),
-                buildFingerprint(), getLogger());
-        coordinator = new MobCoordinator(new MobOutfitter(() -> configuration.items()), () -> configuration.items(),
-                id -> configuration.mobs().get(id), getLogger());
-        dispatcher = new TriggerDispatcher(coordinator::behaviour,
-                (trigger, error) -> getLogger().log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error));
+        getLogger()
+                .info("Editor catalog %s: %d nodes in %d ms"
+                        .formatted(catalog.version(), catalog.nodes().size(), (System.nanoTime() - start) / 1_000_000));
+        behaviourService = new BehaviourService(
+                platform,
+                getClassLoader(),
+                new BytecodeCache(getDataFolder().toPath().resolve("cache")),
+                buildFingerprint(),
+                getLogger());
+        coordinator = new MobCoordinator(
+                new MobOutfitter(() -> configuration.items()),
+                () -> configuration.items(),
+                id -> configuration.mobs().get(id),
+                getLogger());
+        dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, error) -> getLogger()
+                .log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error));
 
         var plugins = getServer().getPluginManager();
         plugins.registerEvents(new MobSpawner(configuration, coordinator, this), this);
@@ -88,8 +102,16 @@ public final class BloodNight extends JavaPlugin {
      */
     private String buildFingerprint() {
         try {
-            Path jar = Path.of(getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
-            return "%s+%d+%d".formatted(getPluginMeta().getVersion(), Files.size(jar), Files.getLastModifiedTime(jar).toMillis());
+            Path jar = Path.of(getClass()
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
+            return "%s+%d+%d"
+                    .formatted(
+                            getPluginMeta().getVersion(),
+                            Files.size(jar),
+                            Files.getLastModifiedTime(jar).toMillis());
         } catch (IOException | URISyntaxException | RuntimeException e) {
             return getPluginMeta().getVersion();
         }
@@ -110,30 +132,37 @@ public final class BloodNight extends JavaPlugin {
     CompletableFuture<Behaviours> recompile() {
         configuration.mobs();
         configuration.macros();
-        configuration.problems().forEach((file, problem) -> getLogger().severe(
-                "%s could not be read and was left untouched; its content is ignored until it is fixed and reloaded: %s".formatted(file, problem)));
+        configuration.problems().forEach((file, problem) -> getLogger()
+                .severe(
+                        "%s could not be read and was left untouched; its content is ignored until it is fixed and reloaded: %s"
+                                .formatted(file, problem)));
         CompletableFuture<Behaviours> applied = new CompletableFuture<>();
-        behaviourService.compile(configuration.mobs().all(), configuration.macros().macros()).whenComplete((result, error) -> {
-            if (error != null) {
-                getLogger().log(Level.SEVERE, "Compiling behaviours failed", error);
-                applied.completeExceptionally(error);
-                return;
-            }
-            getServer().getScheduler().runTask(this, () -> {
-                behaviours = result;
-                coordinator.rebind(result);
-                dispatcher.register(this, result.usedTriggers());
-                configuration.mobs().all().stream()
-                        .filter(mob -> !mob.migrationNotes().isEmpty())
-                        .forEach(mob -> getLogger().warning("Mob %s was migrated from the old format: %s".formatted(mob.id(), mob.migrationNotes())));
-                applied.complete(result);
-            });
-        });
+        behaviourService
+                .compile(configuration.mobs().all(), configuration.macros().macros())
+                .whenComplete((result, error) -> {
+                    if (error != null) {
+                        getLogger().log(Level.SEVERE, "Compiling behaviours failed", error);
+                        applied.completeExceptionally(error);
+                        return;
+                    }
+                    getServer().getScheduler().runTask(this, () -> {
+                        behaviours = result;
+                        coordinator.rebind(result);
+                        dispatcher.register(this, result.usedTriggers());
+                        configuration.mobs().all().stream()
+                                .filter(mob -> !mob.migrationNotes().isEmpty())
+                                .forEach(mob -> getLogger()
+                                        .warning("Mob %s was migrated from the old format: %s"
+                                                .formatted(mob.id(), mob.migrationNotes())));
+                        applied.complete(result);
+                    });
+                });
         return applied;
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(
+            @NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) return false;
         String mob = args.length > 1 ? args[1] : null;
         switch (args[0]) {
@@ -156,9 +185,16 @@ public final class BloodNight extends JavaPlugin {
         configuration.mobs();
         configuration.items();
         configuration.macros();
-        configuration.problems().keySet().forEach(file -> sender.sendMessage("%s could not be read, see the console".formatted(file)));
-        recompile().thenAccept(result -> sender.sendMessage("Compiled %d mobs (%d from cache), %d with problems".formatted(
-                result.compiled().size(), result.fromCache(), result.problems().size())));
+        configuration
+                .problems()
+                .keySet()
+                .forEach(file -> sender.sendMessage("%s could not be read, see the console".formatted(file)));
+        recompile()
+                .thenAccept(result -> sender.sendMessage("Compiled %d mobs (%d from cache), %d with problems"
+                        .formatted(
+                                result.compiled().size(),
+                                result.fromCache(),
+                                result.problems().size())));
     }
 
     private void source(CommandSender sender, String mob) {
@@ -166,23 +202,33 @@ public final class BloodNight extends JavaPlugin {
             sender.sendMessage("Usage: /bloodnight source <mob>");
             return;
         }
-        behaviours.of(mob).ifPresentOrElse(compiled -> {
-            try {
-                Path file = getDataFolder().toPath().resolve("debug").resolve(mob + ".java");
-                Files.createDirectories(file.getParent());
-                Files.writeString(file, compiled.source());
-                sender.sendMessage("Source of %s written to %s".formatted(mob, file));
-            } catch (IOException e) {
-                sender.sendMessage("Could not write source: " + e.getMessage());
-            }
-        }, () -> sender.sendMessage("Mob %s has no compiled behaviour".formatted(mob)));
+        behaviours
+                .of(mob)
+                .ifPresentOrElse(
+                        compiled -> {
+                            try {
+                                Path file = getDataFolder()
+                                        .toPath()
+                                        .resolve("debug")
+                                        .resolve(mob + ".java");
+                                Files.createDirectories(file.getParent());
+                                Files.writeString(file, compiled.source());
+                                sender.sendMessage("Source of %s written to %s".formatted(mob, file));
+                            } catch (IOException e) {
+                                sender.sendMessage("Could not write source: " + e.getMessage());
+                            }
+                        },
+                        () -> sender.sendMessage("Mob %s has no compiled behaviour".formatted(mob)));
     }
 
     private void export(CommandSender sender) {
         try {
             Path directory = getDataFolder().toPath().resolve("debug");
             Files.createDirectories(directory);
-            Files.writeString(directory.resolve("payload.json"), EditorPayload.of(configuration, behaviours, catalog.version()).asJson());
+            Files.writeString(
+                    directory.resolve("payload.json"),
+                    EditorPayload.of(configuration, behaviours, catalog.version())
+                            .asJson());
             Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(catalog));
             sender.sendMessage("Editor payload and catalog written to " + directory);
         } catch (IOException e) {
@@ -192,7 +238,8 @@ public final class BloodNight extends JavaPlugin {
 
     private void problems(CommandSender sender, String mob) {
         if (mob == null) {
-            sender.sendMessage("Mobs with problems: " + String.join(", ", behaviours.problems().keySet()));
+            sender.sendMessage("Mobs with problems: "
+                    + String.join(", ", behaviours.problems().keySet()));
             return;
         }
         List<GraphProblem> problems = behaviours.problems().getOrDefault(mob, List.of());
@@ -206,14 +253,18 @@ public final class BloodNight extends JavaPlugin {
             sender.sendMessage("Unknown mob " + mob);
             return;
         }
-        Location location = sender instanceof Player player ? player.getLocation() : getServer().getWorlds().getFirst().getSpawnLocation();
-        Entity entity = location.getWorld().spawnEntity(location, definition.attributes().entityType());
+        Location location = sender instanceof Player player
+                ? player.getLocation()
+                : getServer().getWorlds().getFirst().getSpawnLocation();
+        Entity entity = location.getWorld()
+                .spawnEntity(location, definition.attributes().entityType());
         if (!(entity instanceof LivingEntity living)) {
             entity.remove();
             sender.sendMessage("Mob %s is not a living entity type".formatted(mob));
             return;
         }
         coordinator.register(living, definition);
-        sender.sendMessage("Spawned %s at %d %d %d".formatted(mob, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+        sender.sendMessage("Spawned %s at %d %d %d"
+                .formatted(mob, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
     }
 }

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.graph.definition.PortType;
@@ -12,8 +17,7 @@ import java.util.Collection;
  * are derived, which keeps the palette of an entity to its useful properties.
  */
 public final class BukkitRules {
-    private BukkitRules() {
-    }
+    private BukkitRules() {}
 
     /**
      * @return the rules, without descriptions
@@ -39,7 +43,8 @@ public final class BukkitRules {
         if (!(type instanceof PortType.Concrete concrete)) return false;
         Class<?> raw = concrete.raw();
         if (Collection.class.isAssignableFrom(raw)) {
-            return concrete.arguments().size() == 1 && accepted(concrete.arguments().getFirst());
+            return concrete.arguments().size() == 1
+                    && accepted(concrete.arguments().getFirst());
         }
         if (!concrete.arguments().isEmpty()) return false;
         if (raw.isPrimitive() || raw == String.class || raw.isEnum()) return true;

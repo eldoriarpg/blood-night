@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.payload;
 
 import de.eldoria.graph.compiler.MacroBoundary;
@@ -33,8 +38,8 @@ public final class CatalogGenerator {
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
             .enable(SerializationFeature.INDENT_OUTPUT)
             .build();
-    private static final List<PortType> SCALARS = List.of(PortType.of(boolean.class), PortType.of(int.class),
-            PortType.of(double.class), PortType.of(String.class));
+    private static final List<PortType> SCALARS = List.of(
+            PortType.of(boolean.class), PortType.of(int.class), PortType.of(double.class), PortType.of(String.class));
 
     private final GraphPlatform platform;
     private final TypeMapping types;
@@ -73,14 +78,25 @@ public final class CatalogGenerator {
     public static Catalog withDescriptions(Catalog catalog, Catalog source) {
         Map<String, NodeType> known = new TreeMap<>();
         source.nodes().forEach(node -> known.put(node.id(), node));
-        List<NodeType> nodes = catalog.nodes().stream().map(node -> {
-            NodeType other = known.get(node.id());
-            if (other == null) return node;
-            return new NodeType(node.id(), node.kind(), node.category(), node.name(),
-                    node.description() == null || node.description().isEmpty() ? other.description() : node.description(),
-                    node.macroOnly(), describe(node.inputs(), other.inputs()), describe(node.outputs(), other.outputs()),
-                    node.executions(), node.config());
-        }).toList();
+        List<NodeType> nodes = catalog.nodes().stream()
+                .map(node -> {
+                    NodeType other = known.get(node.id());
+                    if (other == null) return node;
+                    return new NodeType(
+                            node.id(),
+                            node.kind(),
+                            node.category(),
+                            node.name(),
+                            node.description() == null || node.description().isEmpty()
+                                    ? other.description()
+                                    : node.description(),
+                            node.macroOnly(),
+                            describe(node.inputs(), other.inputs()),
+                            describe(node.outputs(), other.outputs()),
+                            node.executions(),
+                            node.config());
+                })
+                .toList();
         Catalog unversioned = new Catalog(catalog.format(), "", nodes, catalog.types(), catalog.selectable());
         return new Catalog(catalog.format(), hash(write(unversioned)), nodes, catalog.types(), catalog.selectable());
     }
@@ -89,8 +105,17 @@ public final class CatalogGenerator {
         if (ports == null) return null;
         Map<String, String> texts = new TreeMap<>();
         if (source != null) source.forEach(port -> texts.put(port.id(), port.description()));
-        return ports.stream().map(port -> port.description() != null && !port.description().isEmpty() ? port
-                : new PortInfo(port.id(), port.name(), texts.getOrDefault(port.id(), port.description()), port.type(), port.optional(), port.literal())).toList();
+        return ports.stream()
+                .map(port -> port.description() != null && !port.description().isEmpty()
+                        ? port
+                        : new PortInfo(
+                                port.id(),
+                                port.name(),
+                                texts.getOrDefault(port.id(), port.description()),
+                                port.type(),
+                                port.optional(),
+                                port.literal()))
+                .toList();
     }
 
     /**
@@ -119,9 +144,14 @@ public final class CatalogGenerator {
                     .filter(other -> other != type && other.accepts(type))
                     .map(PortType::id)
                     .toList();
-            table.add(new TypeInfo(type.id(), types.name(type), type.raw().getName(),
+            table.add(new TypeInfo(
+                    type.id(),
+                    types.name(type),
+                    type.raw().getName(),
                     type.arguments().stream().map(PortType::id).toList(),
-                    types.codec(type).isPresent(), types.enumValues(type), assignable));
+                    types.codec(type).isPresent(),
+                    types.enumValues(type),
+                    assignable));
         }
         Catalog unversioned = new Catalog(Catalog.FORMAT, "", nodes, table, selectable);
         return new Catalog(Catalog.FORMAT, hash(write(unversioned)), nodes, table, selectable);
@@ -129,17 +159,26 @@ public final class CatalogGenerator {
 
     private NodeType node(NodeDefinition definition, boolean macroOnly) {
         NodeDescriptor descriptor = definition.descriptor();
-        return new NodeType(descriptor.id(), descriptor.kind().name().toLowerCase(), descriptor.category(), descriptor.name(),
-                descriptor.description(), macroOnly,
+        return new NodeType(
+                descriptor.id(),
+                descriptor.kind().name().toLowerCase(),
+                descriptor.category(),
+                descriptor.name(),
+                descriptor.description(),
+                macroOnly,
                 descriptor.inputs().stream().map(port -> port(port, true)).toList(),
                 descriptor.outputs().stream().map(port -> port(port, false)).toList(),
-                descriptor.executions().stream().map(CatalogGenerator::execution).toList(),
+                descriptor.executions().stream()
+                        .map(CatalogGenerator::execution)
+                        .toList(),
                 descriptor.config().stream().map(this::config).toList());
     }
 
     private PortInfo port(Port port, boolean input) {
-        boolean literal = input && (types.codec(port.type()).isPresent() || SCALARS.stream().anyMatch(port.type()::accepts));
-        return new PortInfo(port.id(), port.name(), port.description(), ref(port.type()), input && port.optional(), literal);
+        boolean literal = input
+                && (types.codec(port.type()).isPresent() || SCALARS.stream().anyMatch(port.type()::accepts));
+        return new PortInfo(
+                port.id(), port.name(), port.description(), ref(port.type()), input && port.optional(), literal);
     }
 
     private static ExecutionInfo execution(ExecutionPort port) {
@@ -153,8 +192,13 @@ public final class CatalogGenerator {
     private TypeRef ref(PortType type) {
         return switch (type) {
             case PortType.Variable variable -> new TypeRef(null, variable.name(), null, List.of());
-            case PortType.Concrete generic when generic.hasVariables() ->
-                    new TypeRef(null, null, generic.raw().getName(), generic.arguments().stream().map(this::ref).toList());
+            case PortType.Concrete generic
+            when generic.hasVariables() ->
+                new TypeRef(
+                        null,
+                        null,
+                        generic.raw().getName(),
+                        generic.arguments().stream().map(this::ref).toList());
             case PortType.Concrete plain -> {
                 register(plain);
                 yield new TypeRef(plain.id(), null, null, List.of());
@@ -169,7 +213,9 @@ public final class CatalogGenerator {
 
     private static String hash(String json) {
         try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(json.getBytes(StandardCharsets.UTF_8))).substring(0, 16);
+            return HexFormat.of()
+                    .formatHex(MessageDigest.getInstance("SHA-256").digest(json.getBytes(StandardCharsets.UTF_8)))
+                    .substring(0, 16);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is always available", e);
         }

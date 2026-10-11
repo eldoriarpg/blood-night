@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.Mobs;
@@ -42,14 +47,37 @@ class EditorPayloadTest {
                 .node("print", NodeInstance.of("debug.print").literal("value", IntNode.valueOf(5)))
                 .build();
         CustomMob mob = Mobs.zombie("test", behaviour);
-        EditorPayload payload = new EditorPayload("abc", Map.of("test", mob), List.of(), Map.of(), Behaviours.empty().problems(),
-                Map.of(), Map.of("items.yml", "broken"));
+        EditorPayload payload = new EditorPayload(
+                "abc",
+                Map.of("test", mob),
+                List.of(),
+                Map.of(),
+                Behaviours.empty().problems(),
+                Map.of(),
+                Map.of("items.yml", "broken"));
 
         JsonNode json = GraphJson.mapper().readTree(payload.asJson());
 
         assertEquals("abc", json.path("catalog").asString());
-        assertEquals("mob.tick", json.path("mobs").path("test").path("behaviour").path("nodes").path("tick").path("type").asString());
-        assertEquals(5, json.path("mobs").path("test").path("behaviour").path("nodes").path("print").path("literals").path("value").asInt());
+        assertEquals(
+                "mob.tick",
+                json.path("mobs")
+                        .path("test")
+                        .path("behaviour")
+                        .path("nodes")
+                        .path("tick")
+                        .path("type")
+                        .asString());
+        assertEquals(
+                5,
+                json.path("mobs")
+                        .path("test")
+                        .path("behaviour")
+                        .path("nodes")
+                        .path("print")
+                        .path("literals")
+                        .path("value")
+                        .asInt());
         assertEquals("broken", json.path("configProblems").path("items.yml").asString());
         assertTrue(json.path("mobs").path("test").path("migrationNotes").isMissingNode());
     }
@@ -61,10 +89,16 @@ class EditorPayloadTest {
 
     @Test
     void theRuntimeCatalogKeepsTheBundledDescriptions() {
-        Catalog catalog = RuntimeCatalog.create(BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader())));
+        Catalog catalog = RuntimeCatalog.create(
+                BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader())));
 
-        NodeType living = catalog.nodes().stream().filter(node -> node.id().equals("living_entity.get")).findFirst().orElseThrow();
-        assertTrue(living.outputs().stream().anyMatch(port -> port.id().equals("absorption_amount") && !port.description().isEmpty()));
+        NodeType living = catalog.nodes().stream()
+                .filter(node -> node.id().equals("living_entity.get"))
+                .findFirst()
+                .orElseThrow();
+        assertTrue(living.outputs().stream()
+                .anyMatch(port -> port.id().equals("absorption_amount")
+                        && !port.description().isEmpty()));
         assertEquals(16, catalog.version().length());
     }
 }

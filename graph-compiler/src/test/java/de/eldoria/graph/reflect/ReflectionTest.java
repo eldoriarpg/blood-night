@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.reflect;
 
 import com.palantir.javapoet.ClassName;
@@ -23,10 +28,10 @@ import de.eldoria.graph.toy.ToyPosition;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.node.IntNode;
 
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReflectionTest {
-    private static final ReflectionRules RULES = ReflectionRules.builder().excludeMethods("getHandlers").build();
+    private static final ReflectionRules RULES =
+            ReflectionRules.builder().excludeMethods("getHandlers").build();
 
     private static List<String> ids(List<Port> ports) {
         return ports.stream().map(Port::id).toList();
@@ -48,24 +54,35 @@ class ReflectionTest {
 
     @Test
     void gettersFollowTheRules() {
-        assertEquals(List.of("friends", "name", "nickname", "online", "score", "url_string"),
-                Properties.getters(ToyPlayer.class, RULES).stream().map(Properties.Getter::id).toList());
-        assertTrue(Properties.getters(ToyPlayer.class, ReflectionRules.builder().excludeDeprecated(false).build())
-                .stream().anyMatch(getter -> getter.id().equals("level")));
+        assertEquals(
+                List.of("friends", "name", "nickname", "online", "score", "url_string"),
+                Properties.getters(ToyPlayer.class, RULES).stream()
+                        .map(Properties.Getter::id)
+                        .toList());
+        assertTrue(
+                Properties.getters(
+                                ToyPlayer.class,
+                                ReflectionRules.builder()
+                                        .excludeDeprecated(false)
+                                        .build())
+                        .stream()
+                        .anyMatch(getter -> getter.id().equals("level")));
     }
 
     @Test
     void settersDisambiguateOverloads() {
         List<Properties.Setter> setters = Properties.setters(ToyPlayer.class, RULES);
 
-        assertEquals(List.of("set_nickname", "set_nickname_string", "set_online", "set_score"),
+        assertEquals(
+                List.of("set_nickname", "set_nickname_string", "set_online", "set_score"),
                 setters.stream().map(Properties.Setter::id).toList());
         assertEquals(PortType.of(CharSequence.class), setters.getFirst().type());
     }
 
     @Test
     void recordComponentsAreGetters() {
-        NodeDefinition get = ReflectedType.of(ToyPosition.class, "position").build(RULES).getFirst();
+        NodeDefinition get =
+                ReflectedType.of(ToyPosition.class, "position").build(RULES).getFirst();
 
         assertEquals(List.of("x", "y"), ids(get.descriptor().outputs()));
     }
@@ -77,29 +94,45 @@ class ReflectionTest {
 
     @Test
     void fluentAccessorsMatchFieldsOrPairs() {
-        List<NodeDefinition> nodes = ReflectedType.of(ToyFluent.class, "fluent").fluent().accessors("computed").build(RULES);
+        List<NodeDefinition> nodes = ReflectedType.of(ToyFluent.class, "fluent")
+                .fluent()
+                .accessors("computed")
+                .build(RULES);
 
-        assertEquals(List.of("computed", "label", "level", "name"), ids(nodes.getFirst().descriptor().outputs()));
-        assertEquals(List.of("fluent.get", "fluent.set_label", "fluent.set_name"), nodes.stream().map(NodeDefinition::id).toList());
+        assertEquals(
+                List.of("computed", "label", "level", "name"),
+                ids(nodes.getFirst().descriptor().outputs()));
+        assertEquals(
+                List.of("fluent.get", "fluent.set_label", "fluent.set_name"),
+                nodes.stream().map(NodeDefinition::id).toList());
     }
 
     @Test
     void fluentAccessorsOnInterfacesNeedPairs() {
-        List<NodeDefinition> nodes = ReflectedType.of(ToyFluentApi.class, "api").fluent().build(RULES);
-        List<NodeDefinition> manual = ReflectedType.of(ToyFluentApi.class, "api").fluent().accessors("count").build(RULES);
+        List<NodeDefinition> nodes =
+                ReflectedType.of(ToyFluentApi.class, "api").fluent().build(RULES);
+        List<NodeDefinition> manual = ReflectedType.of(ToyFluentApi.class, "api")
+                .fluent()
+                .accessors("count")
+                .build(RULES);
 
         assertEquals(List.of("title"), ids(nodes.getFirst().descriptor().outputs()));
-        assertEquals(List.of("count", "title"), ids(manual.getFirst().descriptor().outputs()));
-        assertEquals(List.of("api.get", "api.set_title"), nodes.stream().map(NodeDefinition::id).toList());
+        assertEquals(
+                List.of("count", "title"), ids(manual.getFirst().descriptor().outputs()));
+        assertEquals(
+                List.of("api.get", "api.set_title"),
+                nodes.stream().map(NodeDefinition::id).toList());
     }
 
     @Test
     void typeFilterAppliesToPorts() {
         ReflectionRules noLists = ReflectionRules.builder()
-                .acceptTypes(type -> !(type instanceof PortType.Concrete concrete && List.class.isAssignableFrom(concrete.raw())))
+                .acceptTypes(type ->
+                        !(type instanceof PortType.Concrete concrete && List.class.isAssignableFrom(concrete.raw())))
                 .build();
 
-        assertFalse(Properties.getters(ToyPlayer.class, noLists).stream().anyMatch(getter -> getter.id().equals("friends")));
+        assertFalse(Properties.getters(ToyPlayer.class, noLists).stream()
+                .anyMatch(getter -> getter.id().equals("friends")));
     }
 
     @Test
@@ -120,20 +153,28 @@ class ReflectionTest {
                 .rename("score", "Points")
                 .build(RULES);
 
-        assertEquals(List.of("toy.player.get", "toy.player.set_online", "toy.player.set_score"), nodes.stream().map(NodeDefinition::id).toList());
+        assertEquals(
+                List.of("toy.player.get", "toy.player.set_online", "toy.player.set_score"),
+                nodes.stream().map(NodeDefinition::id).toList());
         NodeDefinition get = nodes.getFirst();
         assertEquals(NodeKind.PURE, get.descriptor().kind());
         assertEquals("Get Player", get.descriptor().name());
         assertEquals("toy", get.descriptor().category());
         assertEquals(List.of("target"), ids(get.descriptor().inputs()));
-        assertEquals(List.of("friends", "name", "online", "score"), ids(get.descriptor().outputs()));
+        assertEquals(
+                List.of("friends", "name", "online", "score"),
+                ids(get.descriptor().outputs()));
         assertEquals("Points", get.descriptor().output("score").orElseThrow().name());
-        assertEquals(PortType.parameterized(List.class, PortType.of(String.class)), get.descriptor().output("friends").orElseThrow().type());
+        assertEquals(
+                PortType.parameterized(List.class, PortType.of(String.class)),
+                get.descriptor().output("friends").orElseThrow().type());
 
         NodeDefinition setScore = node(nodes, "toy.player.set_score");
         assertEquals(NodeKind.ACTION, setScore.descriptor().kind());
         assertEquals(List.of("target", "value"), ids(setScore.descriptor().inputs()));
-        assertEquals(PortType.of(int.class), setScore.descriptor().input("value").orElseThrow().type());
+        assertEquals(
+                PortType.of(int.class),
+                setScore.descriptor().input("value").orElseThrow().type());
         assertEquals("Set Player Points", setScore.descriptor().name());
     }
 
@@ -154,24 +195,40 @@ class ReflectionTest {
                 };
             }
         };
-        ReflectionRules documented = ReflectionRules.builder().documentation(docs).build();
+        ReflectionRules documented =
+                ReflectionRules.builder().documentation(docs).build();
 
         List<NodeDefinition> nodes = ReflectedType.of(ToyPlayer.class, "player").build(documented);
-        EntryDefinition entry = ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy").parameterNames("event").build(documented);
+        EntryDefinition entry = ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy")
+                .parameterNames("event")
+                .build(documented);
 
-        assertEquals("Points scored so far.", nodes.getFirst().descriptor().output("score").orElseThrow().description());
-        assertEquals("A player of the toy game.", nodes.getFirst().descriptor().input("target").orElseThrow().description());
-        assertEquals("Replaces the score.", node(nodes, "player.set_score").descriptor().description());
+        assertEquals(
+                "Points scored so far.",
+                nodes.getFirst().descriptor().output("score").orElseThrow().description());
+        assertEquals(
+                "A player of the toy game.",
+                nodes.getFirst().descriptor().input("target").orElseThrow().description());
+        assertEquals(
+                "Replaces the score.",
+                node(nodes, "player.set_score").descriptor().description());
         assertEquals("", entry.descriptor().output("points").orElseThrow().description());
     }
 
     @Test
     void entryOutputsAreParameterAndGetters() {
-        EntryDefinition derived = ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy").build(RULES);
-        EntryDefinition named = ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy").parameterNames("event").exclude("cancelled").build(RULES);
+        EntryDefinition derived =
+                ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy").build(RULES);
+        EntryDefinition named = ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy")
+                .parameterNames("event")
+                .exclude("cancelled")
+                .build(RULES);
 
-        assertEquals(List.of("toy_event", "cancelled", "player", "points"), ids(derived.descriptor().outputs()));
-        assertEquals(List.of("event", "player", "points"), ids(named.descriptor().outputs()));
+        assertEquals(
+                List.of("toy_event", "cancelled", "player", "points"),
+                ids(derived.descriptor().outputs()));
+        assertEquals(
+                List.of("event", "player", "points"), ids(named.descriptor().outputs()));
         assertEquals("event", named.parameters().getFirst().name());
         assertEquals(NodeKind.ENTRY, named.descriptor().kind());
         assertEquals("Toy", named.descriptor().name());
@@ -179,15 +236,21 @@ class ReflectionTest {
 
     @Test
     void ambiguousOrMissingHostMethodsAreRejected() {
-        assertThrows(IllegalArgumentException.class, () -> ReflectedEntry.of(ToyHost.class, "onMissing", "event.missing").build(RULES));
-        assertThrows(IllegalArgumentException.class, () -> ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy").parameterNames("a", "b").build(RULES));
+        assertThrows(
+                IllegalArgumentException.class, () -> ReflectedEntry.of(ToyHost.class, "onMissing", "event.missing")
+                        .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy")
+                .parameterNames("a", "b")
+                .build(RULES));
     }
 
     private static GraphCompiler<ToyHost> compiler() {
         List<NodeDefinition> nodes = new ArrayList<>(ToyNodes.ALL);
         nodes.addAll(ReflectedType.of(ToyPlayer.class, "player").build(RULES));
         nodes.addAll(ReflectedType.of(ToyEvent.class, "event").getter(false).build(RULES));
-        nodes.add(ReflectedEntry.of(ToyHost.class, "onEvent", "entry.event").parameterNames("event").build(RULES));
+        nodes.add(ReflectedEntry.of(ToyHost.class, "onEvent", "entry.event")
+                .parameterNames("event")
+                .build(RULES));
         GraphPlatform platform = GraphPlatform.builder(ToyHost.class)
                 .context(ToyContext.class)
                 .define(nodes)
@@ -198,7 +261,11 @@ class ReflectionTest {
 
     private static Path codeSource() {
         try {
-            return Path.of(ToyHost.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Path.of(ToyHost.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
@@ -207,21 +274,39 @@ class ReflectionTest {
     @Test
     void reflectedNodesCompileAndRun() throws GraphCompilationException {
         Graph graph = Graph.builder()
-                .node("on_event", NodeInstance.of("entry.event").chain("next", "set_points", "print_name", "print_points", "cancel", "bump"))
+                .node(
+                        "on_event",
+                        NodeInstance.of("entry.event")
+                                .chain("next", "set_points", "print_name", "print_points", "cancel", "bump"))
                 .node("forty_two", NodeInstance.of("value.integer").config("value", IntNode.valueOf(42)))
-                .node("set_points", NodeInstance.of("event.set_points").input("target", "on_event", "event").input("value", "forty_two", "value"))
+                .node(
+                        "set_points",
+                        NodeInstance.of("event.set_points")
+                                .input("target", "on_event", "event")
+                                .input("value", "forty_two", "value"))
                 .node("player", NodeInstance.of("player.get").input("target", "on_event", "player"))
                 .node("print_name", NodeInstance.of("debug.print").input("value", "player", "name"))
                 .node("print_points", NodeInstance.of("debug.print").input("value", "on_event", "points"))
                 .node("online", NodeInstance.of("player.get").input("target", "on_event", "player"))
-                .node("cancel", NodeInstance.of("event.set_cancelled").input("target", "on_event", "event").input("value", "online", "online"))
-                .node("bump", NodeInstance.of("player.set_score").input("target", "on_event", "player").input("value", "on_event", "points"))
+                .node(
+                        "cancel",
+                        NodeInstance.of("event.set_cancelled")
+                                .input("target", "on_event", "event")
+                                .input("value", "online", "online"))
+                .node(
+                        "bump",
+                        NodeInstance.of("player.set_score")
+                                .input("target", "on_event", "player")
+                                .input("value", "on_event", "points"))
                 .build();
         ToyContext context = new ToyContext();
         ToyPlayer player = new ToyPlayer("Lilly", 3);
         ToyEvent event = new ToyEvent(player, 7);
 
-        compiler().compile(graph, ClassName.get("generated.toy", "Reflected")).instantiate(context).onEvent(event);
+        compiler()
+                .compile(graph, ClassName.get("generated.toy", "Reflected"))
+                .instantiate(context)
+                .onEvent(event);
 
         assertEquals(42, event.getPoints());
         assertTrue(event.isCancelled());
@@ -234,16 +319,28 @@ class ReflectionTest {
         Graph graph = Graph.builder()
                 .node("on_event", NodeInstance.of("entry.event"))
                 .node("start", NodeInstance.of("entry.start").chain("next", "cancel"))
-                .node("yes", NodeInstance.of("logic.greater").input("a", "one", "value").input("b", "zero", "value"))
+                .node(
+                        "yes",
+                        NodeInstance.of("logic.greater")
+                                .input("a", "one", "value")
+                                .input("b", "zero", "value"))
                 .node("one", NodeInstance.of("value.number").config("value", IntNode.valueOf(1)))
                 .node("zero", NodeInstance.of("value.number").config("value", IntNode.valueOf(0)))
-                .node("cancel", NodeInstance.of("event.set_cancelled").input("target", "on_event", "event").input("value", "yes", "result"))
+                .node(
+                        "cancel",
+                        NodeInstance.of("event.set_cancelled")
+                                .input("target", "on_event", "event")
+                                .input("value", "yes", "result"))
                 .build();
 
-        GraphCompilationException exception = assertThrows(GraphCompilationException.class,
-                () -> compiler().compile(graph, ClassName.get("generated.toy", "Misplaced")));
+        GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compiler()
+                .compile(graph, ClassName.get("generated.toy", "Misplaced")));
 
-        assertTrue(exception.problems().stream().anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR
-                && "cancel".equals(problem.node()) && "target".equals(problem.port())), exception.getMessage());
+        assertTrue(
+                exception.problems().stream()
+                        .anyMatch(problem -> problem.severity() == GraphProblem.Severity.ERROR
+                                && "cancel".equals(problem.node())
+                                && "target".equals(problem.port())),
+                exception.getMessage());
     }
 }

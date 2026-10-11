@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,5 +18,4 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @param literal     inputs only: a value can be typed in instead of connecting a node
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public record PortInfo(String id, String name, String description, TypeRef type, boolean optional, boolean literal) {
-}
+public record PortInfo(String id, String name, String description, TypeRef type, boolean optional, boolean literal) {}

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.std;
 
 import com.palantir.javapoet.ClassName;
@@ -30,19 +35,23 @@ import java.util.Map;
  */
 final class Harness {
     static final EntryDefinition RUN = new EntryDefinition(
-            NodeDescriptor.builder("test.run", NodeKind.ENTRY).execution("next").build(), "run", List.of(),
+            NodeDescriptor.builder("test.run", NodeKind.ENTRY).execution("next").build(),
+            "run",
+            List.of(),
             (port, ctx) -> {
                 throw new IllegalArgumentException(port);
             });
     static final StatementDefinition RECORD = new StatementDefinition(
-            NodeDescriptor.builder("test.record", NodeKind.ACTION).input("value", Object.class).execution("next").build(),
+            NodeDescriptor.builder("test.record", NodeKind.ACTION)
+                    .input("value", Object.class)
+                    .execution("next")
+                    .build(),
             ctx -> CodeBlock.builder()
                     .addStatement("$L.record($L)", ctx.context(), ctx.input("value"))
                     .add(ctx.chain("next"))
                     .build());
 
-    private Harness() {
-    }
+    private Harness() {}
 
     private static GraphCompiler<StdHost> compiler(List<NodeDefinition> extra) {
         GraphPlatform platform = GraphPlatform.builder(StdHost.class)
@@ -106,7 +115,8 @@ final class Harness {
 
     private static Path codeSource(Class<?> type) {
         try {
-            return Path.of(type.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return Path.of(
+                    type.getProtectionDomain().getCodeSource().getLocation().toURI());
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }

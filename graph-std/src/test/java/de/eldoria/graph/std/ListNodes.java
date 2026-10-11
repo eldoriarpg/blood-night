@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.std;
 
 import com.palantir.javapoet.CodeBlock;
@@ -27,6 +32,5 @@ final class ListNodes {
             (port, ctx) -> CodeBlock.of("$L.toUpperCase()", ctx.input("value")));
     static final List<NodeDefinition> ALL = List.of(SPLIT, UPPER);
 
-    private ListNodes() {
-    }
+    private ListNodes() {}
 }

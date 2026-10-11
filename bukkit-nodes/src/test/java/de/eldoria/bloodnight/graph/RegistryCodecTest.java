@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.graph.definition.PortType;
@@ -41,7 +46,10 @@ class RegistryCodecTest {
 
     @Test
     void valuesAreCheckedWithoutAServer() {
-        assertEquals("minecraft:speed", codec(PotionEffectType.class).read(StringNode.valueOf("speed")).toString());
-        assertThrows(IllegalArgumentException.class, () -> codec(PotionEffectType.class).read(StringNode.valueOf("minecraft:flying_pigs")));
+        assertEquals(
+                "minecraft:speed",
+                codec(PotionEffectType.class).read(StringNode.valueOf("speed")).toString());
+        assertThrows(IllegalArgumentException.class, () -> codec(PotionEffectType.class)
+                .read(StringNode.valueOf("minecraft:flying_pigs")));
     }
 }

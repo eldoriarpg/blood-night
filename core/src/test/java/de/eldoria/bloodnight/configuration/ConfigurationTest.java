@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.Mobs;
@@ -42,7 +47,8 @@ class ConfigurationTest {
     @Test
     void unreadableUserDataIsReportedAndKept() throws IOException {
         Files.writeString(mobs, "mobs:\n  broken: [");
-        Configuration configuration = new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        Configuration configuration =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
 
         assertTrue(configuration.mobs().all().isEmpty());
         assertTrue(configuration.problems().containsKey("mobs.yml"));
@@ -53,7 +59,8 @@ class ConfigurationTest {
     @Test
     void aBrokenFileDoesNotStopOthersFromReloading() throws IOException {
         Path items = plugin.getDataFolder().toPath().resolve("items.yml");
-        Configuration configuration = new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        Configuration configuration =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
         Files.writeString(mobs, "mobs: {kept: {id: kept, extension: {type: NONE}}}");
         Files.writeString(items, "registrations: {}");
         assertEquals(1, configuration.mobs().all().size());
@@ -71,7 +78,8 @@ class ConfigurationTest {
 
     @Test
     void reloadPicksUpTheFixedFileAndNeverResetsABrokenOne() throws IOException {
-        Configuration configuration = new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        Configuration configuration =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
         configuration.mobs().add(Mobs.zombie("kept", Graph.builder().build()));
         Files.writeString(mobs, "mobs: {kept: {id: kept, extension: {type: NONE}}}");
         configuration.reload();

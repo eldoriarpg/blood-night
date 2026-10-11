@@ -1,8 +1,13 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.configuration.elements.world.nightselection;
 
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Curve;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Interval;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.MoonPhase;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Curve;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Phase;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Random;
 

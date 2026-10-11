@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
@@ -5,11 +10,12 @@ import com.palantir.javapoet.JavaFile;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 
-import javax.tools.Diagnostic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.tools.Diagnostic;
 
 /**
  * Turns graphs into loaded classes: expand macros, validate, emit, compile.
@@ -42,7 +48,9 @@ public final class GraphCompiler<T> {
      * @param macros   macros graphs may use, compiled against the same platform
      */
     public GraphCompiler(GraphPlatform platform, Class<T> host, ClassLoader parent, MacroLibrary macros) {
-        if (platform.host() != host) throw new IllegalArgumentException("Platform host is " + platform.host().getName());
+        if (platform.host() != host)
+            throw new IllegalArgumentException(
+                    "Platform host is " + platform.host().getName());
         this.platform = platform;
         this.host = host;
         this.compiler = new RuntimeCompiler(platform.classpath(), parent);
@@ -76,15 +84,21 @@ public final class GraphCompiler<T> {
         GraphEmitter.Emitted emitted = emit(expansion, validated, name);
         try {
             CompilationResult result = compiler.compile(emitted.file());
-            return new CompiledGraph<>(name, emitted.file().toString(), result, host, expansion.locate(validated.warnings()));
+            return new CompiledGraph<>(
+                    name, emitted.file().toString(), result, host, expansion.locate(validated.warnings()));
         } catch (CompilationException e) {
             List<GraphProblem> problems = new ArrayList<>(validated.warnings());
             e.diagnostics().stream()
                     .filter(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR)
                     .forEach(diagnostic -> problems.add(GraphProblem.error(
-                            emitted.sourceMap().nodeAt(diagnostic.getLineNumber()).orElse(null), null,
-                            "Generated code does not compile, line %d: %s".formatted(diagnostic.getLineNumber(), diagnostic.getMessage(Locale.ROOT)))));
-            throw new GraphCompilationException(expansion.locate(problems), emitted.file().toString());
+                            emitted.sourceMap()
+                                    .nodeAt(diagnostic.getLineNumber())
+                                    .orElse(null),
+                            null,
+                            "Generated code does not compile, line %d: %s"
+                                    .formatted(diagnostic.getLineNumber(), diagnostic.getMessage(Locale.ROOT)))));
+            throw new GraphCompilationException(
+                    expansion.locate(problems), emitted.file().toString());
         }
     }
 
@@ -98,20 +112,23 @@ public final class GraphCompiler<T> {
      * @param warnings warnings found when it was compiled
      * @return the loaded class
      */
-    public CompiledGraph<T> load(ClassName name, String source, Map<String, byte[]> bytecode, List<GraphProblem> warnings) {
+    public CompiledGraph<T> load(
+            ClassName name, String source, Map<String, byte[]> bytecode, List<GraphProblem> warnings) {
         CompilationResult result = compiler.load(bytecode, List.of(SourceFile.of(name.reflectionName(), source)));
         return new CompiledGraph<>(name, source, result, host, warnings);
     }
 
     private ValidatedGraph validate(MacroExpander.Expansion expansion) throws GraphCompilationException {
         try {
-            return new GraphValidator(platform, MacroBoundary.passDefinitions(platform.types())).validate(expansion.graph());
+            return new GraphValidator(platform, MacroBoundary.passDefinitions(platform.types()))
+                    .validate(expansion.graph());
         } catch (GraphCompilationException e) {
             throw new GraphCompilationException(expansion.locate(e.problems()), null);
         }
     }
 
-    private GraphEmitter.Emitted emit(MacroExpander.Expansion expansion, ValidatedGraph validated, ClassName name) throws GraphCompilationException {
+    private GraphEmitter.Emitted emit(MacroExpander.Expansion expansion, ValidatedGraph validated, ClassName name)
+            throws GraphCompilationException {
         try {
             return new GraphEmitter(validated).emit(name);
         } catch (GraphCompilationException e) {

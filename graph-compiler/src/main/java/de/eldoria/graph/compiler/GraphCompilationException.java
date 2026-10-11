@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import java.util.List;
@@ -13,7 +18,9 @@ public final class GraphCompilationException extends Exception {
     private final String source;
 
     GraphCompilationException(List<GraphProblem> problems, String source) {
-        super(problems.stream().map(GraphProblem::toString).collect(Collectors.joining("\n", "Graph does not compile:\n", "")));
+        super(problems.stream()
+                .map(GraphProblem::toString)
+                .collect(Collectors.joining("\n", "Graph does not compile:\n", "")));
         this.problems = List.copyOf(problems);
         this.source = source;
     }

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.CodeBlock;
@@ -17,7 +22,8 @@ import java.util.Map;
  * @param entries  ids of entry nodes, in id order
  * @param warnings problems that do not prevent compilation
  */
-record ValidatedGraph(GraphPlatform platform, Map<String, Node> nodes, List<String> entries, List<GraphProblem> warnings) {
+record ValidatedGraph(
+        GraphPlatform platform, Map<String, Node> nodes, List<String> entries, List<GraphProblem> warnings) {
 
     /**
      * One checked node instance.
@@ -31,13 +37,13 @@ record ValidatedGraph(GraphPlatform platform, Map<String, Node> nodes, List<Stri
      * @param literals    code for every input set to a value instead of an edge
      * @param config      literal for every config field, defaults applied
      */
-    record Node(String id,
-                NodeInstance instance,
-                NodeDefinition definition,
-                Map<String, PortType> inputTypes,
-                Map<String, PortType> outputTypes,
-                Map<String, PortType> sourceTypes,
-                Map<String, CodeBlock> literals,
-                Map<String, CodeBlock> config) {
-    }
+    record Node(
+            String id,
+            NodeInstance instance,
+            NodeDefinition definition,
+            Map<String, PortType> inputTypes,
+            Map<String, PortType> outputTypes,
+            Map<String, PortType> sourceTypes,
+            Map<String, CodeBlock> literals,
+            Map<String, CodeBlock> config) {}
 }
