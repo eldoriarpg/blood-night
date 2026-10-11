@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.catalog;
 
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.junit.jupiter.api.AfterAll;
@@ -47,6 +49,12 @@ class JavadocDocumentationTest {
     @Test
     void inheritedMethodsUseTheOverriddenJavadoc() throws NoSuchMethodException {
         assertTrue(docs.of(LivingEntity.class.getMethod("getLocation")).isPresent());
+    }
+
+    @Test
+    void constructorsAreDescribed() throws NoSuchMethodException {
+        assertTrue(docs.of(Location.class.getConstructor(World.class, double.class, double.class, double.class))
+                .isPresent());
     }
 
     @Test

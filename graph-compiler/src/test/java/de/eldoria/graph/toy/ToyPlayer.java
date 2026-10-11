@@ -23,6 +23,10 @@ public class ToyPlayer {
         this.score = score;
     }
 
+    public static ToyPlayer load(String name) throws IOException {
+        throw new IOException("unreachable " + name);
+    }
+
     public static ToyPlayer getDefault() {
         return new ToyPlayer("default", 0);
     }

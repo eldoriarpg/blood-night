@@ -8,6 +8,8 @@ package de.eldoria.bloodnight.catalog;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
@@ -15,6 +17,7 @@ import de.eldoria.graph.reflect.Documentation;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -91,6 +94,17 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
         return Optional.empty();
     }
 
+    @Override
+    public Optional<String> of(Executable executable) {
+        if (executable instanceof Method method) return of(method);
+        return declaration(executable.getDeclaringClass()).flatMap(declaration -> declaration.getConstructors().stream()
+                .filter(candidate -> matches(candidate, executable))
+                .findFirst()
+                .flatMap(ConstructorDeclaration::getJavadocComment)
+                .map(JavadocDocumentation::summary)
+                .filter(text -> !text.isEmpty()));
+    }
+
     private Optional<String> own(Class<?> type, Method method) {
         return declaration(type).flatMap(declaration -> declaration.getMethodsByName(method.getName()).stream()
                 .filter(candidate -> matches(candidate, method))
@@ -100,7 +114,7 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
                 .filter(text -> !text.isEmpty()));
     }
 
-    private static boolean matches(MethodDeclaration declaration, Method method) {
+    private static boolean matches(CallableDeclaration<?> declaration, Executable method) {
         if (declaration.getParameters().size() != method.getParameterCount()) return false;
         Class<?>[] types = method.getParameterTypes();
         for (int i = 0; i < types.length; i++) {

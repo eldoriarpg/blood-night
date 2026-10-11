@@ -64,6 +64,8 @@ public final class ReflectedType {
         private boolean getter = true;
         private boolean setters = true;
         private boolean fluent;
+        private boolean recordConstructor = true;
+        private final List<Creations.Creation> creations = new ArrayList<>();
 
         private Builder(Class<?> type, String prefix) {
             this.type = Objects.requireNonNull(type, "type");
@@ -122,6 +124,37 @@ public final class ReflectedType {
         }
 
         /**
+         * Exposes a constructor as node {@code <prefix>.<name>}, with the parameters named for the editor.
+         *
+         * @param name   node id suffix, e.g. {@code create}
+         * @param params the constructor's parameters in order; their types select the overload
+         */
+        public Builder constructor(String name, Param... params) {
+            creations.add(new Creations.Creation(name, null, List.of(params)));
+            return this;
+        }
+
+        /**
+         * Exposes a public static method of the class as node {@code <prefix>.<name>}.
+         *
+         * @param name   node id suffix
+         * @param method the method name
+         * @param params the method's parameters in order; their types select the overload
+         */
+        public Builder factory(String name, String method, Param... params) {
+            creations.add(new Creations.Creation(name, method, List.of(params)));
+            return this;
+        }
+
+        /**
+         * Whether a record gets {@code <prefix>.create} from its canonical constructor. Defaults to true.
+         */
+        public Builder recordConstructor(boolean recordConstructor) {
+            this.recordConstructor = recordConstructor;
+            return this;
+        }
+
+        /**
          * Whether to derive the get node. Defaults to true.
          */
         public Builder getter(boolean getter) {
@@ -157,6 +190,14 @@ public final class ReflectedType {
                         .map(property -> setNode(target, property, rules.documentation()))
                         .forEach(nodes::add);
             }
+            List<Creations.Creation> all = new ArrayList<>(creations);
+            if (type.isRecord()
+                    && recordConstructor
+                    && all.stream().noneMatch(creation -> creation.name().equals("create"))) {
+                all.add(Creations.record(type));
+            }
+            all.forEach(creation ->
+                    nodes.add(Creations.node(type, prefix, category, name, creation, rules.documentation())));
             return nodes;
         }
 

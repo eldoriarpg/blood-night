@@ -26,7 +26,9 @@ import de.eldoria.graph.toy.ToyNodes;
 import de.eldoria.graph.toy.ToyPlayer;
 import de.eldoria.graph.toy.ToyPosition;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -122,6 +124,53 @@ class ReflectionTest {
         assertEquals(
                 List.of("api.get", "api.set_title"),
                 nodes.stream().map(NodeDefinition::id).toList());
+    }
+
+    @Test
+    void recordsCanBeCreatedFromTheirComponents() {
+        NodeDefinition create =
+                node(ReflectedType.of(ToyPosition.class, "position").build(RULES), "position.create");
+
+        assertEquals(List.of("x", "y"), ids(create.descriptor().inputs()));
+        assertEquals(
+                PortType.of(ToyPosition.class),
+                create.descriptor().output("result").orElseThrow().type());
+        assertTrue(ReflectedType.of(ToyPosition.class, "position").recordConstructor(false).build(RULES).stream()
+                .noneMatch(node -> node.id().equals("position.create")));
+    }
+
+    @Test
+    void constructorsAndFactoriesAreOptIn() {
+        List<NodeDefinition> plain = ReflectedType.of(ToyPlayer.class, "player").build(RULES);
+        List<NodeDefinition> creating = ReflectedType.of(ToyPlayer.class, "player")
+                .constructor("create", Param.of("name", String.class), Param.of("score", int.class))
+                .factory("fallback", "getDefault")
+                .build(RULES);
+
+        assertTrue(plain.stream().noneMatch(node -> node.id().equals("player.create")));
+        assertEquals(
+                List.of("name", "score"),
+                ids(node(creating, "player.create").descriptor().inputs()));
+        assertTrue(node(creating, "player.fallback").descriptor().inputs().isEmpty());
+        assertEquals(
+                "Create ToyPlayer", node(creating, "player.create").descriptor().name());
+    }
+
+    @Test
+    void unusableConstructorsAndFactoriesAreRejected() {
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .constructor("create", Param.of("name", String.class))
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyFluentApi.class, "api")
+                .constructor("create")
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .factory("name", "getName")
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> ReflectedType.of(ToyPlayer.class, "player")
+                .factory("load", "load", Param.of("name", String.class))
+                .build(RULES));
+        assertThrows(IllegalArgumentException.class, () -> Param.of("Not An Id", int.class));
     }
 
     @Test
@@ -246,7 +295,11 @@ class ReflectionTest {
 
     private static GraphCompiler<ToyHost> compiler() {
         List<NodeDefinition> nodes = new ArrayList<>(ToyNodes.ALL);
-        nodes.addAll(ReflectedType.of(ToyPlayer.class, "player").build(RULES));
+        nodes.addAll(ReflectedType.of(ToyPlayer.class, "player")
+                .constructor("create", Param.of("name", String.class), Param.of("score", int.class))
+                .factory("fallback", "getDefault")
+                .build(RULES));
+        nodes.addAll(ReflectedType.of(ToyPosition.class, "position").build(RULES));
         nodes.addAll(ReflectedType.of(ToyEvent.class, "event").getter(false).build(RULES));
         nodes.add(ReflectedEntry.of(ToyHost.class, "onEvent", "entry.event")
                 .parameterNames("event")
@@ -312,6 +365,37 @@ class ReflectionTest {
         assertTrue(event.isCancelled());
         assertEquals(List.of("Lilly", "42"), context.printed());
         assertEquals(42, player.getScore());
+    }
+
+    @Test
+    void createdObjectsCanBeUsed() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("start", NodeInstance.of("entry.start").chain("next", "name", "position", "fallback"))
+                .node(
+                        "created",
+                        NodeInstance.of("player.create")
+                                .literal("name", StringNode.valueOf("Lilly"))
+                                .literal("score", IntNode.valueOf(3)))
+                .node("parts", NodeInstance.of("player.get").input("target", "created", "result"))
+                .node("name", NodeInstance.of("debug.print").input("value", "parts", "name"))
+                .node(
+                        "spot",
+                        NodeInstance.of("position.create")
+                                .literal("x", IntNode.valueOf(1))
+                                .literal("y", DoubleNode.valueOf(2.5)))
+                .node("position", NodeInstance.of("debug.print").input("value", "spot", "result"))
+                .node("default", NodeInstance.of("player.fallback"))
+                .node("default_parts", NodeInstance.of("player.get").input("target", "default", "result"))
+                .node("fallback", NodeInstance.of("debug.print").input("value", "default_parts", "name"))
+                .build();
+        ToyContext context = new ToyContext();
+
+        compiler()
+                .compile(graph, ClassName.get("generated.toy", "Creating"))
+                .instantiate(context)
+                .onStart();
+
+        assertEquals(List.of("Lilly", "ToyPosition[x=1.0, y=2.5]", "default"), context.printed());
     }
 
     @Test

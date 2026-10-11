@@ -5,6 +5,7 @@
  */
 package de.eldoria.graph.reflect;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -27,6 +28,14 @@ public interface Documentation {
             return Optional.empty();
         }
     };
+
+    /**
+     * @param executable a constructor or method
+     * @return a short description, if documented; constructors have none unless an implementation supports them
+     */
+    default Optional<String> of(Executable executable) {
+        return executable instanceof Method method ? of(method) : Optional.empty();
+    }
 
     /**
      * @param type a class

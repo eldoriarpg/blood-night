@@ -61,17 +61,6 @@ public final class BukkitNodes {
                     ctx.connected("yaw") ? ctx.input("yaw") : CodeBlock.of("0"),
                     ctx.connected("pitch") ? ctx.input("pitch") : CodeBlock.of("0")));
 
-    public static final ExpressionDefinition CREATE_VECTOR = new ExpressionDefinition(
-            NodeDescriptor.builder("vector.create", NodeKind.PURE)
-                    .description("A vector from its components")
-                    .input("x", double.class)
-                    .input("y", double.class)
-                    .input("z", double.class)
-                    .output(RESULT, Vector.class)
-                    .build(),
-            (port, ctx) ->
-                    CodeBlock.of("new $T($L, $L, $L)", Vector.class, ctx.input("x"), ctx.input("y"), ctx.input("z")));
-
     public static final ExpressionDefinition NORMALIZE = new ExpressionDefinition(
             NodeDescriptor.builder("vector.normalize", NodeKind.PURE)
                     .description("A vector of length 1 pointing the same way")
@@ -166,7 +155,6 @@ public final class BukkitNodes {
     public static List<NodeDefinition> all() {
         return List.of(
                 CREATE_LOCATION,
-                CREATE_VECTOR,
                 NORMALIZE,
                 DIRECTION,
                 DISTANCE,

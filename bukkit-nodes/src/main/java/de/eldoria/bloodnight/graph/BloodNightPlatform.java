@@ -11,6 +11,7 @@ import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.reflect.Documentation;
 import de.eldoria.graph.reflect.Names;
+import de.eldoria.graph.reflect.Param;
 import de.eldoria.graph.reflect.ReflectedEntry;
 import de.eldoria.graph.reflect.ReflectedType;
 import de.eldoria.graph.reflect.ReflectionRules;
@@ -90,7 +91,10 @@ public final class BloodNightPlatform {
         nodes.addAll(ReflectedType.of(Player.class, "player").build(rules));
         nodes.addAll(ReflectedType.of(Projectile.class, "projectile").build(rules));
         nodes.addAll(ReflectedType.of(Location.class, "location").build(rules));
-        nodes.addAll(ReflectedType.of(Vector.class, "vector").build(rules));
+        nodes.addAll(ReflectedType.of(Vector.class, "vector")
+                .constructor(
+                        "create", Param.of("x", double.class), Param.of("y", double.class), Param.of("z", double.class))
+                .build(rules));
         nodes.addAll(ReflectedType.of(World.class, "world").build(rules));
         nodes.addAll(ReflectedType.of(ItemStack.class, "item").name("Item").build(rules));
         nodes.addAll(ReflectedType.of(Block.class, "block").build(rules));
