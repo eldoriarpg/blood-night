@@ -4,14 +4,17 @@ import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.types.LiteralCodec;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
+import org.jetbrains.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -19,15 +22,20 @@ import java.util.regex.Pattern;
  * Paper's registries when generated code runs.
  * <p>
  * Used for every type that has a registry, including types that are still enums, so graphs survive the move of
- * those enums to registries. Keys without namespace get {@code minecraft:}. While a server is running, keys are also
- * checked against the registry; without one, only their syntax is.
+ * those enums to registries. Keys without namespace get {@code minecraft:}.
+ * <p>
+ * The known keys come from the running server's registry. Without a server, e.g. when the editor catalog is built,
+ * they come from Paper's generated key class ({@code MobEffectKeys} and the like) or, for enum-backed registries,
+ * from the enum constants; values are checked against those as well.
  *
  * @param type     the registered type
  * @param key      its registry
  * @param keyField name of the {@link RegistryKey} constant for {@code key}, used in generated code
+ * @param keys     Paper's generated key class for the registry, or {@code null} for enum-backed registries
  * @param <T>      the registered type
  */
-public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, String keyField) implements LiteralCodec<NamespacedKey> {
+public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, String keyField, @Nullable Class<?> keys)
+        implements LiteralCodec<NamespacedKey> {
     private static final Pattern KEY = Pattern.compile("([a-z0-9_.-]+:)?[a-z0-9_./-]+");
 
     @Override
@@ -37,9 +45,10 @@ public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, 
         }
         NamespacedKey namespaced = NamespacedKey.fromString(node.stringValue());
         if (namespaced == null) throw new IllegalArgumentException("Not a valid %s key: %s".formatted(type.getSimpleName(), node));
-        registry().ifPresent(registry -> {
-            if (registry.get(namespaced) == null) throw new IllegalArgumentException("Unknown %s %s".formatted(type.getSimpleName(), namespaced));
-        });
+        List<String> known = values();
+        if (!known.isEmpty() && !known.contains(namespaced.toString())) {
+            throw new IllegalArgumentException("Unknown %s %s".formatted(type.getSimpleName(), namespaced));
+        }
         return namespaced;
     }
 
@@ -51,11 +60,35 @@ public record RegistryCodec<T extends Keyed>(Class<T> type, RegistryKey<T> key, 
 
     @Override
     public List<String> values() {
-        return registry().map(registry -> registry.keyStream().map(NamespacedKey::toString).sorted().toList()).orElse(List.of());
+        if (Bukkit.getServer() != null) {
+            return RegistryAccess.registryAccess().getRegistry(key).keyStream().map(NamespacedKey::toString).sorted().toList();
+        }
+        return keys == null ? enumKeys() : generatedKeys();
     }
 
-    private Optional<Registry<T>> registry() {
-        if (Bukkit.getServer() == null) return Optional.empty();
-        return Optional.of(RegistryAccess.registryAccess().getRegistry(key));
+    private List<String> generatedKeys() {
+        List<String> result = new ArrayList<>();
+        for (Field field : keys.getFields()) {
+            if (!Modifier.isStatic(field.getModifiers()) || !TypedKey.class.isAssignableFrom(field.getType())) continue;
+            try {
+                result.add(((TypedKey<?>) field.get(null)).asString());
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Cannot read " + field, e);
+            }
+        }
+        return result.stream().sorted().toList();
+    }
+
+    private List<String> enumKeys() {
+        if (!type.isEnum()) return List.of();
+        List<String> result = new ArrayList<>();
+        for (T constant : type.getEnumConstants()) {
+            try {
+                result.add(constant.getKey().toString());
+            } catch (RuntimeException e) {
+                continue;
+            }
+        }
+        return result.stream().sorted().toList();
     }
 }

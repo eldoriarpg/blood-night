@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.shadow) apply false
 }
 
-val frameworkProjects = setOf("graph-model", "graph-compiler", "graph-std")
+val frameworkProjects = setOf("graph-model", "graph-compiler", "graph-std", "graph-editor-payload")
 
 allprojects {
     group = "de.eldoria.bloodnight"

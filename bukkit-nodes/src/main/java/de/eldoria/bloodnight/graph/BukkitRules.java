@@ -1,6 +1,7 @@
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.reflect.Documentation;
 import de.eldoria.graph.reflect.ReflectionRules;
 import org.bukkit.event.Event;
 
@@ -15,10 +16,19 @@ public final class BukkitRules {
     }
 
     /**
-     * @return the rules
+     * @return the rules, without descriptions
      */
     public static ReflectionRules rules() {
+        return rules(Documentation.NONE);
+    }
+
+    /**
+     * @param documentation where derived nodes take their descriptions from
+     * @return the rules
+     */
+    public static ReflectionRules rules(Documentation documentation) {
         return ReflectionRules.builder()
+                .documentation(documentation)
                 .excludeMethods("getHandlers", "getHandlerList", "getEventName", "isAsynchronous", "callEvent")
                 .excludeDeclaredBy(Event.class)
                 .acceptTypes(BukkitRules::accepted)

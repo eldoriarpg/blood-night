@@ -26,7 +26,9 @@ import tools.jackson.databind.node.IntNode;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -133,6 +135,34 @@ class ReflectionTest {
         assertEquals(List.of("target", "value"), ids(setScore.descriptor().inputs()));
         assertEquals(PortType.of(int.class), setScore.descriptor().input("value").orElseThrow().type());
         assertEquals("Set Player Points", setScore.descriptor().name());
+    }
+
+    @Test
+    void documentationFillsDescriptions() {
+        Documentation docs = new Documentation() {
+            @Override
+            public Optional<String> of(Class<?> type) {
+                return type == ToyPlayer.class ? Optional.of("A player of the toy game.") : Optional.empty();
+            }
+
+            @Override
+            public Optional<String> of(Method method) {
+                return switch (method.getName()) {
+                    case "getScore" -> Optional.of("Points scored so far.");
+                    case "setScore" -> Optional.of("Replaces the score.");
+                    default -> Optional.empty();
+                };
+            }
+        };
+        ReflectionRules documented = ReflectionRules.builder().documentation(docs).build();
+
+        List<NodeDefinition> nodes = ReflectedType.of(ToyPlayer.class, "player").build(documented);
+        EntryDefinition entry = ReflectedEntry.of(ToyHost.class, "onEvent", "event.toy").parameterNames("event").build(documented);
+
+        assertEquals("Points scored so far.", nodes.getFirst().descriptor().output("score").orElseThrow().description());
+        assertEquals("A player of the toy game.", nodes.getFirst().descriptor().input("target").orElseThrow().description());
+        assertEquals("Replaces the score.", node(nodes, "player.set_score").descriptor().description());
+        assertEquals("", entry.descriptor().output("points").orElseThrow().description());
     }
 
     @Test

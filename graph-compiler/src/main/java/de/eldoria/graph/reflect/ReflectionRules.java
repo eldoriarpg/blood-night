@@ -22,12 +22,22 @@ public final class ReflectionRules {
     private final Set<String> excludedMethods;
     private final Set<Class<?>> excludedDeclarers;
     private final Predicate<PortType> types;
+    private final Documentation documentation;
 
-    private ReflectionRules(boolean excludeDeprecated, Set<String> excludedMethods, Set<Class<?>> excludedDeclarers, Predicate<PortType> types) {
+    private ReflectionRules(boolean excludeDeprecated, Set<String> excludedMethods, Set<Class<?>> excludedDeclarers, Predicate<PortType> types,
+                            Documentation documentation) {
         this.excludeDeprecated = excludeDeprecated;
         this.excludedMethods = Set.copyOf(excludedMethods);
         this.excludedDeclarers = Set.copyOf(excludedDeclarers);
         this.types = types;
+        this.documentation = documentation;
+    }
+
+    /**
+     * @return where derived nodes take their descriptions from
+     */
+    Documentation documentation() {
+        return documentation;
     }
 
     /**
@@ -77,6 +87,7 @@ public final class ReflectionRules {
         private final Set<Class<?>> excludedDeclarers = new HashSet<>();
         private boolean excludeDeprecated = true;
         private Predicate<PortType> types = type -> true;
+        private Documentation documentation = Documentation.NONE;
 
         private Builder() {
         }
@@ -113,8 +124,16 @@ public final class ReflectionRules {
             return this;
         }
 
+        /**
+         * Sets where derived nodes take their descriptions from. Defaults to none.
+         */
+        public Builder documentation(Documentation documentation) {
+            this.documentation = documentation;
+            return this;
+        }
+
         public ReflectionRules build() {
-            return new ReflectionRules(excludeDeprecated, excludedMethods, excludedDeclarers, types);
+            return new ReflectionRules(excludeDeprecated, excludedMethods, excludedDeclarers, types, documentation);
         }
     }
 }

@@ -167,7 +167,11 @@ public record NodeDescriptor(String id,
         }
 
         public Builder input(String id, String name, PortType type, boolean optional) {
-            inputs.add(new Port(id, name, type, optional));
+            return input(id, name, type, optional, "");
+        }
+
+        public Builder input(String id, String name, PortType type, boolean optional, String description) {
+            inputs.add(new Port(id, name, type, optional, description));
             return this;
         }
 
@@ -186,7 +190,11 @@ public record NodeDescriptor(String id,
         }
 
         public Builder output(String id, String name, PortType type) {
-            outputs.add(new Port(id, name, type, false));
+            return output(id, name, type, "");
+        }
+
+        public Builder output(String id, String name, PortType type, String description) {
+            outputs.add(new Port(id, name, type, false, description));
             return this;
         }
 

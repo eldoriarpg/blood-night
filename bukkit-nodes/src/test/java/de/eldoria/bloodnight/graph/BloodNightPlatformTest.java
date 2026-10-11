@@ -12,6 +12,8 @@ import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.Location;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Skeleton;
@@ -41,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings("removal")
 class BloodNightPlatformTest {
     private ServerMock server;
     private Plugin plugin;
@@ -113,10 +116,10 @@ class BloodNightPlatformTest {
         behaviours.put(zombie.getEntityId(), recorder("zombie", calls));
         behaviours.put(skeleton.getEntityId(), recorder("skeleton", calls));
 
-        server.getPluginManager().callEvent(new EntityDamageEvent(zombie, EntityDamageEvent.DamageCause.FALL, 1));
-        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(skeleton, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 1));
-        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(player, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 1));
-        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(zombie, skeleton, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 1000));
+        server.getPluginManager().callEvent(new EntityDamageEvent(zombie, EntityDamageEvent.DamageCause.FALL, DamageSource.builder(DamageType.GENERIC).build(), 1));
+        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(skeleton, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(skeleton).withDirectEntity(skeleton).build(), 1));
+        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(player, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(player).withDirectEntity(player).build(), 1));
+        server.getPluginManager().callEvent(new EntityDamageByEntityEvent(zombie, skeleton, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(zombie).withDirectEntity(zombie).build(), 1000));
 
         assertTrue(calls.containsAll(List.of("zombie:damage", "skeleton:hit", "zombie:damage_by_entity", "zombie:damage_by_player",
                 "zombie:hit", "zombie:kill", "zombie:entity_kill", "skeleton:damage_by_entity")), calls.toString());
@@ -179,7 +182,7 @@ class BloodNightPlatformTest {
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
         PlayerMock player = server.addPlayer();
 
-        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(player, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 3);
+        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(player, zombie, EntityDamageEvent.DamageCause.ENTITY_ATTACK, DamageSource.builder(DamageType.GENERIC).withCausingEntity(player).withDirectEntity(player).build(), 3);
         server.getPluginManager().callEvent(damage);
         EntityTeleportEvent teleport = new EntityTeleportEvent(zombie, zombie.getLocation(), zombie.getLocation().add(5, 0, 0));
         server.getPluginManager().callEvent(teleport);

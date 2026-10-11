@@ -1,0 +1,137 @@
+package de.eldoria.graph.payload;
+
+import de.eldoria.graph.compiler.MacroBoundary;
+import de.eldoria.graph.definition.ConfigField;
+import de.eldoria.graph.definition.ExecutionPort;
+import de.eldoria.graph.definition.NodeDefinition;
+import de.eldoria.graph.definition.NodeDescriptor;
+import de.eldoria.graph.definition.Port;
+import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.platform.GraphPlatform;
+import de.eldoria.graph.types.TypeMapping;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+/**
+ * Builds the {@link Catalog} of a platform.
+ * <p>
+ * The output is deterministic: nodes and types are sorted, so equal platforms give equal JSON and equal versions.
+ */
+public final class CatalogGenerator {
+    private static final ObjectMapper JSON = JsonMapper.builder()
+            .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .build();
+    private static final List<PortType> SCALARS = List.of(PortType.of(boolean.class), PortType.of(int.class),
+            PortType.of(double.class), PortType.of(String.class));
+
+    private final GraphPlatform platform;
+    private final TypeMapping types;
+    private final Map<String, PortType.Concrete> concrete = new TreeMap<>();
+
+    private CatalogGenerator(GraphPlatform platform) {
+        this.platform = platform;
+        this.types = platform.types();
+    }
+
+    /**
+     * @param platform the platform
+     * @return its catalog, including the macro boundary nodes
+     */
+    public static Catalog generate(GraphPlatform platform) {
+        return new CatalogGenerator(platform).run();
+    }
+
+    /**
+     * @param catalog a catalog
+     * @return indented JSON with sorted keys
+     */
+    public static String write(Catalog catalog) {
+        return JSON.writeValueAsString(catalog);
+    }
+
+    private Catalog run() {
+        List<NodeType> nodes = new ArrayList<>();
+        platform.nodes().values().forEach(node -> nodes.add(node(node, false)));
+        MacroBoundary.definitions(types).forEach(node -> nodes.add(node(node, true)));
+        nodes.sort(Comparator.comparing(NodeType::id));
+
+        Map<String, String> selectable = new TreeMap<>();
+        types.selectable().forEach((id, type) -> {
+            register(type);
+            selectable.put(id, type.id());
+        });
+
+        List<TypeInfo> table = new ArrayList<>();
+        for (PortType.Concrete type : concrete.values()) {
+            List<String> assignable = concrete.values().stream()
+                    .filter(other -> other != type && other.accepts(type))
+                    .map(PortType::id)
+                    .toList();
+            table.add(new TypeInfo(type.id(), types.name(type), type.raw().getName(),
+                    type.arguments().stream().map(PortType::id).toList(),
+                    types.codec(type).isPresent(), types.enumValues(type), assignable));
+        }
+        Catalog unversioned = new Catalog(Catalog.FORMAT, "", nodes, table, selectable);
+        return new Catalog(Catalog.FORMAT, hash(write(unversioned)), nodes, table, selectable);
+    }
+
+    private NodeType node(NodeDefinition definition, boolean macroOnly) {
+        NodeDescriptor descriptor = definition.descriptor();
+        return new NodeType(descriptor.id(), descriptor.kind().name().toLowerCase(), descriptor.category(), descriptor.name(),
+                descriptor.description(), macroOnly,
+                descriptor.inputs().stream().map(port -> port(port, true)).toList(),
+                descriptor.outputs().stream().map(port -> port(port, false)).toList(),
+                descriptor.executions().stream().map(CatalogGenerator::execution).toList(),
+                descriptor.config().stream().map(this::config).toList());
+    }
+
+    private PortInfo port(Port port, boolean input) {
+        boolean literal = input && (types.codec(port.type()).isPresent() || SCALARS.stream().anyMatch(port.type()::accepts));
+        return new PortInfo(port.id(), port.name(), port.description(), ref(port.type()), input && port.optional(), literal);
+    }
+
+    private static ExecutionInfo execution(ExecutionPort port) {
+        return new ExecutionInfo(port.id(), port.name(), port.repeating());
+    }
+
+    private ConfigInfo config(ConfigField field) {
+        return new ConfigInfo(field.id(), field.name(), ref(field.type()), field.defaultValue());
+    }
+
+    private TypeRef ref(PortType type) {
+        return switch (type) {
+            case PortType.Variable variable -> new TypeRef(null, variable.name(), null, List.of());
+            case PortType.Concrete generic when generic.hasVariables() ->
+                    new TypeRef(null, null, generic.raw().getName(), generic.arguments().stream().map(this::ref).toList());
+            case PortType.Concrete plain -> {
+                register(plain);
+                yield new TypeRef(plain.id(), null, null, List.of());
+            }
+        };
+    }
+
+    private void register(PortType type) {
+        if (!(type instanceof PortType.Concrete plain) || plain.hasVariables()) return;
+        if (concrete.putIfAbsent(plain.id(), plain) == null) plain.arguments().forEach(this::register);
+    }
+
+    private static String hash(String json) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(json.getBytes(StandardCharsets.UTF_8))).substring(0, 16);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is always available", e);
+        }
+    }
+}

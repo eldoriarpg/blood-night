@@ -4,6 +4,7 @@ import de.eldoria.bloodnight.api.CompiledBehaviour;
 import de.eldoria.bloodnight.api.MobContext;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.platform.GraphPlatform;
+import de.eldoria.graph.reflect.Documentation;
 import de.eldoria.graph.reflect.Names;
 import de.eldoria.graph.reflect.ReflectedEntry;
 import de.eldoria.graph.reflect.ReflectedType;
@@ -46,19 +47,36 @@ public final class BloodNightPlatform {
      * @return the platform
      */
     public static GraphPlatform create(List<Path> classpath) {
+        return create(classpath, Documentation.NONE);
+    }
+
+    /**
+     * @param classpath     jars and directories generated code compiles against
+     * @param documentation descriptions for reflected nodes, e.g. from the API's javadoc
+     * @return the platform
+     */
+    public static GraphPlatform create(List<Path> classpath, Documentation documentation) {
         return GraphPlatform.builder(CompiledBehaviour.class)
                 .context(MobContext.class)
                 .types(BukkitTypes.mapping())
-                .define(nodes())
+                .define(nodes(documentation))
                 .classpath(classpath)
                 .build();
     }
 
     /**
-     * @return every node definition of the platform
+     * @return every node definition of the platform, without descriptions for reflected nodes
      */
     public static List<NodeDefinition> nodes() {
-        ReflectionRules rules = BukkitRules.rules();
+        return nodes(Documentation.NONE);
+    }
+
+    /**
+     * @param documentation descriptions for reflected nodes
+     * @return every node definition of the platform
+     */
+    public static List<NodeDefinition> nodes(Documentation documentation) {
+        ReflectionRules rules = BukkitRules.rules(documentation);
         List<NodeDefinition> nodes = new ArrayList<>(StandardNodes.all());
         nodes.addAll(BukkitNodes.all());
         nodes.addAll(ReflectedType.of(Entity.class, "entity").build(rules));

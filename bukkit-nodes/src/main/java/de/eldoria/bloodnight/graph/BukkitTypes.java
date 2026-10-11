@@ -3,6 +3,13 @@ package de.eldoria.bloodnight.graph;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.types.TypeMapping;
 import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.keys.AttributeKeys;
+import io.papermc.paper.registry.keys.BiomeKeys;
+import io.papermc.paper.registry.keys.BlockTypeKeys;
+import io.papermc.paper.registry.keys.EnchantmentKeys;
+import io.papermc.paper.registry.keys.ItemTypeKeys;
+import io.papermc.paper.registry.keys.MobEffectKeys;
+import io.papermc.paper.registry.keys.SoundEventKeys;
 import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -63,15 +70,15 @@ public final class BukkitTypes {
                 .name(EntityType.class, "Entity Type")
                 .name(ItemType.class, "Item Type")
                 .name(BlockType.class, "Block Type")
-                .codec(registry(EntityType.class, RegistryKey.ENTITY_TYPE, "ENTITY_TYPE"))
-                .codec(registry(PotionEffectType.class, RegistryKey.MOB_EFFECT, "MOB_EFFECT"))
-                .codec(registry(ItemType.class, RegistryKey.ITEM, "ITEM"))
-                .codec(registry(BlockType.class, RegistryKey.BLOCK, "BLOCK"))
-                .codec(registry(Particle.class, RegistryKey.PARTICLE_TYPE, "PARTICLE_TYPE"))
-                .codec(registry(Sound.class, RegistryKey.SOUND_EVENT, "SOUND_EVENT"))
-                .codec(registry(Enchantment.class, RegistryKey.ENCHANTMENT, "ENCHANTMENT"))
-                .codec(registry(Attribute.class, RegistryKey.ATTRIBUTE, "ATTRIBUTE"))
-                .codec(registry(Biome.class, RegistryKey.BIOME, "BIOME"))
+                .codec(registry(EntityType.class, RegistryKey.ENTITY_TYPE, "ENTITY_TYPE", null))
+                .codec(registry(PotionEffectType.class, RegistryKey.MOB_EFFECT, "MOB_EFFECT", MobEffectKeys.class))
+                .codec(registry(ItemType.class, RegistryKey.ITEM, "ITEM", ItemTypeKeys.class))
+                .codec(registry(BlockType.class, RegistryKey.BLOCK, "BLOCK", BlockTypeKeys.class))
+                .codec(registry(Particle.class, RegistryKey.PARTICLE_TYPE, "PARTICLE_TYPE", null))
+                .codec(registry(Sound.class, RegistryKey.SOUND_EVENT, "SOUND_EVENT", SoundEventKeys.class))
+                .codec(registry(Enchantment.class, RegistryKey.ENCHANTMENT, "ENCHANTMENT", EnchantmentKeys.class))
+                .codec(registry(Attribute.class, RegistryKey.ATTRIBUTE, "ATTRIBUTE", AttributeKeys.class))
+                .codec(registry(Biome.class, RegistryKey.BIOME, "BIOME", BiomeKeys.class))
                 .selectable("entity", PortType.of(Entity.class))
                 .selectable("living_entity", PortType.of(LivingEntity.class))
                 .selectable("player", PortType.of(Player.class))
@@ -85,7 +92,7 @@ public final class BukkitTypes {
                 .build();
     }
 
-    private static <T extends Keyed> RegistryCodec<T> registry(Class<T> type, RegistryKey<T> key, String field) {
-        return new RegistryCodec<>(type, key, field);
+    private static <T extends Keyed> RegistryCodec<T> registry(Class<T> type, RegistryKey<T> key, String field, Class<?> keys) {
+        return new RegistryCodec<>(type, key, field, keys);
     }
 }

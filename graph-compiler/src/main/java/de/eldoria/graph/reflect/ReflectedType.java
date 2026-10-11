@@ -145,37 +145,39 @@ public final class ReflectedType {
                 List<Properties.Getter> getters = Properties.getters(type, rules, style).stream()
                         .filter(property -> !excluded.contains(property.id()))
                         .toList();
-                if (!getters.isEmpty()) nodes.add(getNode(target, getters));
+                if (!getters.isEmpty()) nodes.add(getNode(target, getters, rules.documentation()));
             }
             if (setters) {
                 Properties.setters(type, rules, style).stream()
                         .filter(setter -> !excluded.contains(setter.property()))
-                        .map(property -> setNode(target, property))
+                        .map(property -> setNode(target, property, rules.documentation()))
                         .forEach(nodes::add);
             }
             return nodes;
         }
 
-        private ExpressionDefinition getNode(PortType target, List<Properties.Getter> getters) {
+        private ExpressionDefinition getNode(PortType target, List<Properties.Getter> getters, Documentation docs) {
             NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".get", NodeKind.PURE)
                     .category(category)
                     .name("Get " + name)
                     .description("Reads the properties of a " + name)
-                    .input(TARGET, name, target, false);
-            getters.forEach(property -> descriptor.output(property.id(), displayName(property.id()), property.type()));
+                    .input(TARGET, name, target, false, docs.of(type).orElse(""));
+            getters.forEach(property -> descriptor.output(property.id(), displayName(property.id()), property.type(),
+                    docs.of(property.method()).orElse("")));
             Map<String, String> methods = getters.stream().collect(Collectors.toMap(Properties.Getter::id, property -> property.method().getName()));
             return new ExpressionDefinition(descriptor.build(),
                     (port, ctx) -> CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port)));
         }
 
-        private StatementDefinition setNode(PortType target, Properties.Setter setter) {
+        private StatementDefinition setNode(PortType target, Properties.Setter setter, Documentation docs) {
             String property = setter.property();
+            String doc = docs.of(setter.method()).orElse("");
             NodeDescriptor descriptor = NodeDescriptor.builder(prefix + "." + setter.id(), NodeKind.ACTION)
                     .category(category)
                     .name("Set %s %s".formatted(name, displayName(property)))
-                    .description("Calls %s on a %s".formatted(setter.method().getName(), name))
-                    .input(TARGET, name, target, false)
-                    .input("value", displayName(property), setter.type(), false)
+                    .description(doc.isEmpty() ? "Calls %s on a %s".formatted(setter.method().getName(), name) : doc)
+                    .input(TARGET, name, target, false, docs.of(type).orElse(""))
+                    .input("value", displayName(property), setter.type(), false, doc)
                     .execution(NEXT)
                     .build();
             String method = setter.method().getName();

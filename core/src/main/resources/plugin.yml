@@ -5,7 +5,7 @@ api-version: '26.2'
 commands:
   bloodnight:
     description: Blood night administration
-    usage: /bloodnight <reload|source <mob>|problems [mob]|spawn <mob>|debug [mob]>
+    usage: /bloodnight <reload|source <mob>|problems [mob]|spawn <mob>|debug [mob]|export>
     permission: bloodnight.admin
 permissions:
   bloodnight.admin:

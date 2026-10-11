@@ -15,6 +15,8 @@ dependencies {
 
 tasks {
     processResources {
+        dependsOn(":catalog:generateCatalog")
+        from(project(":catalog").layout.buildDirectory.file("catalog/catalog.json"))
         val props = mapOf("version" to project.version)
         inputs.properties(props)
         filesMatching("plugin.yml") {

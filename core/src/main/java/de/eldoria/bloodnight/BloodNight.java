@@ -4,6 +4,8 @@ import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.configuration.Configuration;
+import de.eldoria.bloodnight.editor.BundledCatalog;
+import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
@@ -30,6 +32,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -42,7 +45,8 @@ import java.util.logging.Level;
  * <p>
  * {@code /bloodnight reload} reads the configuration again and recompiles; living mobs switch to the new behaviours
  * once compilation finished. {@code source} writes a mob's generated source to {@code debug/}, {@code problems} lists
- * why a mob does not compile, {@code spawn} and {@code debug} help testing.
+ * why a mob does not compile, {@code export} writes the editor payload and catalog to {@code debug/}, {@code spawn}
+ * and {@code debug} help testing.
  */
 public final class BloodNight extends JavaPlugin {
     private Configuration configuration;
@@ -133,6 +137,7 @@ public final class BloodNight extends JavaPlugin {
             case "problems" -> problems(sender, mob);
             case "spawn" -> spawn(sender, mob);
             case "debug" -> sender.sendMessage("Debug trigger fired on %d mobs".formatted(coordinator.debug(mob)));
+            case "export" -> export(sender);
             default -> {
                 return false;
             }
@@ -166,6 +171,19 @@ public final class BloodNight extends JavaPlugin {
                 sender.sendMessage("Could not write source: " + e.getMessage());
             }
         }, () -> sender.sendMessage("Mob %s has no compiled behaviour".formatted(mob)));
+    }
+
+    private void export(CommandSender sender) {
+        try {
+            Path directory = getDataFolder().toPath().resolve("debug");
+            Files.createDirectories(directory);
+            Files.writeString(directory.resolve("payload.json"), EditorPayload.of(configuration, behaviours, BundledCatalog.version()).asJson());
+            Optional<String> catalog = BundledCatalog.json();
+            if (catalog.isPresent()) Files.writeString(directory.resolve("catalog.json"), catalog.get());
+            sender.sendMessage("Editor payload and catalog written to " + directory);
+        } catch (IOException e) {
+            sender.sendMessage("Could not write the editor payload: " + e.getMessage());
+        }
     }
 
     private void problems(CommandSender sender, String mob) {

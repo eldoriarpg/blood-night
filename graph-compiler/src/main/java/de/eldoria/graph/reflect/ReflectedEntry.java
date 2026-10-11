@@ -156,6 +156,7 @@ public final class ReflectedEntry {
             List<String> parameters = parameterIds(target);
             Map<String, CodeBlock> outputs = new LinkedHashMap<>();
             Map<String, PortType> types = new LinkedHashMap<>();
+            Map<String, String> docs = new HashMap<>();
             List<EntryParameter> entryParameters = new ArrayList<>();
 
             Type[] genericTypes = target.getGenericParameterTypes();
@@ -165,6 +166,7 @@ public final class ReflectedEntry {
                 entryParameters.add(new EntryParameter(parameter, type));
                 types.put(parameter, type);
                 outputs.put(parameter, CodeBlock.of("$N", parameter));
+                rules.documentation().of(target.getParameterTypes()[i]).ifPresent(doc -> docs.put(parameter, doc));
             }
             if (flatten) {
                 for (int i = 0; i < genericTypes.length; i++) {
@@ -174,6 +176,7 @@ public final class ReflectedEntry {
                         if (types.containsKey(output)) continue;
                         types.put(output, getter.type());
                         outputs.put(output, CodeBlock.of("$N.$N()", parameter, getter.method().getName()));
+                        rules.documentation().of(getter.method()).ifPresent(doc -> docs.put(output, doc));
                     }
                 }
             }
@@ -184,7 +187,7 @@ public final class ReflectedEntry {
                     .description(description)
                     .execution(NEXT);
             types.forEach((output, type) -> {
-                if (!excluded.contains(output)) descriptor.output(output, names.getOrDefault(output, Names.humanize(output)), type);
+                if (!excluded.contains(output)) descriptor.output(output, names.getOrDefault(output, Names.humanize(output)), type, docs.getOrDefault(output, ""));
             });
             return new EntryDefinition(descriptor.build(), method, entryParameters, (port, ctx) -> {
                 CodeBlock code = outputs.get(port);
