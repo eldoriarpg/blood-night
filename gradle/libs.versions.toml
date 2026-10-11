@@ -1,7 +1,7 @@
 [versions]
 javalin = "7.2.3"
 sadu = "2.3.9"
-logback = "1.6.3"
+logback = "1.6.5"
 testcontainers = "2.0.5"
 run-paper = "3.1.0"
 plugin-yml = "0.9.0"
