@@ -42,16 +42,23 @@ public final class NightSelector {
     private static final long MIX = 0x9E3779B97F4A7C15L;
 
     private final Function<World, NightSelection> settings;
+    private final Function<World, NightTimes> times;
     private final Clock clock;
     private final DoubleSupplier tickRate;
 
     /**
      * @param settings the night selection of a world
+     * @param times    when a world's nights are
      * @param clock    real time, to place nights for the real moon phase
      * @param tickRate the server's ticks per second
      */
-    public NightSelector(Function<World, NightSelection> settings, Clock clock, DoubleSupplier tickRate) {
+    public NightSelector(
+            Function<World, NightSelection> settings,
+            Function<World, NightTimes> times,
+            Clock clock,
+            DoubleSupplier tickRate) {
         this.settings = settings;
+        this.times = times;
         this.clock = clock;
         this.tickRate = tickRate;
     }
@@ -83,14 +90,23 @@ public final class NightSelector {
      */
     public Optional<Prediction> next(World world, int horizon) {
         long fullTime = world.getFullTime();
-        long first = Nights.upcoming(fullTime);
+        NightTimes nights = times(world);
+        long first = nights.upcoming(fullTime);
         for (long night = first; night < first + horizon; night++) {
             if (isBloodNight(world, night)) {
                 return Optional.of(
-                        new Prediction(night, Nights.ticksUntil(fullTime, night), contains(world, FORCED, night)));
+                        new Prediction(night, nights.ticksUntil(fullTime, night), contains(world, FORCED, night)));
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * @param world a world
+     * @return when its nights are
+     */
+    public NightTimes times(World world) {
+        return times.apply(world);
     }
 
     /**
@@ -135,7 +151,7 @@ public final class NightSelector {
     }
 
     private Instant expectedStart(World world, long night) {
-        long ticks = Nights.ticksUntil(world.getFullTime(), night);
+        long ticks = times(world).ticksUntil(world.getFullTime(), night);
         double rate = Math.max(tickRate.getAsDouble(), 1);
         return clock.instant().plus(Duration.ofMillis((long) (ticks / rate * 1000)));
     }

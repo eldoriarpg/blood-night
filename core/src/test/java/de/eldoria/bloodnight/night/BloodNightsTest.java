@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BloodNightsTest {
+    private static final NightTimes DEFAULT_TIMES = new NightTimes(13_000, 23_000);
     private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-11T12:00:00Z"), ZoneOffset.UTC);
     private final List<String> events = new ArrayList<>();
     private final List<World> ended = new ArrayList<>();
@@ -40,6 +41,7 @@ class BloodNightsTest {
     private NightSelection selection;
     private NightSelector selector;
     private BloodNights nights;
+    private boolean enabled = true;
 
     @BeforeEach
     void setUp() {
@@ -47,8 +49,9 @@ class BloodNightsTest {
         plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
         selection = Selections.of("{\"type\":\"INTERVAL\",\"interval\":{\"interval\":3,\"probability\":100}}");
-        selector = new NightSelector(ignored -> selection, CLOCK, () -> 20);
-        nights = new BloodNights(selector, server.getPluginManager(), ended::add, Logger.getLogger("test"));
+        selector = new NightSelector(ignored -> selection, ignored -> DEFAULT_TIMES, CLOCK, () -> 20);
+        nights = new BloodNights(
+                selector, ignored -> enabled, server.getPluginManager(), ended::add, Logger.getLogger("test"));
         server.getPluginManager()
                 .registerEvents(
                         new Listener() {
@@ -80,7 +83,7 @@ class BloodNightsTest {
         selection = Selections.of("{\"type\":\"RANDOM\",\"random\":{\"probability\":50}}");
         List<Boolean> first = new ArrayList<>();
         for (long night = 0; night < 200; night++) first.add(selector.isBloodNight(world, night));
-        NightSelector again = new NightSelector(ignored -> selection, CLOCK, () -> 20);
+        NightSelector again = new NightSelector(ignored -> selection, ignored -> DEFAULT_TIMES, CLOCK, () -> 20);
         for (long night = 0; night < 200; night++)
             assertEquals(first.get((int) night), again.isBloodNight(world, night));
         long bloodNights = first.stream().filter(Boolean::booleanValue).count();
@@ -173,5 +176,21 @@ class BloodNightsTest {
 
         world.setFullTime(0);
         assertFalse(selector.isBloodNight(world, 1));
+    }
+
+    @Test
+    void disabledWorldsHaveNoBloodNights() {
+        enabled = false;
+        at(13_500);
+        assertTrue(nights.running(world).isEmpty());
+
+        enabled = true;
+        at(14_000);
+        assertEquals(0, nights.running(world).getAsLong());
+        enabled = false;
+        at(14_500);
+
+        assertTrue(nights.running(world).isEmpty());
+        assertEquals(List.of("begin 0", "end 0"), events);
     }
 }

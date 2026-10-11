@@ -5,4 +5,65 @@
  */
 package de.eldoria.bloodnight.configuration.elements.world;
 
-public class NightSettings {}
+import de.eldoria.bloodnight.configuration.elements.world.night.NightLength;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * When a world's nights are and how its blood nights behave.
+ * <p>
+ * {@code begin} and {@code end} are times of day in ticks (0 is sunrise); a night may wrap past midnight, e.g. 18000
+ * to 2000. Commands run from the console when a blood night begins and ends; {@code {world}} is replaced by the
+ * world's name, and a command with {@code {player}} runs once for every player in the world.
+ */
+public class NightSettings {
+    private int begin = 13_000;
+    private int end = 23_000;
+    private boolean skippable;
+    private NightLength length = new NightLength();
+    private List<String> beginCommands = new ArrayList<>();
+    private List<String> endCommands = new ArrayList<>();
+
+    /**
+     * @return the time of day nights begin, 0 to 23999
+     */
+    public int begin() {
+        return Math.floorMod(begin, 24_000);
+    }
+
+    /**
+     * @return the time of day nights end, 0 to 23999
+     */
+    public int end() {
+        return Math.floorMod(end, 24_000);
+    }
+
+    /**
+     * @return whether a blood night may be slept through
+     */
+    public boolean skippable() {
+        return skippable;
+    }
+
+    /**
+     * @return how long blood nights last
+     */
+    public NightLength length() {
+        return length;
+    }
+
+    /**
+     * @return console commands run when a blood night begins
+     */
+    public List<String> beginCommands() {
+        return beginCommands;
+    }
+
+    /**
+     * @return console commands run when a blood night ends
+     */
+    public List<String> endCommands() {
+        return endCommands;
+    }
+}

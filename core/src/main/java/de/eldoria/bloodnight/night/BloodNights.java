@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 /**
@@ -24,10 +25,11 @@ import java.util.logging.Logger;
  * a blood night, the blood night begins, unless a plugin cancels {@link BloodNightBeginEvent}; when the world's time
  * leaves that night, by sunrise or by a jump in time, it ends with {@link BloodNightEndEvent}. A server started in
  * the middle of a blood night picks it up, since the night's answer does not change. Worlds with a fixed time, like
- * the nether, have no nights.
+ * the nether, have no nights; disabled worlds have no blood nights, and one running when its world is disabled ends.
  */
 public final class BloodNights {
     private final NightSelector selector;
+    private final Predicate<World> enabled;
     private final PluginManager events;
     private final Consumer<World> ended;
     private final Logger logger;
@@ -36,12 +38,19 @@ public final class BloodNights {
 
     /**
      * @param selector decides the nights
+     * @param enabled  whether a world has blood nights at all
      * @param events   where the begin and end events are called
      * @param ended    told about every world whose blood night ended, e.g. to run the mobs' night end
      * @param logger   told when blood nights begin and end
      */
-    public BloodNights(NightSelector selector, PluginManager events, Consumer<World> ended, Logger logger) {
+    public BloodNights(
+            NightSelector selector,
+            Predicate<World> enabled,
+            PluginManager events,
+            Consumer<World> ended,
+            Logger logger) {
         this.selector = selector;
+        this.enabled = enabled;
         this.events = events;
         this.ended = ended;
         this.logger = logger;
@@ -55,10 +64,15 @@ public final class BloodNights {
     public void check(Collection<? extends World> worlds) {
         for (World world : worlds) {
             if (world.isFixedTime()) continue;
+            if (!enabled.test(world)) {
+                end(world);
+                continue;
+            }
             long fullTime = world.getFullTime();
             Long current = running.get(world.getUID());
-            long night = Nights.upcoming(fullTime);
-            boolean isNight = Nights.isNight(fullTime);
+            NightTimes times = selector.times(world);
+            long night = times.upcoming(fullTime);
+            boolean isNight = times.isNight(fullTime);
             if (current != null && (!isNight || current != night)) end(world);
             if (!isNight || running.containsKey(world.getUID())) continue;
             Long seen = decided.put(world.getUID(), night);
@@ -84,7 +98,7 @@ public final class BloodNights {
      * @return the forced night's number
      */
     public long force(World world) {
-        long night = Nights.upcoming(world.getFullTime());
+        long night = selector.times(world).upcoming(world.getFullTime());
         selector.force(world, night);
         decided.remove(world.getUID());
         check(List.of(world));
@@ -98,7 +112,7 @@ public final class BloodNights {
      * @return the cancelled night's number
      */
     public long cancel(World world) {
-        long night = Nights.upcoming(world.getFullTime());
+        long night = selector.times(world).upcoming(world.getFullTime());
         selector.cancel(world, night);
         if (running.containsKey(world.getUID())) end(world);
         return night;

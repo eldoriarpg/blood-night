@@ -6,12 +6,16 @@
 package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.configuration.elements.world.night.LengthMode;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConfigurationTest {
@@ -120,5 +125,39 @@ class ConfigurationTest {
         Files.writeString(mobs, "mobs: {}\n");
         new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).seedMobs(() -> defaults);
         assertEquals("mobs: {}\n", Files.readString(mobs));
+    }
+
+    @Test
+    void worldSettingsAreReadFromTheirFile() throws IOException {
+        World world = MockBukkit.getMock().addSimpleWorld("world");
+        Path file = plugin.getDataFolder().toPath().resolve("worlds").resolve(world.getUID() + ".yml");
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, """
+                enabled: false
+                nightSelection:
+                  type: "CURVE"
+                nightSettings:
+                  begin: 12000
+                  skippable: true
+                  length:
+                    mode: "EXTENDED"
+                    seconds: 1000
+                  beginCommands:
+                  - "say begin"
+                mobSettings:
+                  spawning:
+                    spawnPercentage: 7
+                """);
+
+        WorldSettings settings =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).worldConfig(world);
+
+        assertFalse(settings.enabled());
+        assertEquals(NightSelectionType.CURVE, settings.nightSelection().type());
+        assertEquals(12000, settings.nightSettings().begin());
+        assertTrue(settings.nightSettings().skippable());
+        assertEquals(LengthMode.EXTENDED, settings.nightSettings().length().mode());
+        assertEquals(List.of("say begin"), settings.nightSettings().beginCommands());
+        assertEquals(7, settings.mobSettings().spawning().spawnPercentage());
     }
 }
