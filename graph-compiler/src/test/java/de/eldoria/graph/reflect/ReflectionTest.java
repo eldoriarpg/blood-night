@@ -105,7 +105,7 @@ class ReflectionTest {
                 List.of("computed", "label", "level", "name"),
                 ids(nodes.getFirst().descriptor().outputs()));
         assertEquals(
-                List.of("fluent.get", "fluent.set_label", "fluent.set_name"),
+                List.of("fluent.get", "fluent.set_label", "fluent.set_name", "fluent.set"),
                 nodes.stream().map(NodeDefinition::id).toList());
     }
 
@@ -122,7 +122,7 @@ class ReflectionTest {
         assertEquals(
                 List.of("count", "title"), ids(manual.getFirst().descriptor().outputs()));
         assertEquals(
-                List.of("api.get", "api.set_title"),
+                List.of("api.get", "api.set_title", "api.set"),
                 nodes.stream().map(NodeDefinition::id).toList());
     }
 
@@ -203,7 +203,7 @@ class ReflectionTest {
                 .build(RULES);
 
         assertEquals(
-                List.of("toy.player.get", "toy.player.set_online", "toy.player.set_score"),
+                List.of("toy.player.get", "toy.player.set_online", "toy.player.set_score", "toy.player.set"),
                 nodes.stream().map(NodeDefinition::id).toList());
         NodeDefinition get = nodes.getFirst();
         assertEquals(NodeKind.PURE, get.descriptor().kind());
@@ -225,6 +225,13 @@ class ReflectionTest {
                 PortType.of(int.class),
                 setScore.descriptor().input("value").orElseThrow().type());
         assertEquals("Set Player Points", setScore.descriptor().name());
+
+        NodeDefinition modify = node(nodes, "toy.player.set");
+        assertEquals("Modify Player", modify.descriptor().name());
+        assertEquals(
+                List.of("target", "online", "score"), ids(modify.descriptor().inputs()));
+        assertTrue(modify.descriptor().input("score").orElseThrow().optional());
+        assertFalse(modify.descriptor().input("target").orElseThrow().optional());
     }
 
     @Test

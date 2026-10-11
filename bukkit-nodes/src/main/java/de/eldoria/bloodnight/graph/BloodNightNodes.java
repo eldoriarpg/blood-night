@@ -128,6 +128,11 @@ public interface BloodNightNodes extends StdNodes {
     String CREEPER_SET_FUSE_TICKS = "creeper.set_fuse_ticks";
     String CREEPER_SET_EXPLOSION_RADIUS = "creeper.set_explosion_radius";
     String CREEPER_SET_POWERED = "creeper.set_powered";
+    String ENTITY_SET = "entity.set";
+    String LIVING_ENTITY_SET = "living_entity.set";
+    String MOB_SET = "mob.set";
+    String CREEPER_SET = "creeper.set";
+    String EQUIPMENT_SET = "equipment.set";
     String EQUIPMENT_SET_HELMET = "equipment.set_helmet";
     String EQUIPMENT_SET_CHESTPLATE = "equipment.set_chestplate";
     String EQUIPMENT_SET_LEGGINGS = "equipment.set_leggings";
