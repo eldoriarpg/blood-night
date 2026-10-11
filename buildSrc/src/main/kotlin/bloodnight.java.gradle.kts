@@ -38,6 +38,14 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ suite, result ->
+        if (suite.parent == null && result.skippedTestCount > 0) {
+            throw GradleException(
+                "${result.skippedTestCount} test(s) skipped in ${project.path}; a skip hides a test that does not run, " +
+                    "e.g. MockBukkit throwing UnimplementedOperationException",
+            )
+        }
+    }))
 }
 
 spotless {
