@@ -32,12 +32,17 @@ paper {
         "source" to "writes the generated code of a mob to the debug folder",
         "debug" to "fires the debug trigger of mobs",
         "export" to "writes the editor payload and catalog to the debug folder",
+        "night" to "shows the night selection and the next blood night of a world",
     )
     permissions {
         register("bloodnight.admin") {
             description = "Every blood night command"
             default = BukkitPluginDescription.Permission.Default.OP
-            children = subcommands.keys.map { "bloodnight.command.$it" }
+            children = subcommands.keys.map { "bloodnight.command.$it" } + "bloodnight.command.night.manage"
+        }
+        register("bloodnight.command.night.manage") {
+            description = "/bloodnight night force and cancel, decides the coming night of a world"
+            default = BukkitPluginDescription.Permission.Default.OP
         }
         subcommands.forEach { (subcommand, does) ->
             register("bloodnight.command.$subcommand") {
