@@ -13,6 +13,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
@@ -79,5 +82,35 @@ public final class BukkitRuntime {
                 .filter(player -> !survivalOnly || player.getGameMode() == GameMode.SURVIVAL)
                 .min(Comparator.comparingDouble(player -> player.getLocation().distanceSquared(location)))
                 .orElse(null);
+    }
+
+    /**
+     * The entity behind damage: what caused it, such as the player who shot an arrow, the igniter of TNT or the
+     * owner of a potion cloud; otherwise the damaging entity itself.
+     *
+     * @param event a damage event
+     * @return the attacker, or {@code null} when no entity is involved
+     */
+    public static @Nullable Entity attacker(EntityDamageEvent event) {
+        Entity causing = event.getDamageSource().getCausingEntity();
+        if (causing != null) return causing;
+        return event instanceof EntityDamageByEntityEvent byEntity ? byEntity.getDamager() : null;
+    }
+
+    /**
+     * @param event a death event
+     * @return the entity that caused the death, or {@code null} when none did
+     */
+    public static @Nullable Entity attacker(EntityDeathEvent event) {
+        return event.getDamageSource().getCausingEntity();
+    }
+
+    /**
+     * @param event a death event
+     * @return the entity that caused the death unless it is the victim itself, or {@code null}
+     */
+    public static @Nullable Entity killer(EntityDeathEvent event) {
+        Entity killer = attacker(event);
+        return killer == event.getEntity() ? null : killer;
     }
 }

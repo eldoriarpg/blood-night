@@ -6,8 +6,8 @@
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventPriority;
@@ -23,17 +23,29 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * The event triggers of blood-night.
  * <p>
  * Damage is split as before: {@code event.damage} only for damage without an attacking entity,
- * {@code event.damage_by_entity} and {@code event.damage_by_player} for the rest. The extension triggers fire for
- * the entity riding or carrying the mob and run the mob's behaviour. Kills are damage that will kill:
- * final damage at least the victim's health. {@code mob.tick} and {@code debug.trigger} have no event; the plugin
- * calls them itself.
+ * {@code event.damage_by_entity} and {@code event.damage_by_player} for the rest, split on the attacker: the entity
+ * that caused the damage, so a player's arrow counts as the player. Kills are deaths whose damage the mob caused.
+ * The extension triggers fire for the entity riding or carrying the mob and run the mob's behaviour.
+ * {@code mob.tick} and {@code debug.trigger} have no event; the plugin calls them itself.
  */
 public final class Triggers {
+    /**
+     * Triggers with an {@code attacker} output: the entity that caused the damage or death, see
+     * {@link BukkitRuntime#attacker(EntityDamageEvent)}.
+     */
+    public static final Set<String> WITH_ATTACKER = Set.of(
+            BloodNightNodes.EVENT_DAMAGE_BY_ENTITY,
+            BloodNightNodes.EVENT_DAMAGE_BY_PLAYER,
+            BloodNightNodes.EVENT_HIT,
+            BloodNightNodes.EVENT_DEATH,
+            BloodNightNodes.EVENT_EXTENSION_DAMAGE);
+
     public static final List<Trigger<?>> EVENTS = List.of(
             new Trigger<>(
                     BloodNightNodes.EVENT_DAMAGE,
@@ -49,32 +61,33 @@ public final class Triggers {
             new Trigger<>(
                     BloodNightNodes.EVENT_DAMAGE_BY_ENTITY,
                     "On Damage By Entity",
-                    "The mob took damage from an entity that is not a player",
+                    "The mob took damage from an entity that is not a player, or from what such an entity shot or"
+                            + " set off",
                     EntityDamageByEntityEvent.class,
                     "onDamageByEntity",
                     EntityDamageByEntityEvent::getEntity,
-                    event -> !(event.getDamager() instanceof Player),
+                    event -> !(BukkitRuntime.attacker(event) instanceof Player),
                     EventPriority.HIGH,
                     true,
                     CompiledBehaviour::onDamageByEntity),
             new Trigger<>(
                     BloodNightNodes.EVENT_DAMAGE_BY_PLAYER,
                     "On Damage By Player",
-                    "The mob took damage from a player",
+                    "The mob took damage from a player, or from what a player shot or set off",
                     EntityDamageByEntityEvent.class,
                     "onDamageByPlayer",
                     EntityDamageByEntityEvent::getEntity,
-                    event -> event.getDamager() instanceof Player,
+                    event -> BukkitRuntime.attacker(event) instanceof Player,
                     EventPriority.HIGH,
                     true,
                     CompiledBehaviour::onDamageByPlayer),
             new Trigger<>(
                     BloodNightNodes.EVENT_HIT,
                     "On Hit",
-                    "The mob damaged another entity",
+                    "The mob damaged another entity, directly or with what it shot or set off",
                     EntityDamageByEntityEvent.class,
                     "onHit",
-                    EntityDamageByEntityEvent::getDamager,
+                    BukkitRuntime::attacker,
                     event -> true,
                     EventPriority.NORMAL,
                     false,
@@ -82,33 +95,33 @@ public final class Triggers {
             new Trigger<>(
                     BloodNightNodes.EVENT_KILL,
                     "On Kill",
-                    "The mob is about to kill an entity or player",
-                    EntityDamageByEntityEvent.class,
+                    "The mob killed an entity or player",
+                    EntityDeathEvent.class,
                     "onKill",
-                    EntityDamageByEntityEvent::getDamager,
-                    Triggers::kills,
+                    BukkitRuntime::killer,
+                    event -> true,
                     EventPriority.HIGH,
                     true,
                     CompiledBehaviour::onKill),
             new Trigger<>(
                     BloodNightNodes.EVENT_PLAYER_KILL,
                     "On Player Kill",
-                    "The mob is about to kill a player",
-                    EntityDamageByEntityEvent.class,
+                    "The mob killed a player",
+                    EntityDeathEvent.class,
                     "onPlayerKill",
-                    EntityDamageByEntityEvent::getDamager,
-                    event -> kills(event) && event.getEntity() instanceof Player,
+                    BukkitRuntime::killer,
+                    event -> event.getEntity() instanceof Player,
                     EventPriority.HIGH,
                     true,
                     CompiledBehaviour::onPlayerKill),
             new Trigger<>(
                     BloodNightNodes.EVENT_ENTITY_KILL,
                     "On Entity Kill",
-                    "The mob is about to kill an entity that is not a player",
-                    EntityDamageByEntityEvent.class,
+                    "The mob killed an entity that is not a player",
+                    EntityDeathEvent.class,
                     "onEntityKill",
-                    EntityDamageByEntityEvent::getDamager,
-                    event -> kills(event) && !(event.getEntity() instanceof Player),
+                    BukkitRuntime::killer,
+                    event -> !(event.getEntity() instanceof Player),
                     EventPriority.HIGH,
                     true,
                     CompiledBehaviour::onEntityKill),
@@ -216,10 +229,6 @@ public final class Triggers {
                     true));
 
     private Triggers() {}
-
-    private static boolean kills(EntityDamageByEntityEvent event) {
-        return event.getEntity() instanceof LivingEntity living && event.getFinalDamage() >= living.getHealth();
-    }
 
     private static @Nullable Entity shooter(Projectile projectile) {
         return projectile.getShooter() instanceof Entity entity ? entity : null;

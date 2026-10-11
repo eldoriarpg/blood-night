@@ -64,19 +64,19 @@ public interface CompiledBehaviour {
     default void onHit(EntityDamageByEntityEvent event) {}
 
     /**
-     * The mob is about to kill an entity or player.
+     * The mob killed an entity or player: the victim's death, caused by the mob or what it shot or set off.
      */
-    default void onKill(EntityDamageByEntityEvent event) {}
+    default void onKill(EntityDeathEvent event) {}
 
     /**
-     * The mob is about to kill a player.
+     * The mob killed a player.
      */
-    default void onPlayerKill(EntityDamageByEntityEvent event) {}
+    default void onPlayerKill(EntityDeathEvent event) {}
 
     /**
-     * The mob is about to kill an entity that is not a player.
+     * The mob killed an entity that is not a player.
      */
-    default void onEntityKill(EntityDamageByEntityEvent event) {}
+    default void onEntityKill(EntityDeathEvent event) {}
 
     /**
      * The mob died.

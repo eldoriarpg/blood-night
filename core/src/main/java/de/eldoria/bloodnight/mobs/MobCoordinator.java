@@ -20,9 +20,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -41,6 +43,7 @@ public final class MobCoordinator {
     private final Map<Integer, ActiveMob> mobs = new HashMap<>();
     private final Map<Integer, Integer> baseByExtension = new HashMap<>();
     private final Set<String> reported = new HashSet<>();
+    private final Map<String, List<String>> failures = new HashMap<>();
     private final MobOutfitter outfitter;
     private final Supplier<ItemRegistry> items;
     private final Function<String, CustomMob> definitions;
@@ -74,7 +77,7 @@ public final class MobCoordinator {
     public ActiveMob register(LivingEntity entity, CustomMob mob) {
         Entity extension = outfitter.outfit(entity, mob);
         ActiveMob active = track(entity, mob, extension);
-        guard(active, () -> active.behaviour().onSpawn());
+        guard(active, "mob.spawn", () -> active.behaviour().onSpawn());
         return active;
     }
 
@@ -139,7 +142,7 @@ public final class MobCoordinator {
                 forget(mob.entity().getEntityId());
                 continue;
             }
-            guard(mob, () -> mob.behaviour().onTick());
+            guard(mob, "mob.tick", () -> mob.behaviour().onTick());
         }
     }
 
@@ -153,7 +156,7 @@ public final class MobCoordinator {
         int count = 0;
         for (ActiveMob mob : new ArrayList<>(mobs.values())) {
             if (!mob.entity().isValid() || !mob.entity().getWorld().equals(world)) continue;
-            guard(mob, () -> mob.behaviour().onNightEnd());
+            guard(mob, "mob.night_end", () -> mob.behaviour().onNightEnd());
             count++;
         }
         return count;
@@ -169,7 +172,7 @@ public final class MobCoordinator {
         int count = 0;
         for (ActiveMob mob : new ArrayList<>(mobs.values())) {
             if (mobId != null && !mob.mob().id().equals(mobId)) continue;
-            guard(mob, () -> mob.behaviour().onDebug());
+            guard(mob, "debug.trigger", () -> mob.behaviour().onDebug());
             count++;
         }
         return count;
@@ -183,6 +186,7 @@ public final class MobCoordinator {
     public void rebind(Behaviours behaviours) {
         this.behaviours = behaviours;
         reported.clear();
+        failures.clear();
         for (ActiveMob mob : new ArrayList<>(mobs.values())) {
             CustomMob definition =
                     Optional.ofNullable(definitions.apply(mob.mob().id())).orElse(mob.mob());
@@ -223,14 +227,46 @@ public final class MobCoordinator {
                 .orElse(NONE);
     }
 
-    private void guard(ActiveMob mob, Runnable call) {
+    /**
+     * Records a behaviour failure that happened while an event was dispatched.
+     *
+     * @param entry  the entry that ran, e.g. a trigger id
+     * @param entity the entity the event happened to: a mob or the extension of one
+     * @param error  what was thrown
+     */
+    public void failed(String entry, Entity entity, RuntimeException error) {
+        ActiveMob mob = mobs.get(entity.getEntityId());
+        if (mob == null) {
+            Integer base = baseByExtension.get(entity.getEntityId());
+            mob = base == null ? null : mobs.get(base);
+        }
+        if (mob != null) report(mob, entry, error);
+    }
+
+    /**
+     * @return what failed at runtime since the behaviours were last compiled, per mob id, each failure once
+     */
+    public Map<String, List<String>> failures() {
+        Map<String, List<String>> copy = new TreeMap<>();
+        failures.forEach((mob, list) -> copy.put(mob, List.copyOf(list)));
+        return copy;
+    }
+
+    private void guard(ActiveMob mob, String entry, Runnable call) {
         try {
             call.run();
         } catch (RuntimeException e) {
-            String key = mob.mob().id() + ":" + e;
-            if (reported.add(key))
-                logger.warning(
-                        "Behaviour of mob %s failed: %s".formatted(mob.mob().id(), e));
+            report(mob, entry, e);
         }
+    }
+
+    /**
+     * Logs a failure once per mob, entry and error, and keeps it for {@link #failures()}.
+     */
+    private void report(ActiveMob mob, String entry, RuntimeException error) {
+        String failure = "%s: %s".formatted(entry, error);
+        if (!reported.add(mob.mob().id() + ":" + failure)) return;
+        failures.computeIfAbsent(mob.mob().id(), key -> new ArrayList<>()).add(failure);
+        logger.warning("Behaviour of mob %s failed in %s".formatted(mob.mob().id(), failure));
     }
 }

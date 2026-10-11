@@ -20,11 +20,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -66,7 +68,8 @@ class BloodNightPlatformTest {
         plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
         dispatcher = new TriggerDispatcher(
-                entity -> Optional.ofNullable(behaviours.get(entity.getEntityId())), (trigger, e) -> errors.add(e));
+                entity -> Optional.ofNullable(behaviours.get(entity.getEntityId())),
+                (trigger, entity, e) -> errors.add(e));
         dispatcher.register(plugin, Triggers.EVENTS.stream().map(Trigger::id).toList());
     }
 
@@ -125,7 +128,7 @@ class BloodNightPlatformTest {
     }
 
     @Test
-    void damageTriggersKeepTheOldSplit() {
+    void damageTriggersSplitOnTheAttacker() {
         List<String> calls = new ArrayList<>();
         Zombie zombie = zombie();
         Skeleton skeleton = world.spawn(new Location(world, 1, 64, 0), Skeleton.class);
@@ -168,20 +171,51 @@ class BloodNightPlatformTest {
                                 .withCausingEntity(zombie)
                                 .withDirectEntity(zombie)
                                 .build(),
-                        1000));
+                        1));
+        Arrow playerArrow = world.spawn(player.getLocation(), Arrow.class);
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        playerArrow,
+                        zombie,
+                        EntityDamageEvent.DamageCause.PROJECTILE,
+                        DamageSource.builder(DamageType.ARROW)
+                                .withCausingEntity(player)
+                                .withDirectEntity(playerArrow)
+                                .build(),
+                        1));
+        Arrow skeletonArrow = world.spawn(skeleton.getLocation(), Arrow.class);
+        server.getPluginManager()
+                .callEvent(new EntityDamageByEntityEvent(
+                        skeletonArrow,
+                        player,
+                        EntityDamageEvent.DamageCause.PROJECTILE,
+                        DamageSource.builder(DamageType.ARROW)
+                                .withCausingEntity(skeleton)
+                                .withDirectEntity(skeletonArrow)
+                                .build(),
+                        1));
+        server.getPluginManager()
+                .callEvent(new EntityDeathEvent(
+                        skeleton,
+                        DamageSource.builder(DamageType.GENERIC)
+                                .withCausingEntity(zombie)
+                                .withDirectEntity(zombie)
+                                .build(),
+                        List.of()));
 
-        assertTrue(
-                calls.containsAll(List.of(
+        assertEquals(
+                List.of(
                         "zombie:damage",
                         "skeleton:hit",
                         "zombie:damage_by_entity",
                         "zombie:damage_by_player",
                         "zombie:hit",
+                        "skeleton:damage_by_entity",
+                        "zombie:damage_by_player",
+                        "skeleton:hit",
                         "zombie:kill",
-                        "zombie:entity_kill",
-                        "skeleton:damage_by_entity")),
-                calls.toString());
-        assertEquals(8, calls.size(), calls.toString());
+                        "zombie:entity_kill"),
+                calls);
         assertTrue(errors.isEmpty());
     }
 
@@ -208,17 +242,17 @@ class BloodNightPlatformTest {
             }
 
             @Override
-            public void onKill(EntityDamageByEntityEvent event) {
+            public void onKill(EntityDeathEvent event) {
                 calls.add(name + ":kill");
             }
 
             @Override
-            public void onPlayerKill(EntityDamageByEntityEvent event) {
+            public void onPlayerKill(EntityDeathEvent event) {
                 calls.add(name + ":player_kill");
             }
 
             @Override
-            public void onEntityKill(EntityDamageByEntityEvent event) {
+            public void onEntityKill(EntityDeathEvent event) {
                 calls.add(name + ":entity_kill");
             }
         };
@@ -268,6 +302,65 @@ class BloodNightPlatformTest {
         assertEquals(6, damage.getDamage());
         assertTrue(teleport.isCancelled());
         assertTrue(errors.isEmpty(), errors.toString());
+    }
+
+    @Test
+    void attackerIsWhoShotTheArrow() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("hurt", NodeInstance.of("event.damage_by_player").chain("next", "branch"))
+                .node("as_player", NodeInstance.of("cast.player").input("value", "hurt", "attacker"))
+                .node(
+                        "branch",
+                        NodeInstance.of("flow.branch")
+                                .input("condition", "as_player", "matches")
+                                .chain("true", "cancel"))
+                .node(
+                        "cancel",
+                        NodeInstance.of("cancellable.set_cancelled")
+                                .input("target", "hurt", "event")
+                                .literal("value", BooleanNode.TRUE))
+                .build();
+        Zombie zombie = zombie();
+        behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
+        PlayerMock player = server.addPlayer();
+        Arrow arrow = world.spawn(player.getLocation(), Arrow.class);
+
+        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(
+                arrow,
+                zombie,
+                EntityDamageEvent.DamageCause.PROJECTILE,
+                DamageSource.builder(DamageType.ARROW)
+                        .withCausingEntity(player)
+                        .withDirectEntity(arrow)
+                        .build(),
+                3);
+        server.getPluginManager().callEvent(damage);
+
+        assertTrue(damage.isCancelled());
+        assertTrue(errors.isEmpty(), errors.toString());
+    }
+
+    @Test
+    void modifyAppliesOnlyTheGivenProperties() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "modify"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node(
+                        "modify",
+                        NodeInstance.of("living_entity.set")
+                                .input("target", "self", "entity")
+                                .literal("fire_ticks", IntNode.valueOf(80))
+                                .literal("glowing", BooleanNode.TRUE))
+                .build();
+        Zombie zombie = zombie();
+        zombie.setSilent(true);
+        CompiledGraph<CompiledBehaviour> compiled = compile(graph);
+        compiled.instantiate(new TestContext(zombie)).onTick();
+
+        assertEquals(80, zombie.getFireTicks());
+        assertTrue(zombie.isGlowing());
+        assertTrue(zombie.isSilent());
+        assertFalse(compiled.source().contains("setSilent"));
     }
 
     @Test

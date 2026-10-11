@@ -12,13 +12,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,28 +33,27 @@ public final class TriggerDispatcher {
     private final Listener owner = new Listener() {};
     private final Function<Entity, Optional<CompiledBehaviour>> behaviours;
     private final Function<Entity, Optional<CompiledBehaviour>> extensions;
-    private final BiConsumer<Trigger<?>, RuntimeException> errors;
+    private final Failures errors;
 
     /**
      * A dispatcher for mobs without extensions: extension triggers never fire.
      *
      * @param behaviours the behaviour of a custom mob entity, empty for other entities
-     * @param errors     receives exceptions thrown by behaviours
+     * @param errors     receives exceptions thrown by behaviours or while dispatching
      */
-    public TriggerDispatcher(
-            Function<Entity, Optional<CompiledBehaviour>> behaviours, BiConsumer<Trigger<?>, RuntimeException> errors) {
+    public TriggerDispatcher(Function<Entity, Optional<CompiledBehaviour>> behaviours, Failures errors) {
         this(behaviours, entity -> Optional.empty(), errors);
     }
 
     /**
      * @param behaviours the behaviour of a custom mob entity, empty for other entities
      * @param extensions the behaviour of the mob an entity is the extension of, empty for other entities
-     * @param errors     receives exceptions thrown by behaviours
+     * @param errors     receives exceptions thrown by behaviours or while dispatching
      */
     public TriggerDispatcher(
             Function<Entity, Optional<CompiledBehaviour>> behaviours,
             Function<Entity, Optional<CompiledBehaviour>> extensions,
-            BiConsumer<Trigger<?>, RuntimeException> errors) {
+            Failures errors) {
         this.behaviours = behaviours;
         this.extensions = extensions;
         this.errors = errors;
@@ -91,10 +90,27 @@ public final class TriggerDispatcher {
 
     private void dispatch(Trigger<?> trigger, Event event) {
         try {
-            trigger.dispatch(event, trigger.extension() ? extensions : behaviours);
+            trigger.dispatch(
+                    event,
+                    trigger.extension() ? extensions : behaviours,
+                    (entity, e) -> errors.failed(trigger, entity, e));
         } catch (RuntimeException e) {
-            errors.accept(trigger, e);
+            errors.failed(trigger, null, e);
         }
+    }
+
+    /**
+     * Receives what goes wrong while a trigger runs.
+     */
+    @FunctionalInterface
+    public interface Failures {
+        /**
+         * @param trigger the trigger
+         * @param entity  the entity the event happened to, the mob or its extension; {@code null} when the trigger
+         *                failed before a behaviour ran
+         * @param error   what was thrown
+         */
+        void failed(Trigger<?> trigger, @Nullable Entity entity, RuntimeException error);
     }
 
     private record Group(Class<? extends Event> event, EventPriority priority, boolean ignoreCancelled) {

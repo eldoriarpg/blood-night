@@ -73,7 +73,7 @@ class MobCoordinatorTest {
                 new MobOutfitter(() -> items), () -> items, definitions::get, Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
-        dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, error) -> {
+        dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, entity, error) -> {
             throw error;
         });
         dispatcher.register(plugin, List.of("event.damage"));
@@ -216,5 +216,54 @@ class MobCoordinatorTest {
         coordinator.tick();
 
         assertEquals(100, burner.getFireTicks());
+    }
+
+    @Test
+    void failuresAreReportedOncePerMobAndEntry() {
+        Graph failing = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "fuse"))
+                .node("damage", NodeInstance.of("event.damage").chain("next", "fuse_on_damage"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("creeper", NodeInstance.of("cast.creeper").input("value", "self", "entity"))
+                .node(
+                        "fuse",
+                        NodeInstance.of("creeper.set_fuse_ticks")
+                                .input("target", "creeper", "result")
+                                .literal("value", IntNode.valueOf(1)))
+                .node(
+                        "fuse_on_damage",
+                        NodeInstance.of("creeper.set_fuse_ticks")
+                                .input("target", "creeper", "result")
+                                .literal("value", IntNode.valueOf(1)))
+                .build();
+        define(Mobs.zombie("broken", failing));
+        Zombie zombie = zombie();
+        coordinator.register(zombie, definitions.get("broken"));
+        dispatcher.unregister();
+        TriggerDispatcher reporting = new TriggerDispatcher(
+                coordinator::behaviour,
+                coordinator::extensionBehaviour,
+                (trigger, entity, error) -> coordinator.failed(trigger.id(), entity, error));
+        reporting.register(MockBukkit.createMockPlugin(), List.of("event.damage"));
+
+        coordinator.tick();
+        coordinator.tick();
+        for (int i = 0; i < 2; i++) {
+            server.getPluginManager()
+                    .callEvent(new EntityDamageEvent(
+                            zombie,
+                            EntityDamageEvent.DamageCause.FALL,
+                            DamageSource.builder(DamageType.GENERIC).build(),
+                            1));
+        }
+        reporting.unregister();
+
+        List<String> failures = coordinator.failures().get("broken");
+        assertEquals(2, failures.size(), failures.toString());
+        assertTrue(failures.get(0).startsWith("mob.tick: java.lang.NullPointerException"), failures.toString());
+        assertTrue(failures.get(1).startsWith("event.damage: java.lang.NullPointerException"), failures.toString());
+
+        coordinator.rebind(service.compileNow(definitions.values(), List.of()));
+        assertTrue(coordinator.failures().isEmpty());
     }
 }

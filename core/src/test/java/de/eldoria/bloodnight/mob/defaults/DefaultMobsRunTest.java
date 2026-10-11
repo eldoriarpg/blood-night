@@ -88,7 +88,7 @@ class DefaultMobsRunTest {
         Behaviours behaviours = service.compileNow(mobs.values(), List.of());
         coordinator.rebind(behaviours);
         dispatcher = new TriggerDispatcher(
-                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, error) -> errors.add(error));
+                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, entity, error) -> errors.add(error));
         dispatcher.register(plugin, behaviours.usedTriggers());
     }
 
