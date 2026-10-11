@@ -47,6 +47,27 @@ public final class GraphJson {
     }
 
     /**
+     * Parses a macro.
+     *
+     * @param json macro JSON
+     * @return the macro
+     * @throws JacksonException when the JSON is malformed or does not describe a macro
+     */
+    public static Macro readMacro(String json) {
+        return MAPPER.readValue(json, Macro.class);
+    }
+
+    /**
+     * Serializes a macro.
+     *
+     * @param macro the macro
+     * @return compact JSON
+     */
+    public static String writeMacro(Macro macro) {
+        return MAPPER.writeValueAsString(macro);
+    }
+
+    /**
      * Serializes a graph for humans.
      *
      * @param graph the graph

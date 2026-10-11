@@ -63,7 +63,9 @@ public final class ReflectedEntry {
         private String category;
         private String name;
         private String description = "";
+        private final Set<String> accessors = new HashSet<>();
         private boolean flatten = true;
+        private boolean fluent;
 
         private Builder(Class<?> host, String method, String id) {
             this.host = Objects.requireNonNull(host, "host");
@@ -121,6 +123,22 @@ public final class ReflectedEntry {
         }
 
         /**
+         * Also accepts record-style getters on the parameters; see {@link ReflectedType.Builder#fluent()}.
+         */
+        public Builder fluent() {
+            this.fluent = true;
+            return this;
+        }
+
+        /**
+         * Names {@code x()} methods on the parameters that are getters regardless of fields or pairs.
+         */
+        public Builder accessors(String... methods) {
+            accessors.addAll(List.of(methods));
+            return this;
+        }
+
+        /**
          * Whether the getters of the parameters become outputs. Defaults to true.
          */
         public Builder flatten(boolean flatten) {
@@ -151,7 +169,7 @@ public final class ReflectedEntry {
             if (flatten) {
                 for (int i = 0; i < genericTypes.length; i++) {
                     String parameter = parameters.get(i);
-                    for (Properties.Getter getter : Properties.getters(target.getParameterTypes()[i], rules)) {
+                    for (Properties.Getter getter : Properties.getters(target.getParameterTypes()[i], rules, new Properties.Style(fluent, accessors))) {
                         String output = genericTypes.length == 1 ? getter.id() : parameter + "_" + getter.id();
                         if (types.containsKey(output)) continue;
                         types.put(output, getter.type());

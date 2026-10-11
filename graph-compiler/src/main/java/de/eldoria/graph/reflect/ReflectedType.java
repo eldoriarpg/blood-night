@@ -56,8 +56,10 @@ public final class ReflectedType {
         private final Map<String, String> names = new HashMap<>();
         private String category;
         private String name;
+        private final Set<String> accessors = new HashSet<>();
         private boolean getter = true;
         private boolean setters = true;
+        private boolean fluent;
 
         private Builder(Class<?> type, String prefix) {
             this.type = Objects.requireNonNull(type, "type");
@@ -99,6 +101,23 @@ public final class ReflectedType {
         }
 
         /**
+         * Also accepts record-style accessors: {@code x()} as a getter when a field {@code x} of its type backs it or a
+         * setter {@code x(T)} pairs with it, and that setter. Off by default.
+         */
+        public Builder fluent() {
+            this.fluent = true;
+            return this;
+        }
+
+        /**
+         * Names {@code x()} methods that are getters regardless of fields or pairs; their {@code x(T)} setters follow.
+         */
+        public Builder accessors(String... methods) {
+            accessors.addAll(List.of(methods));
+            return this;
+        }
+
+        /**
          * Whether to derive the get node. Defaults to true.
          */
         public Builder getter(boolean getter) {
@@ -121,14 +140,15 @@ public final class ReflectedType {
         public List<NodeDefinition> build(ReflectionRules rules) {
             List<NodeDefinition> nodes = new ArrayList<>();
             PortType target = PortType.of(type);
+            Properties.Style style = new Properties.Style(fluent, accessors);
             if (getter) {
-                List<Properties.Getter> getters = Properties.getters(type, rules).stream()
+                List<Properties.Getter> getters = Properties.getters(type, rules, style).stream()
                         .filter(property -> !excluded.contains(property.id()))
                         .toList();
                 if (!getters.isEmpty()) nodes.add(getNode(target, getters));
             }
             if (setters) {
-                Properties.setters(type, rules).stream()
+                Properties.setters(type, rules, style).stream()
                         .filter(setter -> !excluded.contains(setter.property()))
                         .map(property -> setNode(target, property))
                         .forEach(nodes::add);

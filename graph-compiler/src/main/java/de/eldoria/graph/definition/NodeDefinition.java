@@ -3,7 +3,7 @@ package de.eldoria.graph.definition;
 /**
  * A node type: descriptor plus code emitter. The shape decides how the compiler places the code.
  */
-public sealed interface NodeDefinition permits ExpressionDefinition, StatementDefinition, EntryDefinition {
+public sealed interface NodeDefinition permits ExpressionDefinition, StatementDefinition, EntryDefinition, MacroDefinition {
     /**
      * @return id, editor texts and ports
      */

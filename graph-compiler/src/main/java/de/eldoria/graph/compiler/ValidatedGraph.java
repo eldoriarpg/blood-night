@@ -27,6 +27,7 @@ record ValidatedGraph(GraphPlatform platform, Map<String, Node> nodes, List<Stri
      * @param definition  its definition
      * @param inputTypes  type of each declared input, type variables resolved
      * @param outputTypes type of each declared output; may still contain variables that could not be inferred
+     * @param sourceTypes type of the value connected to each connected input, before any boxing for type variables
      * @param config      literal for every config field, defaults applied
      */
     record Node(String id,
@@ -34,6 +35,7 @@ record ValidatedGraph(GraphPlatform platform, Map<String, Node> nodes, List<Stri
                 NodeDefinition definition,
                 Map<String, PortType> inputTypes,
                 Map<String, PortType> outputTypes,
+                Map<String, PortType> sourceTypes,
                 Map<String, CodeBlock> config) {
     }
 }

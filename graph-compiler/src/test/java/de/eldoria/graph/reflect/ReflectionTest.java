@@ -14,6 +14,8 @@ import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.toy.ToyContext;
 import de.eldoria.graph.toy.ToyEvent;
+import de.eldoria.graph.toy.ToyFluent;
+import de.eldoria.graph.toy.ToyFluentApi;
 import de.eldoria.graph.toy.ToyHost;
 import de.eldoria.graph.toy.ToyNodes;
 import de.eldoria.graph.toy.ToyPlayer;
@@ -64,6 +66,29 @@ class ReflectionTest {
         NodeDefinition get = ReflectedType.of(ToyPosition.class, "position").build(RULES).getFirst();
 
         assertEquals(List.of("x", "y"), ids(get.descriptor().outputs()));
+    }
+
+    @Test
+    void fluentAccessorsAreOptIn() {
+        assertTrue(ReflectedType.of(ToyFluent.class, "fluent").build(RULES).isEmpty());
+    }
+
+    @Test
+    void fluentAccessorsMatchFieldsOrPairs() {
+        List<NodeDefinition> nodes = ReflectedType.of(ToyFluent.class, "fluent").fluent().accessors("computed").build(RULES);
+
+        assertEquals(List.of("computed", "label", "level", "name"), ids(nodes.getFirst().descriptor().outputs()));
+        assertEquals(List.of("fluent.get", "fluent.set_label", "fluent.set_name"), nodes.stream().map(NodeDefinition::id).toList());
+    }
+
+    @Test
+    void fluentAccessorsOnInterfacesNeedPairs() {
+        List<NodeDefinition> nodes = ReflectedType.of(ToyFluentApi.class, "api").fluent().build(RULES);
+        List<NodeDefinition> manual = ReflectedType.of(ToyFluentApi.class, "api").fluent().accessors("count").build(RULES);
+
+        assertEquals(List.of("title"), ids(nodes.getFirst().descriptor().outputs()));
+        assertEquals(List.of("count", "title"), ids(manual.getFirst().descriptor().outputs()));
+        assertEquals(List.of("api.get", "api.set_title"), nodes.stream().map(NodeDefinition::id).toList());
     }
 
     @Test

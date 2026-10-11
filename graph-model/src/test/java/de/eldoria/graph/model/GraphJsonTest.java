@@ -60,6 +60,16 @@ class GraphJsonTest {
     }
 
     @Test
+    void macrosRoundTrip() {
+        Macro macro = new Macro("double_it", "Double It", "Adds a number to itself", null, sample());
+
+        Macro read = GraphJson.readMacro(GraphJson.writeMacro(macro));
+
+        assertEquals(macro, read);
+        assertEquals("macro", read.category());
+    }
+
+    @Test
     void rejectsUnknownProperties() {
         assertThrows(JacksonException.class, () -> GraphJson.read("{\"nodes\":{\"a\":{\"type\":\"x\",\"nodeClass\":\"y\"}}}"));
     }

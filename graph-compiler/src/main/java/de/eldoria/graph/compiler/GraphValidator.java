@@ -38,9 +38,15 @@ import java.util.Set;
  */
 final class GraphValidator {
     private final GraphPlatform platform;
+    private final Map<String, NodeDefinition> extra;
 
-    GraphValidator(GraphPlatform platform) {
+    /**
+     * @param platform the platform
+     * @param extra    definitions only the compiler itself places, such as macro pass-through nodes
+     */
+    GraphValidator(GraphPlatform platform, Map<String, NodeDefinition> extra) {
         this.platform = platform;
+        this.extra = Map.copyOf(extra);
     }
 
     /**
@@ -59,6 +65,7 @@ final class GraphValidator {
         private final Map<String, Map<String, CodeBlock>> config = new HashMap<>();
         private final Map<String, Map<String, PortType>> inputTypes = new HashMap<>();
         private final Map<String, Map<String, PortType>> outputTypes = new HashMap<>();
+        private final Map<String, Map<String, PortType>> sourceTypes = new HashMap<>();
         private final Set<String> resolving = new HashSet<>();
 
         Run(Graph graph) {
@@ -66,7 +73,7 @@ final class GraphValidator {
         }
 
         ValidatedGraph run() throws GraphCompilationException {
-            graph.nodes().forEach((id, node) -> platform.node(node.type()).ifPresentOrElse(
+            graph.nodes().forEach((id, node) -> platform.node(node.type()).or(() -> Optional.ofNullable(extra.get(node.type()))).ifPresentOrElse(
                     definition -> definitions.put(id, definition),
                     () -> problems.add(GraphProblem.error(id, null, "Unknown node type " + node.type()))));
             definitions.forEach(this::checkConfig);
@@ -80,7 +87,7 @@ final class GraphValidator {
             }
             Map<String, ValidatedGraph.Node> nodes = new LinkedHashMap<>();
             definitions.forEach((id, definition) -> nodes.put(id, new ValidatedGraph.Node(id, graph.nodes().get(id), definition,
-                    Map.copyOf(inputTypes.get(id)), Map.copyOf(outputTypes.get(id)), Map.copyOf(config.get(id)))));
+                    Map.copyOf(inputTypes.get(id)), Map.copyOf(outputTypes.get(id)), Map.copyOf(sourceTypes.get(id)), Map.copyOf(config.get(id)))));
             List<String> entries = definitions.entrySet().stream()
                     .filter(entry -> entry.getValue() instanceof EntryDefinition)
                     .map(Map.Entry::getKey)
@@ -221,6 +228,7 @@ final class GraphValidator {
             definition.descriptor().outputs().forEach(port -> outputs.put(port.id(), port.type().resolve(bindings)));
             inputTypes.put(id, inputs);
             outputTypes.put(id, outputs);
+            sourceTypes.put(id, sources);
             resolving.remove(id);
         }
     }

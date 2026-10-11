@@ -1,0 +1,33 @@
+package de.eldoria.graph.definition;
+
+import de.eldoria.graph.model.Macro;
+
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * A user-defined macro used as a node. Never emitted itself: the compiler replaces every use with the macro body
+ * before validation.
+ *
+ * @param descriptor  ports derived from the body's boundary nodes; kind {@link NodeKind#PURE} without a start node,
+ *                    {@link NodeKind#ACTION} with one
+ * @param macro       the macro
+ * @param inputNodes  body node providing each input port
+ * @param outputNodes body node collecting each output port
+ * @param startNode   body node where the execution enters, or {@code null} for a pure macro
+ * @param endNodes    body node standing for each execution port
+ */
+public record MacroDefinition(NodeDescriptor descriptor,
+                              Macro macro,
+                              Map<String, String> inputNodes,
+                              Map<String, String> outputNodes,
+                              String startNode,
+                              Map<String, String> endNodes) implements NodeDefinition {
+    public MacroDefinition {
+        Objects.requireNonNull(macro, "macro");
+        inputNodes = Map.copyOf(inputNodes);
+        outputNodes = Map.copyOf(outputNodes);
+        endNodes = Map.copyOf(endNodes);
+        Shapes.require(descriptor, NodeKind.PURE, NodeKind.ACTION);
+    }
+}

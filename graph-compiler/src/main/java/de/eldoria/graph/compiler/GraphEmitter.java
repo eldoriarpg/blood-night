@@ -14,6 +14,7 @@ import de.eldoria.graph.definition.EntryDefinition;
 import de.eldoria.graph.definition.EntryParameter;
 import de.eldoria.graph.definition.ExecutionPort;
 import de.eldoria.graph.definition.ExpressionDefinition;
+import de.eldoria.graph.definition.MacroDefinition;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
@@ -202,6 +203,7 @@ final class GraphEmitter {
                 yield compute(source, edge.port(), scope, prelude,
                         () -> entry.emitter().output(edge.port(), new Entry(source, scope, prelude)));
             }
+            case MacroDefinition macro -> throw new IllegalStateException("Macro %s was not expanded".formatted(source.id()));
             case StatementDefinition statement -> fail(reader, readerPort,
                     "Output %s of %s is only available in the code %s runs itself".formatted(edge.port(), source.id(), source.id()));
         };

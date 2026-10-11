@@ -5,7 +5,9 @@ import de.eldoria.graph.definition.PortType;
 import tools.jackson.databind.JsonNode;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,10 +25,12 @@ public final class TypeMapping {
 
     private final Map<Class<?>, String> names;
     private final Map<Class<?>, LiteralCodec<?>> codecs;
+    private final Map<String, PortType> selectable;
 
-    private TypeMapping(Map<Class<?>, String> names, Map<Class<?>, LiteralCodec<?>> codecs) {
+    private TypeMapping(Map<Class<?>, String> names, Map<Class<?>, LiteralCodec<?>> codecs, Map<String, PortType> selectable) {
         this.names = Map.copyOf(names);
         this.codecs = Map.copyOf(codecs);
+        this.selectable = Collections.unmodifiableMap(new LinkedHashMap<>(selectable));
     }
 
     /**
@@ -96,16 +100,39 @@ public final class TypeMapping {
     }
 
     /**
+     * Types users can pick themselves, e.g. for a macro input, by id. Defaults: {@code boolean}, {@code integer},
+     * {@code number}, {@code text}.
+     *
+     * @return selectable types by id, in registration order
+     */
+    public Map<String, PortType> selectable() {
+        return selectable;
+    }
+
+    /**
      * Builder for {@link TypeMapping}.
      */
     public static final class Builder {
         private final Map<Class<?>, String> names = new HashMap<>();
         private final Map<Class<?>, LiteralCodec<?>> codecs = new HashMap<>();
+        private final Map<String, PortType> selectable = new LinkedHashMap<>();
 
         private Builder() {
             Codecs.DEFAULTS.forEach(this::codec);
             name(boolean.class, "Boolean").name(int.class, "Integer").name(long.class, "Long")
                     .name(double.class, "Number").name(float.class, "Float").name(String.class, "Text");
+            selectable("boolean", PortType.of(boolean.class)).selectable("integer", PortType.of(int.class))
+                    .selectable("number", PortType.of(double.class)).selectable("text", PortType.of(String.class));
+        }
+
+        /**
+         * Lets users pick a type by id, e.g. for macro inputs. The id must be a lower-case segment.
+         */
+        public Builder selectable(String id, PortType type) {
+            if (!id.matches("[a-z][a-z0-9_]*")) throw new IllegalArgumentException("Invalid type id " + id);
+            if (type.hasVariables()) throw new IllegalArgumentException("Selectable types must be concrete: " + type.id());
+            selectable.put(id, type);
+            return this;
         }
 
         /**
@@ -125,7 +152,7 @@ public final class TypeMapping {
         }
 
         public TypeMapping build() {
-            return new TypeMapping(names, codecs);
+            return new TypeMapping(names, codecs, selectable);
         }
     }
 }
