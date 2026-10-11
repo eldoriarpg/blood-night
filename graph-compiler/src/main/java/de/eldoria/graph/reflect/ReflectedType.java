@@ -16,6 +16,7 @@ import de.eldoria.graph.definition.StatementDefinition;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -212,10 +213,13 @@ public final class ReflectedType {
                 if (!getters.isEmpty()) nodes.add(getNode(target, getters, rules.documentation()));
             }
             if (setters) {
-                Properties.setters(type, rules, style).stream()
+                List<Properties.Setter> found = Properties.setters(type, rules, style).stream()
                         .filter(setter -> !excluded.contains(setter.property()))
+                        .toList();
+                found.stream()
                         .map(property -> setNode(target, property, rules.documentation()))
                         .forEach(nodes::add);
+                if (!found.isEmpty()) nodes.add(setAllNode(target, found, rules.documentation()));
             }
             List<Creations.Creation> all = new ArrayList<>(creations);
             if (type.isRecord()
@@ -267,6 +271,41 @@ public final class ReflectedType {
                     .addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input("value"))
                     .add(ctx.chain(NEXT))
                     .build());
+        }
+
+        /**
+         * {@code <prefix>.set}: every setter as an optional input, applied in declaration order when given, so one node
+         * changes several properties. Overloads of a property contribute their first setter. A property named like
+         * the receiver input gets the input id {@code <property>_value}.
+         */
+        private StatementDefinition setAllNode(PortType target, List<Properties.Setter> setters, Documentation docs) {
+            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".set", NodeKind.ACTION)
+                    .category(category)
+                    .name("Modify " + name)
+                    .description("Changes the properties of a %s that are given; the others stay as they are"
+                            .formatted(name))
+                    .input(TARGET, name, target, false, docs.of(type).orElse(""));
+            Map<String, String> methods = new LinkedHashMap<>();
+            for (Properties.Setter setter : setters) {
+                String input = setter.property().equals(TARGET) ? TARGET + "_value" : setter.property();
+                if (methods.containsKey(input)) continue;
+                methods.put(input, setter.method().getName());
+                descriptor.input(
+                        input,
+                        displayName(setter.property()),
+                        setter.type(),
+                        true,
+                        docs.of(setter.method()).orElse(""));
+            }
+            descriptor.execution(NEXT);
+            return new StatementDefinition(descriptor.build(), ctx -> {
+                CodeBlock.Builder code = CodeBlock.builder();
+                methods.forEach((input, method) -> {
+                    if (ctx.connected(input))
+                        code.addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input(input));
+                });
+                return code.add(ctx.chain(NEXT)).build();
+            });
         }
 
         private String displayName(String property) {

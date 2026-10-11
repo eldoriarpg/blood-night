@@ -1,6 +1,6 @@
 {
   "format" : 1,
-  "version" : "f52c59fab635ec85",
+  "version" : "01a187ff8703cb74",
   "nodes" : [ {
     "id" : "debug.print",
     "kind" : "action",
@@ -702,6 +702,34 @@
       }
     } ]
   }, {
+    "id" : "math.add_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Add Integer",
+    "description" : "Adds two integers",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
     "id" : "math.ceil",
     "kind" : "pure",
     "category" : "math",
@@ -821,6 +849,34 @@
       }
     } ]
   }, {
+    "id" : "math.divide_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Divide Integer",
+    "description" : "Divides the first integer by the second, rounding toward zero; 0 when dividing by zero",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
     "id" : "math.floor",
     "kind" : "pure",
     "category" : "math",
@@ -831,6 +887,34 @@
       "name" : "Value",
       "type" : {
         "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "math.modulo_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Modulo Integer",
+    "description" : "The remainder of dividing the first integer by the second, with the second's sign; 0 when dividing by zero",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "int"
       },
       "literal" : true
     } ],
@@ -867,6 +951,34 @@
       "name" : "Result",
       "type" : {
         "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.multiply_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Multiply Integer",
+    "description" : "Multiplies two integers",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
       }
     } ]
   }, {
@@ -916,6 +1028,34 @@
       "name" : "Result",
       "type" : {
         "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.subtract_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Subtract Integer",
+    "description" : "Subtracts the second integer from the first",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
       }
     } ]
   }, {

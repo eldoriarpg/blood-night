@@ -81,16 +81,26 @@ public record Trigger<E extends Event>(
      *
      * @param raw        an event of the listened handler list; may be of a sibling class
      * @param behaviours the behaviour of a custom mob entity
+     * @param failed     receives the entity and the exception when the behaviour throws
      * @return whether a behaviour was called
      */
-    public boolean dispatch(Event raw, Function<Entity, Optional<CompiledBehaviour>> behaviours) {
+    public boolean dispatch(
+            Event raw,
+            Function<Entity, Optional<CompiledBehaviour>> behaviours,
+            BiConsumer<Entity, RuntimeException> failed) {
         if (!event.isInstance(raw)) return false;
         E typed = event.cast(raw);
         if (!filter.test(typed)) return false;
         Entity entity = subject.apply(typed);
         if (entity == null) return false;
         Optional<CompiledBehaviour> behaviour = behaviours.apply(entity);
-        behaviour.ifPresent(target -> invoke.accept(target, typed));
+        behaviour.ifPresent(target -> {
+            try {
+                invoke.accept(target, typed);
+            } catch (RuntimeException e) {
+                failed.accept(entity, e);
+            }
+        });
         return behaviour.isPresent();
     }
 }

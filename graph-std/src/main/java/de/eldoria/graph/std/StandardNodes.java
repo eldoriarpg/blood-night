@@ -16,6 +16,7 @@ import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.std.runtime.Cooldown;
+import de.eldoria.graph.std.runtime.Integers;
 import de.eldoria.graph.std.runtime.Randoms;
 import de.eldoria.graph.std.runtime.Timer;
 import de.eldoria.graph.types.TypeMapping;
@@ -80,6 +81,21 @@ public final class StandardNodes {
             double.class,
             "Absolute value of a number",
             value -> CodeBlock.of("$T.abs($L)", Math.class, value));
+    public static final ExpressionDefinition ADD_INTEGER =
+            binary(StdNodes.MATH_ADD_INTEGER, int.class, int.class, "+", "Adds two integers");
+    public static final ExpressionDefinition SUBTRACT_INTEGER = binary(
+            StdNodes.MATH_SUBTRACT_INTEGER, int.class, int.class, "-", "Subtracts the second integer from the first");
+    public static final ExpressionDefinition MULTIPLY_INTEGER =
+            binary(StdNodes.MATH_MULTIPLY_INTEGER, int.class, int.class, "*", "Multiplies two integers");
+    public static final ExpressionDefinition DIVIDE_INTEGER = integerHelper(
+            StdNodes.MATH_DIVIDE_INTEGER,
+            "divide",
+            "Divides the first integer by the second, rounding toward zero; 0 when dividing by zero");
+    public static final ExpressionDefinition MODULO_INTEGER = integerHelper(
+            StdNodes.MATH_MODULO_INTEGER,
+            "modulo",
+            "The remainder of dividing the first integer by the second, with the second's sign; 0 when dividing by"
+                    + " zero");
     public static final ExpressionDefinition ABS_INTEGER = unary(
             StdNodes.MATH_ABS_INTEGER,
             double.class,
@@ -335,6 +351,11 @@ public final class StandardNodes {
                 MULTIPLY,
                 DIVIDE,
                 ABS,
+                ADD_INTEGER,
+                SUBTRACT_INTEGER,
+                MULTIPLY_INTEGER,
+                DIVIDE_INTEGER,
+                MODULO_INTEGER,
                 ABS_INTEGER,
                 CEIL,
                 FLOOR,
@@ -454,6 +475,18 @@ public final class StandardNodes {
                         .output(VALUE, type)
                         .build(),
                 (port, ctx) -> ctx.config(VALUE));
+    }
+
+    private static ExpressionDefinition integerHelper(String id, String method, String description) {
+        return new ExpressionDefinition(
+                NodeDescriptor.builder(id, NodeKind.PURE)
+                        .description(description)
+                        .input(FIRST, int.class)
+                        .input(SECOND, int.class)
+                        .output(RESULT, int.class)
+                        .build(),
+                (port, ctx) ->
+                        ctx.staticCall(ClassName.get(Integers.class), method, ctx.input(FIRST), ctx.input(SECOND)));
     }
 
     private static ExpressionDefinition arithmetic(String id, String operator, String description) {

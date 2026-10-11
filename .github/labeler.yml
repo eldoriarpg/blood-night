@@ -1,0 +1,54 @@
+"t:feature":
+  - head-branch: "^feature/"
+"t:fix":
+  - head-branch: "^fix/"
+"t:deps":
+  - head-branch: "^renovate/"
+"t:chore":
+  - head-branch: "^chore/"
+"t:other":
+  - head-branch: "^(?!feature/|fix/|renovate/|chore/).*$"
+
+"a:api":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "api/src/main/**"
+"a:graph":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "graph-model/src/main/**"
+          - "graph-compiler/src/main/**"
+          - "graph-std/src/main/**"
+"a:nodes":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "bukkit-nodes/src/main/**"
+"a:core":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "core/src/main/**"
+"a:editor":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "graph-editor-payload/**"
+          - "catalog/**"
+"a:build":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "buildSrc/**"
+          - "gradle/**"
+          - "config/**"
+          - "*.gradle.kts"
+"a:tests":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*/src/test/**"
+"a:docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "README.md"
+          - "CONTRIBUTING.md"
+"ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"

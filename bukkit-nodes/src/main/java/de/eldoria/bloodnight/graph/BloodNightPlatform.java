@@ -5,9 +5,12 @@
  */
 package de.eldoria.bloodnight.graph;
 
+import com.palantir.javapoet.CodeBlock;
 import de.eldoria.bloodnight.api.CompiledBehaviour;
 import de.eldoria.bloodnight.api.MobContext;
+import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import de.eldoria.graph.definition.NodeDefinition;
+import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.reflect.Documentation;
 import de.eldoria.graph.reflect.Names;
@@ -252,12 +255,20 @@ public final class BloodNightPlatform {
                     .build(rules));
         }
         for (Trigger<?> trigger : Triggers.EVENTS) {
-            nodes.add(ReflectedEntry.of(CompiledBehaviour.class, trigger.method(), trigger.id())
+            ReflectedEntry.Builder entry = ReflectedEntry.of(CompiledBehaviour.class, trigger.method(), trigger.id())
                     .parameterNames("event")
                     .name(trigger.name())
                     .description(trigger.description())
-                    .category("event")
-                    .build(rules));
+                    .category("event");
+            if (Triggers.WITH_ATTACKER.contains(trigger.id())) {
+                entry.computed(
+                        "attacker",
+                        "Attacker",
+                        PortType.of(Entity.class),
+                        "The entity behind it: a player who shot an arrow counts, not the arrow; missing when none",
+                        CodeBlock.of("$T.attacker(event)", BukkitRuntime.class));
+            }
+            nodes.add(entry.build(rules));
         }
         nodes.add(ReflectedEntry.of(CompiledBehaviour.class, "onSpawn", BloodNightNodes.MOB_SPAWN)
                 .name("On Spawn")

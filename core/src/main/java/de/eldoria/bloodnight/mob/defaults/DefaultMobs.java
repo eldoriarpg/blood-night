@@ -123,7 +123,7 @@ public final class DefaultMobs implements BloodNightNodes {
                                     graph.sound(victim, RESULT, "minecraft:block.bubble_column.bubble_pop", 15, 3))));
 
             String damaged = graph.entry(EVENT_DAMAGE_BY_PLAYER);
-            String attacker = graph.as("player", damaged, "damager");
+            String attacker = graph.as("player", damaged, "attacker");
             graph.on(
                     EVENT_DAMAGE_BY_PLAYER,
                     graph.when(
@@ -283,7 +283,7 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(MOB_TICK, graph.dust(128, 0, 128, 2, 5), teleportNear(graph, graph.selfMob(), TARGET));
             graph.on(EVENT_TARGET_CHANGE, teleportNear(graph, graph.entry(EVENT_TARGET_CHANGE), TARGET));
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
-                String attacker = graph.as("living_entity", graph.entry(trigger), "damager");
+                String attacker = graph.as("living_entity", graph.entry(trigger), "attacker");
                 String target = graph.node(MOB_SET_TARGET)
                         .input(TARGET, graph.selfAs("mob"), RESULT)
                         .input(VALUE, attacker, RESULT)

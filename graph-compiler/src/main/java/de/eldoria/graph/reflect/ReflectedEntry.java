@@ -62,6 +62,7 @@ public final class ReflectedEntry {
         private final String id;
         private final Set<String> excluded = new HashSet<>();
         private final Map<String, String> names = new HashMap<>();
+        private final Map<String, Computed> computed = new LinkedHashMap<>();
         private Class<?>[] parameterTypes;
         private List<String> parameterNames;
         private String category;
@@ -151,6 +152,21 @@ public final class ReflectedEntry {
         }
 
         /**
+         * Adds an output computed from the entry's parameters rather than read by a getter, e.g. a helper call.
+         *
+         * @param id          output id
+         * @param name        editor name
+         * @param type        output type
+         * @param description editor description
+         * @param code        the value, written in terms of the parameter names
+         * @return this builder
+         */
+        public Builder computed(String id, String name, PortType type, String description, CodeBlock code) {
+            computed.put(id, new Computed(name, type, description, code));
+            return this;
+        }
+
+        /**
          * @param rules which getters qualify
          * @return the entry definition
          * @throws IllegalArgumentException when the host method cannot be found unambiguously
@@ -188,6 +204,13 @@ public final class ReflectedEntry {
                     }
                 }
             }
+
+            computed.forEach((output, value) -> {
+                types.put(output, value.type());
+                outputs.put(output, value.code());
+                names.putIfAbsent(output, value.name());
+                docs.put(output, value.description());
+            });
 
             NodeDescriptor.Builder descriptor = NodeDescriptor.builder(id, NodeKind.ENTRY)
                     .category(category)
@@ -250,4 +273,6 @@ public final class ReflectedEntry {
             return ids;
         }
     }
+
+    private record Computed(String name, PortType type, String description, CodeBlock code) {}
 }

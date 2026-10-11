@@ -40,6 +40,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -87,8 +90,13 @@ public final class BloodNight extends JavaPlugin {
                 id -> configuration.mobs().get(id),
                 getLogger());
         dispatcher = new TriggerDispatcher(
-                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, error) -> getLogger()
-                        .log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error));
+                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, entity, error) -> {
+                    if (entity != null) {
+                        coordinator.failed(trigger.id(), entity, error);
+                    } else {
+                        getLogger().log(Level.WARNING, "Trigger %s failed".formatted(trigger.id()), error);
+                    }
+                });
 
         var plugins = getServer().getPluginManager();
         plugins.registerEvents(new MobSpawner(configuration, coordinator, this), this);
@@ -237,15 +245,22 @@ public final class BloodNight extends JavaPlugin {
         }
     }
 
+    /**
+     * Lists mobs whose behaviour does not compile or failed while running; with a mob id, its problems and failures.
+     */
     private void problems(CommandSender sender, String mob) {
+        Map<String, List<String>> failures = coordinator.failures();
         if (mob == null) {
-            sender.sendMessage("Mobs with problems: "
-                    + String.join(", ", behaviours.problems().keySet()));
+            Set<String> mobs = new TreeSet<>(behaviours.problems().keySet());
+            mobs.addAll(failures.keySet());
+            sender.sendMessage("Mobs with problems: " + String.join(", ", mobs));
             return;
         }
         List<GraphProblem> problems = behaviours.problems().getOrDefault(mob, List.of());
-        if (problems.isEmpty()) sender.sendMessage("Mob %s has no problems".formatted(mob));
+        List<String> failed = failures.getOrDefault(mob, List.of());
+        if (problems.isEmpty() && failed.isEmpty()) sender.sendMessage("Mob %s has no problems".formatted(mob));
         problems.forEach(problem -> sender.sendMessage(problem.toString()));
+        failed.forEach(failure -> sender.sendMessage("Failed at runtime: " + failure));
     }
 
     private void spawn(CommandSender sender, String mob) {
