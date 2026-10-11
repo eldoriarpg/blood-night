@@ -21,7 +21,7 @@ import org.bukkit.command.CommandSender;
 @Command("bloodnight")
 @Aliases("bn")
 @Description("Blood night administration")
-final class     BloodNightCommand {
+final class BloodNightCommand {
     private static final String USAGE =
             "/bloodnight <reload | spawn <mob> | problems [mob] | source <mob> | debug [mob] | export>";
 
