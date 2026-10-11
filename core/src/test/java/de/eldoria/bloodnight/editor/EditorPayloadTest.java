@@ -57,7 +57,8 @@ class EditorPayloadTest {
                 Behaviours.empty().problems(),
                 Map.of(),
                 Map.of("items.yml", "broken"),
-                new SettingsPayload(new ConfigFile(), GlobalDrops.defaultDrops(), Map.of()));
+                new SettingsPayload(new ConfigFile(), GlobalDrops.defaultDrops(), Map.of()),
+                Map.of("mobs.yml", "abc"));
 
         JsonNode json = GraphJson.mapper().readTree(payload.asJson());
 

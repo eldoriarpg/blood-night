@@ -22,17 +22,22 @@ import org.bukkit.plugin.Plugin;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -67,6 +72,7 @@ public class Configuration {
             Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
     private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS);
 
+    public static final String MISSING = "missing";
     private static final DateTimeFormatter BACKUP_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
     private final Configurations<ConfigFile> configurations;
     private final Set<Key<?>> worlds = new LinkedHashSet<>();
@@ -127,6 +133,33 @@ public class Configuration {
             }
         }
         return target;
+    }
+
+    /**
+     * Hashes the files an editor session replaces, to tell later whether they changed: {@code config.yml},
+     * {@code global_drops.yml}, {@code mobs.yml}, {@code macros.yml} and the files of the given worlds.
+     *
+     * @param worlds the worlds whose settings are covered
+     * @return SHA-256 per file, by path relative to the data folder; {@value #MISSING} for a file that does not exist
+     */
+    public Map<String, String> fileHashes(Collection<? extends World> worlds) throws IOException {
+        Path base = configurations.base();
+        List<String> files = new ArrayList<>(List.of("config.yml", "global_drops.yml", "mobs.yml", "macros.yml"));
+        worlds.forEach(world -> files.add("worlds/" + world.getUID() + ".yml"));
+        Map<String, String> hashes = new TreeMap<>();
+        for (String file : files) {
+            Path path = base.resolve(file);
+            hashes.put(file, Files.exists(path) ? sha256(Files.readAllBytes(path)) : MISSING);
+        }
+        return hashes;
+    }
+
+    private static String sha256(byte[] content) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(content));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**

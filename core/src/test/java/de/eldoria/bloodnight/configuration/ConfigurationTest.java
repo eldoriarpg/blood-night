@@ -129,6 +129,25 @@ class ConfigurationTest {
     }
 
     @Test
+    void hashesFollowTheFilesOnDisk() throws IOException {
+        World world = MockBukkit.getMock().addSimpleWorld("world");
+        Configuration configuration =
+                new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        configuration.worldConfig(world);
+        configuration.main();
+        Map<String, String> opened = configuration.fileHashes(List.of(world));
+        String worldFile = "worlds/" + world.getUID() + ".yml";
+
+        assertEquals(Configuration.MISSING, opened.get("macros.yml"));
+        assertEquals(opened, configuration.fileHashes(List.of(world)));
+        Path file = plugin.getDataFolder().toPath().resolve(worldFile);
+        Files.writeString(file, Files.readString(file) + "\n");
+        Map<String, String> now = configuration.fileHashes(List.of(world));
+        assertEquals(opened.get("config.yml"), now.get("config.yml"));
+        assertFalse(opened.get(worldFile).equals(now.get(worldFile)));
+    }
+
+    @Test
     void editedFilesReplaceTheOldOnesAfterABackup() throws IOException {
         World world = MockBukkit.getMock().addSimpleWorld("world");
         Configuration configuration =

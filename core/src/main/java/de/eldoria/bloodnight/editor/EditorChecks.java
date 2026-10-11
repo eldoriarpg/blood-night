@@ -18,8 +18,8 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Checks a result from the editor against the server before it is applied: each mob is stored under its own id, and
- * mobs only use registered items. Worlds the server does not know are reported separately, they are skipped.
+ * Checks a result from the editor against the server before it is applied: each mob is stored under its own id, mobs
+ * only use registered items, and the files it replaces did not change since the session opened. Worlds the server does not know are reported separately, they are skipped.
  */
 public final class EditorChecks {
     private EditorChecks() {}
@@ -53,6 +53,19 @@ public final class EditorChecks {
         if (settings == null) return List.of();
         return settings.worlds().keySet().stream()
                 .filter(world -> !worlds.contains(world))
+                .sorted()
+                .toList();
+    }
+
+    /**
+     * @param result  the result
+     * @param current the hashes of the files now, see {@code Configuration.fileHashes}
+     * @return the files that changed since the session opened, sorted; every file when the result has no hashes
+     */
+    public static List<String> changedFiles(EditorResult result, Map<String, String> current) {
+        return current.entrySet().stream()
+                .filter(file -> !file.getValue().equals(result.hashes().get(file.getKey())))
+                .map(Map.Entry::getKey)
                 .sorted()
                 .toList();
     }
