@@ -51,6 +51,25 @@ class ConfigurationTest {
     }
 
     @Test
+    void aBrokenFileDoesNotStopOthersFromReloading() throws IOException {
+        Path items = plugin.getDataFolder().toPath().resolve("items.yml");
+        Configuration configuration = new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
+        Files.writeString(mobs, "mobs: {kept: {id: kept, extension: {type: NONE}}}");
+        Files.writeString(items, "registrations: {}");
+        assertEquals(1, configuration.mobs().all().size());
+        configuration.items();
+
+        Files.writeString(mobs, "mobs: {kept: [");
+        Files.writeString(items, "registrations: {}\n");
+        configuration.reload();
+
+        assertTrue(configuration.mobs().all().isEmpty());
+        assertTrue(configuration.problems().containsKey("mobs.yml"));
+        assertTrue(!configuration.problems().containsKey("items.yml"));
+        assertTrue(configuration.items().registrations().isEmpty());
+    }
+
+    @Test
     void reloadPicksUpTheFixedFileAndNeverResetsABrokenOne() throws IOException {
         Configuration configuration = new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
         configuration.mobs().add(Mobs.zombie("kept", Graph.builder().build()));

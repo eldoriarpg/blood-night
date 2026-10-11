@@ -1,7 +1,7 @@
 [versions]
 jackson = "3.2.3"
 jackson-bukkit = "2.0.0"
-ocular = "2.2.1"
+ocular = "2.3.0"
 eldoutil = "2.0.1"
 paper = "26.2.build.133-stable"
 jetbrains-annotations = "26.1.0"
