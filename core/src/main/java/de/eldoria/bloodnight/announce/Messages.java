@@ -39,6 +39,7 @@ public final class Messages {
     public static final String NIGHT_JOINED = "bloodnight.night.joined";
     public static final String NIGHT_LEFT = "bloodnight.night.left";
     public static final String NIGHT_SLEEP = "bloodnight.night.sleep";
+    public static final String COMMAND_BLOCKED = "bloodnight.command.blocked";
     private static final List<String> LOCALES = List.of("en", "de", "es", "ms", "tr", "zh");
 
     private final MiniMessageTranslationStore store =

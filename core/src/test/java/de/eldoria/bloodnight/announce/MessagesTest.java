@@ -66,6 +66,7 @@ class MessagesTest {
                         Messages.NIGHT_JOINED,
                         Messages.NIGHT_LEFT,
                         Messages.NIGHT_SLEEP,
+                        Messages.COMMAND_BLOCKED,
                         "bloodnight.bossbar.title"),
                 bundle("en").stringPropertyNames());
     }

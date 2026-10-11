@@ -12,11 +12,9 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.announcement.NightEffect;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightTimes;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
+import de.eldoria.bloodnight.util.Effects;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.translation.Argument;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -29,7 +27,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -191,16 +188,8 @@ public final class Announcer implements Listener {
 
     private static void applyEffect(Player player, NightEffect effect) {
         if (!effect.enabled()) return;
-        PotionEffectType type = effectType(effect.effect());
+        PotionEffectType type = Effects.effect(effect.effect());
         if (type == null) return;
         player.addPotionEffect(new PotionEffect(type, effect.seconds() * 20, 0, true, false));
-    }
-
-    private static @Nullable PotionEffectType effectType(String key) {
-        NamespacedKey namespaced = NamespacedKey.fromString(key);
-        if (namespaced == null) return null;
-        return RegistryAccess.registryAccess()
-                .getRegistry(RegistryKey.MOB_EFFECT)
-                .get(namespaced);
     }
 }

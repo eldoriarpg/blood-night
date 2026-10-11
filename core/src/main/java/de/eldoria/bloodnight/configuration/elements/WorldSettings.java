@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
 import de.eldoria.bloodnight.configuration.elements.world.SoundSettings;
 import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
+import de.eldoria.bloodnight.configuration.elements.world.death.DeathActionSettings;
 
 /**
  * The settings of one world. Fields are not final: the configuration reads them in place, and Jackson 3 does not write
@@ -23,6 +24,7 @@ public class WorldSettings {
     private MobSettings mobSettings = new MobSettings();
     private AnnouncementSettings announcement = new AnnouncementSettings();
     private SoundSettings soundSettings = new SoundSettings();
+    private DeathActionSettings deathActions = new DeathActionSettings();
     private WorldDrops worldDrops = WorldDrops.defaultDrops();
 
     /**
@@ -42,6 +44,13 @@ public class WorldSettings {
 
     public MobSettings mobSettings() {
         return mobSettings;
+    }
+
+    /**
+     * @return what happens when players and enemies die during a blood night
+     */
+    public DeathActionSettings deathActions() {
+        return deathActions;
     }
 
     /**

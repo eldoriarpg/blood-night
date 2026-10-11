@@ -41,6 +41,10 @@ paper {
             default = BukkitPluginDescription.Permission.Default.OP
             children = subcommands.keys.map { "bloodnight.command.$it" } + "bloodnight.command.night.manage"
         }
+        register("bloodnight.bypass.commands") {
+            description = "Use commands blocked during blood nights"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
         register("bloodnight.command.night.manage") {
             description = "/bloodnight night force and cancel, decides the coming night of a world"
             default = BukkitPluginDescription.Permission.Default.OP
