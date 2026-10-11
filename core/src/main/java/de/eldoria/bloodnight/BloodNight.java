@@ -24,7 +24,11 @@ import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.night.NightCommands;
 import de.eldoria.bloodnight.night.NightSelector;
+import de.eldoria.bloodnight.night.NightSkipGuard;
+import de.eldoria.bloodnight.night.NightStretch;
+import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -57,6 +61,8 @@ public final class BloodNight extends JavaPlugin {
     private TriggerDispatcher dispatcher;
     private BukkitTask tickTask;
     private BukkitTask nightTask;
+    private BukkitTask stretchTask;
+    private NightStretch stretch;
     private NightSelector selector;
     private BloodNights bloodNights;
     private Behaviours behaviours = Behaviours.empty();
@@ -105,9 +111,29 @@ public final class BloodNight extends JavaPlugin {
                         event -> BloodNightCommandBrigadier.register(event.registrar(), this)));
         selector = new NightSelector(
                 world -> configuration.worldConfig(world).nightSelection(),
+                world -> NightTimes.of(configuration.worldConfig(world).nightSettings()),
                 Clock.systemUTC(),
                 () -> getServer().getServerTickManager().getTickRate());
-        bloodNights = new BloodNights(selector, getServer().getPluginManager(), coordinator::endNight, getLogger());
+        bloodNights = new BloodNights(
+                selector,
+                world -> configuration.worldConfig(world).enabled(),
+                getServer().getPluginManager(),
+                coordinator::endNight,
+                getLogger());
+        stretch = new NightStretch(
+                getServer(), world -> configuration.worldConfig(world).nightSettings(), selector::times);
+        plugins.registerEvents(
+                new NightSkipGuard(
+                        bloodNights,
+                        world ->
+                                configuration.worldConfig(world).nightSettings().skippable()),
+                this);
+        plugins.registerEvents(
+                new NightCommands(
+                        getServer(), world -> configuration.worldConfig(world).nightSettings()),
+                this);
+        plugins.registerEvents(stretch, this);
+        stretchTask = getServer().getScheduler().runTaskTimer(this, stretch::tick, 1, 1);
         nightTask = getServer()
                 .getScheduler()
                 .runTaskTimer(this, () -> bloodNights.check(getServer().getWorlds()), 20, 20);
@@ -140,6 +166,8 @@ public final class BloodNight extends JavaPlugin {
         MobIds.clear();
         if (tickTask != null) tickTask.cancel();
         if (nightTask != null) nightTask.cancel();
+        if (stretchTask != null) stretchTask.cancel();
+        if (stretch != null) stretch.clear();
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
         if (dispatcher != null) dispatcher.unregister();
         if (behaviourService != null) behaviourService.close();

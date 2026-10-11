@@ -24,6 +24,10 @@ final class Selections {
         return MAPPER.readValue(json, NightSelection.class);
     }
 
+    static <T> T read(String json, Class<T> type) {
+        return MAPPER.readValue(json, type);
+    }
+
     static String write(NightSelection selection) {
         return MAPPER.writeValueAsString(selection);
     }

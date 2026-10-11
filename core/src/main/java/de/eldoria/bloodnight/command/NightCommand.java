@@ -6,7 +6,6 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
-import de.eldoria.bloodnight.night.Nights;
 import de.eldoria.bloodnight.night.Prediction;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
@@ -14,6 +13,8 @@ import net.strokkur.commands.permission.Permission;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Optional;
 
 /**
  * {@code /bloodnight night [force|cancel] [world]}: shows a world's night selection and next blood night, or forces or
@@ -36,8 +37,12 @@ final class NightCommand {
     }
 
     @Executes
-    void show(CommandSender sender, World world) {
-        long coming = Nights.upcoming(world.getFullTime());
+    void show(CommandSender sender, @WorldSuggestions String world) {
+        world(sender, world).ifPresent(found -> show(sender, found));
+    }
+
+    private void show(CommandSender sender, World world) {
+        long coming = plugin.selector().times(world).upcoming(world.getFullTime());
         sender.sendMessage("%s: %s, blood night %s"
                 .formatted(
                         world.getName(),
@@ -62,7 +67,11 @@ final class NightCommand {
 
     @Executes("force")
     @Permission("bloodnight.command.night.manage")
-    void force(CommandSender sender, World world) {
+    void force(CommandSender sender, @WorldSuggestions String world) {
+        world(sender, world).ifPresent(found -> force(sender, found));
+    }
+
+    private void force(CommandSender sender, World world) {
         long night = plugin.bloodNights().force(world);
         sender.sendMessage("Night %d in %s is a blood night".formatted(night, world.getName()));
     }
@@ -75,7 +84,11 @@ final class NightCommand {
 
     @Executes("cancel")
     @Permission("bloodnight.command.night.manage")
-    void cancel(CommandSender sender, World world) {
+    void cancel(CommandSender sender, @WorldSuggestions String world) {
+        world(sender, world).ifPresent(found -> cancel(sender, found));
+    }
+
+    private void cancel(CommandSender sender, World world) {
         long night = plugin.bloodNights().cancel(world);
         sender.sendMessage("Night %d in %s is an ordinary night".formatted(night, world.getName()));
     }
@@ -90,6 +103,12 @@ final class NightCommand {
                         nights == 0 ? "the coming one" : "%d nights after the coming one".formatted(nights),
                         minutes,
                         prediction.forced() ? " (forced)" : "");
+    }
+
+    private Optional<World> world(CommandSender sender, String name) {
+        World world = plugin.getServer().getWorld(name);
+        if (world == null) sender.sendMessage("Unknown world " + name);
+        return Optional.ofNullable(world);
     }
 
     private World worldOf(CommandSender sender) {
