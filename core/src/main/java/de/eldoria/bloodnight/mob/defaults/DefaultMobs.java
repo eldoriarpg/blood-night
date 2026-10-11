@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
@@ -669,7 +670,8 @@ public final class DefaultMobs implements BloodNightNodes {
                 new Attributes(name, type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
                 built(id, graph),
                 MobDrops.defaultDrops(),
-                extension);
+                extension,
+                SpawnRules.defaults());
     }
 
     private static Graph built(String id, MobGraph graph) {

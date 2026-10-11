@@ -8,17 +8,13 @@ package de.eldoria.bloodnight.mobs;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mobs.exceptions.MobIdAlreadyTakenException;
-import org.bukkit.entity.EntityType;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class MobRegistry {
     @JsonProperty
@@ -61,20 +57,5 @@ public class MobRegistry {
      */
     public CustomMob get(String id) {
         return mobs.get(id);
-    }
-
-    /**
-     * Gets all matching {@link CustomMob}s, depending on the result of calling {@link Attributes#isAssignable(EntityType)}.
-     *
-     * @param active a set containing the ids of active mobs that should be checked
-     * @param type   the entityType of the entity
-     * @return an immutable list containing all mobs that are matching. May be empty.
-     */
-    public List<CustomMob> getMatching(Set<String> active, EntityType type) {
-        return active.stream()
-                .map(mobs::get)
-                .filter(Objects::nonNull)
-                .filter(mob -> mob.attributes().isAssignable(type))
-                .toList();
     }
 }
