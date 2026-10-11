@@ -8,6 +8,25 @@ package de.eldoria.bloodnight.mob.meta;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * What a custom mob is and how strong it is.
+ * <p>
+ * {@code DEFAULT} health is the entity's own times the world's health multiplier, the same toughness ordinary enemies
+ * get during blood nights; {@code DEFAULT} damage is the entity's own, the world's damage modifier applies to every
+ * enemy anyway. {@code MULTIPLY} multiplies the entity's own value, {@code VALUE} replaces it.
+ *
+ * @param displayName    name shown above the mob, MiniMessage; empty shows none
+ * @param entityType     the type of entity the mob takes over
+ * @param exactType      whether only that type matches, not its subtypes (a husk is a zombie)
+ * @param healthModifier how {@code health} applies
+ * @param health         the health value
+ * @param damageModifier how {@code damage} applies
+ * @param damage         the damage value
+ * @param changes        further changes to any attribute
+ */
 public record Attributes(
         String displayName,
         EntityType entityType,
@@ -15,7 +34,26 @@ public record Attributes(
         ValueModifier healthModifier,
         double health,
         ValueModifier damageModifier,
-        double damage) {
+        double damage,
+        List<AttributeChange> changes) {
+    public Attributes {
+        changes = List.copyOf(Objects.requireNonNullElse(changes, List.of()));
+    }
+
+    /**
+     * Attributes without further changes.
+     */
+    public Attributes(
+            String displayName,
+            EntityType entityType,
+            boolean exactType,
+            ValueModifier healthModifier,
+            double health,
+            ValueModifier damageModifier,
+            double damage) {
+        this(displayName, entityType, exactType, healthModifier, health, damageModifier, damage, List.of());
+    }
+
     public boolean isAssignable(EntityType type) {
         if (exactType) return type == entityType;
         Class<? extends Entity> thisClass = entityType.getEntityClass();

@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
+import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
@@ -70,7 +71,10 @@ class MobCoordinatorTest {
         world = server.addSimpleWorld("world");
         ItemRegistry items = new ItemRegistry();
         coordinator = new MobCoordinator(
-                new MobOutfitter(() -> items), () -> items, definitions::get, Logger.getLogger("test"));
+                new MobOutfitter(() -> items, ignored -> new MobSettings()),
+                () -> items,
+                definitions::get,
+                Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
         dispatcher = new TriggerDispatcher(coordinator::behaviour, (trigger, entity, error) -> {

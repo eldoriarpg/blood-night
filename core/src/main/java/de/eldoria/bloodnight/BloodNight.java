@@ -24,6 +24,7 @@ import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
+import de.eldoria.bloodnight.mobs.NightDespawner;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightCommands;
@@ -70,6 +71,8 @@ public final class BloodNight extends JavaPlugin {
     private BukkitTask tickTask;
     private BukkitTask nightTask;
     private BukkitTask stretchTask;
+    private BukkitTask despawnTask;
+    private NightDespawner despawner;
     private NightStretch stretch;
     private BukkitTask announceTask;
     private Announcer announcer;
@@ -97,7 +100,9 @@ public final class BloodNight extends JavaPlugin {
                 buildFingerprint(),
                 getLogger());
         coordinator = new MobCoordinator(
-                new MobOutfitter(() -> configuration.items()),
+                new MobOutfitter(
+                        () -> configuration.items(),
+                        world -> configuration.worldConfig(world).mobSettings()),
                 () -> configuration.items(),
                 id -> configuration.mobs().get(id),
                 getLogger());
@@ -111,7 +116,6 @@ public final class BloodNight extends JavaPlugin {
                 });
 
         var plugins = getServer().getPluginManager();
-        plugins.registerEvents(new MobSpawner(configuration, coordinator, this), this);
         plugins.registerEvents(new DamageHandler(), this);
         plugins.registerEvents(new TargetPolicy(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
@@ -132,6 +136,17 @@ public final class BloodNight extends JavaPlugin {
                 getServer().getPluginManager(),
                 coordinator::endNight,
                 getLogger());
+        plugins.registerEvents(
+                new MobSpawner(
+                        () -> configuration.mobs().all(),
+                        configuration::worldConfig,
+                        coordinator,
+                        bloodNights,
+                        this,
+                        RandomGenerator.getDefault()),
+                this);
+        despawner = new NightDespawner(coordinator, bloodNights);
+        despawnTask = getServer().getScheduler().runTaskTimer(this, despawner::tick, 1, 1);
         stretch = new NightStretch(
                 getServer(), world -> configuration.worldConfig(world).nightSettings(), selector::times);
         plugins.registerEvents(
@@ -175,7 +190,14 @@ public final class BloodNight extends JavaPlugin {
         stretchTask = getServer().getScheduler().runTaskTimer(this, stretch::tick, 1, 1);
         nightTask = getServer()
                 .getScheduler()
-                .runTaskTimer(this, () -> bloodNights.check(getServer().getWorlds()), 20, 20);
+                .runTaskTimer(
+                        this,
+                        () -> {
+                            bloodNights.check(getServer().getWorlds());
+                            despawner.sweep();
+                        },
+                        20,
+                        20);
         recompile();
     }
 
@@ -206,6 +228,7 @@ public final class BloodNight extends JavaPlugin {
         if (tickTask != null) tickTask.cancel();
         if (nightTask != null) nightTask.cancel();
         if (stretchTask != null) stretchTask.cancel();
+        if (despawnTask != null) despawnTask.cancel();
         if (stretch != null) stretch.clear();
         if (announceTask != null) announceTask.cancel();
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());

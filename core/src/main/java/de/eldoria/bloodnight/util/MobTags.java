@@ -13,6 +13,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.UUID;
 
 /**
@@ -44,6 +45,10 @@ public final class MobTags {
      * This tag should use a {@link PersistentDataType#STRING} containing the {@link Entity#getUniqueId()} of the entity that extends this mob.
      */
     public static final NamespacedKey EXTENDED = create("extended");
+    /**
+     * Number of the blood night a mob spawned in.
+     */
+    public static final NamespacedKey NIGHT = create("night");
 
     /**
      * Checks if the specified entity is a custom mob.
@@ -169,5 +174,24 @@ public final class MobTags {
      */
     public static Optional<UUID> getBase(Entity entity) {
         return DataContainerUtil.get(entity, EXTENDS, PersistentDataType.STRING).map(UUID::fromString);
+    }
+
+    /**
+     * Marks a mob as spawned during a blood night.
+     *
+     * @param entity the mob
+     * @param night  the blood night's number
+     */
+    public static void markNight(Entity entity, long night) {
+        entity.getPersistentDataContainer().set(NIGHT, PersistentDataType.LONG, night);
+    }
+
+    /**
+     * @param entity a mob
+     * @return the number of the blood night the mob spawned in, if it spawned in one
+     */
+    public static OptionalLong getNight(Entity entity) {
+        Long night = entity.getPersistentDataContainer().get(NIGHT, PersistentDataType.LONG);
+        return night == null ? OptionalLong.empty() : OptionalLong.of(night);
     }
 }

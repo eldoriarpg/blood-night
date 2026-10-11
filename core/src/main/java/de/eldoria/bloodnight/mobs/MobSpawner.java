@@ -5,10 +5,12 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.util.MobTags;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,44 +18,70 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.OptionalLong;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.random.RandomGenerator;
 
+/**
+ * Turns spawning entities into custom mobs.
+ * <p>
+ * One tick after an entity spawned (so other plugins can change it first), it is taken over when its world is
+ * enabled, it is no custom mob or extension yet, its spawn reason is not ignored by the world, some custom mob fits
+ * the spawn by type, spawn rules and weight, and the world's spawn chance hits. The mob is picked by weight. Mobs
+ * spawned during a blood night are marked with its number, so they can go when it ends.
+ */
 public class MobSpawner implements Listener {
-    private final Configuration configuration;
+    private final Supplier<? extends Collection<CustomMob>> mobs;
+    private final Function<World, WorldSettings> settings;
     private final MobCoordinator coordinator;
+    private final BloodNights nights;
     private final Plugin plugin;
+    private final RandomGenerator random;
 
-    public MobSpawner(Configuration configuration, MobCoordinator coordinator, Plugin plugin) {
-        this.configuration = configuration;
+    /**
+     * @param mobs          every custom mob
+     * @param settings      the settings of a world
+     * @param coordinator   registers the custom mobs
+     * @param nights        the running blood nights
+     * @param plugin        schedules the takeover
+     * @param random        rolls the spawn chance and the pick
+     */
+    public MobSpawner(
+            Supplier<? extends Collection<CustomMob>> mobs,
+            Function<World, WorldSettings> settings,
+            MobCoordinator coordinator,
+            BloodNights nights,
+            Plugin plugin,
+            RandomGenerator random) {
+        this.mobs = mobs;
+        this.settings = settings;
         this.coordinator = coordinator;
+        this.nights = nights;
         this.plugin = plugin;
+        this.random = random;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawn(EntitySpawnEvent event) {
-        // Wait one tick since there might be modification of freshly spawned mobs.
-        var entity = event.getEntity();
-        if (!(entity instanceof LivingEntity livingEntity)) return;
-        entity.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> handleSpawnedMob(livingEntity), 1);
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        plugin.getServer().getScheduler().runTask(plugin, () -> handleSpawnedMob(entity));
     }
 
     void handleSpawnedMob(LivingEntity entity) {
-        if (MobTags.isExtended(entity)) return;
-
-        WorldSettings worldSettings = configuration.worldConfig(entity.getWorld());
-        if (worldSettings.mobSettings().spawning().ignoredReasons().contains(entity.getEntitySpawnReason())) return;
-        Set<String> active = worldSettings.mobSettings().spawning().activeTypes();
-        if (active == null || active.isEmpty()) return;
-        List<CustomMob> matching = configuration.mobs().getMatching(active, entity.getType());
-        if (matching.isEmpty()) return;
-        if (worldSettings.mobSettings().spawning().spawnPercentage()
-                < ThreadLocalRandom.current().nextInt(100)) return;
-        // TODO: This doesnt factor in the spawn percentage of matching active mobs itself.
-        // TODO: Per mob spawn rate is not yet implemented.
-        CustomMob customMob = matching.get(ThreadLocalRandom.current().nextInt(matching.size()));
-        // TODO Building the mob with changed attributes, equipment, extensions etc is missing.
-        coordinator.register(entity, customMob);
+        if (!entity.isValid() || MobTags.isCustomMob(entity) || MobTags.isExtension(entity)) return;
+        WorldSettings worldSettings = settings.apply(entity.getWorld());
+        MobSpawning spawning = worldSettings.mobSettings().spawning();
+        if (!worldSettings.enabled() || spawning.ignoredReasons().contains(entity.getEntitySpawnReason())) return;
+        OptionalLong night = nights.running(entity.getWorld());
+        List<CustomMob> candidates = MobSelector.candidates(
+                mobs.get(), entity.getType(), SpawnContexts.of(entity, night.isPresent()), spawning::weight);
+        if (candidates.isEmpty() || spawning.spawnPercentage() <= random.nextInt(100)) return;
+        MobSelector.pick(candidates, spawning::weight, random).ifPresent(mob -> {
+            night.ifPresent(number -> MobTags.markNight(entity, number));
+            coordinator.register(entity, mob);
+        });
     }
 }

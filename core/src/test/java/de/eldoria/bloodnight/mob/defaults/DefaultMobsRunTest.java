@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.mob.defaults;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
+import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
@@ -81,8 +82,11 @@ class DefaultMobsRunTest {
         Plugin plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
         ItemRegistry items = new ItemRegistry();
-        coordinator =
-                new MobCoordinator(new MobOutfitter(() -> items), () -> items, mobs::get, Logger.getLogger("test"));
+        coordinator = new MobCoordinator(
+                new MobOutfitter(() -> items, ignored -> new MobSettings()),
+                () -> items,
+                mobs::get,
+                Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
         Behaviours behaviours = service.compileNow(mobs.values(), List.of());

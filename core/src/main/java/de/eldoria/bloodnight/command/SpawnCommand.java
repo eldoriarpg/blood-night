@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.util.MobTags;
 import net.strokkur.commands.DefaultExecutes;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
@@ -52,6 +53,7 @@ final class SpawnCommand {
             sender.sendMessage("Mob %s is not a living entity type".formatted(mob));
             return;
         }
+        plugin.bloodNights().running(living.getWorld()).ifPresent(night -> MobTags.markNight(living, night));
         plugin.coordinator().register(living, definition);
         sender.sendMessage("Spawned %s at %d %d %d"
                 .formatted(mob, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
