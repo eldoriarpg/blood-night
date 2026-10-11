@@ -79,7 +79,6 @@ class EditorPayloadTest {
                         .path("value")
                         .asInt());
         assertEquals("broken", json.path("configProblems").path("items.yml").asString());
-        assertTrue(json.path("mobs").path("test").path("migrationNotes").isMissingNode());
     }
 
     @Test

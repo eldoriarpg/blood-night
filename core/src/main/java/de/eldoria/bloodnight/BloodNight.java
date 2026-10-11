@@ -148,11 +148,6 @@ public final class BloodNight extends JavaPlugin {
                         behaviours = result;
                         coordinator.rebind(result);
                         dispatcher.register(this, result.usedTriggers());
-                        configuration.mobs().all().stream()
-                                .filter(mob -> !mob.migrationNotes().isEmpty())
-                                .forEach(mob -> getLogger()
-                                        .warning("Mob %s was migrated from the old format: %s"
-                                                .formatted(mob.id(), mob.migrationNotes())));
                         applied.complete(result);
                     });
                 });

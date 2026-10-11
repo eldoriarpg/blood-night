@@ -120,30 +120,4 @@ class BehaviourServiceTest {
 
         assertEquals(registry.get("good"), read.get("good"));
     }
-
-    @Test
-    void oldMobConfigsAreMigrated() {
-        String json = """
-                {"id": "legacy",
-                 "equipment": {},
-                 "attributes": {"displayName": "Legacy", "entityType": "ZOMBIE", "exactType": false,
-                                "healthModifier": "DEFAULT", "health": 20, "damageModifier": "DEFAULT", "damage": 1},
-                 "extension": {"type": "NONE"},
-                 "nodes": {"nodes": {
-                   "0": {"nodeClass": "de.eldoria.bloodnight.nodes.value.impl.IntegerNode", "input": {}, "value": 5, "id": 0},
-                   "1": {"nodeClass": "de.eldoria.bloodnight.nodes.action.impl.PrintNode", "input": {"value": {"node": 0, "name": "value"}}, "id": 1},
-                   "2": {"nodeClass": "de.eldoria.bloodnight.nodes.trigger.impl.TickNode", "input": {}, "executions": {"nextNodes": {"next": [1]}}, "id": 2}
-                 }}}
-                """;
-
-        CustomMob mob = JsonMapper.builder().build().readValue(json, CustomMob.class);
-        Behaviours result = service("1").compileNow(List.of(mob), List.of());
-
-        assertEquals("mob.tick", mob.behaviour().nodes().get("2").type());
-        assertTrue(mob.migrationNotes().isEmpty());
-        assertTrue(result.of("legacy").isPresent());
-        String written = JsonMapper.builder().build().writeValueAsString(mob);
-        assertTrue(written.contains("\"behaviour\""), written);
-        assertTrue(!written.contains("\"nodes\":{\"nodes\"") && !written.contains("migrationNotes"), written);
-    }
 }
