@@ -5,47 +5,32 @@
  */
 package de.eldoria.bloodnight.configuration.elements.world.nightselection;
 
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Curve;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Interval;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.MoonPhase;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Phase;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Random;
-
-import java.util.function.Supplier;
-
+/**
+ * The ways a world decides which nights are blood nights, as the alpha had them.
+ */
 public enum NightSelectionType {
     /**
-     * Simply choose a random type.
+     * The same probability every night.
      */
-    RANDOM(Random::new),
+    RANDOM,
     /**
-     * Based on the current ingame moon phase.
+     * A probability per phase of the world's moon.
      */
-    MOON_PHASE(MoonPhase::new),
+    MOON_PHASE,
     /**
-     * Based on the current real world moon phase.
+     * A probability per phase of the real moon on the night's date.
      */
-    REAL_MOON_PHASE(MoonPhase::new),
+    REAL_MOON_PHASE,
     /**
-     * Based on an interval and probability.
+     * Every n-th night, with a probability.
      */
-    INTERVAL(Interval::new),
+    INTERVAL,
     /**
-     * Based on daily different probability.
+     * A custom cycle of phases, each with its own probability.
      */
-    PHASE(Phase::new),
+    PHASE,
     /**
-     * Based on a curve defining the probability.
+     * A probability rising smoothly from a minimum to a maximum and back over a period of nights.
      */
-    CURVE(Curve::new);
-
-    private final Supplier<NightSelectionCheck> create;
-
-    NightSelectionType(Supplier<NightSelectionCheck> create) {
-        this.create = create;
-    }
-
-    public NightSelectionCheck create() {
-        return create.get();
-    }
+    CURVE
 }

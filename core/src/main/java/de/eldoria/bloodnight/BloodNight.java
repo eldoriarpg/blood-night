@@ -22,8 +22,9 @@ import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
-import de.eldoria.bloodnight.mobs.NightWatch;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
+import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Clock;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -55,6 +57,8 @@ public final class BloodNight extends JavaPlugin {
     private TriggerDispatcher dispatcher;
     private BukkitTask tickTask;
     private BukkitTask nightTask;
+    private NightSelector selector;
+    private BloodNights bloodNights;
     private Behaviours behaviours = Behaviours.empty();
     private Catalog catalog;
 
@@ -99,10 +103,14 @@ public final class BloodNight extends JavaPlugin {
         getLifecycleManager()
                 .registerEventHandler(LifecycleEvents.COMMANDS.newHandler(
                         event -> BloodNightCommandBrigadier.register(event.registrar(), this)));
-        NightWatch nights = new NightWatch(coordinator::endNight);
+        selector = new NightSelector(
+                world -> configuration.worldConfig(world).nightSelection(),
+                Clock.systemUTC(),
+                () -> getServer().getServerTickManager().getTickRate());
+        bloodNights = new BloodNights(selector, getServer().getPluginManager(), coordinator::endNight, getLogger());
         nightTask = getServer()
                 .getScheduler()
-                .runTaskTimer(this, () -> nights.check(getServer().getWorlds()), 20, 20);
+                .runTaskTimer(this, () -> bloodNights.check(getServer().getWorlds()), 20, 20);
         recompile();
     }
 
@@ -132,6 +140,7 @@ public final class BloodNight extends JavaPlugin {
         MobIds.clear();
         if (tickTask != null) tickTask.cancel();
         if (nightTask != null) nightTask.cancel();
+        if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
         if (dispatcher != null) dispatcher.unregister();
         if (behaviourService != null) behaviourService.close();
     }
@@ -193,5 +202,19 @@ public final class BloodNight extends JavaPlugin {
      */
     public Catalog catalog() {
         return catalog;
+    }
+
+    /**
+     * @return decides which nights are blood nights
+     */
+    public NightSelector selector() {
+        return selector;
+    }
+
+    /**
+     * @return the blood nights running in the worlds
+     */
+    public BloodNights bloodNights() {
+        return bloodNights;
     }
 }
