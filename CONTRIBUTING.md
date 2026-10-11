@@ -14,6 +14,10 @@ CI verifies a feature, fix or chore branch through its pull request only; pushin
 Open a draft pull request to have a branch verified before it is ready for review. Renovate branches, `main` and
 version tags are verified on push.
 
+## Testing on a server
+
+`./gradlew :core:runServer` builds the plugin and starts a Paper server with it in `core/run/`.
+
 ## Pull requests
 
 The title says what the change does, as a short imperative sentence: `Add extension damage and death triggers`.

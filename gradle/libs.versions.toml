@@ -1,4 +1,5 @@
 [versions]
+run-paper = "3.1.0"
 plugin-yml = "0.9.0"
 strokkcommands = "2.3.1"
 jackson = "3.2.3"
@@ -56,6 +57,7 @@ eldoria-utilities = ["eldoutil-items", "eldoutil-entities"]
 junit = ["junit-jupiter", "junit-params"]
 
 [plugins]
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
 plugin-yml-paper = { id = "de.eldoria.plugin-yml.paper", version.ref = "plugin-yml" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
