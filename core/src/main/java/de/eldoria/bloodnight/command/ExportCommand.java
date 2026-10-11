@@ -38,7 +38,8 @@ final class ExportCommand {
                     EditorPayload.of(
                                     plugin.configuration(),
                                     plugin.behaviours(),
-                                    plugin.catalog().version())
+                                    plugin.catalog().version(),
+                                    plugin.getServer().getWorlds())
                             .asJson());
             Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(plugin.catalog()));
             sender.sendMessage("Editor payload and catalog written to " + directory);

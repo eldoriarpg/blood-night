@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -12,11 +13,14 @@ import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
 import de.eldoria.graph.compiler.GraphProblem;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,10 +34,11 @@ import java.util.TreeMap;
  * @param catalog        version of the catalog the server runs
  * @param mobs           mob definitions by id, including their behaviour graphs
  * @param macros         the macro library
- * @param items          registered items by id
+ * @param items          registered items by id; the editor assigns them, it cannot create or change them
  * @param problems       problems per mob id
  * @param macroProblems  problems per macro id
  * @param configProblems files that could not be read, with the reason
+ * @param settings       the server-wide settings, the global drops and every world's settings
  */
 public record EditorPayload(
         String catalog,
@@ -42,10 +47,16 @@ public record EditorPayload(
         Map<String, ItemStack> items,
         Map<String, List<GraphProblem>> problems,
         Map<String, List<GraphProblem>> macroProblems,
-        Map<String, String> configProblems) {
+        Map<String, String> configProblems,
+        SettingsPayload settings) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
             .addModule(new EditorSerialization())
+            .changeDefaultVisibility(visibility -> visibility
+                    .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                    .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                    .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE))
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
             .build();
 
@@ -53,9 +64,11 @@ public record EditorPayload(
      * @param configuration the loaded configuration
      * @param behaviours    the last compilation
      * @param catalog       version of the catalog the server runs
+     * @param worlds        the server's worlds
      * @return the payload
      */
-    public static EditorPayload of(Configuration configuration, Behaviours behaviours, String catalog) {
+    public static EditorPayload of(
+            Configuration configuration, Behaviours behaviours, String catalog, Collection<? extends World> worlds) {
         Map<String, CustomMob> mobs = new TreeMap<>();
         configuration.mobs().all().forEach(mob -> mobs.put(mob.id(), mob));
         return new EditorPayload(
@@ -65,7 +78,18 @@ public record EditorPayload(
                 new TreeMap<>(configuration.items().registrations()),
                 behaviours.problems(),
                 behaviours.macroProblems(),
-                configuration.problems());
+                configuration.problems(),
+                settings(configuration, worlds));
+    }
+
+    private static SettingsPayload settings(Configuration configuration, Collection<? extends World> worlds) {
+        Map<String, SettingsPayload.WorldPayload> settings = new TreeMap<>();
+        for (World world : worlds) {
+            settings.put(
+                    world.getUID().toString(),
+                    new SettingsPayload.WorldPayload(world.getName(), configuration.worldConfig(world)));
+        }
+        return new SettingsPayload(configuration.main(), configuration.globalDrops(), settings);
     }
 
     /**

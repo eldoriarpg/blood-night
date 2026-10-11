@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     api(project(":api"))
+    api(project(":editor-api"))
     api(project(":bukkit-nodes"))
     api(project(":graph-editor-payload"))
     api(libs.bundles.eldoria.utilities)
@@ -34,6 +35,7 @@ paper {
         "debug" to "fires the debug trigger of mobs",
         "export" to "writes the editor payload and catalog to the debug folder",
         "night" to "shows the night selection and the next blood night of a world",
+        "editor" to "opens, applies or closes a web editor session",
     )
     permissions {
         register("bloodnight.admin") {

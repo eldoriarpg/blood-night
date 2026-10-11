@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobRegistry;
+import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import dev.chojo.ocular.Configurations;
 import dev.chojo.ocular.dataformats.YamlDataFormat;
@@ -18,7 +19,11 @@ import dev.chojo.ocular.key.Key;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,8 +31,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * All configuration files of the plugin.
@@ -60,6 +67,7 @@ public class Configuration {
             Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
     private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS);
 
+    private static final DateTimeFormatter BACKUP_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
     private final Configurations<ConfigFile> configurations;
     private final Set<Key<?>> worlds = new LinkedHashSet<>();
     private final Set<Key<?>> completed = new HashSet<>();
@@ -88,11 +96,81 @@ public class Configuration {
     }
 
     public WorldSettings worldConfig(World world) {
+        return settings(worldKey(world));
+    }
+
+    private Key<WorldSettings> worldKey(World world) {
         Key<WorldSettings> key = Key.builder(Path.of("worlds", world.getUID() + ".yml"), WorldSettings::new)
                 .name(world.getName() + " Configuration")
                 .build();
         worlds.add(key);
-        return settings(key);
+        return key;
+    }
+
+    /**
+     * Copies every settings and user data file that exists to {@code backups/<time>/}.
+     *
+     * @return the backup's directory
+     */
+    public Path backup() throws IOException {
+        Path base = configurations.base();
+        Path target = base.resolve("backups").resolve(BACKUP_TIME.format(LocalDateTime.now()));
+        for (String file : List.of("config.yml", "global_drops.yml", "mobs.yml", "items.yml", "macros.yml", "worlds")) {
+            Path source = base.resolve(file);
+            if (!Files.exists(source)) continue;
+            try (Stream<Path> files = Files.walk(source)) {
+                for (Path path : files.filter(Files::isRegularFile).toList()) {
+                    Path copy = target.resolve(base.relativize(path));
+                    Files.createDirectories(Objects.requireNonNull(copy.getParent()));
+                    Files.copy(path, copy);
+                }
+            }
+        }
+        return target;
+    }
+
+    /**
+     * Replaces the mobs and writes {@code mobs.yml}.
+     */
+    public void replaceMobs(Collection<CustomMob> mobs) {
+        MobRegistry registry = new MobRegistry();
+        mobs.forEach(registry::add);
+        replace(MOBS, registry);
+    }
+
+    /**
+     * Replaces the macros and writes {@code macros.yml}.
+     */
+    public void replaceMacros(List<Macro> macros) {
+        replace(MACROS, new MacroFile(macros));
+    }
+
+    /**
+     * Replaces the server-wide settings and writes {@code config.yml}.
+     */
+    public void replaceMain(ConfigFile main) {
+        replace(MAIN, main);
+    }
+
+    /**
+     * Replaces the global drops and writes {@code global_drops.yml}.
+     */
+    public void replaceGlobalDrops(GlobalDrops drops) {
+        replace(GLOBAL_DROPS, drops);
+    }
+
+    /**
+     * Replaces a world's settings and writes its file.
+     */
+    public void replaceWorld(World world, WorldSettings settings) {
+        replace(worldKey(world), settings);
+    }
+
+    private <V> void replace(Key<V> key, V value) {
+        problems.remove(key.path().toString());
+        configurations.replace(key, value);
+        configurations.save(key);
+        completed.add(key);
     }
 
     public MobRegistry mobs() {
