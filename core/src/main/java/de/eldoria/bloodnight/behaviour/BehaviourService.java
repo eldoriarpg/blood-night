@@ -109,9 +109,9 @@ public final class BehaviourService implements AutoCloseable {
         Set<String> keys = new HashSet<>();
         int fromCache = 0;
         for (CustomMob mob : mobs) {
-            String key = BytecodeCache.key(version, mob.behaviour(), macros);
-            keys.add(key);
             ClassName name = ClassName.get(PACKAGE, className(mob.id()));
+            String key = BytecodeCache.key(version, name.reflectionName(), mob.behaviour(), macros);
+            keys.add(key);
             try {
                 CompiledGraph<CompiledBehaviour> graph;
                 var cached = cache.read(key).filter(entry -> entry.name().equals(name.reflectionName()));
