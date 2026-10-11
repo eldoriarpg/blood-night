@@ -17,6 +17,7 @@ import java.util.TreeMap;
  * @param type       stable id of the node definition, e.g. {@code math.add}
  * @param config     literal values for the definition's config fields, still unchecked
  * @param inputs     data edges by input port id
+ * @param literals   values typed directly into inputs instead of connecting an edge, by input port id, still unchecked
  * @param executions chained node ids by execution port id, in execution order
  * @param editor     editor state such as position or colour, or {@code null}; never read by the framework
  */
@@ -24,12 +25,14 @@ import java.util.TreeMap;
 public record NodeInstance(String type,
                            Map<String, JsonNode> config,
                            Map<String, Edge> inputs,
+                           Map<String, JsonNode> literals,
                            Map<String, List<String>> executions,
                            JsonNode editor) {
     public NodeInstance {
         Objects.requireNonNull(type, "type");
         config = sorted(config);
         inputs = sorted(inputs);
+        literals = sorted(literals);
         executions = sortedLists(executions);
         editor = editor == null || editor.isNull() || editor.isMissingNode() ? null : editor;
     }
@@ -62,6 +65,7 @@ public record NodeInstance(String type,
         private final String type;
         private final Map<String, JsonNode> config = new TreeMap<>();
         private final Map<String, Edge> inputs = new TreeMap<>();
+        private final Map<String, JsonNode> literals = new TreeMap<>();
         private final Map<String, List<String>> executions = new TreeMap<>();
         private JsonNode editor;
 
@@ -95,6 +99,18 @@ public record NodeInstance(String type,
         }
 
         /**
+         * Sets an input to a value instead of connecting it.
+         *
+         * @param port  input port id
+         * @param value literal value
+         * @return this builder
+         */
+        public Builder literal(String port, JsonNode value) {
+            literals.put(port, value);
+            return this;
+        }
+
+        /**
          * Appends nodes to an execution port.
          *
          * @param port  execution port id
@@ -121,7 +137,7 @@ public record NodeInstance(String type,
          * @return the node
          */
         public NodeInstance build() {
-            return new NodeInstance(type, config, inputs, executions, editor);
+            return new NodeInstance(type, config, inputs, literals, executions, editor);
         }
     }
 }

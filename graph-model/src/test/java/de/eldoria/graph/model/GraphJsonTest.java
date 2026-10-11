@@ -21,7 +21,7 @@ class GraphJsonTest {
                 .node("tick", NodeInstance.of("entry.tick").chain("next", "print", "other"))
                 .node("five", NodeInstance.of("value.number").config("value", DoubleNode.valueOf(5)))
                 .node("text", NodeInstance.of("value.text").config("value", StringNode.valueOf("\"); System.exit(0); //")))
-                .node("add", NodeInstance.of("math.add").input("a", "five", "value").input("b", "five", "value"))
+                .node("add", NodeInstance.of("math.add").input("a", "five", "value").literal("b", DoubleNode.valueOf(2)))
                 .node("print", NodeInstance.of("debug.print").input("value", "add", "result").editor(position))
                 .node("other", NodeInstance.of("debug.print"))
                 .build();

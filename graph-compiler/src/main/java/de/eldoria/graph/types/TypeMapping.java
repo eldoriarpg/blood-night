@@ -90,13 +90,10 @@ public final class TypeMapping {
 
     /**
      * @param type a port type
-     * @return constant names when the type is an enum, for editor dropdowns
+     * @return the values its codec offers, e.g. enum constants or registry keys, for editor dropdowns
      */
     public List<String> enumValues(PortType type) {
-        if (type instanceof PortType.Concrete concrete && concrete.raw().isEnum()) {
-            return Arrays.stream(concrete.raw().getEnumConstants()).map(constant -> ((Enum<?>) constant).name()).toList();
-        }
-        return List.of();
+        return codec(type).map(LiteralCodec::values).orElse(List.of());
     }
 
     /**

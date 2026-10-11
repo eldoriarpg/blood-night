@@ -1,7 +1,7 @@
 package de.eldoria.bloodnight;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
-import de.eldoria.bloodnight.compiler.CompileClasspath;
+import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.compiler.HardcodedBehaviour;
 import de.eldoria.graph.compiler.CompilationException;
 import de.eldoria.graph.compiler.CompilationResult;
@@ -63,7 +63,7 @@ public final class BloodNight extends JavaPlugin {
     private void install(CompiledBehaviour behaviour) {
         getServer().getPluginManager().registerEvent(EntityDamageEvent.class, dispatchOwner, EventPriority.NORMAL,
                 (listener, event) -> {
-                    if (event instanceof EntityDamageEvent damage) behaviour.onEntityDamage(damage);
+                    if (event instanceof EntityDamageEvent damage) behaviour.onDamage(damage);
                 }, this, true);
         tickTask = getServer().getScheduler().runTaskTimer(this, behaviour::onTick, 1, 1);
         getLogger().info("Generated behaviour installed: %s loaded by %s".formatted(

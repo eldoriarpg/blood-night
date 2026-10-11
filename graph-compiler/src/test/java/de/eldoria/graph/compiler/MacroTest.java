@@ -168,6 +168,17 @@ class MacroTest {
     }
 
     @Test
+    void macroInputsTakeTypedInValues() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("start", NodeInstance.of("entry.start").chain("next", "print"))
+                .node("twice", NodeInstance.of("macro.double_it").literal("x", DoubleNode.valueOf(4.5)))
+                .node("print", print("twice", "result"))
+                .build();
+
+        assertEquals(List.of("9.0"), run(graph, library(doubleIt()), ToyHost::onStart));
+    }
+
+    @Test
     void actionMacroWithExits() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("score", NodeInstance.of("entry.score").chain("next", "check", "done"))

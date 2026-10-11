@@ -1,12 +1,21 @@
 package de.eldoria.bloodnight.api;
 
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityTeleportEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 
 /**
  * Behaviour of a custom mob, generated and compiled at runtime from its node graph.
  * <p>
- * Every entry point is a no-op by default; the generated class overrides those its graph uses. This is the only type
- * the plugin and generated code share.
+ * One method per trigger. Every method is a no-op by default; the generated class overrides those its graph uses.
+ * Each living mob has its own instance, constructed with its {@link MobContext}. This is the only type the plugin and
+ * generated code share besides the context.
  */
 public interface CompiledBehaviour {
     /**
@@ -16,10 +25,92 @@ public interface CompiledBehaviour {
     }
 
     /**
-     * Called when the mob takes damage.
-     *
-     * @param event the damage event
+     * Called when a debug trigger is fired by command.
      */
-    default void onEntityDamage(EntityDamageEvent event) {
+    default void onDebug() {
+    }
+
+    /**
+     * The mob took damage from something other than an entity.
+     */
+    default void onDamage(EntityDamageEvent event) {
+    }
+
+    /**
+     * The mob took damage from an entity that is not a player.
+     */
+    default void onDamageByEntity(EntityDamageByEntityEvent event) {
+    }
+
+    /**
+     * The mob took damage from a player.
+     */
+    default void onDamageByPlayer(EntityDamageByEntityEvent event) {
+    }
+
+    /**
+     * The mob damaged another entity.
+     */
+    default void onHit(EntityDamageByEntityEvent event) {
+    }
+
+    /**
+     * The mob is about to kill an entity or player.
+     */
+    default void onKill(EntityDamageByEntityEvent event) {
+    }
+
+    /**
+     * The mob is about to kill a player.
+     */
+    default void onPlayerKill(EntityDamageByEntityEvent event) {
+    }
+
+    /**
+     * The mob is about to kill an entity that is not a player.
+     */
+    default void onEntityKill(EntityDamageByEntityEvent event) {
+    }
+
+    /**
+     * The mob died.
+     */
+    default void onDeath(EntityDeathEvent event) {
+    }
+
+    /**
+     * The mob teleports.
+     */
+    default void onTeleport(EntityTeleportEvent event) {
+    }
+
+    /**
+     * The mob gets or loses a target.
+     */
+    default void onTargetChange(EntityTargetLivingEntityEvent event) {
+    }
+
+    /**
+     * The mob launched a projectile.
+     */
+    default void onProjectileShoot(ProjectileLaunchEvent event) {
+    }
+
+    /**
+     * A projectile launched by the mob hit something.
+     */
+    default void onProjectileHit(ProjectileHitEvent event) {
+    }
+
+    /**
+     * The mob is about to explode.
+     */
+    default void onExplosionPrime(ExplosionPrimeEvent event) {
+    }
+
+    /**
+     * The mob explodes.
+     */
+    default void onExplode(EntityExplodeEvent event) {
     }
 }

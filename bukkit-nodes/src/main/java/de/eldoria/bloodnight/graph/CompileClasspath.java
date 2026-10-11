@@ -1,6 +1,7 @@
-package de.eldoria.bloodnight.compiler;
+package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.graph.std.runtime.Cooldown;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 
@@ -25,7 +26,7 @@ import java.util.Set;
  * sources of a few anchor classes in case one of those loaders hides its URLs.
  */
 public final class CompileClasspath {
-    private static final List<Class<?>> ANCHORS = List.of(Bukkit.class, Component.class, CompiledBehaviour.class);
+    private static final List<Class<?>> ANCHORS = List.of(Bukkit.class, Component.class, CompiledBehaviour.class, Cooldown.class);
 
     private CompileClasspath() {
     }

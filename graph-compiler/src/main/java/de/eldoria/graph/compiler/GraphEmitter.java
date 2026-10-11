@@ -273,6 +273,8 @@ final class GraphEmitter {
             if (node.definition().descriptor().input(port).isEmpty()) {
                 throw new IllegalArgumentException("%s has no input %s".formatted(node.definition().id(), port));
             }
+            CodeBlock literal = node.literals().get(port);
+            if (literal != null) return literal;
             Edge edge = node.instance().inputs().get(port);
             if (edge == null) throw new IllegalArgumentException("Optional input %s is not connected; check connected() first".formatted(port));
             return read(node.id(), port, edge, scope, prelude);
@@ -280,7 +282,7 @@ final class GraphEmitter {
 
         @Override
         public boolean connected(String port) {
-            return node.instance().inputs().containsKey(port);
+            return node.instance().inputs().containsKey(port) || node.literals().containsKey(port);
         }
 
         @Override

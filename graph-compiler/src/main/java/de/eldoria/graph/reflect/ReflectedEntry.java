@@ -217,7 +217,7 @@ public final class ReflectedEntry {
             }
             List<String> ids = new ArrayList<>();
             for (Parameter parameter : target.getParameters()) {
-                String base = Properties.snakeCase(parameter.isNamePresent() ? parameter.getName() : parameter.getType().getSimpleName());
+                String base = Names.snakeCase(parameter.isNamePresent() ? parameter.getName() : parameter.getType().getSimpleName());
                 String unique = base;
                 for (int suffix = 2; ids.contains(unique); suffix++) unique = base + suffix;
                 ids.add(unique);

@@ -46,7 +46,7 @@ public final class HardcodedBehaviour {
                         .addStatement("logger.info($S + ticks)", "Generated tick: ")
                         .endControlFlow()
                         .build())
-                .addMethod(MethodSpec.methodBuilder("onEntityDamage")
+                .addMethod(MethodSpec.methodBuilder("onDamage")
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(EntityDamageEvent.class, "event")

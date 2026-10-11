@@ -55,6 +55,11 @@ public final class Codecs {
             public CodeBlock emit(E value) {
                 return CodeBlock.of("$T.$N", type, value.name());
             }
+
+            @Override
+            public List<String> values() {
+                return Arrays.stream(type.getEnumConstants()).map(Enum::name).toList();
+            }
         };
     }
 

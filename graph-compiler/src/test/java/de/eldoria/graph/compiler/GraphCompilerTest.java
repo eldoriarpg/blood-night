@@ -14,6 +14,7 @@ import de.eldoria.graph.toy.ToyNodes;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.StringNode;
 
 import java.net.URISyntaxException;
@@ -238,6 +239,41 @@ class GraphCompilerTest {
         ToyContext context = new ToyContext();
         compiled.instantiate(context).onStart();
         assertEquals(List.of("4.0"), context.printed());
+    }
+
+    @Test
+    void inputsTakeTypedInValues() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("score", NodeInstance.of("entry.score").chain("next", "sum", "hello", "picked"))
+                .node("add", NodeInstance.of("math.add").input("a", "score", "points").literal("b", IntNode.valueOf(3)))
+                .node("sum", print("add", "result"))
+                .node("hello", NodeInstance.of("debug.print").literal("value", StringNode.valueOf("hello")))
+                .node("big", NodeInstance.of("logic.greater").input("a", "score", "points").literal("b", DoubleNode.valueOf(10)))
+                .node("pick", NodeInstance.of("logic.pick").input("condition", "big", "result")
+                        .input("when_true", "score", "player").literal("when_false", StringNode.valueOf("nobody")))
+                .node("picked", print("pick", "result"))
+                .build();
+
+        assertEquals(List.of("4.0", "hello", "nobody"), run(graph, host -> host.onScore(1, "Lilly")));
+    }
+
+    @Test
+    void typedInValuesAreChecked() {
+        Graph graph = Graph.builder()
+                .node("start", NodeInstance.of("entry.start").chain("next", "print", "print_object"))
+                .node("one", number(1))
+                .node("add", NodeInstance.of("math.add").literal("a", StringNode.valueOf("five"))
+                        .input("b", "one", "value").literal("b", IntNode.valueOf(2)).literal("c", IntNode.valueOf(2)))
+                .node("print", print("add", "result"))
+                .node("print_object", NodeInstance.of("debug.print").literal("value", JsonNodeFactory.instance.objectNode()))
+                .build();
+
+        List<GraphProblem> problems = problems(graph);
+
+        assertProblem(problems, "add", "a", "Not a valid double");
+        assertProblem(problems, "add", "b", "both a connection and a value");
+        assertProblem(problems, "add", "c", "Unknown input");
+        assertProblem(problems, "print_object", "value", "cannot be typed in");
     }
 
     @Test

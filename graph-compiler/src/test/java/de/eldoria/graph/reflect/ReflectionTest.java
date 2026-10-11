@@ -102,12 +102,12 @@ class ReflectionTest {
 
     @Test
     void snakeCase() {
-        assertEquals("final_damage", Properties.snakeCase("FinalDamage"));
-        assertEquals("uuid_string", Properties.snakeCase("UUIDString"));
-        assertEquals("url", Properties.snakeCase("URL"));
-        assertEquals("entity_damage_event", Properties.snakeCase("EntityDamageEvent"));
-        assertEquals("x2_value", Properties.snakeCase("X2Value"));
-        assertEquals("class_", Properties.snakeCase("Class"));
+        assertEquals("final_damage", Names.snakeCase("FinalDamage"));
+        assertEquals("uuid_string", Names.snakeCase("UUIDString"));
+        assertEquals("url", Names.snakeCase("URL"));
+        assertEquals("entity_damage_event", Names.snakeCase("EntityDamageEvent"));
+        assertEquals("x2_value", Names.snakeCase("X2Value"));
+        assertEquals("class_", Names.snakeCase("Class"));
     }
 
     @Test

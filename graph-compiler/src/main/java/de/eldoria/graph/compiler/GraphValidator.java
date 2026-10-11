@@ -66,6 +66,7 @@ final class GraphValidator {
         private final Map<String, Map<String, PortType>> inputTypes = new HashMap<>();
         private final Map<String, Map<String, PortType>> outputTypes = new HashMap<>();
         private final Map<String, Map<String, PortType>> sourceTypes = new HashMap<>();
+        private final Map<String, Map<String, CodeBlock>> literals = new HashMap<>();
         private final Set<String> resolving = new HashSet<>();
 
         Run(Graph graph) {
@@ -87,7 +88,7 @@ final class GraphValidator {
             }
             Map<String, ValidatedGraph.Node> nodes = new LinkedHashMap<>();
             definitions.forEach((id, definition) -> nodes.put(id, new ValidatedGraph.Node(id, graph.nodes().get(id), definition,
-                    Map.copyOf(inputTypes.get(id)), Map.copyOf(outputTypes.get(id)), Map.copyOf(sourceTypes.get(id)), Map.copyOf(config.get(id)))));
+                    Map.copyOf(inputTypes.get(id)), Map.copyOf(outputTypes.get(id)), Map.copyOf(sourceTypes.get(id)), Map.copyOf(literals.get(id)), Map.copyOf(config.get(id)))));
             List<String> entries = definitions.entrySet().stream()
                     .filter(entry -> entry.getValue() instanceof EntryDefinition)
                     .map(Map.Entry::getKey)
@@ -134,8 +135,12 @@ final class GraphValidator {
                     problems.add(GraphProblem.error(id, port, "Node %s has no output %s".formatted(edge.node(), edge.port())));
                 }
             });
+            instance.literals().keySet().forEach(port -> {
+                if (descriptor.input(port).isEmpty()) problems.add(GraphProblem.error(id, port, "Unknown input"));
+                else if (instance.inputs().containsKey(port)) problems.add(GraphProblem.error(id, port, "Input has both a connection and a value"));
+            });
             descriptor.inputs().stream()
-                    .filter(port -> !port.optional() && !instance.inputs().containsKey(port.id()))
+                    .filter(port -> !port.optional() && !instance.inputs().containsKey(port.id()) && !instance.literals().containsKey(port.id()))
                     .forEach(port -> problems.add(GraphProblem.error(id, port.id(), "Required input is not connected")));
         }
 
@@ -186,6 +191,21 @@ final class GraphValidator {
             });
         }
 
+        private Optional<PortType> literal(String id, Port port, JsonNode value, Map<String, CodeBlock> code) {
+            Optional<PortType> type = literalType(port, value);
+            if (type.isEmpty()) {
+                problems.add(GraphProblem.error(id, port.id(), "Input of type %s cannot be typed in, connect a node".formatted(platform.types().name(port.type()))));
+                return Optional.empty();
+            }
+            try {
+                code.put(port.id(), platform.types().literal(type.get(), value));
+                return type;
+            } catch (IllegalArgumentException e) {
+                problems.add(GraphProblem.error(id, port.id(), e.getMessage()));
+                return Optional.empty();
+            }
+        }
+
         private void resolveTypes(String id) {
             if (outputTypes.containsKey(id)) return;
             if (!resolving.add(id)) return;
@@ -194,7 +214,18 @@ final class GraphValidator {
             Map<String, PortType> bindings = new HashMap<>();
             Map<String, PortType> sources = new LinkedHashMap<>();
 
+            Map<String, CodeBlock> literalCode = new HashMap<>();
             for (Port port : definition.descriptor().inputs()) {
+                JsonNode literal = instance.literals().get(port.id());
+                if (literal != null && !instance.inputs().containsKey(port.id())) {
+                    literal(id, port, literal, literalCode).ifPresent(type -> {
+                        sources.put(port.id(), type);
+                        if (!TypeInference.unify(port.type(), type, bindings)) {
+                            problems.add(GraphProblem.error(id, port.id(), "Conflicting types for %s: %s".formatted(port.type().id(), type.id())));
+                        }
+                    });
+                    continue;
+                }
                 Edge edge = instance.inputs().get(port.id());
                 if (edge == null || !definitions.containsKey(edge.node())) continue;
                 if (resolving.contains(edge.node())) {
@@ -219,7 +250,7 @@ final class GraphValidator {
                 PortType expected = port.type().resolve(bindings);
                 inputs.put(port.id(), expected);
                 PortType source = sources.get(port.id());
-                if (source != null && !expected.accepts(source)) {
+                if (source != null && !literalCode.containsKey(port.id()) && !expected.accepts(source)) {
                     problems.add(GraphProblem.error(id, port.id(), "Expected %s but %s provides %s".formatted(
                             platform.types().name(expected), instance.inputs().get(port.id()).node(), platform.types().name(source))));
                 }
@@ -229,8 +260,25 @@ final class GraphValidator {
             inputTypes.put(id, inputs);
             outputTypes.put(id, outputs);
             sourceTypes.put(id, sources);
+            literals.put(id, literalCode);
             resolving.remove(id);
         }
+    }
+
+    /**
+     * Type of a value typed into an input: the port's own type when it has a literal codec, otherwise the type the
+     * JSON value suggests (text, integer, number, boolean), as long as the port accepts it. Ports of types without a
+     * literal form, such as locations, take no values.
+     */
+    private Optional<PortType> literalType(Port port, JsonNode value) {
+        if (platform.types().codec(port.type()).isPresent()) return Optional.of(port.type());
+        PortType inferred;
+        if (value.isBoolean()) inferred = PortType.of(boolean.class);
+        else if (value.isIntegralNumber() && value.canConvertToInt()) inferred = PortType.of(int.class);
+        else if (value.isNumber()) inferred = PortType.of(double.class);
+        else if (value.isString()) inferred = PortType.of(String.class);
+        else return Optional.empty();
+        return port.type().accepts(inferred) ? Optional.of(inferred) : Optional.empty();
     }
 
     /**

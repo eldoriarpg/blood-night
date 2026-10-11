@@ -20,12 +20,6 @@ import java.util.TreeMap;
  * Finds the readable and writable properties of a class.
  */
 final class Properties {
-    private static final Set<String> KEYWORDS = Set.of("abstract", "assert", "boolean", "break", "byte", "case", "catch",
-            "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", "finally",
-            "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long", "native", "new",
-            "package", "private", "protected", "public", "return", "short", "static", "strictfp", "super", "switch",
-            "synchronized", "this", "throw", "throws", "transient", "try", "void", "volatile", "while", "true", "false",
-            "null", "var", "yield", "record", "sealed", "permits");
 
     private static final Set<String> OBJECT_METHODS = Set.of("toString", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
 
@@ -108,7 +102,7 @@ final class Properties {
         if (style.active()) {
             fluentGetters(type, style).values().forEach(method -> {
                 if (!rules.accepts(method)) return;
-                String id = snakeCase(method.getName());
+                String id = Names.snakeCase(method.getName());
                 portType(method.getGenericReturnType(), rules)
                         .ifPresent(portType -> byId.putIfAbsent(id, new Getter(id, method, portType)));
             });
@@ -166,7 +160,7 @@ final class Properties {
         for (Method method : type.getMethods()) {
             if (method.getParameterCount() != 1 || !isAccessor(method.getName(), "set")) continue;
             if (!rules.accepts(method)) continue;
-            byProperty.computeIfAbsent(snakeCase(method.getName().substring(3)), key -> new ArrayList<>()).add(method);
+            byProperty.computeIfAbsent(Names.snakeCase(method.getName().substring(3)), key -> new ArrayList<>()).add(method);
         }
         Map<String, Setter> byId = new TreeMap<>();
         byProperty.forEach((property, methods) -> {
@@ -175,7 +169,7 @@ final class Properties {
                 Optional<PortType> portType = portType(method.getGenericParameterTypes()[0], rules);
                 if (portType.isEmpty()) continue;
                 String id = byId.containsKey("set_" + property)
-                        ? "set_%s_%s".formatted(property, snakeCase(method.getParameterTypes()[0].getSimpleName()))
+                        ? "set_%s_%s".formatted(property, Names.snakeCase(method.getParameterTypes()[0].getSimpleName()))
                         : "set_" + property;
                 byId.putIfAbsent(id, new Setter(id, property, method, portType.get()));
             }
@@ -184,7 +178,7 @@ final class Properties {
             fluentGetters(type, style).values().forEach(getter -> fluentSetter(type, getter.getName(), getter.getReturnType())
                     .filter(rules::accepts)
                     .ifPresent(setter -> {
-                        String property = snakeCase(getter.getName());
+                        String property = Names.snakeCase(getter.getName());
                         portType(setter.getGenericParameterTypes()[0], rules)
                                 .ifPresent(portType -> byId.putIfAbsent("set_" + property, new Setter("set_" + property, property, setter, portType)));
                     }));
@@ -192,37 +186,15 @@ final class Properties {
         return List.copyOf(byId.values());
     }
 
-    /**
-     * Turns a Java name into a port id: {@code FinalDamage} → {@code final_damage}, {@code UUIDString} →
-     * {@code uuid_string}. Java keywords get a trailing underscore, so ids double as variable names.
-     */
-    static String snakeCase(String name) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < name.length(); i++) {
-            char current = name.charAt(i);
-            if (Character.isUpperCase(current) && i > 0) {
-                char previous = name.charAt(i - 1);
-                boolean nextIsLower = i + 1 < name.length() && Character.isLowerCase(name.charAt(i + 1));
-                if (Character.isLowerCase(previous) || Character.isDigit(previous) || (Character.isUpperCase(previous) && nextIsLower)) {
-                    result.append('_');
-                }
-            }
-            result.append(Character.toLowerCase(current));
-        }
-        String id = result.toString().replaceAll("[^a-z0-9_]", "").replaceAll("^[^a-z]+", "");
-        if (id.isEmpty()) throw new IllegalArgumentException("Cannot derive an id from " + name);
-        return KEYWORDS.contains(id) ? id + "_" : id;
-    }
-
     private static Optional<String> propertyOf(Method method, Class<?> owner) {
         String name = method.getName();
-        if (isAccessor(name, "get")) return Optional.of(snakeCase(name.substring(3)));
+        if (isAccessor(name, "get")) return Optional.of(Names.snakeCase(name.substring(3)));
         if (isAccessor(name, "is") && (method.getReturnType() == boolean.class || method.getReturnType() == Boolean.class)) {
-            return Optional.of(snakeCase(name.substring(2)));
+            return Optional.of(Names.snakeCase(name.substring(2)));
         }
         if (owner.isRecord()) {
             for (RecordComponent component : owner.getRecordComponents()) {
-                if (component.getAccessor().getName().equals(name)) return Optional.of(snakeCase(name));
+                if (component.getAccessor().getName().equals(name)) return Optional.of(Names.snakeCase(name));
             }
         }
         return Optional.empty();

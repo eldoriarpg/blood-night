@@ -3,6 +3,8 @@ package de.eldoria.graph.types;
 import com.palantir.javapoet.CodeBlock;
 import tools.jackson.databind.JsonNode;
 
+import java.util.List;
+
 /**
  * Turns a config value from the graph into a Java literal.
  * <p>
@@ -30,6 +32,16 @@ public interface LiteralCodec<T> {
      * @return an expression evaluating to the value
      */
     CodeBlock emit(T value);
+
+    /**
+     * Values the editor offers in a dropdown, e.g. enum constants or registry keys. Empty when any value of the type
+     * is fine.
+     *
+     * @return the allowed values as they are written into the graph
+     */
+    default List<String> values() {
+        return List.of();
+    }
 
     /**
      * Reads and emits in one step.

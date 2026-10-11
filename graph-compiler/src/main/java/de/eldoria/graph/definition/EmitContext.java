@@ -17,7 +17,8 @@ public interface EmitContext {
     String nodeId();
 
     /**
-     * Value of a data input. Evaluated once per execution scope, so reading it twice yields the same value.
+     * Value of a data input, either connected or typed into the node. Connected values are evaluated once per
+     * execution scope, so reading them twice yields the same value; typed-in values are literals.
      *
      * @param port input port id
      * @return an expression of the input's type
@@ -27,7 +28,7 @@ public interface EmitContext {
 
     /**
      * @param port input port id
-     * @return whether an edge is connected to the input
+     * @return whether the input has a value, connected or typed in
      */
     boolean connected(String port);
 

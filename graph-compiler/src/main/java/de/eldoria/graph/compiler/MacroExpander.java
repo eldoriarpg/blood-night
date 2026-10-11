@@ -4,6 +4,7 @@ import de.eldoria.graph.definition.MacroDefinition;
 import de.eldoria.graph.model.Edge;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
+import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 /**
  * Replaces every macro use in a graph with the macro's body.
@@ -134,7 +136,7 @@ final class MacroExpander {
                 node.inputs().forEach((port, edge) -> inner(edge).ifPresent(resolved -> inputs.put(port, resolved)));
                 Map<String, List<String>> executions = new LinkedHashMap<>();
                 node.executions().forEach((port, targets) -> executions.put(port, chain(targets)));
-                nodes.put(prefix + id, new NodeInstance(node.type(), node.config(), inputs, executions, node.editor()));
+                nodes.put(prefix + id, new NodeInstance(node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
                 List<MacroFrame> trace = new ArrayList<>(useOrigin.trace());
                 trace.add(new MacroFrame(definition.macro().id(), id));
                 origins.put(prefix + id, new Origin(useOrigin.node(), trace));
@@ -147,18 +149,21 @@ final class MacroExpander {
          */
         private void passThrough(String name, String node, Origin useOrigin) {
             Edge connected = use.inputs().get(name);
-            if (connected == null) {
+            JsonNode literal = use.literals().get(name);
+            if (connected == null && literal == null) {
                 problems.add(GraphProblem.error(useId, name, "Macro input is not connected"));
                 return;
             }
             String type = body.nodes().get(node).type().substring(MacroBoundary.INPUT_PREFIX.length());
-            nodes.put(prefix + node, new NodeInstance(MacroBoundary.PASS_PREFIX + type, Map.of(), Map.of(MacroBoundary.VALUE, connected), Map.of(), null));
+            Map<String, Edge> edges = connected == null ? Map.of() : Map.of(MacroBoundary.VALUE, connected);
+            Map<String, JsonNode> literals = literal == null ? Map.of() : Map.of(MacroBoundary.VALUE, literal);
+            nodes.put(prefix + node, new NodeInstance(MacroBoundary.PASS_PREFIX + type, Map.of(), edges, literals, Map.of(), null));
             origins.put(prefix + node, useOrigin);
             inputs.put(prefix + node, name);
         }
 
         private void checkUse() {
-            use.inputs().keySet().stream()
+            Stream.concat(use.inputs().keySet().stream(), use.literals().keySet().stream())
                     .filter(port -> !definition.inputNodes().containsKey(port))
                     .forEach(port -> problems.add(GraphProblem.error(useId, port, "Macro %s has no input %s".formatted(definition.macro().id(), port))));
             use.executions().keySet().stream()
@@ -204,7 +209,7 @@ final class MacroExpander {
                     }
                     executions.put(execution.getKey(), replaced);
                 }
-                if (changed) nodes.put(id, new NodeInstance(node.type(), node.config(), inputs, executions, node.editor()));
+                if (changed) nodes.put(id, new NodeInstance(node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
             }
         }
 
