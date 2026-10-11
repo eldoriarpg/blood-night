@@ -62,7 +62,8 @@ import javax.lang.model.element.Modifier;
  * (registry entries, enum constants) become constants, and a value read exactly once where it is computed is written
  * straight into its reader. To know what is read once, each entry method is emitted twice: the first pass names every
  * local with a unique token and counts the tokens in its output, the second pass inlines the locals counted once.
- * Values of stateful nodes, values read from a nested block and values of nodes keeping state in fields always stay
+ * Values of stateful nodes, values read from a nested block, values of nodes keeping state in fields and numeric
+ * values computed from operands of another type (whose local converts them, e.g. two ints to a double) always stay
  * locals, so nothing changes how often or whether such a value is computed. Emission is deterministic, which keeps
  * both passes in step.
  */
@@ -319,7 +320,8 @@ final class GraphEmitter {
         if (type instanceof PortType.Concrete concrete
                 && concrete.raw().isPrimitive()
                 && concrete.raw() != boolean.class
-                && !Expressions.isCallOrLiteral(expression)) {
+                && !Expressions.isCallOrLiteral(expression)
+                && !source.sourceTypes().values().stream().allMatch(type::equals)) {
             pass.pinIndex(index);
         }
         if (pass.inlines(index)) {
