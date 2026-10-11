@@ -11,11 +11,11 @@ import net.strokkur.commands.Command;
 import net.strokkur.commands.DefaultExecutes;
 import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.paper.Description;
-import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 /**
- * {@code /bloodnight}: administration of the plugin, one class per subcommand. Each subcommand has its own
+ * {@code /bloodnight}: administration of the plugin, one class per subcommand, each declaring its own path and
+ * permission. Each subcommand has its own
  * permission, {@code bloodnight.command.<subcommand>}; {@code bloodnight.admin} grants all of them.
  */
 @Command("bloodnight")
@@ -25,28 +25,22 @@ final class BloodNightCommand {
     private static final String USAGE =
             "/bloodnight <reload | spawn <mob> | problems [mob] | source <mob> | debug [mob] | export>";
 
-    @Subcommand("reload")
-    @Permission("bloodnight.command.reload")
+    @Subcommand
     final ReloadCommand reload;
 
-    @Subcommand("spawn")
-    @Permission("bloodnight.command.spawn")
+    @Subcommand
     final SpawnCommand spawn;
 
-    @Subcommand("problems")
-    @Permission("bloodnight.command.problems")
+    @Subcommand
     final ProblemsCommand problems;
 
-    @Subcommand("source")
-    @Permission("bloodnight.command.source")
+    @Subcommand
     final SourceCommand source;
 
-    @Subcommand("debug")
-    @Permission("bloodnight.command.debug")
+    @Subcommand
     final DebugCommand debug;
 
-    @Subcommand("export")
-    @Permission("bloodnight.command.export")
+    @Subcommand
     final ExportCommand export;
 
     BloodNightCommand(BloodNight plugin) {

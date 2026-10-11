@@ -9,6 +9,8 @@ import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.mob.CustomMob;
 import net.strokkur.commands.DefaultExecutes;
 import net.strokkur.commands.Executes;
+import net.strokkur.commands.Subcommand;
+import net.strokkur.commands.permission.Permission;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -19,6 +21,8 @@ import org.bukkit.entity.Player;
  * {@code /bloodnight spawn <mob>}: spawns a mob where a player stands, or at the spawn of the first world for the
  * console.
  */
+@Subcommand("spawn")
+@Permission("bloodnight.command.spawn")
 final class SpawnCommand {
     private final BloodNight plugin;
 

@@ -7,11 +7,15 @@ package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
 import net.strokkur.commands.Executes;
+import net.strokkur.commands.Subcommand;
+import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 /**
  * {@code /bloodnight debug [mob]}: fires the debug entry on every mob, or on the mobs of one id.
  */
+@Subcommand("debug")
+@Permission("bloodnight.command.debug")
 final class DebugCommand {
     private final BloodNight plugin;
 

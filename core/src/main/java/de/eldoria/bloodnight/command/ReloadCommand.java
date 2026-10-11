@@ -7,11 +7,15 @@ package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
 import net.strokkur.commands.Executes;
+import net.strokkur.commands.Subcommand;
+import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 /**
  * {@code /bloodnight reload}: reads the configuration files again and recompiles every mob.
  */
+@Subcommand("reload")
+@Permission("bloodnight.command.reload")
 final class ReloadCommand {
     private final BloodNight plugin;
 

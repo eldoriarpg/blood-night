@@ -8,6 +8,8 @@ package de.eldoria.bloodnight.command;
 import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.graph.compiler.GraphProblem;
 import net.strokkur.commands.Executes;
+import net.strokkur.commands.Subcommand;
+import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.TreeSet;
  * {@code /bloodnight problems [mob]}: the mobs whose behaviour does not compile or failed while running, or one mob's
  * problems and failures.
  */
+@Subcommand("problems")
+@Permission("bloodnight.command.problems")
 final class ProblemsCommand {
     private final BloodNight plugin;
 

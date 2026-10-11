@@ -75,16 +75,22 @@ class BloodNightCommandTest {
 
     @Test
     void eachSubcommandNeedsItsOwnPermission() {
-        PlayerMock player = server.addPlayer();
+        List<String> subcommands = List.of("reload", "spawn", "problems", "source", "debug", "export");
         CommandNode<CommandSourceStack> root = tree();
-        CommandSourceStack source = source(player);
+        assertFalse(root.canUse(source(server.addPlayer())));
 
-        assertFalse(root.canUse(source));
+        for (String granted : subcommands) {
+            PlayerMock player = server.addPlayer();
+            player.addAttachment(plugin, "bloodnight.command." + granted, true);
+            CommandSourceStack source = source(player);
 
-        player.addAttachment(plugin, "bloodnight.command.problems", true);
-        assertTrue(root.canUse(source));
-        assertTrue(root.getChild("problems").canUse(source));
-        assertFalse(root.getChild("reload").canUse(source));
-        assertFalse(root.getChild("spawn").canUse(source));
+            assertTrue(root.canUse(source), granted);
+            for (String subcommand : subcommands) {
+                assertEquals(
+                        subcommand.equals(granted),
+                        root.getChild(subcommand).canUse(source),
+                        granted + " grants " + subcommand);
+            }
+        }
     }
 }

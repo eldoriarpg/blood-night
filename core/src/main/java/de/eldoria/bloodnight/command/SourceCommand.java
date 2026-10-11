@@ -8,6 +8,8 @@ package de.eldoria.bloodnight.command;
 import de.eldoria.bloodnight.BloodNight;
 import net.strokkur.commands.DefaultExecutes;
 import net.strokkur.commands.Executes;
+import net.strokkur.commands.Subcommand;
+import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.nio.file.Path;
 /**
  * {@code /bloodnight source <mob>}: writes the generated Java source of a mob to {@code debug/<mob>.java}.
  */
+@Subcommand("source")
+@Permission("bloodnight.command.source")
 final class SourceCommand {
     private final BloodNight plugin;
 

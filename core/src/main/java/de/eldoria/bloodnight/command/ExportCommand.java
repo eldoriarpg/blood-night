@@ -9,6 +9,8 @@ import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.graph.payload.CatalogGenerator;
 import net.strokkur.commands.Executes;
+import net.strokkur.commands.Subcommand;
+import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ import java.nio.file.Path;
 /**
  * {@code /bloodnight export}: writes the editor payload and catalog to {@code debug/}.
  */
+@Subcommand("export")
+@Permission("bloodnight.command.export")
 final class ExportCommand {
     private final BloodNight plugin;
 
