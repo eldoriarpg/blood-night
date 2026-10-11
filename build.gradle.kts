@@ -1,11 +1,14 @@
 plugins {
     id("java")
+    alias(libs.plugins.shadow) apply false
 }
 
-group = "de.eldoria.bloodnight"
-version = "1.0.0"
+val frameworkProjects = setOf("graph-compiler")
 
 allprojects {
+    group = "de.eldoria.bloodnight"
+    version = "1.0.0"
+
     apply {
         plugin<JavaPlugin>()
     }
@@ -26,13 +29,15 @@ allprojects {
     dependencies {
         val libs = rootProject.libs
         implementation(platform(libs.jackson.bom))
-        compileOnly(libs.paper.api)
         compileOnly(libs.jetbrains.annotations)
-        testImplementation(libs.paper.api)
-        testImplementation(libs.mockbukkit)
         testImplementation(platform(libs.junit.bom))
         testImplementation(libs.bundles.junit)
         testRuntimeOnly(libs.junit.launcher)
+        if (project.name !in frameworkProjects) {
+            compileOnly(libs.paper.api)
+            testImplementation(libs.paper.api)
+            testImplementation(libs.mockbukkit)
+        }
     }
 
     tasks {
