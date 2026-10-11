@@ -120,4 +120,16 @@ class BehaviourServiceTest {
 
         assertEquals(registry.get("good"), read.get("good"));
     }
+
+    @Test
+    void mobsWithIdenticalGraphsKeepTheirOwnCacheEntries() {
+        List<CustomMob> twins = List.of(Mobs.zombie("first", cancelDamage()), Mobs.zombie("second", cancelDamage()));
+        service("1").compileNow(twins, List.of());
+
+        Behaviours again = service("1").compileNow(twins, List.of());
+
+        assertEquals(2, again.fromCache());
+        assertTrue(again.of("first").isPresent());
+        assertTrue(again.of("second").isPresent());
+    }
 }

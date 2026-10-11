@@ -69,15 +69,21 @@ public final class BytecodeCache {
     }
 
     /**
-     * @param version the plugin version
-     * @param graph   the behaviour graph
-     * @param macros  the macro library
+     * The class name is part of the key: two mobs with identical graphs compile to classes of different names, and
+     * would otherwise take turns overwriting one shared entry.
+     *
+     * @param version   the plugin version
+     * @param className binary name of the generated class
+     * @param graph     the behaviour graph
+     * @param macros    the macro library
      * @return the cache key
      */
-    public static String key(String version, Graph graph, List<Macro> macros) {
+    public static String key(String version, String className, Graph graph, List<Macro> macros) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             digest.update(version.getBytes(StandardCharsets.UTF_8));
+            digest.update((byte) 0);
+            digest.update(className.getBytes(StandardCharsets.UTF_8));
             digest.update((byte) 0);
             digest.update(GraphJson.write(graph).getBytes(StandardCharsets.UTF_8));
             digest.update((byte) 0);
