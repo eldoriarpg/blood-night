@@ -144,8 +144,8 @@ public final class BukkitNodes {
             value("value.item_type", ItemType.class, StringNode.valueOf("minecraft:stone"));
     public static final ExpressionDefinition BLOCK_TYPE =
             value("value.block_type", BlockType.class, StringNode.valueOf("minecraft:stone"));
-    public static final ExpressionDefinition POTION_EFFECT =
-            value("value.potion_effect", PotionEffectType.class, StringNode.valueOf("minecraft:speed"));
+    public static final ExpressionDefinition POTION_EFFECT_TYPE =
+            value("value.potion_effect_type", PotionEffectType.class, StringNode.valueOf("minecraft:speed"));
 
     private BukkitNodes() {}
 
@@ -167,7 +167,7 @@ public final class BukkitNodes {
                 ENTITY_TYPE,
                 ITEM_TYPE,
                 BLOCK_TYPE,
-                POTION_EFFECT);
+                POTION_EFFECT_TYPE);
     }
 
     private static ExpressionDefinition value(String id, Class<?> type, JsonNode defaultValue) {

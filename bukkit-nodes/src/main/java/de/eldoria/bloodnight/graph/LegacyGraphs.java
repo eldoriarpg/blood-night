@@ -39,7 +39,7 @@ public final class LegacyGraphs {
         map("StringNode", "value.text").value("value");
         map("DamageCauseNode", "value.damage_cause").value("value");
         map("EntityTypeNode", "value.entity_type").value("value", LegacyGraphs::registryKey);
-        map("PotionTypeNode", "value.potion_effect").value("value", LegacyGraphs::registryKey);
+        map("PotionTypeNode", "value.potion_effect_type").value("value", LegacyGraphs::registryKey);
         map("ItemNode", "value.item").value("item");
 
         for (String math : List.of("Add", "Subtract", "Multiply", "Divide", "Abs", "Ceil", "Floor", "Round", "Clamp")) {
