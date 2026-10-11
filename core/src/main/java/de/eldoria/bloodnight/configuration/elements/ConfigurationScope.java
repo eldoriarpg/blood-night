@@ -1,5 +1,12 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.configuration.elements;
 
 public enum ConfigurationScope {
-    GLOBAL, WORLD, MOB
+    GLOBAL,
+    WORLD,
+    MOB
 }

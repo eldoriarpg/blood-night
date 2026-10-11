@@ -1,0 +1,1228 @@
+{
+  "format" : 1,
+  "version" : "f52c59fab635ec85",
+  "nodes" : [ {
+    "id" : "debug.print",
+    "kind" : "action",
+    "category" : "debug",
+    "name" : "Print",
+    "description" : "Prints a value to the console",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.Object"
+      },
+      "literal" : true
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "entry.run",
+    "kind" : "entry",
+    "category" : "entry",
+    "name" : "Run",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "flow.batch",
+    "kind" : "control_flow",
+    "category" : "flow",
+    "name" : "Batch",
+    "description" : "Runs a chain several times, then continues",
+    "inputs" : [ {
+      "id" : "count",
+      "name" : "Count",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "index",
+      "name" : "Index",
+      "type" : {
+        "id" : "int"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "body",
+      "name" : "Body",
+      "repeating" : true
+    }, {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "flow.branch",
+    "kind" : "control_flow",
+    "category" : "flow",
+    "name" : "Branch",
+    "description" : "Runs one of two chains depending on a condition, then continues",
+    "inputs" : [ {
+      "id" : "condition",
+      "name" : "Condition",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    } ],
+    "executions" : [ {
+      "id" : "true",
+      "name" : "True"
+    }, {
+      "id" : "false",
+      "name" : "False"
+    }, {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "flow.for_each",
+    "kind" : "control_flow",
+    "category" : "flow",
+    "name" : "For Each",
+    "description" : "Runs a chain for every element of a list, then continues",
+    "inputs" : [ {
+      "id" : "list",
+      "name" : "List",
+      "type" : {
+        "raw" : "java.lang.Iterable",
+        "arguments" : [ {
+          "variable" : "T"
+        } ]
+      }
+    } ],
+    "outputs" : [ {
+      "id" : "element",
+      "name" : "Element",
+      "type" : {
+        "variable" : "T"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "body",
+      "name" : "Body",
+      "repeating" : true
+    }, {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "flow.switch",
+    "kind" : "control_flow",
+    "category" : "flow",
+    "name" : "Switch",
+    "description" : "Runs the chain of the case matching the value, default otherwise, then continues",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "executions" : [ {
+      "id" : "case_0",
+      "name" : "Case 0"
+    }, {
+      "id" : "case_1",
+      "name" : "Case 1"
+    }, {
+      "id" : "case_2",
+      "name" : "Case 2"
+    }, {
+      "id" : "case_3",
+      "name" : "Case 3"
+    }, {
+      "id" : "case_4",
+      "name" : "Case 4"
+    }, {
+      "id" : "case_5",
+      "name" : "Case 5"
+    }, {
+      "id" : "case_6",
+      "name" : "Case 6"
+    }, {
+      "id" : "case_7",
+      "name" : "Case 7"
+    }, {
+      "id" : "default",
+      "name" : "Default"
+    }, {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "function.chance",
+    "kind" : "pure",
+    "category" : "function",
+    "name" : "Chance",
+    "description" : "True with the given probability in percent",
+    "inputs" : [ {
+      "id" : "percent",
+      "name" : "Percent",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "function.cooldown",
+    "kind" : "pure",
+    "category" : "function",
+    "name" : "Cooldown",
+    "description" : "True at most once every n milliseconds; the first evaluation is true",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Milliseconds",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "function.random_integer",
+    "kind" : "pure",
+    "category" : "function",
+    "name" : "Random Integer",
+    "description" : "A random integer between lower and upper, both inclusive",
+    "inputs" : [ {
+      "id" : "lower",
+      "name" : "Lower",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    }, {
+      "id" : "upper",
+      "name" : "Upper",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "function.random_number",
+    "kind" : "pure",
+    "category" : "function",
+    "name" : "Random Number",
+    "description" : "A random number from lower, inclusive, to upper, exclusive",
+    "inputs" : [ {
+      "id" : "lower",
+      "name" : "Lower",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "upper",
+      "name" : "Upper",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "logic.and",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "And",
+    "description" : "True when both are true",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.equal",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Equal",
+    "description" : "True when both values are equal; two missing values are equal",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "java.lang.Object"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "java.lang.Object"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.greater",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Greater",
+    "description" : "True when the first number is greater",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.greater_or_equal",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Greater Or Equal",
+    "description" : "True when the first number is greater or equal",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.is_null",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Is Null",
+    "description" : "True when the value is missing",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.Object"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.less",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Less",
+    "description" : "True when the first number is less",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.less_or_equal",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Less Or Equal",
+    "description" : "True when the first number is less or equal",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.not",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Not",
+    "description" : "Inverts a boolean",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "logic.or",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Or",
+    "description" : "True when at least one is true",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "macro.end",
+    "kind" : "action",
+    "category" : "macro",
+    "name" : "Macro End",
+    "description" : "Continues with what is chained to this exit of the macro",
+    "macroOnly" : true,
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "macro.input.boolean",
+    "kind" : "value",
+    "category" : "macro",
+    "name" : "Macro Input (Boolean)",
+    "description" : "A value passed into the macro",
+    "macroOnly" : true,
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "macro.input.integer",
+    "kind" : "value",
+    "category" : "macro",
+    "name" : "Macro Input (Integer)",
+    "description" : "A value passed into the macro",
+    "macroOnly" : true,
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      }
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "macro.input.number",
+    "kind" : "value",
+    "category" : "macro",
+    "name" : "Macro Input (Number)",
+    "description" : "A value passed into the macro",
+    "macroOnly" : true,
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      }
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "macro.input.text",
+    "kind" : "value",
+    "category" : "macro",
+    "name" : "Macro Input (Text)",
+    "description" : "A value passed into the macro",
+    "macroOnly" : true,
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "macro.output",
+    "kind" : "pure",
+    "category" : "macro",
+    "name" : "Macro Output",
+    "description" : "A value the macro provides",
+    "macroOnly" : true,
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "variable" : "T"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "variable" : "T"
+      }
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "macro.start",
+    "kind" : "entry",
+    "category" : "macro",
+    "name" : "Macro Start",
+    "description" : "Where the macro starts running when it is chained",
+    "macroOnly" : true,
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "math.abs",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Abs",
+    "description" : "Absolute value of a number",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.abs_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Abs Integer",
+    "description" : "Absolute value of a number as integer, decimals cut off",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "math.add",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Add",
+    "description" : "Adds two numbers",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.ceil",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Ceil",
+    "description" : "Rounds up to the next integer",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "math.clamp",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Clamp",
+    "description" : "Keeps a number within a lower and upper bound",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "lower",
+      "name" : "Lower",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "upper",
+      "name" : "Upper",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.clamp_integer",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Clamp Integer",
+    "description" : "Keeps a number within bounds, as integer with decimals cut off",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "lower",
+      "name" : "Lower",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "upper",
+      "name" : "Upper",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "math.divide",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Divide",
+    "description" : "Divides the first number by the second",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.floor",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Floor",
+    "description" : "Rounds down to the next integer",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "math.multiply",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Multiply",
+    "description" : "Multiplies two numbers",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "math.round",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Round",
+    "description" : "Rounds to the closest integer",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "int"
+      }
+    } ]
+  }, {
+    "id" : "math.subtract",
+    "kind" : "pure",
+    "category" : "math",
+    "name" : "Subtract",
+    "description" : "Subtracts the second number from the first",
+    "inputs" : [ {
+      "id" : "first",
+      "name" : "First",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    }, {
+      "id" : "second",
+      "name" : "Second",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "double"
+      }
+    } ]
+  }, {
+    "id" : "routine.define",
+    "kind" : "entry",
+    "category" : "routine",
+    "name" : "Define Routine",
+    "description" : "Starts a routine: a chain any other chain of this mob can call by name",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.boolean",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Boolean)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.integer",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Integer)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.number",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Number)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "routine.parameter.text",
+    "kind" : "value",
+    "category" : "routine",
+    "name" : "Routine Parameter (Text)",
+    "description" : "A value the caller of the routine passes in",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ],
+    "config" : [ {
+      "id" : "routine",
+      "name" : "Routine",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    }, {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "timer.elapsed",
+    "kind" : "pure",
+    "category" : "timer",
+    "name" : "Elapsed",
+    "description" : "Seconds since the mob appeared or a named timer was last reset",
+    "outputs" : [ {
+      "id" : "seconds",
+      "name" : "Seconds",
+      "type" : {
+        "id" : "double"
+      }
+    } ],
+    "config" : [ {
+      "id" : "timer",
+      "name" : "Timer",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "timer"
+    } ]
+  }, {
+    "id" : "timer.reset",
+    "kind" : "action",
+    "category" : "timer",
+    "name" : "Reset",
+    "description" : "Starts a named timer again; every timer node with the same name shares it",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "timer",
+      "name" : "Timer",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "timer"
+    } ]
+  }, {
+    "id" : "value.boolean",
+    "kind" : "value",
+    "category" : "value",
+    "name" : "Boolean",
+    "description" : "A fixed true or false",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "config" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "boolean"
+      },
+      "defaultValue" : false
+    } ]
+  }, {
+    "id" : "value.integer",
+    "kind" : "value",
+    "category" : "value",
+    "name" : "Integer",
+    "description" : "A fixed integer number",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      }
+    } ],
+    "config" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "int"
+      },
+      "defaultValue" : 0
+    } ]
+  }, {
+    "id" : "value.number",
+    "kind" : "value",
+    "category" : "value",
+    "name" : "Number",
+    "description" : "A fixed decimal number",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      }
+    } ],
+    "config" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "double"
+      },
+      "defaultValue" : 0.0
+    } ]
+  }, {
+    "id" : "value.text",
+    "kind" : "value",
+    "category" : "value",
+    "name" : "Text",
+    "description" : "A fixed text",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ],
+    "config" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    } ]
+  }, {
+    "id" : "value.weekday",
+    "kind" : "value",
+    "category" : "value",
+    "name" : "Weekday",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.time.DayOfWeek"
+      }
+    } ],
+    "config" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "id" : "java.time.DayOfWeek"
+      },
+      "defaultValue" : "MONDAY"
+    } ]
+  } ],
+  "types" : [ {
+    "id" : "boolean",
+    "name" : "Boolean",
+    "raw" : "boolean",
+    "literal" : true,
+    "assignableTo" : [ "java.lang.Object" ]
+  }, {
+    "id" : "double",
+    "name" : "Number",
+    "raw" : "double",
+    "literal" : true,
+    "assignableTo" : [ "java.lang.Object" ]
+  }, {
+    "id" : "int",
+    "name" : "Integer",
+    "raw" : "int",
+    "literal" : true,
+    "assignableTo" : [ "double", "java.lang.Object" ]
+  }, {
+    "id" : "java.lang.Object",
+    "name" : "Object",
+    "raw" : "java.lang.Object"
+  }, {
+    "id" : "java.lang.String",
+    "name" : "Text",
+    "raw" : "java.lang.String",
+    "literal" : true,
+    "assignableTo" : [ "java.lang.Object" ]
+  }, {
+    "id" : "java.time.DayOfWeek",
+    "name" : "DayOfWeek",
+    "raw" : "java.time.DayOfWeek",
+    "literal" : true,
+    "values" : [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ],
+    "assignableTo" : [ "java.lang.Object" ]
+  } ],
+  "selectable" : {
+    "boolean" : "boolean",
+    "integer" : "int",
+    "number" : "double",
+    "text" : "java.lang.String"
+  }
+}

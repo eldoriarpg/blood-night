@@ -1,21 +1,24 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mob.serialization;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.fasterxml.jackson.databind.module.SimpleSerializers;
 import de.eldoria.bloodnight.mob.serialization.deserializer.EnchantmentDeserializer;
 import de.eldoria.bloodnight.mob.serialization.deserializer.PotionEffectTypeDeserializer;
 import de.eldoria.bloodnight.mob.serialization.serializer.EnchantmentSerializer;
-import de.eldoria.bloodnight.mob.serialization.serializer.EnchantmentWrapperSerializer;
 import de.eldoria.bloodnight.mob.serialization.serializer.PotionEffectTypeSerializer;
 import de.eldoria.bloodnight.mob.serialization.serializer.SimpleItemStackSerializer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import tools.jackson.core.Version;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.module.SimpleDeserializers;
+import tools.jackson.databind.module.SimpleSerializers;
 
-public class EditorSerialization extends Module {
+public class EditorSerialization extends JacksonModule {
     @Override
     public String getModuleName() {
         return "MobSerialization";
@@ -30,7 +33,6 @@ public class EditorSerialization extends Module {
     public void setupModule(SetupContext context) {
         SimpleSerializers serializers = new SimpleSerializers();
         serializers.addSerializer(Enchantment.class, new EnchantmentSerializer());
-        serializers.addSerializer(EnchantmentWrapper.class, new EnchantmentWrapperSerializer());
         serializers.addSerializer(PotionEffectType.class, new PotionEffectTypeSerializer());
         // Item stacks only need to be sent but never come back.
         serializers.addSerializer(ItemStack.class, new SimpleItemStackSerializer());

@@ -1,0 +1,222 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+package de.eldoria.bloodnight.mob.defaults;
+
+import de.eldoria.bloodnight.behaviour.BehaviourService;
+import de.eldoria.bloodnight.behaviour.Behaviours;
+import de.eldoria.bloodnight.behaviour.BytecodeCache;
+import de.eldoria.bloodnight.graph.BloodNightPlatform;
+import de.eldoria.bloodnight.graph.CompileClasspath;
+import de.eldoria.bloodnight.graph.TriggerDispatcher;
+import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mobs.MobCoordinator;
+import de.eldoria.bloodnight.mobs.MobOutfitter;
+import de.eldoria.graph.platform.GraphPlatform;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Phantom;
+import org.bukkit.entity.Spider;
+import org.bukkit.entity.Zombie;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockbukkit.mockbukkit.MockBukkit;
+import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SuppressWarnings("removal")
+class DefaultMobsRunTest {
+    private static GraphPlatform platform;
+    private static Map<String, CustomMob> mobs;
+    private final List<Throwable> errors = new ArrayList<>();
+    private ServerMock server;
+    private World world;
+    private MobCoordinator coordinator;
+    private BehaviourService service;
+    private TriggerDispatcher dispatcher;
+
+    @TempDir
+    Path cacheDir;
+
+    @BeforeAll
+    static void build() {
+        platform = BloodNightPlatform.create(CompileClasspath.discover(DefaultMobsRunTest.class.getClassLoader()));
+        mobs = DefaultMobs.create(platform).stream().collect(Collectors.toMap(CustomMob::id, Function.identity()));
+    }
+
+    @BeforeEach
+    void setUp() {
+        server = MockBukkit.mock();
+        Plugin plugin = MockBukkit.createMockPlugin();
+        world = server.addSimpleWorld("world");
+        ItemRegistry items = new ItemRegistry();
+        coordinator =
+                new MobCoordinator(new MobOutfitter(() -> items), () -> items, mobs::get, Logger.getLogger("test"));
+        service = new BehaviourService(
+                platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
+        Behaviours behaviours = service.compileNow(mobs.values(), List.of());
+        coordinator.rebind(behaviours);
+        dispatcher = new TriggerDispatcher(
+                coordinator::behaviour, coordinator::extensionBehaviour, (trigger, error) -> errors.add(error));
+        dispatcher.register(plugin, behaviours.usedTriggers());
+    }
+
+    @AfterEach
+    void tearDown() {
+        dispatcher.unregister();
+        service.close();
+        MockBukkit.unmock();
+        assertEquals(List.of(), errors);
+    }
+
+    private <T extends LivingEntity> T spawn(String mob, Class<T> type) {
+        T entity = world.spawn(new Location(world, 0, 64, 0), type);
+        coordinator.register(entity, mobs.get(mob));
+        return entity;
+    }
+
+    @Test
+    void armoredZombieWearsDiamondArmour() {
+        Zombie zombie = spawn("armored_zombie", Zombie.class);
+
+        assertEquals(Material.DIAMOND_HELMET, zombie.getEquipment().getHelmet().getType());
+        assertEquals(Material.DIAMOND_BOOTS, zombie.getEquipment().getBoots().getType());
+    }
+
+    @Test
+    void speedZombieKeepsItsSpeed() {
+        Zombie zombie = spawn("speed_zombie", Zombie.class);
+        coordinator.tick();
+
+        PotionEffect speed = zombie.getPotionEffect(PotionEffectType.SPEED);
+        assertNotNull(speed);
+        assertEquals(4, speed.getAmplifier());
+    }
+
+    @Test
+    void invisibleZombieShowsItselfWhenHit() {
+        Zombie zombie = spawn("invisible_zombie", Zombie.class);
+        zombie.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0));
+        coordinator.tick();
+        PlayerMock player = server.addPlayer();
+
+        server.getPluginManager().callEvent(hit(player, zombie));
+        coordinator.tick();
+
+        assertFalse(zombie.hasPotionEffect(PotionEffectType.INVISIBILITY));
+    }
+
+    @Test
+    void unstableCreeperIsPoweredWithALargeBlast() {
+        Creeper creeper = spawn("unstable_creeper", Creeper.class);
+
+        assertTrue(creeper.isPowered());
+        assertEquals(10, creeper.getExplosionRadius());
+        assertEquals(50, creeper.getMaxFuseTicks());
+    }
+
+    @Test
+    void fearfulPhantomSlowsPlayersItHits() {
+        Phantom phantom = spawn("fearful_phantom", Phantom.class);
+        PlayerMock player = server.addPlayer();
+
+        server.getPluginManager().callEvent(hit(phantom, player));
+
+        PotionEffect slowness = player.getPotionEffect(PotionEffectType.SLOWNESS);
+        assertNotNull(slowness);
+        assertEquals(2, slowness.getAmplifier());
+    }
+
+    @Test
+    void unstableCreeperExplodesWhenAPlayerHitsIt() {
+        Creeper creeper = spawn("unstable_creeper", Creeper.class);
+        PlayerMock player = server.addPlayer();
+
+        server.getPluginManager().callEvent(hit(player, creeper));
+
+        assertTrue(creeper.isDead());
+    }
+
+    @Test
+    void speedCreeperIgnitesWhenTheNightEndsInItsWorld() {
+        Creeper creeper = spawn("speed_creeper", Creeper.class);
+        World other = server.addSimpleWorld("other");
+        Creeper elsewhere = other.spawn(new Location(other, 0, 64, 0), Creeper.class);
+        coordinator.register(elsewhere, mobs.get("speed_creeper"));
+
+        assertEquals(1, coordinator.endNight(world));
+
+        assertTrue(creeper.isIgnited());
+        assertFalse(elsewhere.isIgnited());
+    }
+
+    @Test
+    void ridersKeepTheirPassengerFromSuffocating() {
+        Spider spider = spawn("blaze_rider", Spider.class);
+        Entity blaze = coordinator.mob(spider).orElseThrow().extension();
+        assertNotNull(blaze);
+
+        EntityDamageEvent suffocation = new EntityDamageEvent(
+                blaze,
+                EntityDamageEvent.DamageCause.SUFFOCATION,
+                DamageSource.builder(DamageType.IN_WALL).build(),
+                1);
+        server.getPluginManager().callEvent(suffocation);
+
+        assertTrue(suffocation.isCancelled());
+    }
+
+    @Test
+    void ridersDieWithTheirPassenger() {
+        Spider spider = spawn("blaze_rider", Spider.class);
+        LivingEntity blaze =
+                (LivingEntity) coordinator.mob(spider).orElseThrow().extension();
+        assertNotNull(blaze);
+
+        server.getPluginManager()
+                .callEvent(new EntityDeathEvent(
+                        blaze, DamageSource.builder(DamageType.GENERIC).build(), List.of()));
+
+        assertTrue(spider.isDead());
+    }
+
+    private static EntityDamageByEntityEvent hit(org.bukkit.entity.Entity damager, org.bukkit.entity.Entity victim) {
+        return new EntityDamageByEntityEvent(
+                damager,
+                victim,
+                EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+                DamageSource.builder(DamageType.GENERIC).build(),
+                3);
+    }
+}

@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.util;
 
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -5,7 +10,7 @@ import de.eldoria.eldoutilities.utils.DataContainerUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,7 +24,6 @@ public final class MobTags {
     private MobTags() {
         throw new UnsupportedOperationException("This is a utility class.");
     }
-
 
     private static NamespacedKey create(String key) {
         return new NamespacedKey(NAMESPACE, key);
@@ -97,7 +101,11 @@ public final class MobTags {
      * @param base      The base entity that the extension is extending.
      */
     public static void markExtension(Entity extension, Entity base) {
-        DataContainerUtil.putValue(extension, EXTENDS, PersistentDataType.STRING, base.getUniqueId().toString());
+        DataContainerUtil.putValue(
+                extension,
+                EXTENDS,
+                PersistentDataType.STRING,
+                base.getUniqueId().toString());
     }
 
     /**
@@ -107,7 +115,11 @@ public final class MobTags {
      * @param extension The extension entity to mark the base entity with.
      */
     public static void markBase(Entity base, Entity extension) {
-        DataContainerUtil.putValue(base, EXTENDED, PersistentDataType.STRING, extension.getUniqueId().toString());
+        DataContainerUtil.putValue(
+                base,
+                EXTENDED,
+                PersistentDataType.STRING,
+                extension.getUniqueId().toString());
     }
 
     /**
@@ -137,7 +149,6 @@ public final class MobTags {
         }
     }
 
-
     /**
      * Returns the extension of the given entity as an Optional UUID.
      *
@@ -146,7 +157,8 @@ public final class MobTags {
      * or an empty Optional if no extension is present
      */
     public static Optional<UUID> getExtension(Entity entity) {
-        return DataContainerUtil.get(entity, EXTENDED, PersistentDataType.STRING).map(UUID::fromString);
+        return DataContainerUtil.get(entity, EXTENDED, PersistentDataType.STRING)
+                .map(UUID::fromString);
     }
 
     /**

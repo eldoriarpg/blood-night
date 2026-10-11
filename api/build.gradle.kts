@@ -1,7 +1,3 @@
 plugins {
-    `java-library`
-}
-
-dependencies{
-    api(project(":nodes"))
+    id("bloodnight.paper")
 }

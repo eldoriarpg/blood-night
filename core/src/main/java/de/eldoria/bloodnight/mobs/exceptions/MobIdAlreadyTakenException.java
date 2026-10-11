@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs.exceptions;
 
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -10,7 +15,11 @@ public class MobIdAlreadyTakenException extends RuntimeException {
     private final CustomMob currentMob;
 
     public MobIdAlreadyTakenException(CustomMob newMob, CustomMob currentMob) {
-        super("Could not register %s. The id %s is already taken by %s".formatted(newMob.getClass().getName(), newMob.id(), currentMob.getClass().getName()));
+        super("Could not register %s. The id %s is already taken by %s"
+                .formatted(
+                        newMob.getClass().getName(),
+                        newMob.id(),
+                        currentMob.getClass().getName()));
         this.newMob = newMob;
         this.currentMob = currentMob;
     }

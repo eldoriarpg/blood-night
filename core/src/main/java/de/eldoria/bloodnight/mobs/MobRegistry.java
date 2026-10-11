@@ -1,3 +1,8 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -5,12 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mobs.exceptions.MobIdAlreadyTakenException;
-import de.eldoria.bloodnight.util.Checks;
 import org.bukkit.entity.EntityType;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class MobRegistry {
@@ -18,7 +25,7 @@ public class MobRegistry {
     private final Map<String, CustomMob> mobs;
 
     @JsonCreator
-    public MobRegistry(Map<String, CustomMob> mobs) {
+    public MobRegistry(@JsonProperty("mobs") Map<String, CustomMob> mobs) {
         this.mobs = mobs;
     }
 
@@ -33,10 +40,17 @@ public class MobRegistry {
      * @throws MobIdAlreadyTakenException when the id is already taken.
      */
     public void add(CustomMob mob) {
-        Checks.notNull(mob, "Mob can not be null");
+        Objects.requireNonNull(mob, "Mob can not be null");
 
         if (mobs.containsKey(mob.id())) throw new MobIdAlreadyTakenException(mob, get(mob.id()));
         mobs.put(mob.id(), mob);
+    }
+
+    /**
+     * @return every registered mob
+     */
+    public Collection<CustomMob> all() {
+        return Collections.unmodifiableCollection(mobs.values());
     }
 
     /**
@@ -57,6 +71,10 @@ public class MobRegistry {
      * @return an immutable list containing all mobs that are matching. May be empty.
      */
     public List<CustomMob> getMatching(Set<String> active, EntityType type) {
-        return active.stream().map(mobs::get).filter(mob -> mob.attributes().isAssignable(type)).toList();
+        return active.stream()
+                .map(mobs::get)
+                .filter(Objects::nonNull)
+                .filter(mob -> mob.attributes().isAssignable(type))
+                .toList();
     }
 }

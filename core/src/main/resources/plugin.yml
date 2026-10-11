@@ -1,0 +1,12 @@
+name: BloodNight
+main: de.eldoria.bloodnight.BloodNight
+version: ${version}
+api-version: '26.3'
+commands:
+  bloodnight:
+    description: Blood night administration
+    usage: /bloodnight <reload|source <mob>|problems [mob]|spawn <mob>|debug [mob]|export>
+    permission: bloodnight.admin
+permissions:
+  bloodnight.admin:
+    default: op

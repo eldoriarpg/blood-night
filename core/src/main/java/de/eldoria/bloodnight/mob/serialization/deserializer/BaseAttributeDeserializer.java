@@ -1,15 +1,19 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mob.serialization.deserializer;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import de.eldoria.bloodnight.mob.serialization.NamedAttribute;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BaseAttributeDeserializer<T> extends JsonDeserializer<T> {
+public abstract class BaseAttributeDeserializer<T> extends ValueDeserializer<T> {
     private final Map<String, T> mappings;
 
     public BaseAttributeDeserializer() {
@@ -20,14 +24,13 @@ public abstract class BaseAttributeDeserializer<T> extends JsonDeserializer<T> {
     }
 
     @Override
-    public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public T deserialize(JsonParser p, DeserializationContext ctxt) {
         return map(ctxt.readValue(p, NamedAttribute.class).id());
     }
 
     protected abstract String id(T value);
 
     protected abstract T[] values();
-
 
     protected T map(String hash) {
         if (mappings.containsKey(hash)) return mappings.get(hash);
@@ -38,5 +41,4 @@ public abstract class BaseAttributeDeserializer<T> extends JsonDeserializer<T> {
         }
         throw new IllegalArgumentException("No enchantment found for %s".formatted(hash));
     }
-
 }

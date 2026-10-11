@@ -1,7 +1,13 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.util.MobTags;
-import org.bukkit.EntityEffect;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -35,7 +41,7 @@ public class DamageHandler implements Listener {
         if (baseId.isEmpty()) return;
         if (!(entity instanceof LivingEntity extension)) return;
         // Forward damage from extension over to base mob
-        if (!(entity.getServer().getEntity(baseId.get()) instanceof LivingEntity base)) return;
+        if (!(entity.getServer().getEntity(baseId.get()) instanceof LivingEntity base) || base.isDead()) return;
 
         if (event instanceof EntityDamageByEntityEvent byEntity) {
             base.damage(event.getDamage(), byEntity.getDamager());
@@ -44,8 +50,8 @@ public class DamageHandler implements Listener {
         }
         event.setCancelled(true);
         // Sync damage from base to extension
-        extension.setHealth(base.getHealth());
-        entity.playEffect(EntityEffect.HURT);
+        syncHealth(extension, base.getHealth());
+        extension.playHurtAnimation(0);
     }
 
     private void handleBaseDamage(EntityDamageEvent event) {
@@ -57,8 +63,19 @@ public class DamageHandler implements Listener {
         if (!(entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension)) return;
 
         // We assume that the damage won't change anymore
-        extension.setHealth(base.getHealth() - event.getFinalDamage());
-        extension.playEffect(EntityEffect.HURT);
+        syncHealth(extension, base.getHealth() - event.getFinalDamage());
+        extension.playHurtAnimation(0);
+    }
+
+    /**
+     * Sets the health of an extension, kept within what it can have: base and extension may differ in maximum health.
+     * A dead extension is left alone: setting its health would fire its death again, and with it the base's reaction.
+     */
+    private static void syncHealth(LivingEntity extension, double health) {
+        if (extension.isDead()) return;
+        AttributeInstance max = extension.getAttribute(Attribute.MAX_HEALTH);
+        double limit = max == null ? extension.getHealth() : max.getValue();
+        extension.setHealth(Math.clamp(health, 0, limit));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

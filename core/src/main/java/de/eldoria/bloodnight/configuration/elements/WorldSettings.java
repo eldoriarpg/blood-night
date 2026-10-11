@@ -1,9 +1,14 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.configuration.elements;
 
-import de.eldoria.bloodnight.configuration.elements.world.SoundSettings;
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
+import de.eldoria.bloodnight.configuration.elements.world.SoundSettings;
 import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
 
 public class WorldSettings {
@@ -13,7 +18,12 @@ public class WorldSettings {
     private final SoundSettings soundSettings;
     private final WorldDrops worldDrops;
 
-    public WorldSettings(NightSelection nightSelection, NightSettings nightSettings, MobSettings mobSettings, SoundSettings soundSettings, WorldDrops worldDrops) {
+    public WorldSettings(
+            NightSelection nightSelection,
+            NightSettings nightSettings,
+            MobSettings mobSettings,
+            SoundSettings soundSettings,
+            WorldDrops worldDrops) {
         this.nightSelection = nightSelection;
         this.nightSettings = nightSettings;
         this.mobSettings = mobSettings;
@@ -49,4 +59,3 @@ public class WorldSettings {
         return worldDrops;
     }
 }
-

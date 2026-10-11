@@ -1,15 +1,18 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
 package de.eldoria.bloodnight.mob.serialization.deserializer;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import org.bukkit.enchantments.Enchantment;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
-import java.io.IOException;
-
-public class EnchantmentHashSerializer extends JsonSerializer<Enchantment> {
+public class EnchantmentHashSerializer extends ValueSerializer<Enchantment> {
     @Override
-    public void serialize(Enchantment value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        gen.writeFieldName(Integer.toHexString(value.getKey().hashCode()));
+    public void serialize(Enchantment value, JsonGenerator gen, SerializationContext serializers) {
+        gen.writeName(Integer.toHexString(value.getKey().hashCode()));
     }
 }
