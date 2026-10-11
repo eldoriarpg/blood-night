@@ -77,6 +77,13 @@ public final class ToyNodes {
                     .add(ctx.chain("next"))
                     .build());
 
+    public static final ExpressionDefinition INTEGER = new ExpressionDefinition(
+            NodeDescriptor.builder("value.integer", NodeKind.VALUE)
+                    .config("value", int.class, IntNode.valueOf(0))
+                    .output("value", int.class)
+                    .build(),
+            (port, ctx) -> ctx.config("value"));
+
     public static final ExpressionDefinition TEXT = new ExpressionDefinition(
             NodeDescriptor.builder("value.text", NodeKind.VALUE)
                     .config("value", String.class, null)
@@ -125,7 +132,7 @@ public final class ToyNodes {
                         .build();
             });
 
-    public static final List<NodeDefinition> ALL = List.of(START, SCORE, NUMBER, TEXT, ADD, GREATER, PICK, COUNTER, PRINT, BRANCH, REPEAT);
+    public static final List<NodeDefinition> ALL = List.of(START, SCORE, NUMBER, INTEGER, TEXT, ADD, GREATER, PICK, COUNTER, PRINT, BRANCH, REPEAT);
 
     private ToyNodes() {
     }

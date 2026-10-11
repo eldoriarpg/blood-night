@@ -1,0 +1,172 @@
+package de.eldoria.graph.reflect;
+
+import com.palantir.javapoet.CodeBlock;
+import de.eldoria.graph.definition.ExpressionDefinition;
+import de.eldoria.graph.definition.NodeDefinition;
+import de.eldoria.graph.definition.NodeDescriptor;
+import de.eldoria.graph.definition.NodeKind;
+import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.StatementDefinition;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Derives nodes from the public getters and setters of a class.
+ * <p>
+ * For a class registered under prefix {@code location}:
+ * <ul>
+ *     <li>{@code location.get}: a pure node taking the object as {@code target}, one output per getter;</li>
+ *     <li>{@code location.set_x}, …: one action per setter, taking {@code target} and the new value.</li>
+ * </ul>
+ * Setters act on whatever object is connected to {@code target}. When that object is an entry's output, such as an
+ * event, the scope rules of the compiler already restrict the setter to that entry's chain.
+ */
+public final class ReflectedType {
+    private static final String TARGET = "target";
+    private static final String NEXT = "next";
+
+    private ReflectedType() {
+    }
+
+    /**
+     * Starts deriving nodes for a class.
+     *
+     * @param type   the class
+     * @param prefix id prefix of the derived nodes, e.g. {@code location}
+     * @return a builder
+     */
+    public static Builder of(Class<?> type, String prefix) {
+        return new Builder(type, prefix);
+    }
+
+    /**
+     * Builder for the nodes of one class.
+     */
+    public static final class Builder {
+        private final Class<?> type;
+        private final String prefix;
+        private final Set<String> excluded = new HashSet<>();
+        private final Map<String, String> names = new HashMap<>();
+        private String category;
+        private String name;
+        private boolean getter = true;
+        private boolean setters = true;
+
+        private Builder(Class<?> type, String prefix) {
+            this.type = Objects.requireNonNull(type, "type");
+            this.prefix = Objects.requireNonNull(prefix, "prefix");
+            this.category = prefix.contains(".") ? prefix.substring(0, prefix.indexOf('.')) : prefix;
+            this.name = type.getSimpleName();
+        }
+
+        /**
+         * Editor category of the derived nodes. Defaults to the first segment of the prefix.
+         */
+        public Builder category(String category) {
+            this.category = category;
+            return this;
+        }
+
+        /**
+         * Name of the type in node names, e.g. "Location" in "Get Location". Defaults to the simple class name.
+         */
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        /**
+         * Leaves out properties by id; applies to getters and setters.
+         */
+        public Builder exclude(String... properties) {
+            excluded.addAll(List.of(properties));
+            return this;
+        }
+
+        /**
+         * Sets the editor name of a property.
+         */
+        public Builder rename(String property, String name) {
+            names.put(property, name);
+            return this;
+        }
+
+        /**
+         * Whether to derive the get node. Defaults to true.
+         */
+        public Builder getter(boolean getter) {
+            this.getter = getter;
+            return this;
+        }
+
+        /**
+         * Whether to derive set nodes. Defaults to true.
+         */
+        public Builder setters(boolean setters) {
+            this.setters = setters;
+            return this;
+        }
+
+        /**
+         * @param rules which methods qualify
+         * @return the get node, if the class has any getter, followed by one node per setter
+         */
+        public List<NodeDefinition> build(ReflectionRules rules) {
+            List<NodeDefinition> nodes = new ArrayList<>();
+            PortType target = PortType.of(type);
+            if (getter) {
+                List<Properties.Getter> getters = Properties.getters(type, rules).stream()
+                        .filter(property -> !excluded.contains(property.id()))
+                        .toList();
+                if (!getters.isEmpty()) nodes.add(getNode(target, getters));
+            }
+            if (setters) {
+                Properties.setters(type, rules).stream()
+                        .filter(setter -> !excluded.contains(setter.property()))
+                        .map(property -> setNode(target, property))
+                        .forEach(nodes::add);
+            }
+            return nodes;
+        }
+
+        private ExpressionDefinition getNode(PortType target, List<Properties.Getter> getters) {
+            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".get", NodeKind.PURE)
+                    .category(category)
+                    .name("Get " + name)
+                    .description("Reads the properties of a " + name)
+                    .input(TARGET, name, target, false);
+            getters.forEach(property -> descriptor.output(property.id(), displayName(property.id()), property.type()));
+            Map<String, String> methods = getters.stream().collect(Collectors.toMap(Properties.Getter::id, property -> property.method().getName()));
+            return new ExpressionDefinition(descriptor.build(),
+                    (port, ctx) -> CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port)));
+        }
+
+        private StatementDefinition setNode(PortType target, Properties.Setter setter) {
+            String property = setter.property();
+            NodeDescriptor descriptor = NodeDescriptor.builder(prefix + "." + setter.id(), NodeKind.ACTION)
+                    .category(category)
+                    .name("Set %s %s".formatted(name, displayName(property)))
+                    .description("Calls %s on a %s".formatted(setter.method().getName(), name))
+                    .input(TARGET, name, target, false)
+                    .input("value", displayName(property), setter.type(), false)
+                    .execution(NEXT)
+                    .build();
+            String method = setter.method().getName();
+            return new StatementDefinition(descriptor, ctx -> CodeBlock.builder()
+                    .addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input("value"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+        }
+
+        private String displayName(String property) {
+            return names.getOrDefault(property, Names.humanize(property));
+        }
+    }
+}
