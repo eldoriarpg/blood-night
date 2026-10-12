@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.editor.AddParticipant;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
 import de.eldoria.bloodnight.web.api.editor.ChangeBatch;
@@ -25,21 +26,29 @@ import de.eldoria.graph.payload.CatalogGenerator;
 import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
+import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
+import io.javalin.http.ServiceUnavailableResponse;
 import io.javalin.http.TooManyRequestsResponse;
 import io.javalin.http.UnauthorizedResponse;
 import io.javalin.json.JavalinJackson3;
 import io.javalin.websocket.WsConfig;
 import io.javalin.websocket.WsContext;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ArrayNode;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -61,6 +70,9 @@ import java.util.stream.Collectors;
  * lost. Payloads are checked by {@link PayloadValidator} on every save; problems are reported, never refused, since
  * the editor saves work in progress. Everyone connected to a session's stream hears about changes, locks and who is
  * online.
+ * <p>
+ * Minecraft's item icons and names ({@link AssetRoutes}) are served from {@link ItemAssets}, without a token and
+ * cacheable for good, so the editor's item pickers can show them.
  */
 final class EditorApp {
     static final JsonMapper MAPPER = JsonMapper.builder()
@@ -69,12 +81,15 @@ final class EditorApp {
     private static final TypeReference<List<PayloadProblem>> PROBLEMS = new TypeReference<>() {};
     private static final int SAVE_ATTEMPTS = 10;
     private static final int MAX_NAME = 32;
+    private static final String IMMUTABLE = "public, max-age=31536000, immutable";
+    private static final Logger log = LoggerFactory.getLogger(EditorApp.class);
     private final ServiceConfig config;
     private final SessionRepository sessions;
     private final ParticipantRepository participants;
     private final CatalogRepository catalogs;
     private final Rooms rooms;
     private final RateLimiter limiter;
+    private final ItemAssets assets;
 
     EditorApp(
             ServiceConfig config,
@@ -82,8 +97,10 @@ final class EditorApp {
             ParticipantRepository participants,
             CatalogRepository catalogs,
             Rooms rooms,
+            ItemAssets assets,
             Clock clock) {
         this.config = config;
+        this.assets = assets;
         this.sessions = sessions;
         this.participants = participants;
         this.catalogs = catalogs;
@@ -104,6 +121,7 @@ final class EditorApp {
             }));
             javalin.routes.head(EditorRoutes.CATALOG, this::hasCatalog);
             javalin.routes.put(EditorRoutes.CATALOG, this::putCatalog);
+            javalin.routes.get(EditorRoutes.CATALOG, this::getCatalog);
             javalin.routes.post(EditorRoutes.SESSIONS, this::open);
             javalin.routes.get(EditorRoutes.SESSION, this::view);
             javalin.routes.post(EditorRoutes.PARTICIPANTS, this::addParticipant);
@@ -118,11 +136,17 @@ final class EditorApp {
             javalin.routes.get(EditorRoutes.RESULT, this::result);
             javalin.routes.delete(EditorRoutes.SESSION, this::close);
             javalin.routes.ws(EditorRoutes.STREAM, this::stream);
+            javalin.routes.get(AssetRoutes.ITEMS, this::items);
+            javalin.routes.get(AssetRoutes.TEXTURE, this::texture);
         });
     }
 
     private void hasCatalog(Context ctx) {
         ctx.status(catalogs.exists(ctx.pathParam("version")) ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
+    private void getCatalog(Context ctx) {
+        ctx.json(catalogs.find(ctx.pathParam("version")).orElseThrow(() -> new NotFoundResponse("No such catalog")));
     }
 
     private void putCatalog(Context ctx) {
@@ -175,8 +199,8 @@ final class EditorApp {
 
     private void view(Context ctx) {
         StoredSession session = session(ctx);
-        if (!isPuller(ctx, session)) editing(ctx, session);
-        ctx.json(view(session));
+        String you = isPuller(ctx, session) ? null : editing(ctx, session).name();
+        ctx.json(view(session, you));
     }
 
     private void lock(Context ctx) {
@@ -251,7 +275,7 @@ final class EditorApp {
     private void result(Context ctx) {
         StoredSession session = pulling(ctx);
         if (session.state() != SessionState.SUBMITTED) throw new ConflictResponse("The session is not submitted yet");
-        ctx.json(view(session));
+        ctx.json(view(session, null));
     }
 
     private void close(Context ctx) {
@@ -394,7 +418,7 @@ final class EditorApp {
         return header != null && header.startsWith("Bearer ") ? header.substring(7) : "";
     }
 
-    private SessionView view(StoredSession session) {
+    private SessionView view(StoredSession session, @Nullable String you) {
         Room room = rooms.of(session.id());
         return new SessionView(
                 session.id(),
@@ -405,6 +429,31 @@ final class EditorApp {
                 MAPPER.readValue(session.problems(), PROBLEMS),
                 room.locks(),
                 room.online(),
+                you,
                 session.expires());
+    }
+
+    private void items(Context ctx) throws IOException {
+        String version = ctx.pathParam("version");
+        try {
+            Path index = assets.items(version);
+            ctx.header("Cache-Control", IMMUTABLE)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .result(Files.readAllBytes(index));
+        } catch (ItemAssets.UnknownVersion e) {
+            throw new NotFoundResponse(e.getMessage());
+        } catch (ItemAssets.Unavailable e) {
+            log.warn("Item assets of {} are unavailable", version, e);
+            throw new ServiceUnavailableResponse("Minecraft's assets cannot be fetched right now");
+        }
+    }
+
+    private void texture(Context ctx) throws IOException {
+        String name = ctx.pathParam("name");
+        Path texture = assets.texture(ctx.pathParam("version"), ctx.pathParam("folder"), name)
+                .orElseThrow(() -> new NotFoundResponse("No icon " + name));
+        ctx.header("Cache-Control", IMMUTABLE)
+                .contentType(ContentType.IMAGE_PNG)
+                .result(Files.readAllBytes(texture));
     }
 }

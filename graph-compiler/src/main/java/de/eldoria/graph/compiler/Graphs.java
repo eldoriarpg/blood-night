@@ -42,6 +42,7 @@ public final class Graphs {
     private final boolean macroBody;
     private final Map<String, NodeDefinition> extra;
     private final Map<String, NodeBuilder> nodes = new LinkedHashMap<>();
+    private Map<String, PortType> bindings = Map.of();
 
     private Graphs(GraphPlatform platform, MacroLibrary macros, boolean macroBody) {
         this.platform = platform;
@@ -113,6 +114,18 @@ public final class Graphs {
     }
 
     /**
+     * Binds graph-wide type variables for {@link #build()}'s validation, as the graph will be compiled with them, e.g.
+     * the type of the object it runs for.
+     *
+     * @param bindings types of graph-wide variables; the others take their fallback
+     * @return this
+     */
+    public Graphs bindings(Map<String, PortType> bindings) {
+        this.bindings = Map.copyOf(bindings);
+        return this;
+    }
+
+    /**
      * @return the graph
      * @throws IllegalArgumentException listing every problem when the graph is not valid
      */
@@ -123,7 +136,8 @@ public final class Graphs {
         if (macroBody) return built;
         try {
             MacroExpander.Expansion expansion = MacroExpander.expand(built, macros.definitions());
-            new GraphValidator(platform, MacroBoundary.passDefinitions(platform.types())).validate(expansion.graph());
+            new GraphValidator(platform, MacroBoundary.passDefinitions(platform.types()), bindings)
+                    .validate(expansion.graph());
         } catch (GraphCompilationException e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         }

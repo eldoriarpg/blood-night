@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
 import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
@@ -28,6 +29,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.WebSocket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
@@ -47,12 +50,16 @@ class EditorAppTest {
                      "cold":{"id":"cold","attributes":{"entityType":"STRAY"}}},
              "settings":{"main":{"prefix":"a"}}}""";
     private static Javalin app;
+    private static MojangFixture mojang;
+    private static Path ASSETS;
     private static String base;
     private final HttpClient client = HttpClient.newHttpClient();
 
     @BeforeAll
     static void start() throws SQLException, IOException {
         POSTGRES.start();
+        mojang = new MojangFixture();
+        ASSETS = Files.createTempDirectory("bloodnight-assets");
         var database = new ServiceConfig.DatabaseConfig(
                 POSTGRES.getHost(),
                 POSTGRES.getFirstMappedPort(),
@@ -67,6 +74,7 @@ class EditorAppTest {
                 Duration.ofHours(1),
                 20,
                 1024 * 1024,
+                ASSETS,
                 database);
         Database.open(database);
         app = new EditorApp(
@@ -75,6 +83,7 @@ class EditorAppTest {
                         new ParticipantRepository(),
                         new CatalogRepository(),
                         new Rooms(Clock.systemUTC(), Duration.ofMinutes(2)),
+                        mojang.assets(ASSETS),
                         Clock.systemUTC())
                 .create()
                 .start(0);
@@ -84,6 +93,7 @@ class EditorAppTest {
     @AfterAll
     static void stop() {
         app.stop();
+        mojang.close();
         POSTGRES.stop();
     }
 
@@ -145,6 +155,29 @@ class EditorAppTest {
     }
 
     @Test
+    void itemAssetsAreServedWithoutTokenAndCachedForGood() throws Exception {
+        var items = send("GET", AssetRoutes.ITEMS.replace("{version}", "1.0"), null, null);
+        assertEquals(200, items.statusCode(), items.body());
+        assertTrue(items.body().contains("Diamantschwert"), items.body());
+        assertEquals(
+                "public, max-age=31536000, immutable",
+                items.headers().firstValue("Cache-Control").orElse(""));
+
+        var texture = send("GET", "/api/v1/assets/1.0/textures/item/diamond_sword.png", null, null);
+        assertEquals(200, texture.statusCode());
+        assertEquals("image/png", texture.headers().firstValue("Content-Type").orElse(""));
+
+        assertEquals(
+                404,
+                send("GET", AssetRoutes.ITEMS.replace("{version}", "9.9"), null, null)
+                        .statusCode());
+        assertEquals(
+                404,
+                send("GET", "/api/v1/assets/1.0/textures/item/missing.png", null, null)
+                        .statusCode());
+    }
+
+    @Test
     void catalogsAreUploadedOnce() throws Exception {
         assertEquals(
                 404,
@@ -202,6 +235,8 @@ class EditorAppTest {
         String path = EditorRoutes.path(EditorRoutes.SESSION, session.id());
         assertEquals(401, send("GET", path, null, null).statusCode());
         assertEquals(SessionState.EDITING, view(session, steve).state());
+        assertEquals("Steve", view(session, steve).you());
+        assertEquals(null, view(session, session.pullToken()).you());
         assertEquals(
                 "ZOMBIE",
                 view(session, session.pullToken())

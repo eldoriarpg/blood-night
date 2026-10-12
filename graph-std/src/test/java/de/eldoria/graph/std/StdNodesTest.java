@@ -6,12 +6,14 @@
 package de.eldoria.graph.std;
 
 import de.eldoria.graph.definition.NodeDefinition;
+import de.eldoria.graph.types.TypeMapping;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,8 +39,10 @@ class StdNodesTest {
 
     @Test
     void everyStandardNodeHasExactlyOneConstant() {
-        Set<String> defined =
-                StandardNodes.all().stream().map(NodeDefinition::id).collect(Collectors.toSet());
+        Set<String> defined = Stream.concat(
+                        StandardNodes.all().stream(), StandardNodes.typed(TypeMapping.defaults()).stream())
+                .map(NodeDefinition::id)
+                .collect(Collectors.toSet());
         assertEquals(defined, ids(StdNodes.class));
         assertEquals(StdNodes.class.getFields().length, ids(StdNodes.class).size());
     }

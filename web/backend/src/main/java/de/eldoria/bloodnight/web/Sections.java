@@ -14,16 +14,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Finds the sections of the payload a change touches: {@code mobs/<id>}, {@code macros/<id>}, {@code settings/main},
+ * Finds the sections of the payload a change touches: {@code mobs/<id>}, {@code macros/<id>}, {@code items/<id>}, {@code settings/main},
  * {@code settings/globalDrops} and {@code settings/worlds/<uid>}.
  * <p>
  * Macros are a list, so a pointer into it names the macro at that index as the document stands when the operation
  * runs, or the added macro for an {@code add}. A pointer above section level, such as the whole payload or
- * {@code /mobs}, touches everything. Items, hashes, the catalog version and the problem lists cannot be changed.
+ * {@code /mobs}, touches everything. The server's choices, hashes, the catalog version and the problem lists cannot be changed.
  */
 final class Sections {
     private static final Set<String> READ_ONLY =
-            Set.of("items", "hashes", "catalog", "problems", "macroProblems", "configProblems");
+            Set.of("choices", "hashes", "catalog", "problems", "macroProblems", "configProblems");
 
     private Sections() {}
 
@@ -72,6 +72,7 @@ final class Sections {
         if (READ_ONLY.contains(root)) throw new JsonPatch.PatchException(root + " cannot be changed in the editor");
         return switch (root) {
             case "mobs" -> path.size() < 2 ? null : "mobs/" + path.get(1);
+            case "items" -> path.size() < 2 ? null : "items/" + path.get(1);
             case "macros" -> path.size() < 2 ? null : "macros/" + macroId(document, path, operation);
             case "settings" -> settings(path);
             default -> throw new JsonPatch.PatchException("Unknown part " + root);

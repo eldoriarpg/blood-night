@@ -51,9 +51,9 @@ class BehaviourServiceTest {
                 .node("damage", NodeInstance.of("event.damage").chain("next", "cancel"))
                 .node(
                         "cancel",
-                        NodeInstance.of("cancellable.set_cancelled")
+                        NodeInstance.of("cancellable.mutate")
                                 .input("target", "damage", "event")
-                                .literal("value", BooleanNode.TRUE))
+                                .literal("cancelled", BooleanNode.TRUE))
                 .build();
     }
 

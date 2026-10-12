@@ -12,6 +12,7 @@ import de.eldoria.graph.definition.NodeDescriptor;
 import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.StandardNodes;
+import de.eldoria.graph.types.TypeMapping;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.node.StringNode;
 
@@ -44,6 +45,7 @@ class CatalogGeneratorTest {
                 (port, ctx) -> ctx.config("value"));
         return GraphPlatform.builder(SnapshotHost.class)
                 .define(StandardNodes.all())
+                .define(StandardNodes.typed(TypeMapping.defaults()))
                 .define(run, weekday)
                 .build();
     }
@@ -101,18 +103,46 @@ class CatalogGeneratorTest {
                         "The first summand",
                         first.type(),
                         first.optional(),
-                        first.literal())),
+                        first.literal(),
+                        first.group())),
                 add.outputs(),
                 add.executions(),
                 add.config());
         Catalog documented = new Catalog(plain.format(), "x", List.of(documentedAdd), List.of(), plain.selectable());
+        NodeType undocumentedAdd = new NodeType(
+                add.id(),
+                add.kind(),
+                add.category(),
+                add.name(),
+                add.description(),
+                add.macroOnly(),
+                List.of(new PortInfo(
+                        first.id(), first.name(), "", first.type(), first.optional(), first.literal(), first.group())),
+                add.outputs(),
+                add.executions(),
+                add.config());
+        Catalog undocumented = new Catalog(
+                plain.format(),
+                plain.version(),
+                plain.nodes().stream()
+                        .map(node -> node.id().equals("math.add") ? undocumentedAdd : node)
+                        .toList(),
+                plain.types(),
+                plain.selectable());
 
-        Catalog merged = CatalogGenerator.withDescriptions(plain, documented);
+        Catalog merged = CatalogGenerator.withDescriptions(undocumented, documented);
 
-        assertEquals("Adds two numbers", node(merged, "math.add").description(), "existing descriptions win");
+        assertEquals(add.description(), node(merged, "math.add").description(), "existing descriptions win");
         assertEquals(
                 "The first summand",
                 node(merged, "math.add").inputs().getFirst().description());
+        assertEquals(
+                first.description(),
+                node(CatalogGenerator.withDescriptions(plain, documented), "math.add")
+                        .inputs()
+                        .getFirst()
+                        .description(),
+                "existing port descriptions win");
         assertEquals(plain.nodes().size(), merged.nodes().size());
         assertFalse(plain.version().equals(merged.version()));
     }
@@ -131,7 +161,8 @@ class CatalogGeneratorTest {
         NodeType add = node(catalog, "math.add");
         assertEquals("pure", add.kind());
         assertTrue(add.inputs().getFirst().literal());
-        assertEquals("double", add.inputs().getFirst().type().id());
+        assertEquals("N", add.inputs().getFirst().type().variable());
+        assertTrue(add.inputs().getFirst().type().numeric());
 
         NodeType print = node(catalog, "debug.print");
         assertTrue(print.inputs().getFirst().literal(), "Object inputs take typed-in scalars");
@@ -144,7 +175,13 @@ class CatalogGeneratorTest {
         assertTrue(forEach.executions().stream().anyMatch(port -> port.id().equals("body") && port.repeating()));
 
         assertTrue(node(catalog, "macro.start").macroOnly());
-        assertTrue(catalog.nodes().stream().anyMatch(node -> node.id().equals("macro.input.number")));
+        assertEquals(
+                List.of("boolean", "integer", "number", "text"),
+                node(catalog, "macro.input").config().stream()
+                        .filter(field -> field.id().equals("type"))
+                        .findFirst()
+                        .orElseThrow()
+                        .choices());
 
         TypeInfo weekday = type(catalog, "java.time.DayOfWeek");
         assertTrue(weekday.literal());

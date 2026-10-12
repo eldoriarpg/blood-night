@@ -54,6 +54,12 @@ class EditorResultTest {
                         new ConfigFile(),
                         GlobalDrops.defaultDrops(),
                         Map.of("uid", new SettingsPayload.WorldPayload("world", world))),
+                new EditorChoices(
+                        "26.3",
+                        List.of("minecraft:stone"),
+                        List.of("minecraft:sharpness"),
+                        Map.of("CREEPER", "org.bukkit.entity.Creeper"),
+                        List.of("CREEPER")),
                 Map.of("mobs.yml", "abc"));
 
         EditorResult result = EditorResult.of(EditorPayload.MAPPER.readTree(payload.asJson()));

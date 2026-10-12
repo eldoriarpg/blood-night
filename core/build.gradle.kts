@@ -16,6 +16,7 @@ dependencies {
     api(libs.bundles.jackson.full)
     api(libs.jackson.bukkit.paper)
     api(libs.ocular)
+    testImplementation(project(":json-schema"))
     compileOnly(libs.strokkcommands.annotations)
     annotationProcessor(libs.strokkcommands.processor)
 }
@@ -88,4 +89,13 @@ tasks {
 tasks.runServer {
     minecraftVersion("26.3")
     jvmArgs("-Dcom.mojang.eula.agree=true")
+}
+
+tasks.register<JavaExec>("generatePayloadSchema") {
+    group = "build"
+    description = "Writes web/frontend/src/api/generated/payload.schema.json from the editor payload's classes"
+    dependsOn("compileTestJava")
+    mainClass = "de.eldoria.bloodnight.editor.PayloadSchemaCli"
+    classpath = sourceSets.test.get().runtimeClasspath
+    workingDir = rootDir
 }

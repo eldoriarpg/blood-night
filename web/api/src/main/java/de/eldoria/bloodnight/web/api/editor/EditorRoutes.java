@@ -8,7 +8,8 @@ package de.eldoria.bloodnight.web.api.editor;
 /**
  * The editor's routes in BloodNight's web backend, version 1.
  * <ul>
- *   <li>{@code HEAD} / {@code PUT} {@value #CATALOG}: whether the service has a catalog, upload it</li>
+ *   <li>{@code HEAD} / {@code GET} / {@code PUT} {@value #CATALOG}: whether the service has a catalog, read it,
+ *   upload it</li>
  *   <li>{@code POST} {@value #SESSIONS}: open a session ({@link CreateSession} to {@link SessionCreated})</li>
  *   <li>{@code GET} {@value #SESSION}: the session ({@link SessionView})</li>
  *   <li>{@code POST} {@value #PARTICIPANTS}: let someone else edit ({@link AddParticipant} to

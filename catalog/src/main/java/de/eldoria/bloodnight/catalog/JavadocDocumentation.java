@@ -13,6 +13,7 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.javadoc.JavadocBlockTag;
 import de.eldoria.graph.reflect.Documentation;
 
 import java.io.IOException;
@@ -38,8 +39,9 @@ import java.util.zip.ZipFile;
  * Descriptions taken from the javadoc in sources jars.
  * <p>
  * Source files are parsed when a class is first asked for. A description is the first sentence of the javadoc, with
- * inline tags reduced to their text and HTML removed. Methods without javadoc of their own take it from the method
- * they override, searching superclasses and interfaces.
+ * inline tags reduced to their text and HTML removed; parameters and return values take the first sentence of their
+ * {@code @param} and {@code @return} tags. Methods without javadoc of their own take it from the method they override,
+ * searching superclasses and interfaces.
  */
 public final class JavadocDocumentation implements Documentation, AutoCloseable {
     private static final Pattern INLINE_TAG = Pattern.compile("\\{@(?:link|linkplain|code|literal|value)\\s+([^}]*)}");
@@ -103,6 +105,62 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
                 .flatMap(ConstructorDeclaration::getJavadocComment)
                 .map(JavadocDocumentation::summary)
                 .filter(text -> !text.isEmpty()));
+    }
+
+    @Override
+    public Optional<String> parameter(Executable executable, int index) {
+        return callable(executable)
+                .flatMap(declaration -> {
+                    if (index >= declaration.getParameters().size()) return Optional.empty();
+                    String name = declaration.getParameter(index).getNameAsString();
+                    return declaration.getJavadocComment().flatMap(comment -> comment.parse().getBlockTags().stream()
+                            .filter(tag -> tag.getType() == JavadocBlockTag.Type.PARAM
+                                    && tag.getName().filter(name::equals).isPresent())
+                            .findFirst()
+                            .map(tag -> firstSentence(tag.getContent().toText())));
+                })
+                .filter(text -> !text.isEmpty());
+    }
+
+    @Override
+    public Optional<String> returns(Executable executable) {
+        return callable(executable)
+                .flatMap(CallableDeclaration::getJavadocComment)
+                .flatMap(comment -> comment.parse().getBlockTags().stream()
+                        .filter(tag -> tag.getType() == JavadocBlockTag.Type.RETURN)
+                        .findFirst()
+                        .map(tag -> firstSentence(tag.getContent().toText())))
+                .filter(text -> !text.isEmpty());
+    }
+
+    /**
+     * The documented declaration of a constructor or method, for a method the one it overrides when it has no javadoc
+     * of its own.
+     */
+    private Optional<CallableDeclaration<?>> callable(Executable executable) {
+        if (!(executable instanceof Method method)) {
+            return declaration(executable.getDeclaringClass())
+                    .flatMap(declaration -> declaration.getConstructors().stream()
+                            .filter(candidate -> matches(candidate, executable))
+                            .findFirst()
+                            .map(candidate -> candidate));
+        }
+        Deque<Class<?>> queue = new ArrayDeque<>();
+        Set<Class<?>> seen = new HashSet<>();
+        queue.add(method.getDeclaringClass());
+        while (!queue.isEmpty()) {
+            Class<?> type = queue.poll();
+            if (!seen.add(type)) continue;
+            Optional<MethodDeclaration> found = declaration(type)
+                    .flatMap(declaration -> declaration.getMethodsByName(method.getName()).stream()
+                            .filter(candidate -> matches(candidate, method)
+                                    && candidate.getJavadocComment().isPresent())
+                            .findFirst());
+            if (found.isPresent()) return Optional.of(found.get());
+            if (type.getSuperclass() != null) queue.add(type.getSuperclass());
+            queue.addAll(List.of(type.getInterfaces()));
+        }
+        return Optional.empty();
     }
 
     private Optional<String> own(Class<?> type, Method method) {
@@ -170,7 +228,13 @@ public final class JavadocDocumentation implements Documentation, AutoCloseable 
      * First sentence of a javadoc comment as plain text.
      */
     static String summary(JavadocComment comment) {
-        String text = comment.parse().getDescription().toText();
+        return firstSentence(comment.parse().getDescription().toText());
+    }
+
+    /**
+     * First sentence of javadoc text as plain text.
+     */
+    static String firstSentence(String text) {
         Matcher tags = INLINE_TAG.matcher(text);
         StringBuilder plain = new StringBuilder();
         while (tags.find()) {

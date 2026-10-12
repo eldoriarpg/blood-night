@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
  * Routines: named chains of one graph with typed parameters, called from any chain of the same graph.
  * <ul>
  *     <li>{@code routine.define}: config {@code name}; where the routine starts;</li>
- *     <li>{@code routine.parameter.<type>}: one per selectable type; config {@code routine} and {@code name}; output
- *     {@code value} is the argument the caller passed;</li>
+ *     <li>{@code routine.parameter}: config {@code routine}, {@code name} and {@code type}, the selectable type of the
+ *     parameter; output {@code value} is the argument the caller passed;</li>
  *     <li>{@code routine.<name>}: calls the routine, one input per parameter, then continues with {@code next}.</li>
  * </ul>
  * Call types are not part of the platform: like macro uses, they are derived from the graph that defines the
@@ -42,11 +42,12 @@ import java.util.regex.Pattern;
  */
 public final class Routines {
     public static final String DEFINE = "routine.define";
-    public static final String PARAMETER_PREFIX = "routine.parameter.";
+    public static final String PARAMETER = "routine.parameter";
     public static final String CALL_PREFIX = "routine.";
     static final String NAME = "name";
     static final String ROUTINE = "routine";
     static final String VALUE = "value";
+    static final String TYPE = "type";
     static final String NEXT = "next";
     private static final Pattern VALID_NAME = Pattern.compile("[a-z][a-z0-9_]*");
     private static final Set<String> RESERVED = Set.of("define", "parameter");
@@ -70,7 +71,7 @@ public final class Routines {
     }
 
     /**
-     * @param types the platform's type mapping; one parameter node type is created per selectable type
+     * @param types the platform's type mapping; the parameter node offers its selectable types
      * @return {@code routine.define} and the parameter node types
      */
     public static List<NodeDefinition> boundary(TypeMapping types) {
@@ -79,7 +80,7 @@ public final class Routines {
                 NodeDescriptor.builder(DEFINE, NodeKind.ENTRY)
                         .category("routine")
                         .name("Define Routine")
-                        .description("Starts a routine: a chain any other chain of this mob can call by name")
+                        .description("Starts a routine: a chain any other chain of the same graph can call by name")
                         .config(NAME, String.class, null)
                         .execution(NEXT)
                         .build(),
@@ -88,19 +89,20 @@ public final class Routines {
                 (port, ctx) -> {
                     throw new IllegalArgumentException("routine.define has no outputs");
                 }));
-        types.selectable()
-                .forEach((id, type) -> definitions.add(new ExpressionDefinition(
-                        NodeDescriptor.builder(PARAMETER_PREFIX + id, NodeKind.VALUE)
-                                .category("routine")
-                                .name("Routine Parameter (%s)".formatted(types.name(type)))
-                                .description("A value the caller of the routine passes in")
-                                .config(ROUTINE, String.class, null)
-                                .config(NAME, String.class, null)
-                                .output(VALUE, type)
-                                .build(),
-                        (port, ctx) -> {
-                            throw new IllegalStateException("Routine parameters are resolved by the emitter");
-                        })));
+        definitions.add(new ExpressionDefinition(
+                NodeDescriptor.builder(PARAMETER, NodeKind.VALUE)
+                        .category("routine")
+                        .name("Routine Parameter")
+                        .description("A value the caller of the routine passes in")
+                        .config(ROUTINE, String.class, null)
+                        .config(NAME, String.class, null)
+                        .typeConfig(TYPE, "T", List.copyOf(types.selectable().keySet()))
+                        .output(VALUE, PortType.variable("T"))
+                        .describe("value", "What the caller passed for this parameter")
+                        .build(),
+                (port, ctx) -> {
+                    throw new IllegalStateException("Routine parameters are resolved by the emitter");
+                }));
         return definitions;
     }
 
@@ -217,7 +219,7 @@ public final class Routines {
      * @return the routine a call type calls, or {@code null} when it is no call
      */
     static @Nullable String callee(String type) {
-        if (!type.startsWith(CALL_PREFIX) || type.equals(DEFINE) || type.startsWith(PARAMETER_PREFIX)) return null;
+        if (!type.startsWith(CALL_PREFIX) || type.equals(DEFINE) || type.equals(PARAMETER)) return null;
         return type.substring(CALL_PREFIX.length());
     }
 
@@ -286,8 +288,13 @@ public final class Routines {
     }
 
     private static @Nullable PortType parameterType(NodeInstance node, TypeMapping types) {
-        if (!node.type().startsWith(PARAMETER_PREFIX)) return null;
-        return types.selectable().get(node.type().substring(PARAMETER_PREFIX.length()));
+        if (!node.type().equals(PARAMETER)) return null;
+        String picked = text(node, TYPE);
+        return types.selectable()
+                .get(
+                        picked != null
+                                ? picked
+                                : types.selectable().keySet().iterator().next());
     }
 
     private static @Nullable String text(NodeInstance node, String field) {

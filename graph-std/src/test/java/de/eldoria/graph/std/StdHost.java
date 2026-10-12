@@ -10,4 +10,9 @@ package de.eldoria.graph.std;
  */
 public interface StdHost {
     void run();
+
+    /**
+     * The clock, called by tests that wait.
+     */
+    default void tick() {}
 }

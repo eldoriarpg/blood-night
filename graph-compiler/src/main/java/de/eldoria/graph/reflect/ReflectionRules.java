@@ -6,12 +6,16 @@
 package de.eldoria.graph.reflect;
 
 import de.eldoria.graph.definition.PortType;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -28,18 +32,57 @@ public final class ReflectionRules {
     private final Set<Class<?>> excludedDeclarers;
     private final Predicate<PortType> types;
     private final Documentation documentation;
+    private final Map<Class<?>, String> groups;
 
     private ReflectionRules(
             boolean excludeDeprecated,
             Set<String> excludedMethods,
             Set<Class<?>> excludedDeclarers,
             Predicate<PortType> types,
-            Documentation documentation) {
+            Documentation documentation,
+            Map<Class<?>, String> groups) {
         this.excludeDeprecated = excludeDeprecated;
         this.excludedMethods = Set.copyOf(excludedMethods);
         this.excludedDeclarers = Set.copyOf(excludedDeclarers);
         this.types = types;
         this.documentation = documentation;
+        this.groups = Map.copyOf(groups);
+    }
+
+    /**
+     * The group a property of a type is drawn in: the most general registered group type that the type is one of and
+     * that already has the property, e.g. "Entity" for {@code getLocation} on a creeper and "Creeper" for
+     * {@code getFuseTicks}.
+     *
+     * @param owner  the type the node reads or changes
+     * @param method the property's getter or setter
+     * @return the group's name, or null when the owner belongs to no group
+     */
+    @Nullable
+    String group(Class<?> owner, Method method) {
+        return levels(owner).stream()
+                .filter(level -> method.getDeclaringClass().isAssignableFrom(level))
+                .reduce((specific, general) -> general)
+                .map(groups::get)
+                .orElse(null);
+    }
+
+    /**
+     * @param owner the type the node reads or changes
+     * @return the names of the groups its properties fall into, the most specific first
+     */
+    List<String> groupOrder(Class<?> owner) {
+        return levels(owner).stream().map(groups::get).toList();
+    }
+
+    private List<Class<?>> levels(Class<?> owner) {
+        return groups.keySet().stream()
+                .filter(level -> level.isAssignableFrom(owner))
+                .sorted(Comparator.comparingLong((Class<?> level) -> groups.keySet().stream()
+                                .filter(other -> other.isAssignableFrom(level))
+                                .count())
+                        .reversed())
+                .toList();
     }
 
     /**
@@ -97,6 +140,7 @@ public final class ReflectionRules {
         private boolean excludeDeprecated = true;
         private Predicate<PortType> types = type -> true;
         private Documentation documentation = Documentation.NONE;
+        private final Map<Class<?>, String> groups = new LinkedHashMap<>();
 
         private Builder() {}
 
@@ -140,8 +184,22 @@ public final class ReflectionRules {
             return this;
         }
 
+        /**
+         * Groups the properties of large nodes by the type that brings them, e.g. "Living Entity" for the health of a
+         * creeper, given every level of the hierarchy that should form a group.
+         *
+         * @param type a level of a type hierarchy
+         * @param name its editor name
+         * @return this builder
+         */
+        public Builder group(Class<?> type, String name) {
+            groups.put(type, name);
+            return this;
+        }
+
         public ReflectionRules build() {
-            return new ReflectionRules(excludeDeprecated, excludedMethods, excludedDeclarers, types, documentation);
+            return new ReflectionRules(
+                    excludeDeprecated, excludedMethods, excludedDeclarers, types, documentation, groups);
         }
     }
 }

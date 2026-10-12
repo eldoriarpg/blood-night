@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.behaviour;
 
 import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.GraphJson;
 import de.eldoria.graph.model.Macro;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 /**
@@ -76,9 +78,11 @@ public final class BytecodeCache {
      * @param className binary name of the generated class
      * @param graph     the behaviour graph
      * @param macros    the macro library
+     * @param bindings  the graph-wide types it is compiled with, e.g. its mob's entity type
      * @return the cache key
      */
-    public static String key(String version, String className, Graph graph, List<Macro> macros) {
+    public static String key(
+            String version, String className, Graph graph, List<Macro> macros, Map<String, PortType> bindings) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             digest.update(version.getBytes(StandardCharsets.UTF_8));
@@ -88,6 +92,10 @@ public final class BytecodeCache {
             digest.update(GraphJson.write(graph).getBytes(StandardCharsets.UTF_8));
             digest.update((byte) 0);
             digest.update(GraphJson.mapper().writeValueAsString(macros).getBytes(StandardCharsets.UTF_8));
+            digest.update((byte) 0);
+            new TreeMap<>(bindings)
+                    .forEach((variable, type) ->
+                            digest.update((variable + "=" + type.id() + ";").getBytes(StandardCharsets.UTF_8)));
             return HexFormat.of().formatHex(digest.digest());
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is always available", e);

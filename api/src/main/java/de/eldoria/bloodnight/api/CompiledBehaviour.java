@@ -69,16 +69,6 @@ public interface CompiledBehaviour {
     default void onKill(EntityDeathEvent event) {}
 
     /**
-     * The mob killed a player.
-     */
-    default void onPlayerKill(EntityDeathEvent event) {}
-
-    /**
-     * The mob killed an entity that is not a player.
-     */
-    default void onEntityKill(EntityDeathEvent event) {}
-
-    /**
      * The mob died.
      */
     default void onDeath(EntityDeathEvent event) {}

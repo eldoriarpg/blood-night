@@ -109,3 +109,6 @@ gradle-app.setting
 .concept/
 
 /core/run/
+
+.direnv/
+/test-results/

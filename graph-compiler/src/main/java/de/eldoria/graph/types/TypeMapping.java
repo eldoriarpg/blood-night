@@ -7,6 +7,7 @@ package de.eldoria.graph.types;
 
 import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.definition.PortType;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.Collections;
@@ -115,6 +116,14 @@ public final class TypeMapping {
      */
     public List<String> enumValues(PortType type) {
         return codec(type).map(LiteralCodec::values).orElse(List.of());
+    }
+
+    /**
+     * @param type a port type
+     * @return how the editor lets users type a value of it in, see {@link LiteralCodec#format()}; null for the default
+     */
+    public @Nullable String format(PortType type) {
+        return codec(type).map(LiteralCodec::format).orElse(null);
     }
 
     /**

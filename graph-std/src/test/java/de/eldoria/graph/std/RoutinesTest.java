@@ -26,7 +26,8 @@ class RoutinesTest {
     }
 
     private static NodeInstance.Builder parameter(String type, String routine, String name) {
-        return NodeInstance.of("routine.parameter." + type)
+        return NodeInstance.of("routine.parameter")
+                .config("type", StringNode.valueOf(type))
                 .config("routine", StringNode.valueOf(routine))
                 .config("name", StringNode.valueOf(name));
     }

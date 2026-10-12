@@ -20,9 +20,10 @@ public final class Timer {
     }
 
     /**
-     * @return seconds since the behaviour was created or the timer last reset
+     * @param unit the unit to give the time in
+     * @return time since the behaviour was created or the timer last reset, with fractions
      */
-    public double seconds() {
-        return (System.currentTimeMillis() - start) / 1000.0;
+    public double elapsed(TimeUnit unit) {
+        return unit.fromMillis(System.currentTimeMillis() - start);
     }
 }

@@ -1,7 +1,47 @@
 {
   "format" : 1,
-  "version" : "01a187ff8703cb74",
+  "version" : "2e40d621cd1c8662",
   "nodes" : [ {
+    "id" : "cast",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "As",
+    "description" : "The value as the picked type, missing when it is none; matches tells which",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "description" : "Any value",
+      "type" : {
+        "id" : "java.lang.Object"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "description" : "The value as the picked type; missing when it is none",
+      "type" : {
+        "variable" : "T"
+      }
+    }, {
+      "id" : "matches",
+      "name" : "Matches",
+      "description" : "Whether the value is of the picked type",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "config" : [ {
+      "id" : "type",
+      "name" : "Type",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "text",
+      "selects" : "T",
+      "choices" : [ "text" ]
+    } ]
+  }, {
     "id" : "debug.print",
     "kind" : "action",
     "category" : "debug",
@@ -10,6 +50,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "What is written to the console",
       "type" : {
         "id" : "java.lang.Object"
       },
@@ -37,6 +78,7 @@
     "inputs" : [ {
       "id" : "count",
       "name" : "Count",
+      "description" : "How often the body runs",
       "type" : {
         "id" : "int"
       },
@@ -45,6 +87,7 @@
     "outputs" : [ {
       "id" : "index",
       "name" : "Index",
+      "description" : "The current run, counting from 0",
       "type" : {
         "id" : "int"
       }
@@ -66,6 +109,7 @@
     "inputs" : [ {
       "id" : "condition",
       "name" : "Condition",
+      "description" : "Decides which chain runs",
       "type" : {
         "id" : "boolean"
       },
@@ -82,6 +126,107 @@
       "name" : "Next"
     } ]
   }, {
+    "id" : "flow.delay",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Delay",
+    "description" : "Runs the rest of the chain once the duration has passed; starting it again while it waits waits twice",
+    "inputs" : [ {
+      "id" : "duration",
+      "name" : "Duration",
+      "description" : "How long to wait, in the picked unit",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "unit",
+      "name" : "Unit",
+      "type" : {
+        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+      },
+      "defaultValue" : "SECONDS"
+    } ]
+  }, {
+    "id" : "flow.do_n",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Do N",
+    "description" : "Runs the rest of the chain the first n times; named, Reset Do Once of the same name lets it run again",
+    "inputs" : [ {
+      "id" : "count",
+      "name" : "Count",
+      "description" : "How often the chain runs",
+      "type" : {
+        "id" : "int"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "counter",
+      "name" : "Counter",
+      "description" : "How often it has run, this time included",
+      "type" : {
+        "id" : "int"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    } ]
+  }, {
+    "id" : "flow.do_once",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Do Once",
+    "description" : "Runs the rest of the chain the first time only; named, Reset Do Once of the same name lets it run again",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    } ]
+  }, {
+    "id" : "flow.flip_flop",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Flip Flop",
+    "description" : "Runs A, then B the next time, then A again, and so on",
+    "outputs" : [ {
+      "id" : "is_a",
+      "name" : "Is A",
+      "description" : "Whether this time runs A",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "a",
+      "name" : "A"
+    }, {
+      "id" : "b",
+      "name" : "B"
+    } ]
+  }, {
     "id" : "flow.for_each",
     "kind" : "control_flow",
     "category" : "flow",
@@ -90,6 +235,7 @@
     "inputs" : [ {
       "id" : "list",
       "name" : "List",
+      "description" : "The values to go through",
       "type" : {
         "raw" : "java.lang.Iterable",
         "arguments" : [ {
@@ -100,6 +246,7 @@
     "outputs" : [ {
       "id" : "element",
       "name" : "Element",
+      "description" : "The current value, inside the body",
       "type" : {
         "variable" : "T"
       }
@@ -113,6 +260,94 @@
       "name" : "Next"
     } ]
   }, {
+    "id" : "flow.gate",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Gate",
+    "description" : "Runs the rest of the chain only while the gate of its name is open; gates start open",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "gate"
+    } ]
+  }, {
+    "id" : "flow.reset_once",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Reset Do Once",
+    "description" : "Lets the Do Once and Do N nodes of the same name run again",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "once"
+    } ]
+  }, {
+    "id" : "flow.retriggerable_delay",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Retriggerable Delay",
+    "description" : "Runs the rest of the chain once the duration has passed; starting it again while it waits starts the wait anew",
+    "inputs" : [ {
+      "id" : "duration",
+      "name" : "Duration",
+      "description" : "How long to wait, in the picked unit",
+      "type" : {
+        "id" : "double"
+      },
+      "literal" : true
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "unit",
+      "name" : "Unit",
+      "type" : {
+        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+      },
+      "defaultValue" : "SECONDS"
+    } ]
+  }, {
+    "id" : "flow.set_gate",
+    "kind" : "action",
+    "category" : "flow",
+    "name" : "Set Gate",
+    "description" : "Opens, closes or toggles the gate of its name",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "gate"
+    }, {
+      "id" : "change",
+      "name" : "Change",
+      "type" : {
+        "id" : "de.eldoria.graph.std.runtime.GateChange"
+      },
+      "defaultValue" : "CLOSE"
+    } ]
+  }, {
     "id" : "flow.switch",
     "kind" : "control_flow",
     "category" : "flow",
@@ -121,41 +356,116 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "Picks the case with the same value",
       "type" : {
-        "id" : "int"
+        "variable" : "T"
       },
       "literal" : true
     } ],
     "executions" : [ {
       "id" : "case_0",
-      "name" : "Case 0"
-    }, {
-      "id" : "case_1",
       "name" : "Case 1"
     }, {
-      "id" : "case_2",
+      "id" : "case_1",
       "name" : "Case 2"
     }, {
-      "id" : "case_3",
+      "id" : "case_2",
       "name" : "Case 3"
     }, {
-      "id" : "case_4",
+      "id" : "case_3",
       "name" : "Case 4"
     }, {
-      "id" : "case_5",
+      "id" : "case_4",
       "name" : "Case 5"
     }, {
-      "id" : "case_6",
+      "id" : "case_5",
       "name" : "Case 6"
     }, {
-      "id" : "case_7",
+      "id" : "case_6",
       "name" : "Case 7"
+    }, {
+      "id" : "case_7",
+      "name" : "Case 8"
     }, {
       "id" : "default",
       "name" : "Default"
     }, {
       "id" : "next",
       "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "type",
+      "name" : "Type",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "integer",
+      "selects" : "T",
+      "choices" : [ "integer", "number", "text" ]
+    }, {
+      "id" : "case_0",
+      "name" : "Case 1",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_0"
+    }, {
+      "id" : "case_1",
+      "name" : "Case 2",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_1"
+    }, {
+      "id" : "case_2",
+      "name" : "Case 3",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_2"
+    }, {
+      "id" : "case_3",
+      "name" : "Case 4",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_3"
+    }, {
+      "id" : "case_4",
+      "name" : "Case 5",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_4"
+    }, {
+      "id" : "case_5",
+      "name" : "Case 6",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_5"
+    }, {
+      "id" : "case_6",
+      "name" : "Case 7",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_6"
+    }, {
+      "id" : "case_7",
+      "name" : "Case 8",
+      "type" : {
+        "variable" : "T"
+      },
+      "defaultValue" : null,
+      "beside" : "case_7"
     } ]
   }, {
     "id" : "function.chance",
@@ -166,6 +476,7 @@
     "inputs" : [ {
       "id" : "percent",
       "name" : "Percent",
+      "description" : "How likely it is true, from 0 to 100",
       "type" : {
         "id" : "double"
       },
@@ -174,6 +485,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True with the given chance",
       "type" : {
         "id" : "boolean"
       }
@@ -183,21 +495,31 @@
     "kind" : "pure",
     "category" : "function",
     "name" : "Cooldown",
-    "description" : "True at most once every n milliseconds; the first evaluation is true",
+    "description" : "True at most once per duration; the first evaluation is true",
     "inputs" : [ {
-      "id" : "value",
-      "name" : "Milliseconds",
+      "id" : "duration",
+      "name" : "Duration",
+      "description" : "How long to wait after passing, in the picked unit",
       "type" : {
-        "id" : "int"
+        "id" : "double"
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True once the time has passed since it was last true",
       "type" : {
         "id" : "boolean"
       }
+    } ],
+    "config" : [ {
+      "id" : "unit",
+      "name" : "Unit",
+      "type" : {
+        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+      },
+      "defaultValue" : "SECONDS"
     } ]
   }, {
     "id" : "function.random_integer",
@@ -208,6 +530,7 @@
     "inputs" : [ {
       "id" : "lower",
       "name" : "Lower",
+      "description" : "The smallest possible integer",
       "type" : {
         "id" : "int"
       },
@@ -215,6 +538,7 @@
     }, {
       "id" : "upper",
       "name" : "Upper",
+      "description" : "The largest possible integer",
       "type" : {
         "id" : "int"
       },
@@ -223,6 +547,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "A random integer between both, inclusive",
       "type" : {
         "id" : "int"
       }
@@ -236,6 +561,7 @@
     "inputs" : [ {
       "id" : "lower",
       "name" : "Lower",
+      "description" : "The smallest possible number",
       "type" : {
         "id" : "double"
       },
@@ -243,6 +569,7 @@
     }, {
       "id" : "upper",
       "name" : "Upper",
+      "description" : "The largest possible number",
       "type" : {
         "id" : "double"
       },
@@ -251,6 +578,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "A random number between both",
       "type" : {
         "id" : "double"
       }
@@ -264,6 +592,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "A condition",
       "type" : {
         "id" : "boolean"
       },
@@ -271,6 +600,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "Another condition",
       "type" : {
         "id" : "boolean"
       },
@@ -279,6 +609,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when both are true",
       "type" : {
         "id" : "boolean"
       }
@@ -292,6 +623,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "Any value",
       "type" : {
         "id" : "java.lang.Object"
       },
@@ -299,6 +631,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "Any value to compare with",
       "type" : {
         "id" : "java.lang.Object"
       },
@@ -307,6 +640,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "Whether both are equal",
       "type" : {
         "id" : "boolean"
       }
@@ -320,6 +654,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
         "id" : "double"
       },
@@ -327,6 +662,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
         "id" : "double"
       },
@@ -335,6 +671,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when the first number is greater",
       "type" : {
         "id" : "boolean"
       }
@@ -348,6 +685,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
         "id" : "double"
       },
@@ -355,6 +693,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
         "id" : "double"
       },
@@ -363,6 +702,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when the first number is greater or equal",
       "type" : {
         "id" : "boolean"
       }
@@ -376,6 +716,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "Any value",
       "type" : {
         "id" : "java.lang.Object"
       },
@@ -384,6 +725,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when the value is missing",
       "type" : {
         "id" : "boolean"
       }
@@ -397,6 +739,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
         "id" : "double"
       },
@@ -404,6 +747,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
         "id" : "double"
       },
@@ -412,6 +756,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when the first number is less",
       "type" : {
         "id" : "boolean"
       }
@@ -425,6 +770,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
         "id" : "double"
       },
@@ -432,6 +778,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
         "id" : "double"
       },
@@ -440,6 +787,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when the first number is less or equal",
       "type" : {
         "id" : "boolean"
       }
@@ -453,6 +801,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "A condition",
       "type" : {
         "id" : "boolean"
       },
@@ -461,6 +810,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "Inverts a boolean",
       "type" : {
         "id" : "boolean"
       }
@@ -474,6 +824,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "A condition",
       "type" : {
         "id" : "boolean"
       },
@@ -481,6 +832,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "Another condition",
       "type" : {
         "id" : "boolean"
       },
@@ -489,6 +841,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "True when at least one is true",
       "type" : {
         "id" : "boolean"
       }
@@ -508,17 +861,18 @@
       }
     } ]
   }, {
-    "id" : "macro.input.boolean",
+    "id" : "macro.input",
     "kind" : "value",
     "category" : "macro",
-    "name" : "Macro Input (Boolean)",
+    "name" : "Macro Input",
     "description" : "A value passed into the macro",
     "macroOnly" : true,
     "outputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "What is connected to this input where the macro is used",
       "type" : {
-        "id" : "boolean"
+        "variable" : "T"
       }
     } ],
     "config" : [ {
@@ -527,69 +881,15 @@
       "type" : {
         "id" : "java.lang.String"
       }
-    } ]
-  }, {
-    "id" : "macro.input.integer",
-    "kind" : "value",
-    "category" : "macro",
-    "name" : "Macro Input (Integer)",
-    "description" : "A value passed into the macro",
-    "macroOnly" : true,
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "int"
-      }
-    } ],
-    "config" : [ {
-      "id" : "name",
-      "name" : "Name",
+    }, {
+      "id" : "type",
+      "name" : "Type",
       "type" : {
         "id" : "java.lang.String"
-      }
-    } ]
-  }, {
-    "id" : "macro.input.number",
-    "kind" : "value",
-    "category" : "macro",
-    "name" : "Macro Input (Number)",
-    "description" : "A value passed into the macro",
-    "macroOnly" : true,
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "double"
-      }
-    } ],
-    "config" : [ {
-      "id" : "name",
-      "name" : "Name",
-      "type" : {
-        "id" : "java.lang.String"
-      }
-    } ]
-  }, {
-    "id" : "macro.input.text",
-    "kind" : "value",
-    "category" : "macro",
-    "name" : "Macro Input (Text)",
-    "description" : "A value passed into the macro",
-    "macroOnly" : true,
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "java.lang.String"
-      }
-    } ],
-    "config" : [ {
-      "id" : "name",
-      "name" : "Name",
-      "type" : {
-        "id" : "java.lang.String"
-      }
+      },
+      "defaultValue" : "boolean",
+      "selects" : "T",
+      "choices" : [ "boolean", "integer", "number", "text" ]
     } ]
   }, {
     "id" : "macro.output",
@@ -601,6 +901,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "What the macro gives out under this output's name",
       "type" : {
         "variable" : "T"
       },
@@ -609,6 +910,7 @@
     "outputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "What the macro gives out under this output's name",
       "type" : {
         "variable" : "T"
       }
@@ -640,37 +942,20 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "A number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The number without its sign",
       "type" : {
-        "id" : "double"
-      }
-    } ]
-  }, {
-    "id" : "math.abs_integer",
-    "kind" : "pure",
-    "category" : "math",
-    "name" : "Abs Integer",
-    "description" : "Absolute value of a number as integer, decimals cut off",
-    "inputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "double"
-      },
-      "literal" : true
-    } ],
-    "outputs" : [ {
-      "id" : "result",
-      "name" : "Result",
-      "type" : {
-        "id" : "int"
+        "variable" : "N",
+        "numeric" : true
       }
     } ]
   }, {
@@ -678,55 +963,33 @@
     "kind" : "pure",
     "category" : "math",
     "name" : "Add",
-    "description" : "Adds two numbers",
+    "description" : "Adds two numbers; whole numbers give a whole number, any decimal a decimal",
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The outcome, a whole number when both numbers are whole",
       "type" : {
-        "id" : "double"
-      }
-    } ]
-  }, {
-    "id" : "math.add_integer",
-    "kind" : "pure",
-    "category" : "math",
-    "name" : "Add Integer",
-    "description" : "Adds two integers",
-    "inputs" : [ {
-      "id" : "first",
-      "name" : "First",
-      "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    }, {
-      "id" : "second",
-      "name" : "Second",
-      "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    } ],
-    "outputs" : [ {
-      "id" : "result",
-      "name" : "Result",
-      "type" : {
-        "id" : "int"
+        "variable" : "N",
+        "numeric" : true
       }
     } ]
   }, {
@@ -738,6 +1001,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "A number",
       "type" : {
         "id" : "double"
       },
@@ -746,6 +1010,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "Rounds up to the next integer",
       "type" : {
         "id" : "int"
       }
@@ -759,65 +1024,38 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "The number to keep in bounds",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     }, {
       "id" : "lower",
       "name" : "Lower",
+      "description" : "The smallest allowed value",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     }, {
       "id" : "upper",
       "name" : "Upper",
+      "description" : "The largest allowed value",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The number, moved into the bounds when outside",
       "type" : {
-        "id" : "double"
-      }
-    } ]
-  }, {
-    "id" : "math.clamp_integer",
-    "kind" : "pure",
-    "category" : "math",
-    "name" : "Clamp Integer",
-    "description" : "Keeps a number within bounds, as integer with decimals cut off",
-    "inputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "double"
-      },
-      "literal" : true
-    }, {
-      "id" : "lower",
-      "name" : "Lower",
-      "type" : {
-        "id" : "double"
-      },
-      "literal" : true
-    }, {
-      "id" : "upper",
-      "name" : "Upper",
-      "type" : {
-        "id" : "double"
-      },
-      "literal" : true
-    } ],
-    "outputs" : [ {
-      "id" : "result",
-      "name" : "Result",
-      "type" : {
-        "id" : "int"
+        "variable" : "N",
+        "numeric" : true
       }
     } ]
   }, {
@@ -825,55 +1063,33 @@
     "kind" : "pure",
     "category" : "math",
     "name" : "Divide",
-    "description" : "Divides the first number by the second",
+    "description" : "Divides the first number by the second; whole numbers round toward zero and give 0 when dividing by zero",
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The number divided",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The number divided by",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The quotient; whole numbers round toward zero",
       "type" : {
-        "id" : "double"
-      }
-    } ]
-  }, {
-    "id" : "math.divide_integer",
-    "kind" : "pure",
-    "category" : "math",
-    "name" : "Divide Integer",
-    "description" : "Divides the first integer by the second, rounding toward zero; 0 when dividing by zero",
-    "inputs" : [ {
-      "id" : "first",
-      "name" : "First",
-      "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    }, {
-      "id" : "second",
-      "name" : "Second",
-      "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    } ],
-    "outputs" : [ {
-      "id" : "result",
-      "name" : "Result",
-      "type" : {
-        "id" : "int"
+        "variable" : "N",
+        "numeric" : true
       }
     } ]
   }, {
@@ -885,6 +1101,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "A number",
       "type" : {
         "id" : "double"
       },
@@ -893,6 +1110,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "Rounds down to the next integer",
       "type" : {
         "id" : "int"
       }
@@ -906,6 +1124,7 @@
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The integer divided",
       "type" : {
         "id" : "int"
       },
@@ -913,6 +1132,7 @@
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The integer divided by",
       "type" : {
         "id" : "int"
       },
@@ -921,6 +1141,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The remainder",
       "type" : {
         "id" : "int"
       }
@@ -930,55 +1151,33 @@
     "kind" : "pure",
     "category" : "math",
     "name" : "Multiply",
-    "description" : "Multiplies two numbers",
+    "description" : "Multiplies two numbers; whole numbers give a whole number, any decimal a decimal",
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The outcome, a whole number when both numbers are whole",
       "type" : {
-        "id" : "double"
-      }
-    } ]
-  }, {
-    "id" : "math.multiply_integer",
-    "kind" : "pure",
-    "category" : "math",
-    "name" : "Multiply Integer",
-    "description" : "Multiplies two integers",
-    "inputs" : [ {
-      "id" : "first",
-      "name" : "First",
-      "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    }, {
-      "id" : "second",
-      "name" : "Second",
-      "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    } ],
-    "outputs" : [ {
-      "id" : "result",
-      "name" : "Result",
-      "type" : {
-        "id" : "int"
+        "variable" : "N",
+        "numeric" : true
       }
     } ]
   }, {
@@ -990,6 +1189,7 @@
     "inputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "A number",
       "type" : {
         "id" : "double"
       },
@@ -998,6 +1198,7 @@
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "Rounds to the closest integer",
       "type" : {
         "id" : "int"
       }
@@ -1007,63 +1208,74 @@
     "kind" : "pure",
     "category" : "math",
     "name" : "Subtract",
-    "description" : "Subtracts the second number from the first",
+    "description" : "Subtracts the second number from the first; whole numbers give a whole number, any decimal a decimal",
     "inputs" : [ {
       "id" : "first",
       "name" : "First",
+      "description" : "The first number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     }, {
       "id" : "second",
       "name" : "Second",
+      "description" : "The second number",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       },
       "literal" : true
     } ],
     "outputs" : [ {
       "id" : "result",
       "name" : "Result",
+      "description" : "The outcome, a whole number when both numbers are whole",
       "type" : {
-        "id" : "double"
+        "variable" : "N",
+        "numeric" : true
       }
     } ]
   }, {
-    "id" : "math.subtract_integer",
+    "id" : "reroute",
     "kind" : "pure",
-    "category" : "math",
-    "name" : "Subtract Integer",
-    "description" : "Subtracts the second integer from the first",
+    "category" : "layout",
+    "name" : "Reroute",
+    "description" : "Passes a value on unchanged, so a wire can take another path",
     "inputs" : [ {
-      "id" : "first",
-      "name" : "First",
+      "id" : "value",
+      "name" : "Value",
+      "description" : "Any value",
       "type" : {
-        "id" : "int"
-      },
-      "literal" : true
-    }, {
-      "id" : "second",
-      "name" : "Second",
-      "type" : {
-        "id" : "int"
+        "variable" : "T"
       },
       "literal" : true
     } ],
     "outputs" : [ {
-      "id" : "result",
-      "name" : "Result",
+      "id" : "value",
+      "name" : "Value",
+      "description" : "Any value",
       "type" : {
-        "id" : "int"
+        "variable" : "T"
       }
+    } ]
+  }, {
+    "id" : "reroute.execution",
+    "kind" : "action",
+    "category" : "layout",
+    "name" : "Reroute",
+    "description" : "Continues the chain unchanged, so a wire can take another path",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
     } ]
   }, {
     "id" : "routine.define",
     "kind" : "entry",
     "category" : "routine",
     "name" : "Define Routine",
-    "description" : "Starts a routine: a chain any other chain of this mob can call by name",
+    "description" : "Starts a routine: a chain any other chain of the same graph can call by name",
     "executions" : [ {
       "id" : "next",
       "name" : "Next"
@@ -1076,16 +1288,17 @@
       }
     } ]
   }, {
-    "id" : "routine.parameter.boolean",
+    "id" : "routine.parameter",
     "kind" : "value",
     "category" : "routine",
-    "name" : "Routine Parameter (Boolean)",
+    "name" : "Routine Parameter",
     "description" : "A value the caller of the routine passes in",
     "outputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "What the caller passed for this parameter",
       "type" : {
-        "id" : "boolean"
+        "variable" : "T"
       }
     } ],
     "config" : [ {
@@ -1100,94 +1313,205 @@
       "type" : {
         "id" : "java.lang.String"
       }
+    }, {
+      "id" : "type",
+      "name" : "Type",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "boolean",
+      "selects" : "T",
+      "choices" : [ "boolean", "integer", "number", "text" ]
     } ]
   }, {
-    "id" : "routine.parameter.integer",
-    "kind" : "value",
-    "category" : "routine",
-    "name" : "Routine Parameter (Integer)",
-    "description" : "A value the caller of the routine passes in",
+    "id" : "select",
+    "kind" : "pure",
+    "category" : "logic",
+    "name" : "Select",
+    "description" : "One of several values, picked by a key; only the picked one is computed",
+    "inputs" : [ {
+      "id" : "key",
+      "name" : "Key",
+      "description" : "Picks the option with the same key",
+      "type" : {
+        "variable" : "K"
+      },
+      "literal" : true
+    }, {
+      "id" : "option_0",
+      "name" : "Option 1",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_1",
+      "name" : "Option 2",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_2",
+      "name" : "Option 3",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_3",
+      "name" : "Option 4",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_4",
+      "name" : "Option 5",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_5",
+      "name" : "Option 6",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_6",
+      "name" : "Option 7",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "option_7",
+      "name" : "Option 8",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "default",
+      "name" : "Default",
+      "description" : "Given when no option has the key",
+      "type" : {
+        "variable" : "T"
+      },
+      "optional" : true,
+      "literal" : true
+    } ],
     "outputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "The picked option",
       "type" : {
-        "id" : "int"
+        "variable" : "T"
       }
     } ],
     "config" : [ {
-      "id" : "routine",
-      "name" : "Routine",
+      "id" : "key_type",
+      "name" : "Key Type",
       "type" : {
         "id" : "java.lang.String"
-      }
+      },
+      "defaultValue" : "boolean",
+      "selects" : "K",
+      "choices" : [ "boolean", "integer", "number", "text" ]
     }, {
-      "id" : "name",
-      "name" : "Name",
+      "id" : "type",
+      "name" : "Type",
       "type" : {
         "id" : "java.lang.String"
-      }
-    } ]
-  }, {
-    "id" : "routine.parameter.number",
-    "kind" : "value",
-    "category" : "routine",
-    "name" : "Routine Parameter (Number)",
-    "description" : "A value the caller of the routine passes in",
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "double"
-      }
-    } ],
-    "config" : [ {
-      "id" : "routine",
-      "name" : "Routine",
-      "type" : {
-        "id" : "java.lang.String"
-      }
+      },
+      "defaultValue" : "boolean",
+      "selects" : "T",
+      "choices" : [ "boolean", "integer", "number", "text" ]
     }, {
-      "id" : "name",
-      "name" : "Name",
+      "id" : "key_0",
+      "name" : "Key 1",
       "type" : {
-        "id" : "java.lang.String"
-      }
-    } ]
-  }, {
-    "id" : "routine.parameter.text",
-    "kind" : "value",
-    "category" : "routine",
-    "name" : "Routine Parameter (Text)",
-    "description" : "A value the caller of the routine passes in",
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "java.lang.String"
-      }
-    } ],
-    "config" : [ {
-      "id" : "routine",
-      "name" : "Routine",
-      "type" : {
-        "id" : "java.lang.String"
-      }
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_0"
     }, {
-      "id" : "name",
-      "name" : "Name",
+      "id" : "key_1",
+      "name" : "Key 2",
       "type" : {
-        "id" : "java.lang.String"
-      }
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_1"
+    }, {
+      "id" : "key_2",
+      "name" : "Key 3",
+      "type" : {
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_2"
+    }, {
+      "id" : "key_3",
+      "name" : "Key 4",
+      "type" : {
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_3"
+    }, {
+      "id" : "key_4",
+      "name" : "Key 5",
+      "type" : {
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_4"
+    }, {
+      "id" : "key_5",
+      "name" : "Key 6",
+      "type" : {
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_5"
+    }, {
+      "id" : "key_6",
+      "name" : "Key 7",
+      "type" : {
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_6"
+    }, {
+      "id" : "key_7",
+      "name" : "Key 8",
+      "type" : {
+        "variable" : "K"
+      },
+      "defaultValue" : null,
+      "beside" : "option_7"
     } ]
   }, {
     "id" : "timer.elapsed",
     "kind" : "pure",
     "category" : "timer",
-    "name" : "Elapsed",
-    "description" : "Seconds since the mob appeared or a named timer was last reset",
+    "name" : "Timer Elapsed",
+    "description" : "Time since the behaviour started or a named timer was last reset",
     "outputs" : [ {
-      "id" : "seconds",
-      "name" : "Seconds",
+      "id" : "elapsed",
+      "name" : "Elapsed",
+      "description" : "Time passed in the picked unit, with fractions",
       "type" : {
         "id" : "double"
       }
@@ -1199,12 +1523,19 @@
         "id" : "java.lang.String"
       },
       "defaultValue" : "timer"
+    }, {
+      "id" : "unit",
+      "name" : "Unit",
+      "type" : {
+        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+      },
+      "defaultValue" : "SECONDS"
     } ]
   }, {
     "id" : "timer.reset",
     "kind" : "action",
     "category" : "timer",
-    "name" : "Reset",
+    "name" : "Reset Timer",
     "description" : "Starts a named timer again; every timer node with the same name shares it",
     "executions" : [ {
       "id" : "next",
@@ -1219,88 +1550,34 @@
       "defaultValue" : "timer"
     } ]
   }, {
-    "id" : "value.boolean",
+    "id" : "value",
     "kind" : "value",
     "category" : "value",
-    "name" : "Boolean",
-    "description" : "A fixed true or false",
+    "name" : "Value",
+    "description" : "A fixed value of the picked type",
     "outputs" : [ {
       "id" : "value",
       "name" : "Value",
+      "description" : "The value typed in",
       "type" : {
-        "id" : "boolean"
+        "variable" : "T"
       }
     } ],
     "config" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "boolean"
-      },
-      "defaultValue" : false
-    } ]
-  }, {
-    "id" : "value.integer",
-    "kind" : "value",
-    "category" : "value",
-    "name" : "Integer",
-    "description" : "A fixed integer number",
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "int"
-      }
-    } ],
-    "config" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "int"
-      },
-      "defaultValue" : 0
-    } ]
-  }, {
-    "id" : "value.number",
-    "kind" : "value",
-    "category" : "value",
-    "name" : "Number",
-    "description" : "A fixed decimal number",
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "double"
-      }
-    } ],
-    "config" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "double"
-      },
-      "defaultValue" : 0.0
-    } ]
-  }, {
-    "id" : "value.text",
-    "kind" : "value",
-    "category" : "value",
-    "name" : "Text",
-    "description" : "A fixed text",
-    "outputs" : [ {
-      "id" : "value",
-      "name" : "Value",
-      "type" : {
-        "id" : "java.lang.String"
-      }
-    } ],
-    "config" : [ {
-      "id" : "value",
-      "name" : "Value",
+      "id" : "type",
+      "name" : "Type",
       "type" : {
         "id" : "java.lang.String"
       },
-      "defaultValue" : ""
+      "defaultValue" : "boolean",
+      "selects" : "T",
+      "choices" : [ "boolean", "integer", "number", "text" ]
+    }, {
+      "id" : "value",
+      "name" : "Value",
+      "type" : {
+        "variable" : "T"
+      }
     } ]
   }, {
     "id" : "value.weekday",
@@ -1322,12 +1599,101 @@
       },
       "defaultValue" : "MONDAY"
     } ]
+  }, {
+    "id" : "variable.get",
+    "kind" : "pure",
+    "category" : "variable",
+    "name" : "Get Variable",
+    "description" : "The value a variable holds; every variable node with the same name shares it",
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "description" : "What the variable holds now",
+      "type" : {
+        "variable" : "T"
+      }
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "variable"
+    }, {
+      "id" : "type",
+      "name" : "Type",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "boolean",
+      "selects" : "T",
+      "choices" : [ "boolean", "integer", "number", "text" ]
+    } ]
+  }, {
+    "id" : "variable.set",
+    "kind" : "action",
+    "category" : "variable",
+    "name" : "Set Variable",
+    "description" : "Stores a value in a variable; every variable node with the same name shares it",
+    "inputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "description" : "What the variable holds from now on",
+      "type" : {
+        "variable" : "T"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "value",
+      "name" : "Value",
+      "description" : "What the variable holds from now on",
+      "type" : {
+        "variable" : "T"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "variable"
+    }, {
+      "id" : "type",
+      "name" : "Type",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : "boolean",
+      "selects" : "T",
+      "choices" : [ "boolean", "integer", "number", "text" ]
+    } ]
   } ],
   "types" : [ {
     "id" : "boolean",
     "name" : "Boolean",
     "raw" : "boolean",
     "literal" : true,
+    "assignableTo" : [ "java.lang.Object" ]
+  }, {
+    "id" : "de.eldoria.graph.std.runtime.GateChange",
+    "name" : "GateChange",
+    "raw" : "de.eldoria.graph.std.runtime.GateChange",
+    "literal" : true,
+    "values" : [ "OPEN", "CLOSE", "TOGGLE" ],
+    "assignableTo" : [ "java.lang.Object" ]
+  }, {
+    "id" : "de.eldoria.graph.std.runtime.TimeUnit",
+    "name" : "TimeUnit",
+    "raw" : "de.eldoria.graph.std.runtime.TimeUnit",
+    "literal" : true,
+    "values" : [ "MILLISECONDS", "TICKS", "SECONDS", "MINUTES" ],
     "assignableTo" : [ "java.lang.Object" ]
   }, {
     "id" : "double",
@@ -1364,5 +1730,6 @@
     "integer" : "int",
     "number" : "double",
     "text" : "java.lang.String"
-  }
+  },
+  "bindings" : { }
 }

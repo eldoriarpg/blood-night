@@ -17,13 +17,27 @@ services:
     environment:
       DB_HOST: postgres
       DB_PASSWORD: ${DB_PASSWORD}
-      EDITOR_URL: ${EDITOR_URL:-http://localhost:3000/session/{id}#{token}}
+      EDITOR_URL: ${EDITOR_URL:-http://localhost:4000/session/{id}#{token}}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+    volumes:
+      - assets:/var/cache/bloodnight/assets
     ports:
       - "${PORT:-8080}:8080"
     depends_on:
       postgres:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ..
+      dockerfile: .docker/web-frontend.Dockerfile
+    environment:
+      NUXT_BACKEND_URL: http://web:8080
+    ports:
+      - "${FRONTEND_PORT:-4000}:4000"
+    depends_on:
+      - web
+
 volumes:
   postgres:
+  assets:

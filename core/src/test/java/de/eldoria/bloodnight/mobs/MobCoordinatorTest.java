@@ -35,6 +35,7 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -96,15 +97,15 @@ class MobCoordinatorTest {
                 .node("self", NodeInstance.of("mob.self"))
                 .node(
                         "burn",
-                        NodeInstance.of("entity.set_fire_ticks")
+                        NodeInstance.of("entity.mutate")
                                 .input("target", "self", "entity")
-                                .literal("value", IntNode.valueOf(ticks)))
+                                .literal("fire_ticks", IntNode.valueOf(ticks)))
                 .node("damage", NodeInstance.of("event.damage").chain("next", "cancel"))
                 .node(
                         "cancel",
-                        NodeInstance.of("cancellable.set_cancelled")
+                        NodeInstance.of("cancellable.mutate")
                                 .input("target", "damage", "event")
-                                .literal("value", BooleanNode.TRUE))
+                                .literal("cancelled", BooleanNode.TRUE))
                 .build();
     }
 
@@ -206,9 +207,9 @@ class MobCoordinatorTest {
                 .node("extension", NodeInstance.of("mob.extension"))
                 .node(
                         "boom",
-                        NodeInstance.of("entity.set_fire_ticks")
+                        NodeInstance.of("entity.mutate")
                                 .input("target", "extension", "entity")
-                                .literal("value", IntNode.valueOf(1)))
+                                .literal("fire_ticks", IntNode.valueOf(1)))
                 .build();
         define(Mobs.zombie("broken", throwing), Mobs.zombie("burner", fireTicks(100)));
         Zombie broken = zombie();
@@ -228,17 +229,21 @@ class MobCoordinatorTest {
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "fuse"))
                 .node("damage", NodeInstance.of("event.damage").chain("next", "fuse_on_damage"))
                 .node("self", NodeInstance.of("mob.self"))
-                .node("creeper", NodeInstance.of("cast.creeper").input("value", "self", "entity"))
+                .node(
+                        "creeper",
+                        NodeInstance.of("cast")
+                                .config("type", StringNode.valueOf("creeper"))
+                                .input("value", "self", "entity"))
                 .node(
                         "fuse",
-                        NodeInstance.of("creeper.set_fuse_ticks")
+                        NodeInstance.of("creeper.mutate")
                                 .input("target", "creeper", "result")
-                                .literal("value", IntNode.valueOf(1)))
+                                .literal("fuse_ticks", IntNode.valueOf(1)))
                 .node(
                         "fuse_on_damage",
-                        NodeInstance.of("creeper.set_fuse_ticks")
+                        NodeInstance.of("creeper.mutate")
                                 .input("target", "creeper", "result")
-                                .literal("value", IntNode.valueOf(1)))
+                                .literal("fuse_ticks", IntNode.valueOf(1)))
                 .build();
         define(Mobs.zombie("broken", failing));
         Zombie zombie = zombie();

@@ -23,6 +23,15 @@ public final class Integers {
     /**
      * @param dividend the number divided
      * @param divisor  the number divided by
+     * @return the quotient rounded toward zero, or 0 when dividing by zero
+     */
+    public static long divide(long dividend, long divisor) {
+        return divisor == 0 ? 0 : dividend / divisor;
+    }
+
+    /**
+     * @param dividend the number divided
+     * @param divisor  the number divided by
      * @return the remainder with the divisor's sign, e.g. -1 modulo 3 is 2; 0 when dividing by zero
      */
     public static int modulo(int dividend, int divisor) {

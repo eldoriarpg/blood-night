@@ -86,6 +86,54 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
     }
 
     /**
+     * A variable that only numbers bind to. Unlike other variables it binds to the primitive type and, given numbers of
+     * different types, to the widest of them (at least {@code int}), so one node adds integers as well as decimals:
+     * whole numbers in, a whole number out; any decimal in, a decimal out. Left unbound it is {@code double}.
+     *
+     * @param name name of the variable, unique within one node definition
+     * @return the port type
+     */
+    static PortType number(String name) {
+        return new Variable(name, true);
+    }
+
+    /**
+     * Whether a type is a primitive number or its wrapper.
+     *
+     * @param type a type
+     * @return true for {@code byte} through {@code double} and their wrappers
+     */
+    static boolean isNumber(PortType type) {
+        return type instanceof Concrete concrete
+                && Primitives.number(concrete.raw()).isPresent();
+    }
+
+    /**
+     * The type a numeric variable binds to when numbers of two types meet it.
+     *
+     * @param a a number type
+     * @param b a number type
+     * @return the wider of both as primitive, e.g. {@code double} for {@code int} and {@code Double}
+     * @throws IllegalArgumentException when either is not a number
+     */
+    static PortType widerNumber(PortType a, PortType b) {
+        return of(Primitives.wider(primitiveNumber(a), primitiveNumber(b)));
+    }
+
+    /**
+     * @param type a number type
+     * @return its primitive form, e.g. {@code int} for {@code Integer}
+     * @throws IllegalArgumentException when it is not a number
+     */
+    static Class<?> primitiveNumber(PortType type) {
+        if (type instanceof Concrete concrete) {
+            Optional<Class<?>> number = Primitives.number(concrete.raw());
+            if (number.isPresent()) return number.get();
+        }
+        throw new IllegalArgumentException(type.id() + " is no number");
+    }
+
+    /**
      * @return the type as JavaPoet renders it into generated code
      */
     TypeName typeName();
@@ -246,7 +294,20 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
      *
      * @param name variable name
      */
-    record Variable(String name) implements PortType {
+    /**
+     * A type variable, bound per node by what is connected.
+     *
+     * @param name    name of the variable
+     * @param numeric whether only numbers bind to it; see {@link #number(String)}
+     */
+    record Variable(String name, boolean numeric) implements PortType {
+        /**
+         * A variable any type binds to.
+         */
+        public Variable(String name) {
+            this(name, false);
+        }
+
         public Variable {
             Objects.requireNonNull(name, "name");
         }
@@ -258,7 +319,7 @@ public sealed interface PortType permits PortType.Concrete, PortType.Variable {
 
         @Override
         public boolean accepts(PortType source) {
-            return true;
+            return !numeric || source instanceof Variable || isNumber(source);
         }
 
         @Override

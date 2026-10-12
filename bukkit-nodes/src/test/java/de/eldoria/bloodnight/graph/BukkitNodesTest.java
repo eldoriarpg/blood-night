@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -45,7 +46,9 @@ class BukkitNodesTest {
     }
 
     private static NodeInstance.Builder number(double value) {
-        return NodeInstance.of("value.number").config("value", DoubleNode.valueOf(value));
+        return NodeInstance.of("value")
+                .config("type", StringNode.valueOf("number"))
+                .config("value", DoubleNode.valueOf(value));
     }
 
     private static NodeInstance.Builder print(String node, String port) {
@@ -76,7 +79,7 @@ class BukkitNodesTest {
         Graph graph = Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "x", "world"))
                 .node("self", NodeInstance.of("mob.self"))
-                .node("self_get", NodeInstance.of("entity.get").input("target", "self", "entity"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
                 .node(
                         "location",
                         NodeInstance.of("location.create")
@@ -85,7 +88,7 @@ class BukkitNodesTest {
                                 .input("y", "two", "value")
                                 .input("z", "two", "value"))
                 .node("two", number(2.5))
-                .node("parts", NodeInstance.of("location.get").input("target", "location", "result"))
+                .node("parts", NodeInstance.of("location.read").input("target", "location", "result"))
                 .node("x", print("parts", "x"))
                 .node("world", print("parts", "world"))
                 .build();
@@ -146,7 +149,7 @@ class BukkitNodesTest {
         Graph graph = Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "loop"))
                 .node("self", NodeInstance.of("mob.self"))
-                .node("self_get", NodeInstance.of("entity.get").input("target", "self", "entity"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
                 .node(
                         "nearby",
                         NodeInstance.of("world.nearby_entities")
@@ -159,7 +162,7 @@ class BukkitNodesTest {
                         NodeInstance.of("flow.for_each")
                                 .input("list", "nearby", "result")
                                 .chain("body", "print"))
-                .node("element", NodeInstance.of("entity.get").input("target", "loop", "element"))
+                .node("element", NodeInstance.of("entity.read").input("target", "loop", "element"))
                 .node("print", print("element", "type"))
                 .build();
 

@@ -1,0 +1,8 @@
+{
+  "entries": [
+    {
+      "key": "bloodnight.mobSheet.opened",
+      "purpose": "The parts of the mob settings sheet the reader opened, as a JSON array of part names; the others stay folded."
+    }
+  ]
+}

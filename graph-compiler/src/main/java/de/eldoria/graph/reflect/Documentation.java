@@ -38,6 +38,23 @@ public interface Documentation {
     }
 
     /**
+     * @param executable a constructor or method
+     * @param index      the parameter's position
+     * @return a short description of the parameter, if documented
+     */
+    default Optional<String> parameter(Executable executable, int index) {
+        return Optional.empty();
+    }
+
+    /**
+     * @param executable a method
+     * @return a short description of what it returns, if documented
+     */
+    default Optional<String> returns(Executable executable) {
+        return Optional.empty();
+    }
+
+    /**
      * @param type a class
      * @return a short description of the class, if documented
      */

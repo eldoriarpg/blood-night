@@ -5,11 +5,14 @@
  */
 package de.eldoria.bloodnight.mob.meta;
 
+/**
+ * How a configured number changes a value the game would use, such as the experience a mob drops.
+ */
 public enum ValueModifier {
-    // Do not change the value
+    /** The game's value stays. */
     DEFAULT,
-    // Multiply the default value
+    /** The game's value is multiplied by the configured number. */
     MULTIPLY,
-    // Set the value
+    /** The configured number replaces the game's value. */
     VALUE
 }

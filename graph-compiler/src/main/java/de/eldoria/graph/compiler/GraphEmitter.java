@@ -28,6 +28,7 @@ import de.eldoria.graph.model.Edge;
 import de.eldoria.graph.model.NodeInstance;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -88,6 +89,8 @@ final class GraphEmitter {
     private final Map<String, CodeBlock> constants = new HashMap<>();
     private final List<FieldSpec> constantSpecs = new ArrayList<>();
     private final Map<String, ClassName> staticImports = new LinkedHashMap<>();
+    private final Set<CodeBlock> ticking = new LinkedHashSet<>();
+    private final Map<String, TypeName> sharedTypes = new HashMap<>();
     private Pass pass = Pass.counting();
 
     private final boolean inline;
@@ -133,10 +136,18 @@ final class GraphEmitter {
                     .computeIfAbsent(hostMethod(definition), key -> new ArrayList<>())
                     .add(entry);
         }
-        entriesByMethod.forEach((method, entries) -> type.addMethod(entryMethod(method, entries)));
-        routines.values().forEach(routine -> routineMethod(routine).ifPresent(type::addMethod));
+        Map<Method, MethodSpec> methods = new LinkedHashMap<>();
+        entriesByMethod.forEach((method, entries) -> methods.put(method, entryMethod(method, entries)));
+        List<MethodSpec> routineMethods = new ArrayList<>();
+        routines.values().forEach(routine -> routineMethod(routine).ifPresent(routineMethods::add));
+        graph.platform()
+                .clock()
+                .filter(clock -> !ticking.isEmpty())
+                .ifPresent(clock -> methods.put(clock, ticked(methods.getOrDefault(clock, emptyMethod(clock)))));
+        methods.values().forEach(type::addMethod);
+        routineMethods.forEach(type::addMethod);
         for (Method method : host.getMethods()) {
-            if (java.lang.reflect.Modifier.isAbstract(method.getModifiers()) && !entriesByMethod.containsKey(method)) {
+            if (java.lang.reflect.Modifier.isAbstract(method.getModifiers()) && !methods.containsKey(method)) {
                 type.addMethod(emptyMethod(method));
             }
         }
@@ -262,12 +273,33 @@ final class GraphEmitter {
         for (String entry : entries) {
             Scope root = Scope.root(entry, methodNames);
             builder.addCode(marker(entry));
+            Optional<CodeBlock> guard =
+                    definition.guard().condition(new Entry(graph.nodes().get(entry), root, CodeBlock.builder()));
+            guard.ifPresent(condition -> builder.beginControlFlow("if ($L)", condition));
             for (ExecutionPort port : ports) {
                 boolean last = returnsNothing && entry.equals(entries.getLast()) && port.equals(ports.getLast());
                 builder.addCode(chain(entry, port, root, Map.of(), last));
             }
+            guard.ifPresent(condition -> builder.endControlFlow());
         }
         return builder.addCode(sourceMap.boundary()).build();
+    }
+
+    /**
+     * The clock method with the statements nodes run every tick in front of its own code.
+     */
+    private MethodSpec ticked(MethodSpec method) {
+        CodeBlock.Builder code = CodeBlock.builder();
+        ticking.forEach(statement -> code.addStatement(statement));
+        return MethodSpec.methodBuilder(method.name())
+                .addAnnotations(method.annotations())
+                .addModifiers(method.modifiers())
+                .returns(method.returnType())
+                .addParameters(method.parameters())
+                .addExceptions(method.exceptions())
+                .addCode(code.build())
+                .addCode(method.code())
+                .build();
     }
 
     private CodeBlock marker(String node) {
@@ -344,7 +376,7 @@ final class GraphEmitter {
         if (existing != null) return existing;
 
         ValidatedGraph.Node source = graph.nodes().get(edge.node());
-        if (source.definition().id().startsWith(Routines.PARAMETER_PREFIX)) {
+        if (source.definition().id().equals(Routines.PARAMETER)) {
             return parameter(reader, readerPort, source, scope);
         }
         return switch (source.definition()) {
@@ -483,6 +515,11 @@ final class GraphEmitter {
         CodeBlock emit();
     }
 
+    private static String simple(TypeName type) {
+        String name = type.toString();
+        return name.substring(name.lastIndexOf('.') + 1);
+    }
+
     private CodeBlock fail(String node, String port, String message) {
         report(GraphProblem.error(node, port, message));
         return CodeBlock.of("null");
@@ -542,7 +579,22 @@ final class GraphEmitter {
                 throw new IllegalArgumentException(
                         "%s has no config field %s".formatted(node.definition().id(), field));
             JsonNode value = node.instance().config().get(field);
-            return constant(declared.type(), literal, value == null ? declared.defaultValue() : value);
+            return constant(
+                    node.configTypes().getOrDefault(field, declared.type()),
+                    literal,
+                    value == null ? declared.defaultValue() : value);
+        }
+
+        @Override
+        public JsonNode configValue(String field) {
+            ConfigField declared =
+                    node.definition().descriptor().configField(field).orElse(null);
+            if (declared == null)
+                throw new IllegalArgumentException(
+                        "%s has no config field %s".formatted(node.definition().id(), field));
+            JsonNode value = node.instance().config().get(field);
+            if (value != null) return value;
+            return declared.defaultIfAbsent().orElse(NullNode.getInstance());
         }
 
         @Override
@@ -598,6 +650,13 @@ final class GraphEmitter {
         @Override
         public CodeBlock sharedField(String name, TypeName type, CodeBlock initializer) {
             pass.touchedState = true;
+            TypeName declared = sharedTypes.putIfAbsent(name, type);
+            if (declared != null && !declared.equals(type)) {
+                report(GraphProblem.error(
+                        node.id(),
+                        null,
+                        "%s already holds %s values, not %s".formatted(name, simple(declared), simple(type))));
+            }
             return fields.computeIfAbsent(Scope.key("", name), key -> {
                 String field = fieldNames.claim(Identifiers.lowerCamel(name));
                 fieldSpecs.add(FieldSpec.builder(type, field, Modifier.PRIVATE).build());
@@ -612,6 +671,13 @@ final class GraphEmitter {
             if (graph.platform().context().isEmpty())
                 throw new IllegalStateException("The platform has no context type");
             return CodeBlock.of("this.$N", CONTEXT_FIELD);
+        }
+
+        @Override
+        public void everyTick(CodeBlock statement) {
+            if (graph.platform().clock().isEmpty())
+                throw new IllegalStateException("The platform has no clock, nothing can wait");
+            ticking.add(statement);
         }
     }
 

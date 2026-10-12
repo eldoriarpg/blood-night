@@ -14,6 +14,16 @@ public interface StdNodes {
     String FLOW_BRANCH = "flow.branch";
     String FLOW_FOR_EACH = "flow.for_each";
     String FLOW_SWITCH = "flow.switch";
+    String FLOW_DELAY = "flow.delay";
+    String FLOW_DO_ONCE = "flow.do_once";
+    String FLOW_DO_N = "flow.do_n";
+    String FLOW_RESET_ONCE = "flow.reset_once";
+    String FLOW_FLIP_FLOP = "flow.flip_flop";
+    String FLOW_GATE = "flow.gate";
+    String FLOW_SET_GATE = "flow.set_gate";
+    String VARIABLE_GET = "variable.get";
+    String VARIABLE_SET = "variable.set";
+    String FLOW_RETRIGGERABLE_DELAY = "flow.retriggerable_delay";
     String FUNCTION_CHANCE = "function.chance";
     String FUNCTION_COOLDOWN = "function.cooldown";
     String FUNCTION_RANDOM_INTEGER = "function.random_integer";
@@ -27,17 +37,14 @@ public interface StdNodes {
     String LOGIC_LESS_OR_EQUAL = "logic.less_or_equal";
     String LOGIC_NOT = "logic.not";
     String LOGIC_OR = "logic.or";
+    String CAST = "cast";
+    String VALUE = "value";
+    String SELECT = "select";
     String MATH_ABS = "math.abs";
-    String MATH_ABS_INTEGER = "math.abs_integer";
     String MATH_ADD = "math.add";
-    String MATH_ADD_INTEGER = "math.add_integer";
-    String MATH_DIVIDE_INTEGER = "math.divide_integer";
     String MATH_MODULO_INTEGER = "math.modulo_integer";
-    String MATH_MULTIPLY_INTEGER = "math.multiply_integer";
-    String MATH_SUBTRACT_INTEGER = "math.subtract_integer";
     String MATH_CEIL = "math.ceil";
     String MATH_CLAMP = "math.clamp";
-    String MATH_CLAMP_INTEGER = "math.clamp_integer";
     String MATH_DIVIDE = "math.divide";
     String MATH_FLOOR = "math.floor";
     String MATH_MULTIPLY = "math.multiply";
@@ -45,16 +52,6 @@ public interface StdNodes {
     String MATH_SUBTRACT = "math.subtract";
     String TIMER_ELAPSED = "timer.elapsed";
     String TIMER_RESET = "timer.reset";
-    String VALUE_BOOLEAN = "value.boolean";
-    String VALUE_INTEGER = "value.integer";
-    String VALUE_NUMBER = "value.number";
-    String VALUE_TEXT = "value.text";
-
-    /**
-     * @param selectable id of a selectable type
-     * @return the type id of the cast node to that type
-     */
-    static String cast(String selectable) {
-        return "cast." + selectable;
-    }
+    String REROUTE = "reroute";
+    String REROUTE_EXECUTION = "reroute.execution";
 }

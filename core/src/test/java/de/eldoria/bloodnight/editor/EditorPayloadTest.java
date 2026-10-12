@@ -58,6 +58,12 @@ class EditorPayloadTest {
                 Map.of(),
                 Map.of("items.yml", "broken"),
                 new SettingsPayload(new ConfigFile(), GlobalDrops.defaultDrops(), Map.of()),
+                new EditorChoices(
+                        "26.3",
+                        List.of("minecraft:stone"),
+                        List.of("minecraft:sharpness"),
+                        Map.of("CREEPER", "org.bukkit.entity.Creeper"),
+                        List.of("CREEPER")),
                 Map.of("mobs.yml", "abc"));
 
         JsonNode json = GraphJson.mapper().readTree(payload.asJson());
@@ -96,7 +102,7 @@ class EditorPayloadTest {
                 BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader())));
 
         NodeType living = catalog.nodes().stream()
-                .filter(node -> node.id().equals("living_entity.get"))
+                .filter(node -> node.id().equals("living_entity.read"))
                 .findFirst()
                 .orElseThrow();
         assertTrue(living.outputs().stream()

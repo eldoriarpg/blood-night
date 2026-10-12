@@ -85,11 +85,20 @@ final class Creations {
         for (int i = 0; i < generic.length; i++) {
             Param param = creation.params().get(i);
             PortType input = declared(generic[i], param);
-            descriptor.input(param.name(), Names.humanize(param.name()), input, false, "");
+            descriptor.input(
+                    param.name(),
+                    Names.humanize(param.name()),
+                    input,
+                    false,
+                    docs.parameter(executable, i).orElse(param.description()));
         }
         if (output.hasVariables())
             throw new IllegalArgumentException("%s returns a type variable".formatted(executable));
-        descriptor.output(RESULT, typeName, output, "");
+        descriptor.output(
+                RESULT,
+                typeName,
+                output,
+                docs.returns(executable).or(() -> docs.of(type)).orElse(""));
         List<String> inputs = creation.params().stream().map(Param::name).toList();
         String method = creation.method();
         return new ExpressionDefinition(descriptor.build(), (port, ctx) -> {

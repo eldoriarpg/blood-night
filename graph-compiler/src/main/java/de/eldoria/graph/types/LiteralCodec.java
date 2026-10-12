@@ -6,6 +6,7 @@
 package de.eldoria.graph.types;
 
 import com.palantir.javapoet.CodeBlock;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.List;
@@ -46,6 +47,16 @@ public interface LiteralCodec<T> {
      */
     default List<String> values() {
         return List.of();
+    }
+
+    /**
+     * How the editor lets users type a value in, when a plain text field does not fit, e.g. {@code color} for a
+     * colour picker writing {@code #rrggbb}.
+     *
+     * @return the input format, or null for the input the value's shape implies
+     */
+    default @Nullable String format() {
+        return null;
     }
 
     /**

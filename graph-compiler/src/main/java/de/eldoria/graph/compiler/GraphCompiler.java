@@ -7,6 +7,7 @@ package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.JavaFile;
+import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 
@@ -67,7 +68,7 @@ public final class GraphCompiler<T> {
      */
     public JavaFile generate(Graph graph, ClassName name) throws GraphCompilationException {
         MacroExpander.Expansion expansion = MacroExpander.expand(graph, macros.definitions());
-        return emit(expansion, validate(expansion), name, true).file();
+        return emit(expansion, validate(expansion, Map.of()), name, true).file();
     }
 
     /**
@@ -79,8 +80,24 @@ public final class GraphCompiler<T> {
      * @throws GraphCompilationException when the graph is invalid or the generated code does not compile
      */
     public CompiledGraph<T> compile(Graph graph, ClassName name) throws GraphCompilationException {
+        return compile(graph, name, Map.of());
+    }
+
+    /**
+     * Expands, validates, emits, compiles and loads a graph with some of the platform's graph-wide type variables
+     * bound, e.g. the type of the object it runs for.
+     *
+     * @param graph    the graph
+     * @param name     name of the generated class
+     * @param bindings types of graph-wide variables (see {@link de.eldoria.graph.platform.Binding}); the others take
+     *                 their fallback
+     * @return the loaded class
+     * @throws GraphCompilationException when the graph is invalid or the generated code does not compile
+     */
+    public CompiledGraph<T> compile(Graph graph, ClassName name, Map<String, PortType> bindings)
+            throws GraphCompilationException {
         MacroExpander.Expansion expansion = MacroExpander.expand(graph, macros.definitions());
-        ValidatedGraph validated = validate(expansion);
+        ValidatedGraph validated = validate(expansion, bindings);
         GraphEmitter.Emitted emitted = emit(expansion, validated, name, true);
         try {
             CompilationResult result = compiler.compile(emitted.file());
@@ -133,9 +150,10 @@ public final class GraphCompiler<T> {
         return new CompiledGraph<>(name, source, result, host, warnings);
     }
 
-    private ValidatedGraph validate(MacroExpander.Expansion expansion) throws GraphCompilationException {
+    private ValidatedGraph validate(MacroExpander.Expansion expansion, Map<String, PortType> bindings)
+            throws GraphCompilationException {
         try {
-            return new GraphValidator(platform, MacroBoundary.passDefinitions(platform.types()))
+            return new GraphValidator(platform, MacroBoundary.passDefinitions(platform.types()), bindings)
                     .validate(expansion.graph());
         } catch (GraphCompilationException e) {
             throw new GraphCompilationException(expansion.locate(e.problems()), null);

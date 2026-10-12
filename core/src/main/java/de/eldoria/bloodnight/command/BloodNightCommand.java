@@ -24,7 +24,8 @@ import org.bukkit.command.CommandSender;
 final class BloodNightCommand {
     private static final String USAGE =
             "/bloodnight <reload | spawn <mob> | problems [mob] | source <mob> | debug [mob] | export"
-                    + " | night [force | cancel] [world] | editor [new | apply [force] | cancel]>";
+                    + " | night [force | cancel] [world] | editor [new | apply [force] | cancel]"
+                    + " | item [register | remove <id>]>";
 
     @Subcommand
     final ReloadCommand reload;
@@ -50,6 +51,9 @@ final class BloodNightCommand {
     @Subcommand
     final EditorCommand editor;
 
+    @Subcommand
+    final ItemCommand item;
+
     BloodNightCommand(BloodNight plugin) {
         reload = new ReloadCommand(plugin);
         spawn = new SpawnCommand(plugin);
@@ -59,6 +63,7 @@ final class BloodNightCommand {
         export = new ExportCommand(plugin);
         night = new NightCommand(plugin);
         editor = new EditorCommand(plugin);
+        item = new ItemCommand(plugin);
     }
 
     @DefaultExecutes

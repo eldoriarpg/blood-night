@@ -74,8 +74,16 @@ class SectionsTest {
     }
 
     @Test
-    void itemsAndHashesCannotChange() {
-        assertThrows(JsonPatch.PatchException.class, () -> touched("[{'op':'add','path':'/items/x','value':{}}]"));
+    void itemsAreSections() {
+        assertEquals(
+                Set.of("items/x"),
+                touched("[{'op':'add','path':'/items/x','value':{}}]").sections());
+        assertTrue(touched("[{'op':'replace','path':'/items','value':{}}]").everything());
+    }
+
+    @Test
+    void choicesAndHashesCannotChange() {
+        assertThrows(JsonPatch.PatchException.class, () -> touched("[{'op':'add','path':'/choices/x','value':{}}]"));
         assertThrows(JsonPatch.PatchException.class, () -> touched("[{'op':'remove','path':'/hashes'}]"));
     }
 }

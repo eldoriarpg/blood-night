@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.behaviour;
 
 import com.palantir.javapoet.ClassName;
 import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.graph.MobBindings;
 import de.eldoria.bloodnight.graph.Triggers;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.graph.compiler.CompiledGraph;
@@ -14,6 +15,7 @@ import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphCompiler;
 import de.eldoria.graph.compiler.GraphProblem;
 import de.eldoria.graph.compiler.MacroLibrary;
+import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
@@ -110,7 +112,9 @@ public final class BehaviourService implements AutoCloseable {
         int fromCache = 0;
         for (CustomMob mob : mobs) {
             ClassName name = ClassName.get(PACKAGE, className(mob.id()));
-            String key = BytecodeCache.key(version, name.reflectionName(), mob.behaviour(), macros);
+            Map<String, PortType> bindings = MobBindings.of(
+                    mob.attributes().entityType(), mob.extension().entityType());
+            String key = BytecodeCache.key(version, name.reflectionName(), mob.behaviour(), macros, bindings);
             keys.add(key);
             try {
                 CompiledGraph<CompiledBehaviour> graph;
@@ -123,7 +127,7 @@ public final class BehaviourService implements AutoCloseable {
                             cached.get().warnings());
                     fromCache++;
                 } else {
-                    graph = compiler.compile(mob.behaviour(), name);
+                    graph = compiler.compile(mob.behaviour(), name, bindings);
                     cache.write(
                             key,
                             BytecodeCache.Entry.of(

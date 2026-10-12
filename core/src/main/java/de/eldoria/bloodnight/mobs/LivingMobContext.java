@@ -26,7 +26,6 @@ record LivingMobContext(LivingEntity entity, @Nullable Entity extension, Supplie
     @Override
     @Nullable
     public ItemStack item(String id) {
-        ItemStack item = items.get().registrations().get(id);
-        return item == null ? null : item.clone();
+        return items.get().item(id);
     }
 }

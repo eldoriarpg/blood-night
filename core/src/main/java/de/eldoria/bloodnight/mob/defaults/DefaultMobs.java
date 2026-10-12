@@ -9,14 +9,18 @@ import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
+import de.eldoria.graph.compiler.Graphs;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -79,27 +83,28 @@ public final class DefaultMobs implements BloodNightNodes {
                 "armored_zombie",
                 "Armored Zombie",
                 EntityType.ZOMBIE,
-                graph -> graph.on(
-                        MOB_SPAWN,
-                        graph.equip(EQUIPMENT_SET_HELMET, "minecraft:diamond_helmet"),
-                        graph.equip(EQUIPMENT_SET_CHESTPLATE, "minecraft:diamond_chestplate"),
-                        graph.equip(EQUIPMENT_SET_LEGGINGS, "minecraft:diamond_leggings"),
-                        graph.equip(EQUIPMENT_SET_BOOTS, "minecraft:diamond_boots")));
+                new Equipment(
+                        "minecraft:diamond_helmet",
+                        "minecraft:diamond_chestplate",
+                        "minecraft:diamond_leggings",
+                        "minecraft:diamond_boots",
+                        null,
+                        null),
+                graph -> {});
     }
 
     /**
      * Blocks some hits with a shield sound and sometimes knocks the player up and slows them instead of hitting.
      */
     private CustomMob knightZombie() {
-        return mob("knight_zombie", "Knight Zombie", EntityType.ZOMBIE, graph -> {
-            graph.on(
-                    MOB_SPAWN,
-                    graph.equip(EQUIPMENT_SET_HELMET, "minecraft:chainmail_helmet"),
-                    graph.equip(EQUIPMENT_SET_CHESTPLATE, "minecraft:chainmail_chestplate"),
-                    graph.equip(EQUIPMENT_SET_LEGGINGS, "minecraft:chainmail_leggings"),
-                    graph.equip(EQUIPMENT_SET_BOOTS, "minecraft:chainmail_boots"),
-                    graph.equip(EQUIPMENT_SET_ITEM_IN_MAIN_HAND, "minecraft:golden_axe"));
-
+        Equipment armor = new Equipment(
+                "minecraft:chainmail_helmet",
+                "minecraft:chainmail_chestplate",
+                "minecraft:chainmail_leggings",
+                "minecraft:chainmail_boots",
+                "minecraft:golden_axe",
+                null);
+        return mob("knight_zombie", "Knight Zombie", EntityType.ZOMBIE, armor, graph -> {
             String hit = graph.entry(EVENT_HIT);
             String victim = graph.as("player", hit, "entity");
             String up = graph.node(VECTOR_CREATE)
@@ -107,9 +112,9 @@ public final class DefaultMobs implements BloodNightNodes {
                     .literal("y", 1.0)
                     .literal("z", 0.0)
                     .id();
-            String launch = graph.node(ENTITY_SET_VELOCITY)
+            String launch = graph.node(ENTITY_MUTATE)
                     .input(TARGET, victim, RESULT)
-                    .input(VALUE, up, RESULT)
+                    .input("velocity", up, RESULT)
                     .id();
             graph.on(
                     EVENT_HIT,
@@ -144,11 +149,11 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob("invisible_zombie", "Invisible Zombie", EntityType.ZOMBIE, graph -> {
             graph.on(
                     MOB_SPAWN,
-                    graph.equip(EQUIPMENT_SET_ITEM_IN_MAIN_HAND, "minecraft:air"),
-                    graph.equip(EQUIPMENT_SET_HELMET, "minecraft:air"),
-                    graph.equip(EQUIPMENT_SET_CHESTPLATE, "minecraft:air"),
-                    graph.equip(EQUIPMENT_SET_LEGGINGS, "minecraft:air"),
-                    graph.equip(EQUIPMENT_SET_BOOTS, "minecraft:air"));
+                    graph.equip(EquipmentSlot.HAND, "minecraft:air"),
+                    graph.equip(EquipmentSlot.HEAD, "minecraft:air"),
+                    graph.equip(EquipmentSlot.CHEST, "minecraft:air"),
+                    graph.equip(EquipmentSlot.LEGS, "minecraft:air"),
+                    graph.equip(EquipmentSlot.FEET, "minecraft:air"));
             String hide = graph.node(LIVING_ENTITY_APPLY_EFFECT)
                     .input(TARGET, graph.self(), "entity")
                     .literal("effect", "minecraft:invisibility")
@@ -194,6 +199,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     .literal("upper", 7)
                     .id();
             var choice = graph.node(FLOW_SWITCH).input(VALUE, pick, RESULT);
+            for (int i = 0; i < 8; i++) choice.config("case_" + i, i);
             choice.chain("case_0", graph.effect(victim, RESULT, "minecraft:slowness", 8, 1));
             choice.chain("case_1", graph.effect(victim, RESULT, "minecraft:slowness", 6, 2));
             choice.chain("case_2", graph.effect(victim, RESULT, "minecraft:instant_damage", 2, 1));
@@ -212,14 +218,14 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob speedCreeper() {
         return mob("speed_creeper", "Speed Creeper", EntityType.CREEPER, graph -> {
-            graph.on(MOB_SPAWN, graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 10));
+            graph.on(MOB_SPAWN, graph.creeper("max_fuse_ticks", 10));
             graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 4, true));
             String prime = graph.entry(EVENT_EXPLOSION_PRIME);
             graph.on(
                     EVENT_EXPLOSION_PRIME,
-                    graph.node(EVENT_DATA_EXPLOSION_PRIME_SET_FIRE)
+                    graph.node(EVENT_DATA_EXPLOSION_PRIME_MUTATE)
                             .input(TARGET, prime, "event")
-                            .literal(VALUE, true)
+                            .literal("fire", true)
                             .id());
             igniteAtNightEnd(graph);
         });
@@ -230,7 +236,7 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob toxicCreeper() {
         return mob("toxic_creeper", "Toxic Creeper", EntityType.CREEPER, graph -> {
-            graph.on(MOB_SPAWN, graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 20));
+            graph.on(MOB_SPAWN, graph.creeper("max_fuse_ticks", 20));
             graph.on(MOB_TICK, graph.dust(0, 128, 0, 2, 5));
             String explode = graph.entry(EVENT_EXPLODE);
             graph.on(EVENT_EXPLODE, graph.cloud(explode, "location", "minecraft:strong_poison", 10, 3, 0, 128, 0));
@@ -244,9 +250,9 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob("unstable_creeper", "Unstable Creeper", EntityType.CREEPER, graph -> {
             graph.on(
                     MOB_SPAWN,
-                    graph.creeper(CREEPER_SET_EXPLOSION_RADIUS, 10),
-                    graph.creeper(CREEPER_SET_POWERED, true),
-                    graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 50));
+                    graph.creeper("explosion_radius", 10),
+                    graph.creeper("powered", true),
+                    graph.creeper("max_fuse_ticks", 50));
             graph.on(MOB_TICK, graph.particles("minecraft:end_rod", 2));
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String damage = graph.entry(trigger);
@@ -255,7 +261,7 @@ public final class DefaultMobs implements BloodNightNodes {
                         .input("second", causeIs(graph, damage, "PROJECTILE"), RESULT)
                         .id();
                 String explode = graph.node(CREEPER_EXPLODE)
-                        .input(TARGET, graph.selfAs("creeper"), RESULT)
+                        .input(TARGET, graph.self(), "entity")
                         .id();
                 graph.on(trigger, graph.when(either, RESULT, explode));
             }
@@ -266,8 +272,8 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob("nervous_powered_creeper", "Nervous Powered Creeper", EntityType.CREEPER, graph -> {
             graph.on(
                     MOB_SPAWN,
-                    graph.creeper(CREEPER_SET_POWERED, true),
-                    graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 1),
+                    graph.creeper("powered", true),
+                    graph.creeper("max_fuse_ticks", 1),
                     graph.dustOnce(255, 0, 0, 4, 10));
             graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 2, false));
             igniteAtNightEnd(graph);
@@ -281,13 +287,12 @@ public final class DefaultMobs implements BloodNightNodes {
     private CustomMob enderCreeper() {
         return mob("ender_creeper", "Ender Creeper", EntityType.CREEPER, graph -> {
             defineTeleportNear(graph);
-            graph.on(MOB_TICK, graph.dust(128, 0, 128, 2, 5), teleportNear(graph, graph.selfMob(), TARGET));
+            graph.on(MOB_TICK, graph.dust(128, 0, 128, 2, 5), teleportNear(graph, graph.selfRead(), TARGET));
             graph.on(EVENT_TARGET_CHANGE, teleportNear(graph, graph.entry(EVENT_TARGET_CHANGE), TARGET));
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String attacker = graph.as("living_entity", graph.entry(trigger), "attacker");
-                String target = graph.node(MOB_SET_TARGET)
-                        .input(TARGET, graph.selfAs("mob"), RESULT)
-                        .input(VALUE, attacker, RESULT)
+                String target = graph.selfMutate()
+                        .input("target_value", attacker, RESULT)
                         .id();
                 graph.on(trigger, graph.when(attacker, "matches", target), teleportNear(graph, attacker, RESULT));
             }
@@ -300,22 +305,16 @@ public final class DefaultMobs implements BloodNightNodes {
     private CustomMob ghostCreeper() {
         Extension vex = new Extension(ExtensionType.RIDER, EntityType.VEX, null);
         return mob("ghost_creeper", "Ghost Creeper", EntityType.CREEPER, vex, graph -> {
-            String extension = graph.node(MOB_EXTENSION).id();
-            String carrier = graph.as("mob", extension, "entity");
-            String carrierGetter =
-                    graph.node(MOB_GET).input(TARGET, carrier, RESULT).id();
-            String hide = graph.node(ENTITY_SET_INVISIBLE)
-                    .input(TARGET, extension, "entity")
-                    .literal(VALUE, true)
-                    .id();
+            String extension = graph.extension();
+            String hide = graph.extensionMutate().literal("invisible", true).id();
             graph.on(
                     MOB_SPAWN,
-                    graph.when(
-                            carrier,
-                            "matches",
+                    graph.present(
+                            extension,
+                            "entity",
                             hide,
-                            graph.equip(carrierGetter, EQUIPMENT_SET_ITEM_IN_MAIN_HAND, "minecraft:air"),
-                            graph.equip(carrierGetter, EQUIPMENT_SET_ITEM_IN_OFF_HAND, "minecraft:air")));
+                            graph.equip(graph.extensionRead(), EquipmentSlot.HAND, "minecraft:air"),
+                            graph.equip(graph.extensionRead(), EquipmentSlot.OFF_HAND, "minecraft:air")));
             graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 4, false));
             String damage = graph.entry(EVENT_DAMAGE);
             graph.on(EVENT_DAMAGE, graph.when(causeIs(graph, damage, "SUFFOCATION"), RESULT, graph.cancel(damage)));
@@ -364,7 +363,7 @@ public final class DefaultMobs implements BloodNightNodes {
         Extension blaze = new Extension(ExtensionType.CARRIER, EntityType.BLAZE, null);
         return mob("fire_phantom", "Fire Phantom", EntityType.PHANTOM, blaze, graph -> {
             graph.forwardTargetToExtension();
-            String extension = graph.node(MOB_EXTENSION).id();
+            String extension = graph.extension();
             String remove =
                     graph.node(ENTITY_REMOVE).input(TARGET, extension, "entity").id();
             graph.on(MOB_NIGHT_END, graph.present(extension, "entity", remove));
@@ -387,13 +386,13 @@ public final class DefaultMobs implements BloodNightNodes {
      * witch's attack damage on top.
      */
     private CustomMob fireWizard() {
-        return mob("fire_wizard", "Fire Wizard", EntityType.WITCH, graph -> {
-            graph.on(MOB_SPAWN, graph.equip(EQUIPMENT_SET_ITEM_IN_MAIN_HAND, "minecraft:fire_charge"));
+        Equipment held = new Equipment(null, null, null, null, "minecraft:fire_charge", null);
+        return mob("fire_wizard", "Fire Wizard", EntityType.WITCH, held, graph -> {
             graph.on(
                     MOB_TICK,
                     graph.particles("minecraft:dripping_lava", 5),
                     graph.present(
-                            graph.selfMob(),
+                            graph.selfRead(),
                             TARGET,
                             graph.every(5000, graph.shootAtTarget(ProjectileKind.LARGE_FIREBALL, 4))));
             onlyShoot(graph, "minecraft:fireball");
@@ -405,8 +404,8 @@ public final class DefaultMobs implements BloodNightNodes {
                     .literal("attribute", "minecraft:attack_damage")
                     .id();
             String strength =
-                    graph.node(ATTRIBUTE_GET).input(TARGET, attribute, RESULT).id();
-            String damage = graph.node(LIVING_ENTITY_DAMAGE_BY)
+                    graph.node(ATTRIBUTE_READ).input(TARGET, attribute, RESULT).id();
+            String damage = graph.node(LIVING_ENTITY_DAMAGE)
                     .input(TARGET, victim, RESULT)
                     .input("amount", strength, VALUE)
                     .input("source", graph.self(), "entity")
@@ -421,10 +420,32 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob thunderWizard() {
         return mob("thunder_wizard", "Thunder Wizard", EntityType.WITCH, graph -> {
-            String target = graph.entity(graph.selfMob(), TARGET);
+            String target = graph.living(graph.selfRead(), TARGET);
+            String marked = graph.node(VARIABLE_GET)
+                    .config("name", "mark")
+                    .config("type", "location")
+                    .id();
             String strike = graph.node(WORLD_STRIKE_LIGHTNING)
-                    .input(TARGET, graph.selfMob(), "world")
-                    .input("location", target, "location")
+                    .input(TARGET, graph.selfRead(), "world")
+                    .input("location", marked, VALUE)
+                    .id();
+            String wait = graph.node(FLOW_DELAY)
+                    .literal("duration", 1.5)
+                    .chain("next", strike)
+                    .id();
+            Graphs.NodeBuilder mark = graph.node(VARIABLE_SET)
+                    .config("name", "mark")
+                    .config("type", "location")
+                    .input(VALUE, target, "location");
+            String flash = graph.node(WORLD_STRIKE_LIGHTNING)
+                    .input(TARGET, graph.selfRead(), "world")
+                    .input("location", mark.id(), VALUE)
+                    .literal("effect_only", true)
+                    .id();
+            mark.chain("next", flash, wait);
+            String sees = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
+                    .input(TARGET, graph.self(), "entity")
+                    .input("other", graph.selfRead(), TARGET)
                     .id();
             graph.on(
                     MOB_TICK,
@@ -432,7 +453,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             250,
                             graph.particlesAroundWith(
                                     "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
-                    graph.present(graph.selfMob(), TARGET, graph.every(4000, strike)));
+                    graph.present(graph.selfRead(), TARGET, graph.every(4000, graph.when(sees, RESULT, mark.id()))));
             String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
             graph.on(EVENT_PROJECTILE_SHOOT, graph.cancel(shoot));
             smokeAtNightEnd(graph);
@@ -443,8 +464,8 @@ public final class DefaultMobs implements BloodNightNodes {
      * Throws a wither skull at its target every five seconds instead of potions.
      */
     private CustomMob witherWizard() {
-        return mob("wither_wizard", "Wither Wizard", EntityType.WITCH, graph -> {
-            graph.on(MOB_SPAWN, graph.equip(EQUIPMENT_SET_ITEM_IN_MAIN_HAND, "minecraft:wither_skeleton_skull"));
+        Equipment held = new Equipment(null, null, null, null, "minecraft:wither_skeleton_skull", null);
+        return mob("wither_wizard", "Wither Wizard", EntityType.WITCH, held, graph -> {
             graph.on(
                     MOB_TICK,
                     graph.every(
@@ -452,7 +473,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             graph.particlesAroundWith(
                                     "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
                     graph.present(
-                            graph.selfMob(),
+                            graph.selfRead(),
                             TARGET,
                             graph.every(5000, graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4))));
             onlyShoot(graph, "minecraft:wither_skull");
@@ -491,7 +512,7 @@ public final class DefaultMobs implements BloodNightNodes {
     private CustomMob toxicSlime() {
         return mob("toxic_slime", "Toxic Slime", EntityType.SLIME, graph -> {
             String death = graph.entry(EVENT_DEATH);
-            String body = graph.entity(death, "entity");
+            String body = graph.living(death, "entity");
             graph.on(EVENT_DEATH, graph.cloud(body, "location", "minecraft:strong_poison", 5, 3, 78, 147, 49));
         });
     }
@@ -509,9 +530,9 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private static void defineTeleportNear(MobGraph graph) {
         String parameter = graph.parameter(TELEPORT_NEAR, TARGET, "living_entity");
-        String target = graph.entity(parameter, VALUE);
+        String target = graph.living(parameter, VALUE);
         String distance = graph.node(LOCATION_DISTANCE)
-                .input(TARGET, graph.selfMob(), "location")
+                .input(TARGET, graph.selfRead(), "location")
                 .input("other", target, "location")
                 .id();
         String far = graph.node(LOGIC_GREATER)
@@ -520,7 +541,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 .id();
         String spot = nearby(graph, target, 0);
         String head = nearby(graph, target, 1);
-        String feetFree = graph.node(BLOCK_GET)
+        String feetFree = graph.node(BLOCK_READ)
                 .input(
                         TARGET,
                         graph.node(WORLD_BLOCK_AT)
@@ -529,7 +550,7 @@ public final class DefaultMobs implements BloodNightNodes {
                                 .id(),
                         RESULT)
                 .id();
-        String headFree = graph.node(BLOCK_GET)
+        String headFree = graph.node(BLOCK_READ)
                 .input(
                         TARGET,
                         graph.node(WORLD_BLOCK_AT)
@@ -604,10 +625,9 @@ public final class DefaultMobs implements BloodNightNodes {
      * Lights the creeper's fuse when the night ends, so it explodes at once.
      */
     private static void igniteAtNightEnd(MobGraph graph) {
-        String ignite = graph.node(CREEPER_IGNITE)
-                .input(TARGET, graph.selfAs("creeper"), RESULT)
-                .id();
-        graph.on(MOB_NIGHT_END, graph.creeper(CREEPER_SET_MAX_FUSE_TICKS, 0), ignite);
+        String ignite =
+                graph.node(CREEPER_IGNITE).input(TARGET, graph.self(), "entity").id();
+        graph.on(MOB_NIGHT_END, graph.creeper("max_fuse_ticks", 0), ignite);
     }
 
     /**
@@ -618,18 +638,15 @@ public final class DefaultMobs implements BloodNightNodes {
         graph.on(
                 EVENT_EXTENSION_DAMAGE,
                 graph.when(causeIs(graph, damage, "SUFFOCATION"), RESULT, graph.cancel(damage)));
-        String self = graph.node(LIVING_ENTITY_GET)
-                .input(TARGET, graph.self(), "entity")
-                .id();
         String die = graph.node(LIVING_ENTITY_DAMAGE)
                 .input(TARGET, graph.self(), "entity")
-                .input("amount", self, "health")
+                .input("amount", graph.selfRead(), "health")
                 .id();
-        graph.on(EVENT_EXTENSION_DEATH, graph.unless(self, "dead", die));
+        graph.on(EVENT_EXTENSION_DEATH, graph.unless(graph.selfRead(), "dead", die));
     }
 
     private static String causeIs(MobGraph graph, String trigger, String cause) {
-        String expected = graph.node(VALUE_DAMAGE_CAUSE).config(VALUE, cause).id();
+        String expected = graph.value("damage_cause", cause);
         return graph.node(LOGIC_EQUAL)
                 .input("first", trigger, "cause")
                 .input("second", expected, VALUE)
@@ -649,7 +666,7 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private static void onlyShoot(MobGraph graph, String entityType) {
         String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
-        String allowed = graph.node(VALUE_ENTITY_TYPE).config(VALUE, entityType).id();
+        String allowed = graph.value("entity_type", entityType);
         String same = graph.node(LOGIC_EQUAL)
                 .input("first", shoot, "entity_type")
                 .input("second", allowed, VALUE)
@@ -658,15 +675,29 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     private CustomMob mob(String id, String name, EntityType type, Consumer<MobGraph> behaviour) {
-        return mob(id, name, type, new Extension(ExtensionType.NONE, null, null), behaviour);
+        return mob(id, name, type, null, new Extension(ExtensionType.NONE, null, null), behaviour);
+    }
+
+    private CustomMob mob(String id, String name, EntityType type, Equipment equipment, Consumer<MobGraph> behaviour) {
+        return mob(id, name, type, equipment, new Extension(ExtensionType.NONE, null, null), behaviour);
     }
 
     private CustomMob mob(String id, String name, EntityType type, Extension extension, Consumer<MobGraph> behaviour) {
-        MobGraph graph = new MobGraph(platform);
+        return mob(id, name, type, null, extension, behaviour);
+    }
+
+    private CustomMob mob(
+            String id,
+            String name,
+            EntityType type,
+            @Nullable Equipment equipment,
+            Extension extension,
+            Consumer<MobGraph> behaviour) {
+        MobGraph graph = new MobGraph(platform, type, extension.entityType());
         behaviour.accept(graph);
         return new CustomMob(
                 id,
-                null,
+                equipment,
                 new Attributes(name, type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
                 built(id, graph),
                 MobDrops.defaultDrops(),

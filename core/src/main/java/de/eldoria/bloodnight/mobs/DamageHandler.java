@@ -35,12 +35,15 @@ public class DamageHandler implements Listener {
         if (MobTags.isExtended(event.getEntity())) handleBaseDamage(event);
     }
 
+    /**
+     * Damage to an extension is dealt to its base instead, by the same damager, and the extension's health follows the
+     * base's.
+     */
     private void handleExtensionDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         Optional<UUID> baseId = MobTags.getBase(entity);
         if (baseId.isEmpty()) return;
         if (!(entity instanceof LivingEntity extension)) return;
-        // Forward damage from extension over to base mob
         if (!(entity.getServer().getEntity(baseId.get()) instanceof LivingEntity base) || base.isDead()) return;
 
         if (event instanceof EntityDamageByEntityEvent byEntity) {
@@ -49,11 +52,13 @@ public class DamageHandler implements Listener {
             base.damage(event.getDamage());
         }
         event.setCancelled(true);
-        // Sync damage from base to extension
         syncHealth(extension, base.getHealth());
         extension.playHurtAnimation(0);
     }
 
+    /**
+     * The extension's health follows the base's. Runs at {@code MONITOR}, where the final damage no longer changes.
+     */
     private void handleBaseDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         Optional<UUID> extensionId = MobTags.getExtension(entity);
@@ -62,7 +67,6 @@ public class DamageHandler implements Listener {
         if (extensionId.isEmpty()) return;
         if (!(entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension)) return;
 
-        // We assume that the damage won't change anymore
         syncHealth(extension, base.getHealth() - event.getFinalDamage());
         extension.playHurtAnimation(0);
     }
@@ -78,13 +82,15 @@ public class DamageHandler implements Listener {
         extension.setHealth(Math.clamp(health, 0, limit));
     }
 
+    /**
+     * The extension dies with its base.
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
         var entity = event.getEntity();
         if (!MobTags.isCustomMob(entity)) return;
         Optional<UUID> extensionId = MobTags.getExtension(entity);
         if (extensionId.isEmpty()) return;
-        // Kill extension when the base dies.
         if (entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension) {
             extension.damage(extension.getHealth());
         }

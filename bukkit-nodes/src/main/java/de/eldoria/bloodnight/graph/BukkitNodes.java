@@ -5,9 +5,14 @@
  */
 package de.eldoria.bloodnight.graph;
 
+import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.TypeName;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
+import de.eldoria.bloodnight.graph.runtime.Trace;
+import de.eldoria.bloodnight.graph.runtime.TraceHits;
+import de.eldoria.graph.definition.EmitContext;
 import de.eldoria.graph.definition.ExpressionDefinition;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.NodeDescriptor;
@@ -17,26 +22,25 @@ import de.eldoria.graph.definition.StatementContext;
 import de.eldoria.graph.definition.StatementDefinition;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Vibration;
 import org.bukkit.World;
-import org.bukkit.block.BlockType;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ItemType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.StringNode;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Bukkit nodes that are not property access: constructing locations and vectors, vector math, area queries, the mob
@@ -53,6 +57,7 @@ public final class BukkitNodes {
 
     public static final ExpressionDefinition CREATE_LOCATION = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.LOCATION_CREATE, NodeKind.PURE)
+                    .name("Create Location")
                     .description("A location in a world; yaw and pitch default to 0")
                     .input("world", World.class)
                     .input("x", double.class)
@@ -61,6 +66,13 @@ public final class BukkitNodes {
                     .optionalInput("yaw", double.class)
                     .optionalInput("pitch", double.class)
                     .output(RESULT, Location.class)
+                    .describe("world", "The world it lies in")
+                    .describe("x", "East-west position")
+                    .describe("y", "Height")
+                    .describe("z", "North-south position")
+                    .describe("yaw", "Facing around the vertical axis, in degrees; 0 when not given")
+                    .describe("pitch", "Facing up or down, in degrees; 0 when not given")
+                    .describe("result", "The location")
                     .build(),
             (port, ctx) -> CodeBlock.of(
                     "new $T($L, $L, $L, $L, (float) $L, (float) $L)",
@@ -74,48 +86,69 @@ public final class BukkitNodes {
 
     public static final ExpressionDefinition NORMALIZE = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VECTOR_NORMALIZE, NodeKind.PURE)
+                    .name("Normalize Vector")
                     .description("A vector of length 1 pointing the same way")
                     .input(VALUE, Vector.class)
                     .output(RESULT, Vector.class)
+                    .describe("value", "A vector")
+                    .describe("result", "The same direction with length 1")
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.clone().normalize()", ctx.input(VALUE)));
 
     public static final ExpressionDefinition DIRECTION = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VECTOR_DIRECTION, NodeKind.PURE)
+                    .name("Direction Between Points")
                     .description("The vector pointing from one point to another")
                     .input("from", Vector.class)
                     .input("to", Vector.class)
                     .output(RESULT, Vector.class)
+                    .describe("from", "Where it starts")
+                    .describe("to", "Where it points")
+                    .describe("result", "The vector from start to end")
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.clone().subtract($L)", ctx.input("to"), ctx.input("from")));
 
     public static final ExpressionDefinition DISTANCE = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VECTOR_DISTANCE, NodeKind.PURE)
+                    .name("Distance Between Points")
                     .description(
                             "Distance between two points. Uses a square root; prefer Distance Squared for comparisons")
                     .input(FIRST, Vector.class)
                     .input(SECOND, Vector.class)
                     .output(RESULT, double.class)
+                    .describe("first", "A point")
+                    .describe("second", "Another point")
+                    .describe("result", "The distance between both")
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.distance($L)", ctx.input(FIRST), ctx.input(SECOND)));
 
     public static final ExpressionDefinition DISTANCE_SQUARED = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VECTOR_DISTANCE_SQUARED, NodeKind.PURE)
+                    .name("Squared Distance Between Points")
                     .description("Squared distance between two points")
                     .input(FIRST, Vector.class)
                     .input(SECOND, Vector.class)
                     .output(RESULT, double.class)
+                    .describe("first", "A point")
+                    .describe("second", "Another point")
+                    .describe("result", "The distance between both, squared; cheaper when only comparing")
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.distanceSquared($L)", ctx.input(FIRST), ctx.input(SECOND)));
 
     public static final ExpressionDefinition NEARBY_ENTITIES = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.WORLD_NEARBY_ENTITIES, NodeKind.PURE)
+                    .name("Entities Near Location")
                     .description("Entities within a box around a location; x, y and z are half the box size")
                     .input("location", Location.class)
                     .input("x", double.class)
                     .input("y", double.class)
                     .input("z", double.class)
                     .output(RESULT, PortType.parameterized(Collection.class, PortType.of(Entity.class)))
+                    .describe("location", "The centre of the search")
+                    .describe("x", "How far to search east and west")
+                    .describe("y", "How far to search up and down")
+                    .describe("z", "How far to search north and south")
+                    .describe("result", "The entities in that box")
                     .build(),
             (port, ctx) -> CodeBlock.of(
                     "$L.getWorld().getNearbyEntities($L, $L, $L, $L)",
@@ -127,23 +160,29 @@ public final class BukkitNodes {
 
     public static final ExpressionDefinition SELF = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.MOB_SELF, NodeKind.PURE)
-                    .description("The mob this behaviour belongs to")
-                    .output("entity", LivingEntity.class)
+                    .description("The mob this behaviour belongs to, as its own entity type, e.g. a Creeper")
+                    .output("entity", PortType.variable(MobBindings.SELF))
+                    .describe("entity", "The mob this behaviour belongs to")
                     .build(),
-            (port, ctx) -> CodeBlock.of("$L.entity()", ctx.context()));
+            (port, ctx) -> narrowed(ctx, "entity", LivingEntity.class, CodeBlock.of("$L.entity()", ctx.context())));
 
     public static final ExpressionDefinition EXTENSION = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.MOB_EXTENSION, NodeKind.PURE)
                     .description("The entity riding or carrying the mob; missing when it has none")
-                    .output("entity", Entity.class)
+                    .output("entity", PortType.variable(MobBindings.EXTENSION))
+                    .describe(
+                            "entity",
+                            "The entity riding or carrying the mob, as its own entity type; missing when it has none")
                     .build(),
-            (port, ctx) -> CodeBlock.of("$L.extension()", ctx.context()));
+            (port, ctx) -> narrowed(ctx, "entity", Entity.class, CodeBlock.of("$L.extension()", ctx.context())));
 
     public static final ExpressionDefinition ITEM = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VALUE_ITEM, NodeKind.VALUE)
+                    .name("Item By Id")
                     .description("A copy of an item from the item registry; missing when the id is unknown")
                     .config("item", String.class, null)
                     .output(VALUE, ItemStack.class)
+                    .describe("value", "A copy of the item; missing when the id is unknown")
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.item($L)", ctx.context(), ctx.config("item")));
 
@@ -158,6 +197,11 @@ public final class BukkitNodes {
                     .input("amplifier", int.class)
                     .optionalInput("visible", boolean.class)
                     .execution(NEXT)
+                    .describe("target", "Who gets the effect")
+                    .describe("effect", "The kind of effect")
+                    .describe("seconds", "How long it lasts")
+                    .describe("amplifier", "Its strength, 0 for level I")
+                    .describe("visible", "Whether it shows particles and an icon; true when not given")
                     .build(),
             ctx -> CodeBlock.builder()
                     .addStatement(
@@ -172,6 +216,124 @@ public final class BukkitNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
+    public static final StatementDefinition DAMAGE = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.LIVING_ENTITY_DAMAGE, NodeKind.ACTION)
+                    .category("living_entity")
+                    .description("Deals damage to an entity; with a source, the damage counts as dealt by it")
+                    .input("target", "Living Entity", PortType.of(LivingEntity.class), false)
+                    .input("amount", double.class)
+                    .input("source", "Source", PortType.of(Entity.class), true)
+                    .execution(NEXT)
+                    .describe("target", "Who takes the damage")
+                    .describe("amount", "The damage, in half hearts")
+                    .describe("source", "Who deals it; without, the damage has no source")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement("$L.damage($L)", ctx.input("target"), arguments(ctx, "amount", "source"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition SPAWN_PARTICLE = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_SPAWN_PARTICLE, NodeKind.ACTION)
+                    .category("world")
+                    .description("Spawns particles around a location; particles such as dust need data, connected"
+                            + " from a node like Dust")
+                    .input("target", "World", PortType.of(World.class), false)
+                    .input("particle", Particle.class)
+                    .input("location", Location.class)
+                    .input("count", int.class)
+                    .input("offset_x", double.class)
+                    .input("offset_y", double.class)
+                    .input("offset_z", double.class)
+                    .input("data", "Data", PortType.of(Object.class), true)
+                    .execution(NEXT)
+                    .describe("target", "The world to spawn them in")
+                    .describe("particle", "The kind of particle")
+                    .describe("location", "Where they appear")
+                    .describe("count", "How many")
+                    .describe("offset_x", "Spread east and west")
+                    .describe("offset_y", "Spread up and down")
+                    .describe("offset_z", "Spread north and south")
+                    .describe("data", "What particles such as dust need, from a node like Dust; leave empty for others")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$L.spawnParticle($L)",
+                            ctx.input("target"),
+                            arguments(ctx, "particle", "location", "count", "offset_x", "offset_y", "offset_z", "data"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition STRIKE_LIGHTNING = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_STRIKE_LIGHTNING, NodeKind.ACTION)
+                    .category("world")
+                    .description("Strikes lightning at a location; an effect only strike looks the same but deals no"
+                            + " damage and sets nothing on fire")
+                    .input("target", "World", PortType.of(World.class), false)
+                    .input("location", Location.class)
+                    .optionalInput("effect_only", boolean.class)
+                    .execution(NEXT)
+                    .describe("target", "The world to strike in")
+                    .describe("location", "Where it strikes")
+                    .describe("effect_only", "Only the look and sound, no damage and no fire; false when not given")
+                    .build(),
+            ctx -> CodeBlock.builder().add(strike(ctx)).add(ctx.chain(NEXT)).build());
+
+    public static final StatementDefinition LINE_TRACE = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_LINE_TRACE, NodeKind.ACTION)
+                    .category("world")
+                    .name("Line Trace")
+                    .description("Follows a line from a location and tells what it meets first, ignoring fluids and"
+                            + " passable blocks such as grass")
+                    .config("hits", "Stops at", PortType.of(TraceHits.class), StringNode.valueOf(TraceHits.BOTH.name()))
+                    .input("start", Location.class)
+                    .input("direction", Vector.class)
+                    .input("distance", double.class)
+                    .optionalInput("ignore", Entity.class)
+                    .output("hit", boolean.class)
+                    .output("location", Location.class)
+                    .output("entity", Entity.class)
+                    .output("block", Block.class)
+                    .output("hit_distance", "Distance", PortType.of(double.class))
+                    .execution(NEXT)
+                    .describe("start", "Where the line starts, e.g. the eyes of the mob")
+                    .describe("direction", "Where the line goes, e.g. the direction the mob looks in")
+                    .describe("distance", "How far the line goes")
+                    .describe("ignore", "An entity the line passes through, e.g. the mob itself")
+                    .describe("hit", "Whether the line met a block or entity")
+                    .describe("location", "Where it met it; missing without a hit")
+                    .describe("entity", "The entity it met; missing when it met a block or nothing")
+                    .describe("block", "The block it met; missing when it met an entity or nothing")
+                    .describe(
+                            "hit_distance", "How far from the start it met something, the full distance without a hit")
+                    .build(),
+            ctx -> {
+                CodeBlock trace = ctx.field("trace", ClassName.get(Trace.class), CodeBlock.of("null"));
+                CodeBlock.Builder code = CodeBlock.builder()
+                        .addStatement(
+                                "$L = $T.of($L, $L, $L, $L, $L)",
+                                trace,
+                                Trace.class,
+                                ctx.input("start"),
+                                ctx.input("direction"),
+                                ctx.input("distance"),
+                                ctx.connected("ignore") ? ctx.input("ignore") : CodeBlock.of("null"),
+                                ctx.config("hits"));
+                Map.of(
+                                "hit", "hit",
+                                "location", "location",
+                                "entity", "entity",
+                                "block", "block",
+                                "hit_distance", "distance")
+                        .forEach((port, accessor) -> {
+                            if (ctx.isRead(port)) {
+                                code.addStatement(
+                                        "final $T $L = $L.$N()", ctx.type(port), ctx.bind(port, NEXT), trace, accessor);
+                            }
+                        });
+                return code.add(ctx.chain(NEXT)).build();
+            });
+
     public static final StatementDefinition LAUNCH_PROJECTILE = new StatementDefinition(
             NodeDescriptor.builder(BloodNightNodes.LIVING_ENTITY_LAUNCH_PROJECTILE, NodeKind.ACTION)
                     .category("living_entity")
@@ -182,6 +344,10 @@ public final class BukkitNodes {
                     .input("speed", double.class)
                     .output("projectile", Projectile.class)
                     .execution(NEXT)
+                    .describe("shooter", "Who launches it")
+                    .describe("target", "What it flies at")
+                    .describe("speed", "How fast it flies")
+                    .describe("projectile", "The launched projectile")
                     .build(),
             ctx -> {
                 CodeBlock projectile = ctx.bind("projectile", NEXT);
@@ -210,6 +376,12 @@ public final class BukkitNodes {
                     .optionalInput("radius_per_tick", double.class)
                     .optionalInput("color", Color.class)
                     .execution(NEXT)
+                    .describe("location", "Where the cloud appears")
+                    .describe("potion", "The effect it gives")
+                    .describe("seconds", "How long it lasts")
+                    .describe("radius", "Its size when it appears")
+                    .describe("radius_per_tick", "How much it grows per tick; negative to shrink")
+                    .describe("color", "Its colour")
                     .build(),
             ctx -> CodeBlock.builder()
                     .addStatement(
@@ -231,6 +403,10 @@ public final class BukkitNodes {
                     .input("radius", double.class)
                     .optionalInput("survival_only", boolean.class)
                     .output("player", Player.class)
+                    .describe("location", "Where to search from")
+                    .describe("radius", "How far to search")
+                    .describe("survival_only", "Whether only players in survival or adventure count")
+                    .describe("player", "The closest player; missing when none is in range")
                     .build(),
             (port, ctx) -> CodeBlock.of(
                     "$T.nearestPlayer($L, $L, $L)",
@@ -241,30 +417,38 @@ public final class BukkitNodes {
 
     public static final ExpressionDefinition PARTICLE_POWER = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.PARTICLE_POWER, NodeKind.PURE)
+                    .name("Particle Power")
                     .category("world")
                     .description("Data for particles that take a strength, such as dragon breath and sculk charge")
                     .input("power", double.class)
                     .output("power", PortType.of(Float.class))
+                    .describe("power", "The strength the particle shows, e.g. of dragon breath")
                     .build(),
             (port, ctx) -> CodeBlock.of("$T.valueOf((float) $L)", Float.class, ctx.input("power")));
 
     public static final ExpressionDefinition PARTICLE_DELAY = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.PARTICLE_DELAY, NodeKind.PURE)
+                    .name("Particle Delay")
                     .category("world")
                     .description("Data for particles that appear after a delay in ticks, such as shriek")
                     .input("ticks", int.class)
                     .output("delay", PortType.of(Integer.class))
+                    .describe("ticks", "How long the particle waits before it shows")
+                    .describe("delay", "The delay, as data for particles such as shriek")
                     .build(),
             (port, ctx) -> CodeBlock.of("$T.valueOf($L)", Integer.class, ctx.input("ticks")));
 
     public static final ExpressionDefinition VIBRATION = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VIBRATION_CREATE, NodeKind.PURE)
+                    .name("Create Vibration")
                     .category("world")
-                    .name("Vibration")
                     .description("Data for the vibration particle: travels to a location within some ticks")
                     .input("destination", Location.class)
                     .input("ticks", int.class)
                     .output("vibration", Vibration.class)
+                    .describe("destination", "Where the vibration travels to")
+                    .describe("ticks", "How long it travels")
+                    .describe("vibration", "The vibration, as data for the vibration particle")
                     .build(),
             (port, ctx) -> CodeBlock.of(
                     "new $T(new $T($L), $L)",
@@ -272,19 +456,6 @@ public final class BukkitNodes {
                     Vibration.Destination.BlockDestination.class,
                     ctx.input("destination"),
                     ctx.input("ticks")));
-
-    public static final ExpressionDefinition DAMAGE_CAUSE = value(
-            BloodNightNodes.VALUE_DAMAGE_CAUSE,
-            EntityDamageEvent.DamageCause.class,
-            StringNode.valueOf("ENTITY_ATTACK"));
-    public static final ExpressionDefinition ENTITY_TYPE =
-            value(BloodNightNodes.VALUE_ENTITY_TYPE, EntityType.class, StringNode.valueOf("minecraft:zombie"));
-    public static final ExpressionDefinition ITEM_TYPE =
-            value(BloodNightNodes.VALUE_ITEM_TYPE, ItemType.class, StringNode.valueOf("minecraft:stone"));
-    public static final ExpressionDefinition BLOCK_TYPE =
-            value(BloodNightNodes.VALUE_BLOCK_TYPE, BlockType.class, StringNode.valueOf("minecraft:stone"));
-    public static final ExpressionDefinition POTION_EFFECT_TYPE = value(
-            BloodNightNodes.VALUE_POTION_EFFECT_TYPE, PotionEffectType.class, StringNode.valueOf("minecraft:speed"));
 
     private BukkitNodes() {}
 
@@ -295,6 +466,10 @@ public final class BukkitNodes {
         return List.of(
                 CREATE_LOCATION,
                 APPLY_EFFECT,
+                DAMAGE,
+                SPAWN_PARTICLE,
+                STRIKE_LIGHTNING,
+                LINE_TRACE,
                 LAUNCH_PROJECTILE,
                 SPAWN_POTION_CLOUD,
                 NEAREST_PLAYER,
@@ -308,24 +483,40 @@ public final class BukkitNodes {
                 NEARBY_ENTITIES,
                 SELF,
                 EXTENSION,
-                ITEM,
-                DAMAGE_CAUSE,
-                ENTITY_TYPE,
-                ITEM_TYPE,
-                BLOCK_TYPE,
-                POTION_EFFECT_TYPE);
+                ITEM);
+    }
+
+    /**
+     * The value as the type its port resolved to, cast when that is narrower than what the context returns.
+     */
+    private static CodeBlock narrowed(EmitContext ctx, String port, Class<?> returned, CodeBlock value) {
+        TypeName type = ctx.type(port);
+        return type.equals(TypeName.get(returned)) ? value : CodeBlock.of("(($T) $L)", type, value);
     }
 
     private static CodeBlock visible(StatementContext ctx) {
         return ctx.connected("visible") ? ctx.input("visible") : CodeBlock.of("true");
     }
 
-    private static ExpressionDefinition value(String id, Class<?> type, JsonNode defaultValue) {
-        return new ExpressionDefinition(
-                NodeDescriptor.builder(id, NodeKind.VALUE)
-                        .config(VALUE, type, defaultValue)
-                        .output(VALUE, type)
-                        .build(),
-                (port, ctx) -> ctx.config(VALUE));
+    /**
+     * The given inputs as a comma separated argument list, leaving out optional inputs without a value, so one node can
+     * call the overload that matches what is wired.
+     */
+    private static CodeBlock arguments(EmitContext ctx, String... ports) {
+        return Arrays.stream(ports).filter(ctx::connected).map(ctx::input).collect(CodeBlock.joining(", "));
+    }
+
+    private static CodeBlock strike(StatementContext ctx) {
+        if (!ctx.connected("effect_only"))
+            return CodeBlock.builder()
+                    .addStatement("$L.strikeLightning($L)", ctx.input("target"), ctx.input("location"))
+                    .build();
+        return CodeBlock.builder()
+                .beginControlFlow("if ($L)", ctx.input("effect_only"))
+                .addStatement("$L.strikeLightningEffect($L)", ctx.input("target"), ctx.input("location"))
+                .nextControlFlow("else")
+                .addStatement("$L.strikeLightning($L)", ctx.input("target"), ctx.input("location"))
+                .endControlFlow()
+                .build();
     }
 }
