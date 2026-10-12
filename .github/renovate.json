@@ -3,7 +3,9 @@
   "extends": [
     "github>eldoriarpg/.github"
   ],
-  "baseBranch": ["main"],
+  "baseBranchPatterns": [
+    "main"
+  ],
   "reviewers": [
     "RainbowDashLabs",
     "Goldmensch",
