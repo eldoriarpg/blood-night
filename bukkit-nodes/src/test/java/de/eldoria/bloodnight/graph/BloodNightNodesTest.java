@@ -26,7 +26,13 @@ class BloodNightNodesTest {
                 .filter(id -> platform.node(id).isEmpty())
                 .toList();
         assertEquals(List.of(), unknown);
-        assertTrue(platform.node(StdNodes.cast("potion_effect_type")).isPresent());
+        assertTrue(platform.node(StdNodes.CAST)
+                .orElseThrow()
+                .descriptor()
+                .configField("type")
+                .orElseThrow()
+                .choices()
+                .contains("potion_effect_type"));
     }
 
     private static String value(Field field) {

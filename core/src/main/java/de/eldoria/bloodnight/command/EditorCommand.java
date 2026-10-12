@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.command;
 import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.editor.EditorChecks;
 import de.eldoria.bloodnight.editor.EditorClient;
+import de.eldoria.bloodnight.editor.EditorItems;
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.editor.EditorResult;
 import de.eldoria.bloodnight.editor.EditorSessionFile;
@@ -48,8 +49,8 @@ import java.util.stream.Collectors;
  * Applying is the confirmation: nothing changes on the server before. The result is checked first (mob ids, items,
  * readable files, and that no file it replaces changed on disk since the session opened; {@code force} skips the
  * last check); a result that does not pass changes nothing and keeps the session open. Otherwise every file is
- * backed up, mobs, macros and settings are replaced, the configuration is reloaded and every mob recompiled. Items
- * are never changed by the editor.
+ * backed up, mobs, macros, items and settings are replaced, the configuration is reloaded and every mob recompiled.
+ * Items registered in game keep everything but the name, lore and enchantments the editor sets.
  */
 @Subcommand("editor")
 @Permission("bloodnight.command.editor")
@@ -209,8 +210,8 @@ final class EditorCommand {
             sender.sendMessage(Component.text("The session cannot be read: " + e.getMessage(), NamedTextColor.RED));
             return false;
         }
-        List<String> problems = EditorChecks.problems(
-                result, plugin.configuration().items().registrations().keySet());
+        List<String> problems =
+                EditorChecks.problems(result, plugin.configuration().items()::knows);
         if (!problems.isEmpty()) {
             sender.sendMessage(Component.text("The session was not applied:", NamedTextColor.RED));
             problems.forEach(problem -> sender.sendMessage(" - " + problem));
@@ -229,6 +230,8 @@ final class EditorCommand {
         }
         plugin.configuration().replaceMobs(result.mobs().values());
         plugin.configuration().replaceMacros(result.macros());
+        plugin.configuration()
+                .replaceItems(EditorItems.apply(plugin.configuration().items(), result.items()));
         SettingsPayload settings = result.settings();
         if (settings != null) {
             plugin.configuration().replaceMain(settings.main());

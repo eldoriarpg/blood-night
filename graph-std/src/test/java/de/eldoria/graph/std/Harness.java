@@ -20,6 +20,7 @@ import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.runtime.Cooldown;
 import de.eldoria.graph.types.TypeMapping;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.IntNode;
@@ -57,8 +58,9 @@ final class Harness {
     private static GraphCompiler<StdHost> compiler(List<NodeDefinition> extra) {
         GraphPlatform platform = GraphPlatform.builder(StdHost.class)
                 .context(Recorder.class)
+                .clock("tick")
                 .define(StandardNodes.all())
-                .define(StandardNodes.casts(TypeMapping.defaults()))
+                .define(StandardNodes.typed(TypeMapping.defaults()))
                 .define(RUN, RECORD)
                 .define(extra)
                 .classpath(List.of(codeSource(StdHost.class), codeSource(Cooldown.class)))
@@ -107,10 +109,10 @@ final class Harness {
 
     static NodeInstance.Builder literal(Object value) {
         return switch (value) {
-            case Integer integer -> NodeInstance.of("value.integer").config("value", IntNode.valueOf(integer));
-            case Double number -> NodeInstance.of("value.number").config("value", DoubleNode.valueOf(number));
-            case Boolean bool -> NodeInstance.of("value.boolean").config("value", BooleanNode.valueOf(bool));
-            case String text -> NodeInstance.of("value.text").config("value", StringNode.valueOf(text));
+            case Integer integer -> value("integer", IntNode.valueOf(integer));
+            case Double number -> value("number", DoubleNode.valueOf(number));
+            case Boolean bool -> value("boolean", BooleanNode.valueOf(bool));
+            case String text -> value("text", StringNode.valueOf(text));
             default -> throw new IllegalArgumentException("No value node for " + value);
         };
     }
@@ -122,5 +124,14 @@ final class Harness {
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    /**
+     * @param type  the selectable type the value node picks, e.g. {@code integer}
+     * @param value the value typed in
+     * @return a value node
+     */
+    static NodeInstance.Builder value(String type, JsonNode value) {
+        return NodeInstance.of("value").config("type", StringNode.valueOf(type)).config("value", value);
     }
 }

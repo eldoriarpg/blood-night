@@ -13,7 +13,9 @@ import de.eldoria.graph.definition.NodeDescriptor;
 import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementDefinition;
+import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.types.TypeMapping;
+import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,41 +26,43 @@ import java.util.Map;
  * Nodes that mark the edges of a macro body. They only exist while editing a macro: every use of the macro replaces
  * them with the connections of the using node.
  * <ul>
- *     <li>{@code macro.input.<type>}: one per selectable type; config {@code name} becomes an input port of the macro,
- *     output {@code value} provides what is connected to it;</li>
+ *     <li>{@code macro.input}: config {@code name} becomes an input port of the macro of the selectable type config
+ *     {@code type} picks; output {@code value} provides what is connected to it;</li>
  *     <li>{@code macro.output}: input {@code value}, config {@code name}; becomes an output port of that type;</li>
  *     <li>{@code macro.start}: where the execution enters; makes the macro an action;</li>
  *     <li>{@code macro.end}: config {@code name}; chaining it continues with what the user chained to that port.</li>
  * </ul>
  */
 public final class MacroBoundary {
-    public static final String INPUT_PREFIX = "macro.input.";
+    public static final String INPUT = "macro.input";
     public static final String OUTPUT = "macro.output";
     public static final String START = "macro.start";
     public static final String END = "macro.end";
     static final String PASS_PREFIX = "macro.pass.";
     static final String NAME = "name";
+    static final String TYPE = "type";
     static final String VALUE = "value";
     static final String NEXT = "next";
 
     private MacroBoundary() {}
 
     /**
-     * @param types the platform's type mapping; one input node is created per selectable type
+     * @param types the platform's type mapping; the input node offers its selectable types
      * @return the boundary node definitions
      */
     public static List<NodeDefinition> definitions(TypeMapping types) {
         List<NodeDefinition> definitions = new ArrayList<>();
-        types.selectable()
-                .forEach((id, type) -> definitions.add(new ExpressionDefinition(
-                        NodeDescriptor.builder(INPUT_PREFIX + id, NodeKind.VALUE)
-                                .category("macro")
-                                .name("Macro Input (%s)".formatted(types.name(type)))
-                                .description("A value passed into the macro")
-                                .config(NAME, String.class, null)
-                                .output(VALUE, type)
-                                .build(),
-                        MacroBoundary::neverEmitted)));
+        definitions.add(new ExpressionDefinition(
+                NodeDescriptor.builder(INPUT, NodeKind.VALUE)
+                        .category("macro")
+                        .name("Macro Input")
+                        .description("A value passed into the macro")
+                        .config(NAME, String.class, null)
+                        .typeConfig(TYPE, "T", List.copyOf(types.selectable().keySet()))
+                        .output(VALUE, PortType.variable("T"))
+                        .describe("value", "What is connected to this input where the macro is used")
+                        .build(),
+                MacroBoundary::neverEmitted));
         definitions.add(new ExpressionDefinition(
                 NodeDescriptor.builder(OUTPUT, NodeKind.PURE)
                         .category("macro")
@@ -67,6 +71,7 @@ public final class MacroBoundary {
                         .config(NAME, String.class, null)
                         .input(VALUE, PortType.variable("T"))
                         .output(VALUE, PortType.variable("T"))
+                        .describe("value", "What the macro gives out under this output's name")
                         .build(),
                 MacroBoundary::neverEmitted));
         definitions.add(new EntryDefinition(
@@ -113,7 +118,19 @@ public final class MacroBoundary {
     }
 
     static boolean isBoundary(String type) {
-        return type.startsWith(INPUT_PREFIX) || type.equals(OUTPUT) || type.equals(START) || type.equals(END);
+        return type.equals(INPUT) || type.equals(OUTPUT) || type.equals(START) || type.equals(END);
+    }
+
+    /**
+     * @param node  a {@code macro.input} node
+     * @param types the platform's type mapping
+     * @return the selectable type id it picks; the first selectable type when it picks none
+     */
+    static String inputType(NodeInstance node, TypeMapping types) {
+        JsonNode picked = node.config().get(TYPE);
+        return picked != null && picked.isString()
+                ? picked.asString()
+                : types.selectable().keySet().iterator().next();
     }
 
     private static CodeBlock neverEmitted(String port, Object context) {

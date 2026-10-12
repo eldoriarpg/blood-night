@@ -40,6 +40,8 @@ public final class GraphPlatform {
     private final Map<String, NodeDefinition> nodes;
     private final List<Path> classpath;
     private final Map<String, List<NodeRule>> rules;
+    private final Map<String, Binding> bindings;
+    private final @Nullable Method clock;
 
     private GraphPlatform(
             Class<?> host,
@@ -47,8 +49,12 @@ public final class GraphPlatform {
             TypeMapping types,
             Map<String, NodeDefinition> nodes,
             List<Path> classpath,
-            Map<String, List<NodeRule>> rules) {
+            Map<String, List<NodeRule>> rules,
+            Map<String, Binding> bindings,
+            @Nullable Method clock) {
         this.host = host;
+        this.clock = clock;
+        this.bindings = Map.copyOf(bindings);
         this.context = context;
         this.types = types;
         this.nodes = Map.copyOf(nodes);
@@ -120,6 +126,21 @@ public final class GraphPlatform {
     }
 
     /**
+     * @return the graph-wide type variables by name; see {@link Binding}
+     */
+    public Map<String, Binding> bindings() {
+        return bindings;
+    }
+
+    /**
+     * @return the host method the host calls once per tick, which code that has to run every tick, such as pending
+     *     delays, is added to; empty when the platform has no clock
+     */
+    public Optional<Method> clock() {
+        return Optional.ofNullable(clock);
+    }
+
+    /**
      * Builder for {@link GraphPlatform}.
      */
     public static final class Builder {
@@ -128,8 +149,10 @@ public final class GraphPlatform {
         private final List<String> problems = new ArrayList<>();
         private final List<Path> classpath = new ArrayList<>();
         private final Map<String, List<NodeRule>> rules = new LinkedHashMap<>();
+        private final Map<String, Binding> bindings = new LinkedHashMap<>();
         private Class<?> context;
         private TypeMapping types = TypeMapping.defaults();
+        private @Nullable String clock;
 
         private Builder(Class<?> host) {
             this.host = Objects.requireNonNull(host, "host");
@@ -140,6 +163,18 @@ public final class GraphPlatform {
          */
         public Builder context(Class<?> context) {
             this.context = context;
+            return this;
+        }
+
+        /**
+         * Names the host method the host calls once per tick, without parameters and returning nothing. Nodes that wait,
+         * such as a delay, need one.
+         *
+         * @param method the method's name
+         * @return this builder
+         */
+        public Builder clock(String method) {
+            this.clock = method;
             return this;
         }
 
@@ -184,6 +219,29 @@ public final class GraphPlatform {
         }
 
         /**
+         * Declares a graph-wide type variable; see {@link Binding}.
+         *
+         * @param variable the variable's name, as node definitions use it
+         * @param binding  its fallback and candidates
+         * @return this builder
+         */
+        public Builder binding(String variable, Binding binding) {
+            bindings.put(Objects.requireNonNull(variable, "variable"), Objects.requireNonNull(binding, "binding"));
+            return this;
+        }
+
+        /**
+         * Declares the graph-wide type variables of another platform, e.g. when building one from it.
+         *
+         * @param bindings the variables by name
+         * @return this builder
+         */
+        public Builder bindings(Map<String, Binding> bindings) {
+            this.bindings.putAll(bindings);
+            return this;
+        }
+
+        /**
          * @return the platform
          * @throws PlatformException listing every problem found
          */
@@ -205,10 +263,36 @@ public final class GraphPlatform {
             for (String type : rules.keySet()) {
                 if (!nodes.containsKey(type)) found.add("Rule for unknown node type " + type);
             }
-            return new GraphPlatform(host, context, types, nodes, classpath, rules);
+            Method tick = clock == null ? null : clockMethod(found);
+            if (!found.isEmpty()) throw new PlatformException(found);
+            return new GraphPlatform(host, context, types, nodes, classpath, rules, bindings, tick);
+        }
+
+        private @Nullable Method clockMethod(List<String> found) {
+            try {
+                Method method = host.getMethod(Objects.requireNonNull(clock));
+                if (method.getReturnType() == void.class) return method;
+                found.add("Clock %s must return nothing".formatted(clock));
+            } catch (NoSuchMethodException e) {
+                found.add("Host %s has no clock method %s()".formatted(host.getName(), clock));
+            }
+            return null;
         }
 
         private void checkConfig(NodeDefinition definition, ConfigField field, List<String> found) {
+            if (field.type() instanceof PortType.Variable variable) {
+                boolean picked = definition.descriptor().config().stream()
+                        .anyMatch(other -> variable.name().equals(other.selects()));
+                if (!picked)
+                    found.add("%s: config field '%s' has type %s, which no type field picks"
+                            .formatted(definition.id(), field.id(), variable.name()));
+                return;
+            }
+            for (String choice : field.choices()) {
+                if (!types.selectable().containsKey(choice))
+                    found.add("%s: config field '%s' offers %s, which is no selectable type"
+                            .formatted(definition.id(), field.id(), choice));
+            }
             var codec = types.codec(field.type());
             if (codec.isEmpty()) {
                 found.add("%s: config field '%s' has type %s without a literal codec"

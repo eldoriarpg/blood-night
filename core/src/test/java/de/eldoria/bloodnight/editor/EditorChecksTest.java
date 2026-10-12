@@ -10,8 +10,13 @@ import de.eldoria.bloodnight.configuration.ConfigFile;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobTypes;
+import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Equipment;
+import de.eldoria.bloodnight.mob.meta.Extension;
+import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.graph.model.Graph;
+import org.bukkit.entity.EntityType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -19,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EditorChecksTest {
     private static CustomMob armed(String id, String item) {
@@ -36,10 +43,43 @@ class EditorChecksTest {
     @Test
     void mobsNeedTheirIdAndKnownItems() {
         EditorResult result = new EditorResult(
-                Map.of("a", armed("a", "sword"), "b", armed("other", "axe")), List.of(), null, Map.of());
+                Map.of("a", armed("a", "sword"), "b", armed("other", "axe")), List.of(), Map.of(), null, Map.of());
         assertEquals(
                 List.of("Mob other is stored as b", "Mob other uses unknown item axe"),
-                EditorChecks.problems(result, Set.of("sword")).stream().sorted().toList());
+                EditorChecks.problems(result, Set.of("sword")::contains).stream()
+                        .sorted()
+                        .toList());
+    }
+
+    @Test
+    void mobsAndTheirExtensionsAreMobs() {
+        CustomMob zombie = Mobs.zombie("spit", Graph.builder().build());
+        Attributes attributes = zombie.attributes();
+        CustomMob spit = new CustomMob(
+                zombie.id(),
+                zombie.equipment(),
+                new Attributes(
+                        attributes.displayName(),
+                        EntityType.LLAMA_SPIT,
+                        attributes.exactType(),
+                        attributes.healthModifier(),
+                        attributes.health(),
+                        attributes.damageModifier(),
+                        attributes.damage(),
+                        attributes.changes()),
+                zombie.behaviour(),
+                zombie.mobDrops(),
+                new Extension(ExtensionType.CARRIER, EntityType.OAK_BOAT, null),
+                zombie.spawn());
+        EditorResult result = new EditorResult(Map.of("spit", spit), List.of(), Map.of(), null, Map.of());
+
+        assertEquals(
+                List.of(
+                        "Mob spit cannot be a LLAMA_SPIT, which is no mob",
+                        "The extension of mob spit cannot be a OAK_BOAT, which is no mob"),
+                EditorChecks.problems(result, item -> true));
+        assertTrue(MobTypes.isMob(EntityType.ZOMBIE));
+        assertFalse(MobTypes.isMob(EntityType.ARMOR_STAND));
     }
 
     @Test
@@ -48,6 +88,7 @@ class EditorChecksTest {
         EditorResult result = new EditorResult(
                 Map.of(),
                 List.of(),
+                Map.of(),
                 new SettingsPayload(
                         new ConfigFile(), GlobalDrops.defaultDrops(), Map.of("known", world, "gone", world)),
                 Map.of());
@@ -57,11 +98,11 @@ class EditorChecksTest {
     @Test
     void filesChangedSinceTheSessionOpenedAreFound() {
         Map<String, String> opened = Map.of("mobs.yml", "a", "config.yml", "b");
-        EditorResult result = new EditorResult(Map.of(), List.of(), null, opened);
+        EditorResult result = new EditorResult(Map.of(), List.of(), Map.of(), null, opened);
         assertEquals(List.of(), EditorChecks.changedFiles(result, opened));
         assertEquals(
                 List.of("mobs.yml"), EditorChecks.changedFiles(result, Map.of("mobs.yml", "c", "config.yml", "b")));
-        EditorResult lost = new EditorResult(Map.of(), List.of(), null, Map.of());
+        EditorResult lost = new EditorResult(Map.of(), List.of(), Map.of(), null, Map.of());
         assertEquals(List.of("config.yml", "mobs.yml"), EditorChecks.changedFiles(lost, opened));
     }
 

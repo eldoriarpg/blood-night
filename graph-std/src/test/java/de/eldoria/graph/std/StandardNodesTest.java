@@ -14,6 +14,7 @@ import de.eldoria.graph.types.TypeMapping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.StringNode;
@@ -36,20 +37,18 @@ class StandardNodesTest {
     @Test
     void values() throws GraphCompilationException {
         Graph graph = Graph.builder()
-                .node("run", NodeInstance.of("test.run").chain("next", "a", "b", "c", "d", "e"))
+                .node("run", NodeInstance.of("test.run").chain("next", "a", "b", "c", "d"))
                 .node("a", NodeInstance.of("test.record").input("value", "bool", "value"))
                 .node("b", NodeInstance.of("test.record").input("value", "int", "value"))
                 .node("c", NodeInstance.of("test.record").input("value", "number", "value"))
                 .node("d", NodeInstance.of("test.record").input("value", "text", "value"))
-                .node("e", NodeInstance.of("test.record").input("value", "default", "value"))
                 .node("bool", Harness.literal(true))
                 .node("int", Harness.literal(-3))
                 .node("number", Harness.literal(2.5))
                 .node("text", Harness.literal("Chojo stinkt"))
-                .node("default", NodeInstance.of("value.number"))
                 .build();
 
-        assertEquals(List.of(true, -3, 2.5, "Chojo stinkt", 0.0), Harness.run(graph, 1));
+        assertEquals(List.of(true, -3, 2.5, "Chojo stinkt"), Harness.run(graph, 1));
     }
 
     @ParameterizedTest
@@ -65,14 +64,17 @@ class StandardNodesTest {
     }
 
     @Test
-    void integersWidenToNumbers() throws GraphCompilationException {
-        assertEquals(7.0, evaluate("math.add", Map.of("first", 5, "second", 2)));
+    void mathKeepsWholeNumbersWholeAndWidensToDecimals() throws GraphCompilationException {
+        assertEquals(7, evaluate("math.add", Map.of("first", 5, "second", 2)));
+        assertEquals(7.5, evaluate("math.add", Map.of("first", 5, "second", 2.5)));
+        assertEquals(2, evaluate("math.abs", Map.of("value", -2)));
+        assertEquals(7, evaluate("math.clamp", Map.of("value", 7, "lower", 0, "upper", 10)));
+        assertEquals(10.0, evaluate("math.clamp", Map.of("value", 15.5, "lower", 0, "upper", 10)));
     }
 
     @ParameterizedTest
     @CsvSource({
         "math.abs, -2.5, 2.5",
-        "math.abs_integer, -2.7, 2",
         "math.ceil, 2.1, 3",
         "math.floor, 2.9, 2",
         "math.floor, -2.1, -3",
@@ -88,9 +90,7 @@ class StandardNodesTest {
     @CsvSource({
         "math.clamp, 5.0, 0.0, 10.0, 5.0",
         "math.clamp, -5.0, 0.0, 10.0, 0.0",
-        "math.clamp, 15.0, 0.0, 10.0, 10.0",
-        "math.clamp_integer, 7.9, 0.0, 10.0, 7",
-        "math.clamp_integer, 15.0, 0.0, 10.0, 10"
+        "math.clamp, 15.0, 0.0, 10.0, 10.0"
     })
     void clamp(String type, double value, double lower, double upper, String result) throws GraphCompilationException {
         assertEquals(result, String.valueOf(evaluate(type, Map.of("value", value, "lower", lower, "upper", upper))));
@@ -174,8 +174,8 @@ class StandardNodesTest {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "record"))
                 .node("record", NodeInstance.of("test.record").input("value", "cooldown", "result"))
-                .node("cooldown", NodeInstance.of("function.cooldown").input("value", "millis", "value"))
-                .node("millis", Harness.literal(60_000))
+                .node("cooldown", NodeInstance.of("function.cooldown").input("duration", "length", "value"))
+                .node("length", Harness.literal(60))
                 .build();
 
         assertEquals(List.of(true, false, false), Harness.run(graph, 3));
@@ -186,8 +186,8 @@ class StandardNodesTest {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "record"))
                 .node("record", NodeInstance.of("test.record").input("value", "cooldown", "result"))
-                .node("cooldown", NodeInstance.of("function.cooldown").input("value", "millis", "value"))
-                .node("millis", Harness.literal(60_000))
+                .node("cooldown", NodeInstance.of("function.cooldown").input("duration", "length", "value"))
+                .node("length", Harness.literal(60))
                 .build();
         var compiled = Harness.compile(graph);
         Recorder first = new Recorder();
@@ -293,8 +293,16 @@ class StandardNodesTest {
                                 .chain("next", "text_matches", "text_result", "number_matches", "number_result"))
                 .node("text", Harness.literal("hello"))
                 .node("number", Harness.literal(4))
-                .node("as_text", NodeInstance.of("cast.text").input("value", "text", "value"))
-                .node("number_as_text", NodeInstance.of("cast.text").input("value", "number", "value"))
+                .node(
+                        "as_text",
+                        NodeInstance.of("cast")
+                                .config("type", StringNode.valueOf("text"))
+                                .input("value", "text", "value"))
+                .node(
+                        "number_as_text",
+                        NodeInstance.of("cast")
+                                .config("type", StringNode.valueOf("text"))
+                                .input("value", "number", "value"))
                 .node("text_matches", NodeInstance.of("test.record").input("value", "as_text", "matches"))
                 .node("text_result", NodeInstance.of("test.record").input("value", "as_text", "result"))
                 .node("number_matches", NodeInstance.of("test.record").input("value", "number_as_text", "matches"))
@@ -305,36 +313,326 @@ class StandardNodesTest {
     }
 
     @Test
-    void castsSkipPrimitiveTypes() {
+    void castsOfferReferenceTypesAndValuesTypesWithALiteralForm() {
+        List<NodeDefinition> typed = StandardNodes.typed(TypeMapping.defaults());
         assertEquals(
-                List.of("cast.text"),
-                StandardNodes.casts(TypeMapping.defaults()).stream()
-                        .map(NodeDefinition::id)
-                        .toList());
+                List.of("text"),
+                typed.getFirst().descriptor().configField("type").orElseThrow().choices());
+        assertEquals(
+                List.of("boolean", "integer", "number", "text"),
+                typed.get(1).descriptor().configField("type").orElseThrow().choices());
     }
 
     @Test
     void switchRunsTheMatchingCase() throws GraphCompilationException {
-        for (int value : new int[] {0, 5, 9}) {
+        for (int value : new int[] {3, 5, 9}) {
             Graph graph = Graph.builder()
                     .node("run", NodeInstance.of("test.run").chain("next", "switch"))
                     .node(
                             "switch",
                             NodeInstance.of("flow.switch")
                                     .literal("value", IntNode.valueOf(value))
-                                    .chain("case_0", "zero")
-                                    .chain("case_5", "five")
+                                    .config("case_0", IntNode.valueOf(3))
+                                    .config("case_1", IntNode.valueOf(5))
+                                    .config("case_2", IntNode.valueOf(9))
+                                    .chain("case_0", "three")
+                                    .chain("case_1", "five")
                                     .chain("default", "other")
                                     .chain("next", "after"))
-                    .node("zero", NodeInstance.of("test.record").literal("value", StringNode.valueOf("zero")))
+                    .node("three", NodeInstance.of("test.record").literal("value", StringNode.valueOf("three")))
                     .node("five", NodeInstance.of("test.record").literal("value", StringNode.valueOf("five")))
                     .node("other", NodeInstance.of("test.record").literal("value", StringNode.valueOf("other")))
                     .node("after", NodeInstance.of("test.record").literal("value", StringNode.valueOf("after")))
                     .build();
 
-            String expected = value == 0 ? "zero" : value == 5 ? "five" : "other";
+            String expected = value == 3 ? "three" : value == 5 ? "five" : "other";
             assertEquals(List.of(expected, "after"), Harness.run(graph, 1));
         }
+    }
+
+    @Test
+    void switchMatchesTexts() throws GraphCompilationException {
+        for (String value : new String[] {"fire", "ice", "wind"}) {
+            Graph graph = Graph.builder()
+                    .node("run", NodeInstance.of("test.run").chain("next", "switch"))
+                    .node(
+                            "switch",
+                            NodeInstance.of("flow.switch")
+                                    .config("type", StringNode.valueOf("text"))
+                                    .literal("value", StringNode.valueOf(value))
+                                    .config("case_0", StringNode.valueOf("fire"))
+                                    .config("case_3", StringNode.valueOf("ice"))
+                                    .chain("case_0", "burn")
+                                    .chain("case_3", "freeze")
+                                    .chain("default", "other"))
+                    .node("burn", NodeInstance.of("test.record").literal("value", StringNode.valueOf("burn")))
+                    .node("freeze", NodeInstance.of("test.record").literal("value", StringNode.valueOf("freeze")))
+                    .node("other", NodeInstance.of("test.record").literal("value", StringNode.valueOf("other")))
+                    .build();
+
+            String expected = value.equals("fire") ? "burn" : value.equals("ice") ? "freeze" : "other";
+            assertEquals(List.of(expected), Harness.run(graph, 1));
+        }
+    }
+
+    @Test
+    void switchSkipsCasesWithoutAValue() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "switch"))
+                .node(
+                        "switch",
+                        NodeInstance.of("flow.switch")
+                                .literal("value", IntNode.valueOf(0))
+                                .chain("case_0", "never")
+                                .chain("default", "other"))
+                .node("never", NodeInstance.of("test.record").literal("value", StringNode.valueOf("never")))
+                .node("other", NodeInstance.of("test.record").literal("value", StringNode.valueOf("other")))
+                .build();
+
+        assertEquals(List.of("other"), Harness.run(graph, 1));
+    }
+
+    private static Graph delayed(String type) {
+        return Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "wait", "now"))
+                .node(
+                        "wait",
+                        NodeInstance.of(type)
+                                .config("unit", StringNode.valueOf("MILLISECONDS"))
+                                .literal("duration", IntNode.valueOf(0))
+                                .chain("next", "later"))
+                .node("later", NodeInstance.of("test.record").literal("value", StringNode.valueOf("later")))
+                .node("now", NodeInstance.of("test.record").literal("value", StringNode.valueOf("now")))
+                .build();
+    }
+
+    @Test
+    void delayRunsTheRestOfItsChainOnTheClock() throws GraphCompilationException {
+        Recorder recorder = new Recorder();
+        StdHost host = Harness.compile(delayed("flow.delay")).instantiate(recorder);
+
+        host.run();
+        host.run();
+        assertEquals(List.of("now", "now"), recorder.values());
+        host.tick();
+        assertEquals(List.of("now", "now", "later", "later"), recorder.values());
+        host.tick();
+        assertEquals(4, recorder.values().size());
+    }
+
+    @Test
+    void retriggerableDelayStartsItsWaitAnew() throws GraphCompilationException {
+        Recorder recorder = new Recorder();
+        StdHost host = Harness.compile(delayed("flow.retriggerable_delay")).instantiate(recorder);
+
+        host.run();
+        host.run();
+        host.tick();
+        assertEquals(List.of("now", "now", "later"), recorder.values());
+    }
+
+    @Test
+    void delayWaitsItsDuration() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "wait"))
+                .node(
+                        "wait",
+                        NodeInstance.of("flow.delay")
+                                .literal("duration", IntNode.valueOf(60))
+                                .chain("next", "later"))
+                .node("later", NodeInstance.of("test.record").literal("value", StringNode.valueOf("later")))
+                .build();
+        Recorder recorder = new Recorder();
+        StdHost host = Harness.compile(graph).instantiate(recorder);
+
+        host.run();
+        host.tick();
+        assertEquals(List.of(), recorder.values());
+    }
+
+    @Test
+    void variablesKeepTheirValueBetweenRuns() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "count", "record"))
+                .node(
+                        "hits",
+                        NodeInstance.of("variable.get")
+                                .config("name", StringNode.valueOf("hits"))
+                                .config("type", StringNode.valueOf("integer")))
+                .node("one", Harness.literal(1))
+                .node(
+                        "plus",
+                        NodeInstance.of("math.add")
+                                .input("first", "hits", "value")
+                                .input("second", "one", "value"))
+                .node(
+                        "count",
+                        NodeInstance.of("variable.set")
+                                .config("name", StringNode.valueOf("hits"))
+                                .config("type", StringNode.valueOf("integer"))
+                                .input("value", "plus", "result"))
+                .node(
+                        "read",
+                        NodeInstance.of("variable.get")
+                                .config("name", StringNode.valueOf("hits"))
+                                .config("type", StringNode.valueOf("integer")))
+                .node("record", NodeInstance.of("test.record").input("value", "read", "value"))
+                .build();
+
+        assertEquals(List.of(1, 2, 3), Harness.run(graph, 3));
+    }
+
+    @Test
+    void variablesStartEmpty() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "record"))
+                .node(
+                        "name",
+                        NodeInstance.of("variable.get")
+                                .config("name", StringNode.valueOf("label"))
+                                .config("type", StringNode.valueOf("text")))
+                .node("record", NodeInstance.of("test.record").input("value", "name", "value"))
+                .build();
+
+        assertEquals(List.of(""), Harness.run(graph, 1));
+    }
+
+    @Test
+    void aVariableNameHoldsOneType() {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "record", "other"))
+                .node(
+                        "number",
+                        NodeInstance.of("variable.get")
+                                .config("name", StringNode.valueOf("x"))
+                                .config("type", StringNode.valueOf("integer")))
+                .node(
+                        "text",
+                        NodeInstance.of("variable.get")
+                                .config("name", StringNode.valueOf("x"))
+                                .config("type", StringNode.valueOf("text")))
+                .node("record", NodeInstance.of("test.record").input("value", "number", "value"))
+                .node("other", NodeInstance.of("test.record").input("value", "text", "value"))
+                .build();
+
+        GraphCompilationException failure = assertThrows(GraphCompilationException.class, () -> Harness.compile(graph));
+        assertTrue(
+                failure.getMessage().contains("variable x already holds int values, not String"), failure.getMessage());
+    }
+
+    private static NodeInstance.Builder record(String value) {
+        return NodeInstance.of("test.record").literal("value", StringNode.valueOf(value));
+    }
+
+    @Test
+    void doOnceRunsUntilReset() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "once", "every"))
+                .node("once", NodeInstance.of("flow.do_once").chain("next", "first"))
+                .node("first", record("first"))
+                .node(
+                        "every",
+                        NodeInstance.of("flow.do_n")
+                                .literal("count", IntNode.valueOf(2))
+                                .chain("next", "count"))
+                .node("count", NodeInstance.of("test.record").input("value", "every", "counter"))
+                .build();
+
+        assertEquals(List.of("first", 1, 2), Harness.run(graph, 3));
+    }
+
+    @Test
+    void resetLetsDoOnceRunAgain() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "once", "reset"))
+                .node(
+                        "once",
+                        NodeInstance.of("flow.do_once")
+                                .config("name", StringNode.valueOf("intro"))
+                                .chain("next", "first"))
+                .node("first", record("again"))
+                .node("reset", NodeInstance.of("flow.reset_once").config("name", StringNode.valueOf("intro")))
+                .build();
+
+        assertEquals(List.of("again", "again"), Harness.run(graph, 2));
+    }
+
+    @Test
+    void flipFlopAlternates() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "flip"))
+                .node("flip", NodeInstance.of("flow.flip_flop").chain("a", "a").chain("b", "b"))
+                .node("a", record("a"))
+                .node("b", record("b"))
+                .build();
+
+        assertEquals(List.of("a", "b", "a"), Harness.run(graph, 3));
+    }
+
+    @Test
+    void gatesOpenAndClose() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "gate", "toggle"))
+                .node("gate", NodeInstance.of("flow.gate").chain("next", "through"))
+                .node("through", record("through"))
+                .node("toggle", NodeInstance.of("flow.set_gate").config("change", StringNode.valueOf("TOGGLE")))
+                .build();
+
+        assertEquals(List.of("through", "through"), Harness.run(graph, 3));
+    }
+
+    private static List<Object> selected(NodeInstance.Builder select) throws GraphCompilationException {
+        return Harness.run(
+                Graph.builder()
+                        .node("run", NodeInstance.of("test.run").chain("next", "record"))
+                        .node("select", select)
+                        .node("record", NodeInstance.of("test.record").input("value", "select", "value"))
+                        .build(),
+                1);
+    }
+
+    @Test
+    void selectGivesTheOptionOfTheKey() throws GraphCompilationException {
+        for (int key : new int[] {2, 7, 9}) {
+            NodeInstance.Builder select = NodeInstance.of("select")
+                    .config("key_type", StringNode.valueOf("integer"))
+                    .config("type", StringNode.valueOf("text"))
+                    .literal("key", IntNode.valueOf(key))
+                    .config("key_0", IntNode.valueOf(2))
+                    .literal("option_0", StringNode.valueOf("two"))
+                    .config("key_3", IntNode.valueOf(7))
+                    .literal("option_3", StringNode.valueOf("seven"))
+                    .literal("default", StringNode.valueOf("other"));
+
+            String expected = key == 2 ? "two" : key == 7 ? "seven" : "other";
+            assertEquals(List.of(expected), selected(select));
+        }
+    }
+
+    @Test
+    void selectByABooleanNeedsNoKeys() throws GraphCompilationException {
+        for (boolean key : new boolean[] {true, false}) {
+            NodeInstance.Builder select = NodeInstance.of("select")
+                    .config("key_type", StringNode.valueOf("boolean"))
+                    .config("type", StringNode.valueOf("integer"))
+                    .literal("key", BooleanNode.valueOf(key))
+                    .literal("option_0", IntNode.valueOf(1))
+                    .literal("option_1", IntNode.valueOf(0));
+
+            assertEquals(List.of(key ? 1 : 0), selected(select));
+        }
+    }
+
+    @Test
+    void selectWithoutADefaultGivesTheEmptyValue() throws GraphCompilationException {
+        NodeInstance.Builder select = NodeInstance.of("select")
+                .config("key_type", StringNode.valueOf("text"))
+                .config("type", StringNode.valueOf("integer"))
+                .literal("key", StringNode.valueOf("none"))
+                .config("key_0", StringNode.valueOf("some"))
+                .literal("option_0", IntNode.valueOf(5));
+
+        assertEquals(List.of(0), selected(select));
     }
 
     @Test
@@ -370,6 +668,24 @@ class StandardNodesTest {
     }
 
     @Test
+    void reroutesPassValuesAndChainsOn() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("run", NodeInstance.of("test.run").chain("next", "hop"))
+                .node("hop", NodeInstance.of("reroute.execution").chain("next", "record"))
+                .node("record", NodeInstance.of("test.record").input("value", "via", "value"))
+                .node("via", NodeInstance.of("reroute").input("value", "sum", "result"))
+                .node(
+                        "sum",
+                        NodeInstance.of("math.add")
+                                .input("first", "two", "value")
+                                .input("second", "two", "value"))
+                .node("two", Harness.literal(2))
+                .build();
+
+        assertEquals(List.of(4), Harness.run(graph, 1));
+    }
+
+    @Test
     void timersWithTheSameNameShareTheirState() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "reset", "fresh"))
@@ -379,8 +695,8 @@ class StandardNodesTest {
                 .node(
                         "less",
                         NodeInstance.of("logic.less_or_equal")
-                                .input("first", "elapsed", "seconds")
-                                .input("second", "other", "seconds"))
+                                .input("first", "elapsed", "elapsed")
+                                .input("second", "other", "elapsed"))
                 .node("fresh", NodeInstance.of("test.record").input("value", "less", "result"))
                 .build();
 
@@ -482,27 +798,27 @@ class StandardNodesTest {
     void statefulValuesStayLocals() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("run", NodeInstance.of("test.run").chain("next", "record"))
-                .node("cooldown", NodeInstance.of("function.cooldown").literal("value", IntNode.valueOf(1000)))
+                .node("cooldown", NodeInstance.of("function.cooldown").literal("duration", DoubleNode.valueOf(1)))
                 .node("record", NodeInstance.of("test.record").input("value", "cooldown", "result"))
                 .build();
 
         String source = Harness.compile(graph).source();
         assertEquals(List.of(true, false), Harness.run(graph, 2));
-        assertTrue(source.contains("final boolean cooldown = this.cooldown.ready(1000);"), source);
+        assertTrue(source.contains("final boolean cooldown = this.cooldown.ready(SECONDS.toMillis(1.0d));"), source);
     }
 
     @Test
     void integerMathStaysInteger() throws GraphCompilationException {
-        assertEquals(5, Harness.evaluate("math.add_integer", Map.of("first", 2, "second", 3)));
-        assertEquals(-1, Harness.evaluate("math.subtract_integer", Map.of("first", 2, "second", 3)));
-        assertEquals(6, Harness.evaluate("math.multiply_integer", Map.of("first", 2, "second", 3)));
+        assertEquals(5, Harness.evaluate("math.add", Map.of("first", 2, "second", 3)));
+        assertEquals(-1, Harness.evaluate("math.subtract", Map.of("first", 2, "second", 3)));
+        assertEquals(6, Harness.evaluate("math.multiply", Map.of("first", 2, "second", 3)));
     }
 
     @Test
     void integerDivisionRoundsTowardZeroAndNeverThrows() throws GraphCompilationException {
-        assertEquals(3, Harness.evaluate("math.divide_integer", Map.of("first", 7, "second", 2)));
-        assertEquals(-3, Harness.evaluate("math.divide_integer", Map.of("first", -7, "second", 2)));
-        assertEquals(0, Harness.evaluate("math.divide_integer", Map.of("first", 7, "second", 0)));
+        assertEquals(3, Harness.evaluate("math.divide", Map.of("first", 7, "second", 2)));
+        assertEquals(-3, Harness.evaluate("math.divide", Map.of("first", -7, "second", 2)));
+        assertEquals(0, Harness.evaluate("math.divide", Map.of("first", 7, "second", 0)));
         assertEquals(2, Harness.evaluate("math.modulo_integer", Map.of("first", -1, "second", 3)));
         assertEquals(0, Harness.evaluate("math.modulo_integer", Map.of("first", 5, "second", 0)));
     }

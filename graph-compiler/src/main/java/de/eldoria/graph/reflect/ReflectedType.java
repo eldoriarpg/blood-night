@@ -13,7 +13,9 @@ import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementDefinition;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -28,17 +31,43 @@ import java.util.stream.Collectors;
  * <p>
  * For a class registered under prefix {@code location}:
  * <ul>
- *     <li>{@code location.get}: a pure node taking the object as {@code target}, one output per getter;</li>
- *     <li>{@code location.set_x}, …: one action per setter, taking {@code target} and the new value.</li>
+ *     <li>{@code location.read}: a pure node taking the object as {@code target}, one output per getter;</li>
+ *     <li>{@code location.mutate}: an action taking {@code target} and every setter as an optional input, applying
+ *     those that are given.</li>
  * </ul>
  * Setters act on whatever object is connected to {@code target}. When that object is an entry's output, such as an
  * event, the scope rules of the compiler already restrict the setter to that entry's chain.
+ * <p>
+ * Both nodes are variants of the {@link #MUTATE} node the editor shows in their place: it reads while no property is
+ * set and changes them as soon as one is, so {@code <prefix>.mutate} also gives every property's value after the change.
+ * Inherited properties are included, so the node of a type offers everything that type has.
  */
 public final class ReflectedType {
     private static final String TARGET = "target";
     private static final String NEXT = "next";
 
+    /** Id of the node standing in for every reflected type's read and change nodes in the editor. */
+    public static final String MUTATE = "object.mutate";
+
     private ReflectedType() {}
+
+    /**
+     * The node the editor shows for the read and change nodes of every reflected type: only an optional
+     * {@code target}, turned into the variant of whatever is wired into it. Compiled as it is, it passes the object on.
+     *
+     * @return the node
+     */
+    public static ExpressionDefinition mutate() {
+        return new ExpressionDefinition(
+                NodeDescriptor.builder(MUTATE, NodeKind.PURE)
+                        .category("object")
+                        .name("Mutate")
+                        .description("Reads the properties of whatever is wired in, and changes those given a value")
+                        .input(TARGET, "Target", PortType.of(Object.class), true, "The object to read or change")
+                        .output(TARGET, "Target", PortType.of(Object.class), "The object, unchanged")
+                        .build(),
+                (port, ctx) -> ctx.connected(TARGET) ? ctx.input(TARGET) : CodeBlock.of("null"));
+    }
 
     /**
      * Starts deriving nodes for a class.
@@ -59,6 +88,7 @@ public final class ReflectedType {
         private final String prefix;
         private final Set<String> excluded = new HashSet<>();
         private final Map<String, String> names = new HashMap<>();
+        private final Map<String, String> titles = new HashMap<>();
         private String category;
         private String name;
         private final Set<String> accessors = new HashSet<>();
@@ -85,7 +115,7 @@ public final class ReflectedType {
         }
 
         /**
-         * Name of the type in node names, e.g. "Location" in "Get Location". Defaults to the simple class name.
+         * Name of the type in node names, e.g. "Location" in "Read Location". Defaults to the simple class name.
          */
         public Builder name(String name) {
             this.name = name;
@@ -97,6 +127,19 @@ public final class ReflectedType {
          */
         public Builder exclude(String... properties) {
             excluded.addAll(List.of(properties));
+            return this;
+        }
+
+        /**
+         * Sets the editor name of an action or query node, e.g. "Remove Entity" for {@code remove}; without, the node
+         * is named after its id suffix.
+         *
+         * @param call  the node's id suffix
+         * @param title its editor name
+         * @return this builder
+         */
+        public Builder title(String call, String title) {
+            titles.put(call, title);
             return this;
         }
 
@@ -191,7 +234,7 @@ public final class ReflectedType {
         }
 
         /**
-         * Whether to derive set nodes. Defaults to true.
+         * Whether to derive the set node. Defaults to true.
          */
         public Builder setters(boolean setters) {
             this.setters = setters;
@@ -200,26 +243,30 @@ public final class ReflectedType {
 
         /**
          * @param rules which methods qualify
-         * @return the get node, if the class has any getter, followed by one node per setter
+         * @return the get node, if the class has any getter, and the set node, if it has any setter
          */
         public List<NodeDefinition> build(ReflectionRules rules) {
             List<NodeDefinition> nodes = new ArrayList<>();
             PortType target = PortType.of(type);
             Properties.Style style = new Properties.Style(fluent, accessors);
-            if (getter) {
-                List<Properties.Getter> getters = Properties.getters(type, rules, style).stream()
-                        .filter(property -> !excluded.contains(property.id()))
-                        .toList();
-                if (!getters.isEmpty()) nodes.add(getNode(target, getters, rules.documentation()));
-            }
+            List<Properties.Getter> getters = getter
+                    ? Properties.getters(type, rules, style).stream()
+                            .filter(property -> !excluded.contains(property.id()))
+                            .toList()
+                    : List.of();
+            if (!getters.isEmpty())
+                nodes.add(getNode(target, grouped(getters, Properties.Getter::method, rules), rules));
             if (setters) {
                 List<Properties.Setter> found = Properties.setters(type, rules, style).stream()
                         .filter(setter -> !excluded.contains(setter.property()))
                         .toList();
-                found.stream()
-                        .map(property -> setNode(target, property, rules.documentation()))
-                        .forEach(nodes::add);
-                if (!found.isEmpty()) nodes.add(setAllNode(target, found, rules.documentation()));
+                if (!found.isEmpty()) {
+                    nodes.add(setNode(
+                            target,
+                            grouped(found, Properties.Setter::method, rules),
+                            grouped(getters, Properties.Getter::method, rules),
+                            rules));
+                }
             }
             List<Creations.Creation> all = new ArrayList<>(creations);
             if (type.isRecord()
@@ -229,21 +276,47 @@ public final class ReflectedType {
             }
             all.forEach(creation ->
                     nodes.add(Creations.node(type, prefix, category, name, creation, rules.documentation())));
-            calls.forEach(call -> nodes.add(Calls.node(type, prefix, category, name, call, rules.documentation())));
+            calls.forEach(call -> nodes.add(Calls.node(
+                    type,
+                    prefix,
+                    category,
+                    name,
+                    titles.getOrDefault(call.name(), Names.humanize(call.name())),
+                    call,
+                    rules.documentation())));
             return nodes;
         }
 
-        private ExpressionDefinition getNode(PortType target, List<Properties.Getter> getters, Documentation docs) {
-            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".get", NodeKind.PURE)
+        /**
+         * Orders properties by their group, the node's own type first and the most general last, keeping the order
+         * within a group.
+         */
+        private <P> List<P> grouped(List<P> properties, Function<P, Method> method, ReflectionRules rules) {
+            List<String> order = rules.groupOrder(type);
+            return properties.stream()
+                    .sorted(Comparator.comparingInt(property -> {
+                        String group = rules.group(type, method.apply(property));
+                        return group == null ? -1 : order.indexOf(group);
+                    }))
+                    .toList();
+        }
+
+        private ExpressionDefinition getNode(PortType target, List<Properties.Getter> getters, ReflectionRules rules) {
+            Documentation docs = rules.documentation();
+            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".read", NodeKind.PURE)
                     .category(category)
-                    .name("Get " + name)
+                    .name("Read " + name)
+                    .family(MUTATE)
                     .description("Reads the properties of a " + name)
                     .input(TARGET, name, target, false, docs.of(type).orElse(""));
             getters.forEach(property -> descriptor.output(
                     property.id(),
                     displayName(property.id()),
                     property.type(),
-                    docs.of(property.method()).orElse("")));
+                    docs.of(property.method())
+                            .or(() -> docs.returns(property.method()))
+                            .orElse(""),
+                    rules.group(type, property.method())));
             Map<String, String> methods = getters.stream()
                     .collect(Collectors.toMap(
                             Properties.Getter::id, property -> property.method().getName()));
@@ -251,39 +324,25 @@ public final class ReflectedType {
                     descriptor.build(), (port, ctx) -> CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port)));
         }
 
-        private StatementDefinition setNode(PortType target, Properties.Setter setter, Documentation docs) {
-            String property = setter.property();
-            String doc = docs.of(setter.method()).orElse("");
-            NodeDescriptor descriptor = NodeDescriptor.builder(prefix + "." + setter.id(), NodeKind.ACTION)
-                    .category(category)
-                    .name("Set %s %s".formatted(name, displayName(property)))
-                    .description(
-                            doc.isEmpty()
-                                    ? "Calls %s on a %s"
-                                            .formatted(setter.method().getName(), name)
-                                    : doc)
-                    .input(TARGET, name, target, false, docs.of(type).orElse(""))
-                    .input("value", displayName(property), setter.type(), false, doc)
-                    .execution(NEXT)
-                    .build();
-            String method = setter.method().getName();
-            return new StatementDefinition(descriptor, ctx -> CodeBlock.builder()
-                    .addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input("value"))
-                    .add(ctx.chain(NEXT))
-                    .build());
-        }
-
         /**
-         * {@code <prefix>.set}: every setter as an optional input, applied in declaration order when given, so one node
-         * changes several properties. Overloads of a property contribute their first setter. A property named like
-         * the receiver input gets the input id {@code <property>_value}.
+         * {@code <prefix>.mutate}: every setter as an optional input, applied in declaration order when given, so one node
+         * changes several properties, and every getter as an output read after the change. Overloads of a property
+         * contribute their first setter. A property named like the receiver input gets the input id
+         * {@code <property>_value}.
          */
-        private StatementDefinition setAllNode(PortType target, List<Properties.Setter> setters, Documentation docs) {
-            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".set", NodeKind.ACTION)
+        private StatementDefinition setNode(
+                PortType target,
+                List<Properties.Setter> setters,
+                List<Properties.Getter> getters,
+                ReflectionRules rules) {
+            Documentation docs = rules.documentation();
+            NodeDescriptor.Builder descriptor = NodeDescriptor.builder(prefix + ".mutate", NodeKind.ACTION)
                     .category(category)
-                    .name("Modify " + name)
-                    .description("Changes the properties of a %s that are given; the others stay as they are"
-                            .formatted(name))
+                    .name("Mutate " + name)
+                    .family(MUTATE)
+                    .description("Changes the properties of a %s that are given, the others stay as they are, and gives"
+                                    .formatted(name)
+                            + " every property's value after the change")
                     .input(TARGET, name, target, false, docs.of(type).orElse(""));
             Map<String, String> methods = new LinkedHashMap<>();
             for (Properties.Setter setter : setters) {
@@ -295,14 +354,35 @@ public final class ReflectedType {
                         displayName(setter.property()),
                         setter.type(),
                         true,
-                        docs.of(setter.method()).orElse(""));
+                        docs.of(setter.method()).orElse(""),
+                        rules.group(type, setter.method()));
             }
+            getters.forEach(property -> descriptor.output(
+                    property.id(),
+                    displayName(property.id()),
+                    property.type(),
+                    docs.of(property.method())
+                            .or(() -> docs.returns(property.method()))
+                            .orElse(""),
+                    rules.group(type, property.method())));
+            Map<String, String> reads = getters.stream()
+                    .collect(Collectors.toMap(
+                            Properties.Getter::id, property -> property.method().getName()));
             descriptor.execution(NEXT);
             return new StatementDefinition(descriptor.build(), ctx -> {
                 CodeBlock.Builder code = CodeBlock.builder();
                 methods.forEach((input, method) -> {
                     if (ctx.connected(input))
                         code.addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input(input));
+                });
+                reads.forEach((output, method) -> {
+                    if (!ctx.isRead(output)) return;
+                    code.addStatement(
+                            "final $T $L = $L.$N()",
+                            ctx.type(output),
+                            ctx.bind(output, NEXT),
+                            ctx.input(TARGET),
+                            method);
                 });
                 return code.add(ctx.chain(NEXT)).build();
             });

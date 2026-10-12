@@ -14,7 +14,6 @@ import de.eldoria.graph.compiler.GraphProblem;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
@@ -35,11 +34,13 @@ import java.util.TreeMap;
  * @param catalog        version of the catalog the server runs
  * @param mobs           mob definitions by id, including their behaviour graphs
  * @param macros         the macro library
- * @param items          registered items by id; the editor assigns them, it cannot create or change them
+ * @param items          the items by id: registered from the game (name, lore and enchantments editable) and made in
+ *                       the editor
  * @param problems       problems per mob id
  * @param macroProblems  problems per macro id
  * @param configProblems files that could not be read, with the reason
  * @param settings       the server-wide settings, the global drops and every world's settings
+ * @param choices        the materials and enchantments the server offers
  * @param hashes         SHA-256 of each file the session may replace, as it was when the session opened; checked
  *                       when the result comes back
  */
@@ -47,11 +48,12 @@ public record EditorPayload(
         String catalog,
         Map<String, CustomMob> mobs,
         List<Macro> macros,
-        Map<String, ItemStack> items,
+        Map<String, EditorItem> items,
         Map<String, List<GraphProblem>> problems,
         Map<String, List<GraphProblem>> macroProblems,
         Map<String, String> configProblems,
         SettingsPayload settings,
+        EditorChoices choices,
         Map<String, String> hashes) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
@@ -82,12 +84,20 @@ public record EditorPayload(
                 catalog,
                 mobs,
                 configuration.macros().macros(),
-                new TreeMap<>(configuration.items().registrations()),
+                items(configuration),
                 behaviours.problems(),
                 behaviours.macroProblems(),
                 configuration.problems(),
                 settings,
+                EditorChoices.ofServer(),
                 configuration.fileHashes(worlds));
+    }
+
+    private static Map<String, EditorItem> items(Configuration configuration) {
+        Map<String, EditorItem> items = new TreeMap<>();
+        configuration.items().registrations().forEach((id, item) -> items.put(id, EditorItem.registered(item)));
+        configuration.items().definitions().forEach((id, definition) -> items.put(id, EditorItem.defined(definition)));
+        return items;
     }
 
     private static SettingsPayload settings(Configuration configuration, Collection<? extends World> worlds) {

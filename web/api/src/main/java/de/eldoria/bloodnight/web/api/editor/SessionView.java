@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.web.api.editor;
 
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
@@ -21,6 +22,7 @@ import java.util.List;
  * @param problems what the service found wrong with it, best effort
  * @param locks    the sections participants hold
  * @param online   who has the session open
+ * @param you      the name of the participant asking; none when the server asks with its pull token
  * @param expires  when the session is deleted unless it is used again
  */
 public record SessionView(
@@ -32,4 +34,5 @@ public record SessionView(
         List<PayloadProblem> problems,
         List<LockInfo> locks,
         List<String> online,
+        @Nullable String you,
         Instant expires) {}

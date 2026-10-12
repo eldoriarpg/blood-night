@@ -168,7 +168,7 @@ final class MacroExpander {
                 problems.add(GraphProblem.error(useId, name, "Macro input is not connected"));
                 return;
             }
-            String type = body.nodes().get(node).type().substring(MacroBoundary.INPUT_PREFIX.length());
+            String type = definition.inputTypes().get(name);
             Map<String, Edge> edges = connected == null ? Map.of() : Map.of(MacroBoundary.VALUE, connected);
             Map<String, JsonNode> literals = literal == null ? Map.of() : Map.of(MacroBoundary.VALUE, literal);
             nodes.put(

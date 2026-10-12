@@ -112,15 +112,21 @@ class BloodNightPlatformTest {
     void reflectedPaletteStaysWithinMappedTypes() {
         GraphPlatform platform = platform();
 
-        NodeDefinition location = platform.node("location.get").orElseThrow();
+        NodeDefinition location = platform.node("location.read").orElseThrow();
         List<String> outputs =
                 location.descriptor().outputs().stream().map(Port::id).toList();
         assertTrue(
                 outputs.containsAll(List.of("x", "y", "z", "world", "direction", "yaw", "pitch")), outputs.toString());
-        assertTrue(platform.node("cancellable.set_cancelled").isPresent());
-        assertTrue(platform.node("event_data.entity_damage.set_damage").isPresent());
-        assertTrue(platform.node("event_data.entity_damage.set_cancelled").isEmpty());
-        platform.node("living_entity.get")
+        assertTrue(platform.node("cancellable.mutate")
+                .orElseThrow()
+                .descriptor()
+                .input("cancelled")
+                .isPresent());
+        var damage =
+                platform.node("event_data.entity_damage.mutate").orElseThrow().descriptor();
+        assertTrue(damage.input("damage").isPresent());
+        assertTrue(damage.input("cancelled").isEmpty());
+        platform.node("living_entity.read")
                 .orElseThrow()
                 .descriptor()
                 .outputs()
@@ -213,8 +219,7 @@ class BloodNightPlatformTest {
                         "skeleton:damage_by_entity",
                         "zombie:damage_by_player",
                         "skeleton:hit",
-                        "zombie:kill",
-                        "zombie:entity_kill"),
+                        "zombie:kill"),
                 calls);
         assertTrue(errors.isEmpty());
     }
@@ -245,24 +250,78 @@ class BloodNightPlatformTest {
             public void onKill(EntityDeathEvent event) {
                 calls.add(name + ":kill");
             }
-
-            @Override
-            public void onPlayerKill(EntityDeathEvent event) {
-                calls.add(name + ":player_kill");
-            }
-
-            @Override
-            public void onEntityKill(EntityDeathEvent event) {
-                calls.add(name + ":entity_kill");
-            }
         };
+    }
+
+    @Test
+    void delayedChainsRunOnALaterTick() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "wait"))
+                .node(
+                        "wait",
+                        NodeInstance.of("flow.retriggerable_delay")
+                                .config("unit", StringNode.valueOf("MILLISECONDS"))
+                                .literal("duration", IntNode.valueOf(0))
+                                .chain("next", "remove"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("remove", NodeInstance.of("entity.remove").input("target", "self", "entity"))
+                .build();
+        Zombie zombie = zombie();
+        CompiledBehaviour behaviour = compile(graph).instantiate(new TestContext(zombie));
+
+        behaviour.onTick();
+        assertTrue(zombie.isValid());
+        behaviour.onTick();
+        assertFalse(zombie.isValid());
+    }
+
+    @Test
+    void switchPicksTheCaseOfAnEnumValue() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("on_damage", NodeInstance.of("event.damage").chain("next", "by_cause"))
+                .node(
+                        "by_cause",
+                        NodeInstance.of("flow.switch")
+                                .config("type", StringNode.valueOf("damage_cause"))
+                                .config("case_0", StringNode.valueOf("FALL"))
+                                .input("value", "on_damage", "cause")
+                                .chain("case_0", "cancel"))
+                .node(
+                        "cancel",
+                        NodeInstance.of("cancellable.mutate")
+                                .input("target", "on_damage", "event")
+                                .literal("cancelled", BooleanNode.TRUE))
+                .build();
+        Zombie zombie = zombie();
+        behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
+
+        EntityDamageEvent fall = new EntityDamageEvent(
+                zombie,
+                EntityDamageEvent.DamageCause.FALL,
+                DamageSource.builder(DamageType.FALL).build(),
+                1);
+        EntityDamageEvent fire = new EntityDamageEvent(
+                zombie,
+                EntityDamageEvent.DamageCause.FIRE,
+                DamageSource.builder(DamageType.IN_FIRE).build(),
+                1);
+        server.getPluginManager().callEvent(fall);
+        server.getPluginManager().callEvent(fire);
+
+        assertTrue(fall.isCancelled());
+        assertFalse(fire.isCancelled());
+        assertTrue(errors.isEmpty(), errors.toString());
     }
 
     @Test
     void compiledGraphChangesTheEvent() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("on_damage", NodeInstance.of("event.damage_by_player").chain("next", "set_damage"))
-                .node("two", NodeInstance.of("value.number").config("value", DoubleNode.valueOf(2)))
+                .node(
+                        "two",
+                        NodeInstance.of("value")
+                                .config("type", StringNode.valueOf("number"))
+                                .config("value", DoubleNode.valueOf(2)))
                 .node(
                         "double",
                         NodeInstance.of("math.multiply")
@@ -270,16 +329,20 @@ class BloodNightPlatformTest {
                                 .input("second", "two", "value"))
                 .node(
                         "set_damage",
-                        NodeInstance.of("event_data.entity_damage.set_damage")
+                        NodeInstance.of("event_data.entity_damage.mutate")
                                 .input("target", "on_damage", "event")
-                                .input("value", "double", "result"))
+                                .input("damage", "double", "result"))
                 .node("on_teleport", NodeInstance.of("event.teleport").chain("next", "cancel"))
-                .node("yes", NodeInstance.of("value.boolean").config("value", BooleanNode.TRUE))
+                .node(
+                        "yes",
+                        NodeInstance.of("value")
+                                .config("type", StringNode.valueOf("boolean"))
+                                .config("value", BooleanNode.TRUE))
                 .node(
                         "cancel",
-                        NodeInstance.of("cancellable.set_cancelled")
+                        NodeInstance.of("cancellable.mutate")
                                 .input("target", "on_teleport", "event")
-                                .input("value", "yes", "value"))
+                                .input("cancelled", "yes", "value"))
                 .build();
         Zombie zombie = zombie();
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
@@ -308,7 +371,11 @@ class BloodNightPlatformTest {
     void attackerIsWhoShotTheArrow() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("hurt", NodeInstance.of("event.damage_by_player").chain("next", "branch"))
-                .node("as_player", NodeInstance.of("cast.player").input("value", "hurt", "attacker"))
+                .node(
+                        "as_player",
+                        NodeInstance.of("cast")
+                                .config("type", StringNode.valueOf("player"))
+                                .input("value", "hurt", "attacker"))
                 .node(
                         "branch",
                         NodeInstance.of("flow.branch")
@@ -316,9 +383,9 @@ class BloodNightPlatformTest {
                                 .chain("true", "cancel"))
                 .node(
                         "cancel",
-                        NodeInstance.of("cancellable.set_cancelled")
+                        NodeInstance.of("cancellable.mutate")
                                 .input("target", "hurt", "event")
-                                .literal("value", BooleanNode.TRUE))
+                                .literal("cancelled", BooleanNode.TRUE))
                 .build();
         Zombie zombie = zombie();
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
@@ -347,7 +414,7 @@ class BloodNightPlatformTest {
                 .node("self", NodeInstance.of("mob.self"))
                 .node(
                         "modify",
-                        NodeInstance.of("living_entity.set")
+                        NodeInstance.of("entity.mutate")
                                 .input("target", "self", "entity")
                                 .literal("fire_ticks", IntNode.valueOf(80))
                                 .literal("glowing", BooleanNode.TRUE))
@@ -364,23 +431,87 @@ class BloodNightPlatformTest {
     }
 
     @Test
-    void declaredCallsApplyPotionEffects() throws GraphCompilationException {
+    void killEntriesCheckTheirVictim() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("any", NodeInstance.of("event.kill").chain("next", "print_any"))
+                .node(
+                        "players",
+                        NodeInstance.of("event.kill")
+                                .config("victim", StringNode.valueOf("PLAYER"))
+                                .chain("next", "print_player"))
+                .node("print_any", NodeInstance.of("debug.print").literal("value", StringNode.valueOf("any")))
+                .node("print_player", NodeInstance.of("debug.print").literal("value", StringNode.valueOf("player")))
+                .build();
+
+        String source = compile(graph).source();
+
+        assertEquals(1, source.split("instanceof Player", -1).length - 1, source);
+        assertFalse(source.contains("!(event.getEntity() instanceof"), source);
+    }
+
+    @Test
+    void selfIsTheMobsOwnEntityType() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "fuse"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node(
+                        "fuse",
+                        NodeInstance.of("creeper.mutate")
+                                .input("target", "self", "entity")
+                                .literal("max_fuse_ticks", IntNode.valueOf(5)))
+                .build();
+        GraphCompiler<CompiledBehaviour> compiler = new GraphCompiler<>(
+                platform(), CompiledBehaviour.class, getClass().getClassLoader());
+
+        String source = compiler.compile(
+                        graph,
+                        ClassName.get("generated.bloodnight", "Creeping"),
+                        MobBindings.of(EntityType.CREEPER, EntityType.VEX))
+                .source();
+
+        assertTrue(source.contains("(Creeper)"), source);
+        assertThrows(
+                GraphCompilationException.class,
+                () -> compiler.compile(graph, ClassName.get("generated.bloodnight", "Unbound")),
+                "a graph checked without its mob keeps Self a living entity");
+    }
+
+    @Test
+    void attributesCanBeDefinedAsValues() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "print"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node(
+                        "speed",
+                        NodeInstance.of("value")
+                                .config("type", StringNode.valueOf("attribute"))
+                                .config("value", StringNode.valueOf("minecraft:movement_speed")))
+                .node(
+                        "instance",
+                        NodeInstance.of("living_entity.attribute")
+                                .input("target", "self", "entity")
+                                .input("attribute", "speed", "value"))
+                .node("print", NodeInstance.of("debug.print").input("value", "instance", "result"))
+                .build();
+
+        String source = compile(graph).source();
+
+        assertTrue(source.contains("getAttribute("), source);
+        assertTrue(source.contains("movement_speed") || source.contains("MOVEMENT_SPEED"), source);
+    }
+
+    @Test
+    void applyEffectGivesPotionEffects() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("hurt", NodeInstance.of("event.damage_by_player").chain("next", "apply"))
                 .node("self", NodeInstance.of("mob.self"))
                 .node(
-                        "effect",
-                        NodeInstance.of("potion_effect.create")
-                                .literal("type", StringNode.valueOf("minecraft:regeneration"))
-                                .literal("duration", IntNode.valueOf(100))
-                                .literal("amplifier", IntNode.valueOf(1)))
-                .node(
                         "apply",
-                        NodeInstance.of("living_entity.add_potion_effect")
+                        NodeInstance.of("living_entity.apply_effect")
                                 .input("target", "self", "entity")
-                                .input("effect", "effect", "result")
-                                .chain("next", "print"))
-                .node("print", NodeInstance.of("debug.print").input("value", "apply", "result"))
+                                .literal("effect", StringNode.valueOf("minecraft:regeneration"))
+                                .literal("seconds", DoubleNode.valueOf(5))
+                                .literal("amplifier", IntNode.valueOf(1)))
                 .build();
         Zombie zombie = zombie();
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
@@ -403,23 +534,23 @@ class BloodNightPlatformTest {
     void castsLetTheMobPoisonWhatItHits() throws GraphCompilationException {
         Graph graph = Graph.builder()
                 .node("hit", NodeInstance.of("event.hit").chain("next", "guard"))
-                .node("victim", NodeInstance.of("cast.living_entity").input("value", "hit", "entity"))
+                .node(
+                        "victim",
+                        NodeInstance.of("cast")
+                                .config("type", StringNode.valueOf("living_entity"))
+                                .input("value", "hit", "entity"))
                 .node(
                         "guard",
                         NodeInstance.of("flow.branch")
                                 .input("condition", "victim", "matches")
                                 .chain("true", "poison"))
                 .node(
-                        "effect",
-                        NodeInstance.of("potion_effect.create")
-                                .literal("type", StringNode.valueOf("minecraft:poison"))
-                                .literal("duration", IntNode.valueOf(60))
-                                .literal("amplifier", IntNode.valueOf(0)))
-                .node(
                         "poison",
-                        NodeInstance.of("living_entity.add_potion_effect")
+                        NodeInstance.of("living_entity.apply_effect")
                                 .input("target", "victim", "result")
-                                .input("effect", "effect", "result"))
+                                .literal("effect", StringNode.valueOf("minecraft:poison"))
+                                .literal("seconds", DoubleNode.valueOf(3))
+                                .literal("amplifier", IntNode.valueOf(0)))
                 .build();
         Zombie zombie = zombie();
         Skeleton skeleton = world.spawn(new Location(world, 1, 64, 0), Skeleton.class);
@@ -443,14 +574,16 @@ class BloodNightPlatformTest {
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "print"))
                 .node(
                         "type",
-                        NodeInstance.of("value.entity_type").config("value", StringNode.valueOf("minecraft:zombie")))
+                        NodeInstance.of("value")
+                                .config("type", StringNode.valueOf("entity_type"))
+                                .config("value", StringNode.valueOf("minecraft:zombie")))
                 .node("self", NodeInstance.of("mob.self"))
                 .node(
                         "same",
                         NodeInstance.of("logic.equal")
                                 .input("first", "type", "value")
                                 .input("second", "self_type", "type"))
-                .node("self_type", NodeInstance.of("entity.get").input("target", "self", "entity"))
+                .node("self_type", NodeInstance.of("entity.read").input("target", "self", "entity"))
                 .node("print", NodeInstance.of("debug.print").input("value", "same", "result"))
                 .build();
         String source = compile(graph).source().toString();
@@ -465,7 +598,11 @@ class BloodNightPlatformTest {
     void invalidRegistryKeysAreRejected() {
         Graph graph = Graph.builder()
                 .node("tick", NodeInstance.of("mob.tick").chain("next", "print"))
-                .node("type", NodeInstance.of("value.entity_type").config("value", StringNode.valueOf("Not A Key")))
+                .node(
+                        "type",
+                        NodeInstance.of("value")
+                                .config("type", StringNode.valueOf("entity_type"))
+                                .config("value", StringNode.valueOf("Not A Key")))
                 .node("print", NodeInstance.of("debug.print").input("value", "type", "value"))
                 .build();
 

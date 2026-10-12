@@ -1,0 +1,67 @@
+{
+  "name": "bloodnight-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "postinstall": "nuxi prepare",
+    "dev": "nuxi dev",
+    "lint": "node scripts/lint.mjs",
+    "lint:audit": "node scripts/lint.mjs --audit",
+    "build": "node scripts/build.mjs",
+    "preview": "nuxi preview",
+    "typecheck:e2e": "tsc -p tsconfig.e2e.json"
+  },
+  "dependencies": {
+    "@fontsource/bitter": "^5.2.10",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/vue-fontawesome": "^3.2.0",
+    "@nuxtjs/i18n": "^10.4.0",
+    "@tailwindcss/vite": "^4.2.4",
+    "@vue-flow/core": "^1.48.2",
+    "@vueuse/core": "^14.4.0",
+    "axios": "^1.16.0",
+    "elkjs": "^0.12.0",
+    "nuxt": "^4.4.8",
+    "reka-ui": "^2.10.5",
+    "tailwindcss": "^4.2.4",
+    "vue": "^3.5.32",
+    "vue-i18n": "^11.4.12",
+    "vue-router": "^5.0.6"
+  },
+  "devDependencies": {
+    "@intlify/eslint-plugin-vue-i18n": "^4.5.1",
+    "@intlify/message-compiler": "^11.4.12",
+    "@nuxt/eslint": "^1.17.0",
+    "@nuxt/test-utils": "^4.1.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^24.12.2",
+    "@typescript-eslint/parser": "^8.71.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "@vue/test-utils": "^2.4.11",
+    "eslint": "^9.39.5",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-vuejs-accessibility": "^2.6.0",
+    "happy-dom": "^20.11.2",
+    "jiti": "^2.7.0",
+    "jscpd": "^5.3.3",
+    "json-schema-to-typescript": "^16.0.0",
+    "jsonc-eslint-parser": "^2.4.2",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.10",
+    "vue-eslint-parser": "^10.4.1",
+    "vue-tsc": "^3.2.7"
+  },
+  "overrides": {
+    "@intlify/core": "$vue-i18n",
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
+  }
+}

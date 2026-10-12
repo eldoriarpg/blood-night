@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,7 +106,7 @@ class ReflectionTest {
                 List.of("computed", "label", "level", "name"),
                 ids(nodes.getFirst().descriptor().outputs()));
         assertEquals(
-                List.of("fluent.get", "fluent.set_label", "fluent.set_name", "fluent.set"),
+                List.of("fluent.read", "fluent.mutate"),
                 nodes.stream().map(NodeDefinition::id).toList());
     }
 
@@ -122,7 +123,7 @@ class ReflectionTest {
         assertEquals(
                 List.of("count", "title"), ids(manual.getFirst().descriptor().outputs()));
         assertEquals(
-                List.of("api.get", "api.set_title", "api.set"),
+                List.of("api.read", "api.mutate"),
                 nodes.stream().map(NodeDefinition::id).toList());
     }
 
@@ -173,6 +174,54 @@ class ReflectionTest {
         assertThrows(IllegalArgumentException.class, () -> Param.of("Not An Id", int.class));
     }
 
+    public interface Being {
+        String getName();
+
+        void setName(String name);
+    }
+
+    public interface Walker extends Being {
+        double getSpeed();
+    }
+
+    public interface Titled {
+        String getTitle();
+    }
+
+    public interface Dog extends Walker, Titled {
+        boolean isBarking();
+
+        void setBarking(boolean barking);
+    }
+
+    @Test
+    void propertiesAreGroupedByTheTypeThatBringsThem() {
+        ReflectionRules rules = ReflectionRules.builder()
+                .group(Being.class, "Being")
+                .group(Walker.class, "Walker")
+                .group(Dog.class, "Dog")
+                .build();
+        List<NodeDefinition> nodes = ReflectedType.of(Dog.class, "dog").build(rules);
+
+        List<Port> read = node(nodes, "dog.read").descriptor().outputs();
+        assertEquals(List.of("barking", "title", "speed", "name"), ids(read));
+        assertEquals(
+                List.of("Dog", "Dog", "Walker", "Being"),
+                read.stream().map(Port::group).toList());
+        List<Port> changed = node(nodes, "dog.mutate").descriptor().inputs();
+        assertEquals(List.of("target", "barking", "name"), ids(changed));
+        assertEquals(
+                Arrays.asList(null, "Dog", "Being"),
+                changed.stream().map(Port::group).toList());
+    }
+
+    @Test
+    void propertiesStayUngroupedWithoutGroups() {
+        List<NodeDefinition> nodes = ReflectedType.of(Dog.class, "dog").build(ReflectionRules.defaults());
+
+        assertTrue(node(nodes, "dog.read").descriptor().outputs().stream().allMatch(port -> port.group() == null));
+    }
+
     @Test
     void typeFilterAppliesToPorts() {
         ReflectionRules noLists = ReflectionRules.builder()
@@ -203,11 +252,11 @@ class ReflectionTest {
                 .build(RULES);
 
         assertEquals(
-                List.of("toy.player.get", "toy.player.set_online", "toy.player.set_score", "toy.player.set"),
+                List.of("toy.player.read", "toy.player.mutate"),
                 nodes.stream().map(NodeDefinition::id).toList());
         NodeDefinition get = nodes.getFirst();
         assertEquals(NodeKind.PURE, get.descriptor().kind());
-        assertEquals("Get Player", get.descriptor().name());
+        assertEquals("Read Player", get.descriptor().name());
         assertEquals("toy", get.descriptor().category());
         assertEquals(List.of("target"), ids(get.descriptor().inputs()));
         assertEquals(
@@ -218,16 +267,13 @@ class ReflectionTest {
                 PortType.parameterized(List.class, PortType.of(String.class)),
                 get.descriptor().output("friends").orElseThrow().type());
 
-        NodeDefinition setScore = node(nodes, "toy.player.set_score");
-        assertEquals(NodeKind.ACTION, setScore.descriptor().kind());
-        assertEquals(List.of("target", "value"), ids(setScore.descriptor().inputs()));
+        NodeDefinition modify = node(nodes, "toy.player.mutate");
+        assertEquals(NodeKind.ACTION, modify.descriptor().kind());
+        assertEquals("Mutate Player", modify.descriptor().name());
+        assertEquals("Points", modify.descriptor().input("score").orElseThrow().name());
         assertEquals(
                 PortType.of(int.class),
-                setScore.descriptor().input("value").orElseThrow().type());
-        assertEquals("Set Player Points", setScore.descriptor().name());
-
-        NodeDefinition modify = node(nodes, "toy.player.set");
-        assertEquals("Modify Player", modify.descriptor().name());
+                modify.descriptor().input("score").orElseThrow().type());
         assertEquals(
                 List.of("target", "online", "score"), ids(modify.descriptor().inputs()));
         assertTrue(modify.descriptor().input("score").orElseThrow().optional());
@@ -267,7 +313,11 @@ class ReflectionTest {
                 nodes.getFirst().descriptor().input("target").orElseThrow().description());
         assertEquals(
                 "Replaces the score.",
-                node(nodes, "player.set_score").descriptor().description());
+                node(nodes, "player.mutate")
+                        .descriptor()
+                        .input("score")
+                        .orElseThrow()
+                        .description());
         assertEquals("", entry.descriptor().output("points").orElseThrow().description());
     }
 
@@ -344,23 +394,25 @@ class ReflectionTest {
                 .node("forty_two", NodeInstance.of("value.integer").config("value", IntNode.valueOf(42)))
                 .node(
                         "set_points",
-                        NodeInstance.of("event.set_points")
+                        NodeInstance.of("event.mutate")
                                 .input("target", "on_event", "event")
-                                .input("value", "forty_two", "value"))
-                .node("player", NodeInstance.of("player.get").input("target", "on_event", "player"))
+                                .input("points", "forty_two", "value"))
+                .node("player", NodeInstance.of("player.read").input("target", "on_event", "player"))
                 .node("print_name", NodeInstance.of("debug.print").input("value", "player", "name"))
                 .node("print_points", NodeInstance.of("debug.print").input("value", "on_event", "points"))
-                .node("online", NodeInstance.of("player.get").input("target", "on_event", "player"))
+                .node("online", NodeInstance.of("player.read").input("target", "on_event", "player"))
                 .node(
                         "cancel",
-                        NodeInstance.of("event.set_cancelled")
+                        NodeInstance.of("event.mutate")
                                 .input("target", "on_event", "event")
-                                .input("value", "online", "online"))
+                                .input("cancelled", "online", "online"))
                 .node(
                         "bump",
-                        NodeInstance.of("player.set_score")
+                        NodeInstance.of("player.mutate")
                                 .input("target", "on_event", "player")
-                                .input("value", "on_event", "points"))
+                                .input("score", "on_event", "points")
+                                .chain("next", "print_score"))
+                .node("print_score", NodeInstance.of("debug.print").input("value", "bump", "score"))
                 .build();
         ToyContext context = new ToyContext();
         ToyPlayer player = new ToyPlayer("Lilly", 3);
@@ -373,7 +425,7 @@ class ReflectionTest {
 
         assertEquals(42, event.getPoints());
         assertTrue(event.isCancelled());
-        assertEquals(List.of("Lilly", "42"), context.printed());
+        assertEquals(List.of("Lilly", "42", "42"), context.printed());
         assertEquals(42, player.getScore());
     }
 
@@ -386,7 +438,7 @@ class ReflectionTest {
                         NodeInstance.of("player.create")
                                 .literal("name", StringNode.valueOf("Lilly"))
                                 .literal("score", IntNode.valueOf(3)))
-                .node("parts", NodeInstance.of("player.get").input("target", "created", "result"))
+                .node("parts", NodeInstance.of("player.read").input("target", "created", "result"))
                 .node("name", NodeInstance.of("debug.print").input("value", "parts", "name"))
                 .node(
                         "spot",
@@ -395,7 +447,7 @@ class ReflectionTest {
                                 .literal("y", DoubleNode.valueOf(2.5)))
                 .node("position", NodeInstance.of("debug.print").input("value", "spot", "result"))
                 .node("default", NodeInstance.of("player.fallback"))
-                .node("default_parts", NodeInstance.of("player.get").input("target", "default", "result"))
+                .node("default_parts", NodeInstance.of("player.read").input("target", "default", "result"))
                 .node("fallback", NodeInstance.of("debug.print").input("value", "default_parts", "name"))
                 .build();
         ToyContext context = new ToyContext();
@@ -431,7 +483,7 @@ class ReflectionTest {
                                 .chain("next", "befriended"))
                 .node("befriended", NodeInstance.of("debug.print").input("value", "befriend", "result"))
                 .node("reset", NodeInstance.of("player.reset").input("target", "player", "result"))
-                .node("parts", NodeInstance.of("player.get").input("target", "player", "result"))
+                .node("parts", NodeInstance.of("player.read").input("target", "player", "result"))
                 .node("after", NodeInstance.of("debug.print").input("value", "parts", "score"))
                 .build();
         ToyContext context = new ToyContext();
@@ -495,9 +547,9 @@ class ReflectionTest {
                 .node("zero", NodeInstance.of("value.number").config("value", IntNode.valueOf(0)))
                 .node(
                         "cancel",
-                        NodeInstance.of("event.set_cancelled")
+                        NodeInstance.of("event.mutate")
                                 .input("target", "on_event", "event")
-                                .input("value", "yes", "result"))
+                                .input("cancelled", "yes", "result"))
                 .build();
 
         GraphCompilationException exception = assertThrows(GraphCompilationException.class, () -> compiler()

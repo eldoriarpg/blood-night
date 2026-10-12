@@ -8,6 +8,12 @@ package de.eldoria.bloodnight.graph;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.reflect.Documentation;
 import de.eldoria.graph.reflect.ReflectionRules;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 
 import java.util.Collection;
@@ -36,6 +42,12 @@ public final class BukkitRules {
                 .excludeMethods("getHandlers", "getHandlerList", "getEventName", "isAsynchronous", "callEvent")
                 .excludeDeclaredBy(Event.class)
                 .acceptTypes(BukkitRules::accepted)
+                .group(Entity.class, "Entity")
+                .group(LivingEntity.class, "Living Entity")
+                .group(Mob.class, "Mob")
+                .group(Creeper.class, "Creeper")
+                .group(Player.class, "Player")
+                .group(Projectile.class, "Projectile")
                 .build();
     }
 

@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Checks that a particle typed into a spawn node gets the data it needs: none for Spawn Particle, data of the
- * particle's own data type for Spawn Particle With Data. Without this, a mismatch only shows on the server, when the
- * particle is spawned.
+ * Checks that a particle typed into Spawn Particle gets the data it needs: none when the particle takes none, data of
+ * the particle's own data type otherwise. Without this, a mismatch only shows on the server, when the particle is
+ * spawned.
  * <p>
  * Particles are looked up in the running server's registry; without a server nothing is checked. A particle that is
  * connected rather than typed in is only known at runtime and is not checked either.
@@ -44,19 +44,17 @@ final class ParticleData {
             ItemStack.class, "an item",
             Color.class, "Color");
 
-    static final NodeRule WITHOUT_DATA = (node, report) -> particle(node).ifPresent(particle -> {
-        if (particle.getDataType() != Void.class) {
-            report.error(
-                    PARTICLE,
-                    "%s needs %s data: use Spawn Particle With Data and connect %s"
-                            .formatted(particle.key(), simpleName(particle), source(particle.getDataType())));
-        }
-    });
-
-    static final NodeRule WITH_DATA = (node, report) -> particle(node).ifPresent(particle -> {
+    static final NodeRule RULE = (node, report) -> particle(node).ifPresent(particle -> {
         Class<?> needed = particle.getDataType();
+        boolean given = node.literal(DATA).isPresent() || node.connected(DATA).isPresent();
         if (needed == Void.class) {
-            report.error(PARTICLE, "%s takes no data: use Spawn Particle".formatted(particle.key()));
+            if (given) report.error(DATA, "%s takes no data: leave Data empty".formatted(particle.key()));
+            return;
+        }
+        if (!given) {
+            report.error(
+                    DATA,
+                    "%s needs %s data: connect %s".formatted(particle.key(), simpleName(particle), source(needed)));
             return;
         }
         if (node.literal(DATA).isPresent()) {

@@ -42,11 +42,12 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ItemType;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import tools.jackson.databind.node.StringNode;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -57,7 +58,9 @@ import java.util.List;
  * one entry point per trigger.
  * <p>
  * Event classes contribute setters only, since entries already expose their getters. {@code set_cancelled} exists
- * once, on {@link Cancellable}, instead of once per event.
+ * once, on {@link Cancellable}, instead of once per event. The read and change nodes of every reflected type show as
+ * one "Mutate" node in the editor ({@link ReflectedType#mutate()}), turned into the variant of whatever is wired in.
+ * Equipment is changed by slot through one node with a slot input instead of one setter per slot.
  */
 public final class BloodNightPlatform {
     private BloodNightPlatform() {}
@@ -78,10 +81,12 @@ public final class BloodNightPlatform {
     public static GraphPlatform create(List<Path> classpath, Documentation documentation) {
         return GraphPlatform.builder(CompiledBehaviour.class)
                 .context(MobContext.class)
+                .clock("onTick")
                 .types(BukkitTypes.mapping())
+                .binding(MobBindings.SELF, MobBindings.self())
+                .binding(MobBindings.EXTENSION, MobBindings.extension())
                 .define(nodes(documentation))
-                .rule(BloodNightNodes.WORLD_SPAWN_PARTICLE, ParticleData.WITHOUT_DATA)
-                .rule(BloodNightNodes.WORLD_SPAWN_PARTICLE_WITH_DATA, ParticleData.WITH_DATA)
+                .rule(BloodNightNodes.WORLD_SPAWN_PARTICLE, ParticleData.RULE)
                 .classpath(classpath)
                 .build();
     }
@@ -101,10 +106,13 @@ public final class BloodNightPlatform {
         ReflectionRules rules = BukkitRules.rules(documentation);
         List<NodeDefinition> nodes = new ArrayList<>(StandardNodes.all());
         nodes.addAll(BukkitNodes.all());
-        nodes.addAll(StandardNodes.casts(BukkitTypes.mapping()));
+        nodes.add(ReflectedType.mutate());
+        nodes.addAll(StandardNodes.typed(BukkitTypes.mapping()));
         nodes.addAll(ReflectedType.of(Entity.class, "entity")
                 .action("remove", "remove")
+                .title("remove", "Remove Entity")
                 .action("teleport", "teleport", Param.of("location", Location.class))
+                .title("nearby_entities", "Entities Near Entity")
                 .query(
                         "nearby_entities",
                         "getNearbyEntities",
@@ -114,20 +122,11 @@ public final class BloodNightPlatform {
                 .build(rules));
         nodes.addAll(ReflectedType.of(LivingEntity.class, "living_entity")
                 .name("Living Entity")
-                .action("add_potion_effect", "addPotionEffect", Param.of("effect", PotionEffect.class))
                 .action("remove_potion_effect", "removePotionEffect", Param.of("type", PotionEffectType.class))
-                .action("damage", "damage", Param.of("amount", double.class))
-                .action("damage_by", "damage", Param.of("amount", double.class), Param.of("source", Entity.class))
                 .query("attribute", "getAttribute", Param.of("attribute", Attribute.class))
-                .build(rules));
-        nodes.addAll(ReflectedType.of(PotionEffect.class, "potion_effect")
-                .name("Potion Effect")
-                .category("entity")
-                .constructor(
-                        "create",
-                        Param.of("type", PotionEffectType.class),
-                        Param.of("duration", int.class),
-                        Param.of("amplifier", int.class))
+                .title("attribute", "Attribute Of Entity")
+                .query("has_line_of_sight", "hasLineOfSight", Param.of("other", Entity.class))
+                .title("has_line_of_sight", "Has Line Of Sight")
                 .build(rules));
         nodes.addAll(ReflectedType.of(Player.class, "player")
                 .action(
@@ -146,6 +145,15 @@ public final class BloodNightPlatform {
                 .build(rules));
         nodes.addAll(ReflectedType.of(EntityEquipment.class, "equipment")
                 .category("entity")
+                .name("Equipment")
+                .setters(false)
+                .action("equip", "setItem", Param.of("slot", EquipmentSlot.class), Param.of("item", ItemStack.class))
+                .action(
+                        "set_slot_drop_chance",
+                        "setDropChance",
+                        Param.of("slot", EquipmentSlot.class),
+                        Param.of("chance", float.class))
+                .query("item_in_slot", "getItem", Param.of("slot", EquipmentSlot.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(ItemType.class, "item_type")
                 .category("item")
@@ -159,30 +167,36 @@ public final class BloodNightPlatform {
         nodes.addAll(ReflectedType.of(Particle.DustOptions.class, "dust")
                 .category("world")
                 .name("Dust")
-                .constructor("create", Param.of("color", Color.class), Param.of("size", float.class))
+                .constructor(
+                        "create",
+                        Param.of("color", Color.class, "The colour of the dust"),
+                        Param.of("size", float.class, "How big each particle is, 1 for normal"))
                 .build(rules));
         nodes.addAll(ReflectedType.of(Particle.DustTransition.class, "dust_transition")
                 .category("world")
                 .name("Dust Transition")
                 .constructor(
                         "create",
-                        Param.of("from", Color.class),
-                        Param.of("to", Color.class),
-                        Param.of("size", float.class))
+                        Param.of("from", Color.class, "The colour it starts with"),
+                        Param.of("to", Color.class, "The colour it fades to"),
+                        Param.of("size", float.class, "How big each particle is, 1 for normal"))
                 .build(rules));
         nodes.addAll(ReflectedType.of(Particle.Spell.class, "spell")
                 .category("world")
                 .name("Spell")
-                .constructor("create", Param.of("color", Color.class), Param.of("power", float.class))
+                .constructor(
+                        "create",
+                        Param.of("color", Color.class, "The colour of the spell"),
+                        Param.of("power", float.class, "How strongly it shows"))
                 .build(rules));
         nodes.addAll(ReflectedType.of(Particle.Trail.class, "trail")
                 .category("world")
                 .name("Trail")
                 .constructor(
                         "create",
-                        Param.of("target", Location.class),
-                        Param.of("color", Color.class),
-                        Param.of("duration", int.class))
+                        Param.of("target", Location.class, "Where the trail leads"),
+                        Param.of("color", Color.class, "The colour of the trail"),
+                        Param.of("duration", int.class, "How long it travels, in ticks"))
                 .build(rules));
         nodes.addAll(ReflectedType.of(BlockType.class, "block_type")
                 .category("world")
@@ -204,33 +218,13 @@ public final class BloodNightPlatform {
         nodes.addAll(ReflectedType.of(Projectile.class, "projectile").build(rules));
         nodes.addAll(ReflectedType.of(Location.class, "location")
                 .query("distance", "distance", Param.of("other", Location.class))
+                .title("distance", "Distance Between Locations")
                 .build(rules));
         nodes.addAll(ReflectedType.of(Vector.class, "vector")
                 .constructor(
                         "create", Param.of("x", double.class), Param.of("y", double.class), Param.of("z", double.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(World.class, "world")
-                .action(
-                        "spawn_particle",
-                        "spawnParticle",
-                        Param.of("particle", Particle.class),
-                        Param.of("location", Location.class),
-                        Param.of("count", int.class),
-                        Param.of("offset_x", double.class),
-                        Param.of("offset_y", double.class),
-                        Param.of("offset_z", double.class))
-                .action(
-                        "spawn_particle_with_data",
-                        "spawnParticle",
-                        Param.of("particle", Particle.class),
-                        Param.of("location", Location.class),
-                        Param.of("count", int.class),
-                        Param.of("offset_x", double.class),
-                        Param.of("offset_y", double.class),
-                        Param.of("offset_z", double.class),
-                        Param.of("data", Object.class))
-                .action("strike_lightning", "strikeLightning", Param.of("location", Location.class))
-                .action("strike_lightning_effect", "strikeLightningEffect", Param.of("location", Location.class))
                 .query("block_at", "getBlockAt", Param.of("location", Location.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(ItemStack.class, "item").name("Item").build(rules));
@@ -260,6 +254,10 @@ public final class BloodNightPlatform {
                     .name(trigger.name())
                     .description(trigger.description())
                     .category("event");
+            if (trigger.id().equals(BloodNightNodes.EVENT_KILL)) {
+                entry.config(KillVictim.FIELD, KillVictim.class, StringNode.valueOf(KillVictim.ANY.name()))
+                        .guard(KillVictim::guard);
+            }
             if (Triggers.WITH_ATTACKER.contains(trigger.id())) {
                 entry.computed(
                         "attacker",

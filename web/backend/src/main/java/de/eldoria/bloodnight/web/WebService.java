@@ -37,6 +37,7 @@ public final class WebService {
                         new ParticipantRepository(),
                         new CatalogRepository(),
                         rooms,
+                        ItemAssets.mojang(config.assetCache()),
                         Clock.systemUTC())
                 .create()
                 .start(config.port());

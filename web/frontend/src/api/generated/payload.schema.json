@@ -1,0 +1,1781 @@
+{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "title" : "EditorPayload",
+  "$ref" : "#/$defs/EditorPayload",
+  "$defs" : {
+    "AnnouncementSettings" : {
+      "type" : "object",
+      "properties" : {
+        "bossBar" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/BossBarSettings"
+          } ],
+          "default" : {
+            "color" : "RED",
+            "enabled" : true,
+            "flags" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ],
+            "overlay" : "PROGRESS",
+            "title" : "<red><bold><lang:bloodnight.bossbar.title>"
+          }
+        },
+        "effect" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/NightEffect"
+          } ],
+          "default" : {
+            "effect" : "minecraft:darkness",
+            "enabled" : true,
+            "seconds" : 5
+          }
+        },
+        "joinWarning" : {
+          "type" : "boolean",
+          "default" : true
+        }
+      }
+    },
+    "Announcements" : {
+      "type" : "object",
+      "properties" : {
+        "prefix" : {
+          "type" : "string",
+          "default" : "<dark_red>[<red>BN</red>]</dark_red> "
+        },
+        "reach" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Reach"
+          } ],
+          "default" : "SERVER"
+        },
+        "method" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Method"
+          } ],
+          "default" : "SUBTITLE"
+        },
+        "personalMethod" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Method"
+          } ],
+          "default" : "ACTION_BAR"
+        },
+        "fallbackLocale" : {
+          "type" : "string",
+          "default" : "en_US"
+        }
+      }
+    },
+    "AttributeChange" : {
+      "type" : "object",
+      "properties" : {
+        "attribute" : {
+          "type" : "string"
+        },
+        "operation" : {
+          "$ref" : "#/$defs/Operation"
+        },
+        "amount" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "attribute", "operation", "amount" ]
+    },
+    "Attributes" : {
+      "type" : "object",
+      "properties" : {
+        "displayName" : {
+          "type" : "string"
+        },
+        "entityType" : {
+          "$ref" : "#/$defs/EntityType"
+        },
+        "exactType" : {
+          "type" : "boolean"
+        },
+        "healthModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "health" : {
+          "type" : "number"
+        },
+        "damageModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "damage" : {
+          "type" : "number"
+        },
+        "changes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/AttributeChange"
+          }
+        }
+      },
+      "required" : [ "displayName", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes" ]
+    },
+    "BossBarSettings" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "title" : {
+          "type" : "string",
+          "default" : "<red><bold><lang:bloodnight.bossbar.title>"
+        },
+        "color" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Color"
+          } ],
+          "default" : "RED"
+        },
+        "overlay" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Overlay"
+          } ],
+          "default" : "PROGRESS"
+        },
+        "flags" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Flag"
+          },
+          "uniqueItems" : true,
+          "default" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ]
+        }
+      }
+    },
+    "Catalog" : {
+      "type" : "object",
+      "properties" : {
+        "format" : {
+          "type" : "integer"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "nodes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/NodeType"
+          }
+        },
+        "types" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/TypeInfo"
+          }
+        },
+        "selectable" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "bindings" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      },
+      "required" : [ "format", "version", "nodes", "types", "selectable", "bindings" ]
+    },
+    "Color" : {
+      "type" : "string",
+      "enum" : [ "PINK", "BLUE", "RED", "GREEN", "YELLOW", "PURPLE", "WHITE" ]
+    },
+    "ConfigFile" : {
+      "type" : "object",
+      "properties" : {
+        "announcements" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Announcements"
+          } ],
+          "default" : {
+            "fallbackLocale" : "en_US",
+            "method" : "SUBTITLE",
+            "personalMethod" : "ACTION_BAR",
+            "prefix" : "<dark_red>[<red>BN</red>]</dark_red> ",
+            "reach" : "SERVER"
+          }
+        },
+        "editor" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/EditorSettings"
+          } ],
+          "default" : {
+            "timeoutSeconds" : 30,
+            "url" : "http://localhost:8080"
+          }
+        }
+      }
+    },
+    "ConfigInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "$ref" : "#/$defs/TypeRef"
+        },
+        "defaultValue" : { },
+        "selects" : {
+          "type" : "string"
+        },
+        "choices" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "beside" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ConfigurationScope" : {
+      "type" : "string",
+      "enum" : [ "GLOBAL", "WORLD", "MOB" ]
+    },
+    "CreeperSettings" : {
+      "type" : "object",
+      "properties" : {
+        "blockDamage" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "always" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "Curve" : {
+      "type" : "object",
+      "properties" : {
+        "min" : {
+          "type" : "integer",
+          "default" : 20
+        },
+        "max" : {
+          "type" : "integer",
+          "default" : 80
+        },
+        "period" : {
+          "type" : "integer",
+          "default" : 10
+        }
+      }
+    },
+    "CustomMob" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "equipment" : {
+          "$ref" : "#/$defs/Equipment"
+        },
+        "attributes" : {
+          "$ref" : "#/$defs/Attributes"
+        },
+        "behaviour" : {
+          "$ref" : "#/$defs/Graph"
+        },
+        "mobDrops" : {
+          "$ref" : "#/$defs/MobDrops"
+        },
+        "extension" : {
+          "$ref" : "#/$defs/Extension"
+        },
+        "spawn" : {
+          "$ref" : "#/$defs/SpawnRules"
+        }
+      },
+      "required" : [ "id", "attributes", "behaviour", "mobDrops", "extension", "spawn" ]
+    },
+    "DeathActionSettings" : {
+      "type" : "object",
+      "properties" : {
+        "player" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/PlayerDeathActions"
+          } ],
+          "default" : {
+            "deathCommands" : [ ],
+            "lightning" : {
+              "lightning" : true,
+              "lightningChance" : 100,
+              "thunder" : true,
+              "thunderChance" : 100
+            },
+            "loseExperienceChance" : 0,
+            "loseInventoryChance" : 0,
+            "respawnCommands" : [ ],
+            "respawnEffects" : [ {
+              "effect" : "minecraft:nausea",
+              "seconds" : 5.0
+            } ],
+            "shockwave" : {
+              "chance" : 10,
+              "effects" : [ {
+                "effect" : "minecraft:nausea",
+                "seconds" : 5.0
+              } ],
+              "minSeconds" : 0.1,
+              "power" : 10.0,
+              "range" : 10.0
+            }
+          }
+        },
+        "mob" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/DeathActions"
+          } ],
+          "default" : {
+            "lightning" : {
+              "lightning" : true,
+              "lightningChance" : 100,
+              "thunder" : true,
+              "thunderChance" : 100
+            },
+            "shockwave" : {
+              "chance" : 10,
+              "effects" : [ {
+                "effect" : "minecraft:nausea",
+                "seconds" : 5.0
+              } ],
+              "minSeconds" : 0.1,
+              "power" : 10.0,
+              "range" : 10.0
+            }
+          }
+        }
+      }
+    },
+    "DeathActions" : {
+      "type" : "object",
+      "properties" : {
+        "lightning" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/LightningSettings"
+          } ],
+          "default" : {
+            "lightning" : true,
+            "lightningChance" : 100,
+            "thunder" : true,
+            "thunderChance" : 100
+          }
+        },
+        "shockwave" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ShockwaveSettings"
+          } ],
+          "default" : {
+            "chance" : 10,
+            "effects" : [ {
+              "effect" : "minecraft:nausea",
+              "seconds" : 5.0
+            } ],
+            "minSeconds" : 0.1,
+            "power" : 10.0,
+            "range" : 10.0
+          }
+        }
+      }
+    },
+    "Despawn" : {
+      "type" : "string",
+      "enum" : [ "NIGHT_END", "NEVER" ]
+    },
+    "Drop" : {
+      "type" : "object",
+      "properties" : {
+        "itemId" : {
+          "type" : "string"
+        },
+        "amount" : {
+          "type" : "integer"
+        },
+        "weight" : {
+          "type" : "integer"
+        }
+      },
+      "required" : [ "itemId", "amount", "weight" ]
+    },
+    "Edge" : {
+      "type" : "object",
+      "properties" : {
+        "node" : {
+          "type" : "string"
+        },
+        "port" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "node", "port" ]
+    },
+    "EditorChoices" : {
+      "type" : "object",
+      "properties" : {
+        "minecraftVersion" : {
+          "type" : "string"
+        },
+        "materials" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "enchantments" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "entityClasses" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "mobTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes" ]
+    },
+    "EditorItem" : {
+      "type" : "object",
+      "properties" : {
+        "kind" : {
+          "$ref" : "#/$defs/ItemKind"
+        },
+        "material" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "lore" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "enchantments" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "required" : [ "kind", "material", "lore", "enchantments" ]
+    },
+    "EditorPayload" : {
+      "type" : "object",
+      "properties" : {
+        "catalog" : {
+          "type" : "string"
+        },
+        "mobs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/CustomMob"
+          }
+        },
+        "macros" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Macro"
+          }
+        },
+        "items" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/EditorItem"
+          }
+        },
+        "problems" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/GraphProblem"
+            }
+          }
+        },
+        "macroProblems" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/GraphProblem"
+            }
+          }
+        },
+        "configProblems" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "settings" : {
+          "$ref" : "#/$defs/SettingsPayload"
+        },
+        "choices" : {
+          "$ref" : "#/$defs/EditorChoices"
+        },
+        "hashes" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      },
+      "required" : [ "catalog", "mobs", "macros", "items", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes" ]
+    },
+    "EditorSettings" : {
+      "type" : "object",
+      "properties" : {
+        "url" : {
+          "type" : "string",
+          "default" : "http://localhost:8080"
+        },
+        "timeoutSeconds" : {
+          "type" : "integer",
+          "default" : 30
+        }
+      }
+    },
+    "EntityType" : {
+      "type" : "string",
+      "enum" : [ "ACACIA_BOAT", "ACACIA_CHEST_BOAT", "ALLAY", "AREA_EFFECT_CLOUD", "ARMADILLO", "ARMOR_STAND", "ARROW", "AXOLOTL", "BAMBOO_CHEST_RAFT", "BAMBOO_RAFT", "BAT", "BEE", "BIRCH_BOAT", "BIRCH_CHEST_BOAT", "BLAZE", "BLOCK_DISPLAY", "BOGGED", "BREEZE", "BREEZE_WIND_CHARGE", "CAMEL", "CAMEL_HUSK", "CAT", "CAVE_SPIDER", "CHERRY_BOAT", "CHERRY_CHEST_BOAT", "CHEST_MINECART", "CHICKEN", "COD", "COMMAND_BLOCK_MINECART", "COPPER_GOLEM", "COW", "CREAKING", "CREEPER", "DARK_OAK_BOAT", "DARK_OAK_CHEST_BOAT", "DOLPHIN", "DONKEY", "DRAGON_FIREBALL", "DROWNED", "EGG", "ELDER_GUARDIAN", "END_CRYSTAL", "ENDER_DRAGON", "ENDER_PEARL", "ENDERMAN", "ENDERMITE", "EVOKER", "EVOKER_FANGS", "EXPERIENCE_BOTTLE", "EXPERIENCE_ORB", "EYE_OF_ENDER", "FALLING_BLOCK", "FIREBALL", "FIREWORK_ROCKET", "FISHING_BOBBER", "FOX", "FROG", "FURNACE_MINECART", "GHAST", "GIANT", "GLOW_ITEM_FRAME", "GLOW_SQUID", "GOAT", "GUARDIAN", "HAPPY_GHAST", "HOGLIN", "HOPPER_MINECART", "HORSE", "HUSK", "ILLUSIONER", "INTERACTION", "IRON_GOLEM", "ITEM", "ITEM_DISPLAY", "ITEM_FRAME", "JUNGLE_BOAT", "JUNGLE_CHEST_BOAT", "LEASH_KNOT", "LIGHTNING_BOLT", "LINGERING_POTION", "LLAMA", "LLAMA_SPIT", "MAGMA_CUBE", "MANGROVE_BOAT", "MANGROVE_CHEST_BOAT", "MANNEQUIN", "MARKER", "MINECART", "MOOSHROOM", "MULE", "NAUTILUS", "OAK_BOAT", "OAK_CHEST_BOAT", "OCELOT", "OMINOUS_ITEM_SPAWNER", "PAINTING", "PALE_OAK_BOAT", "PALE_OAK_CHEST_BOAT", "PANDA", "PARCHED", "PARROT", "PHANTOM", "PIG", "PIGLIN", "PIGLIN_BRUTE", "PILLAGER", "PLAYER", "POLAR_BEAR", "PUFFERFISH", "RABBIT", "RAVAGER", "SALMON", "SHEEP", "SHULKER", "SHULKER_BULLET", "SILVERFISH", "SKELETON", "SKELETON_HORSE", "SLIME", "SMALL_FIREBALL", "SNIFFER", "SNOW_GOLEM", "SNOWBALL", "SPAWNER_MINECART", "SPECTRAL_ARROW", "SPIDER", "SPLASH_POTION", "SPRUCE_BOAT", "SPRUCE_CHEST_BOAT", "SQUID", "STRAY", "STRIDER", "SULFUR_CUBE", "TADPOLE", "TEXT_DISPLAY", "TNT", "TNT_MINECART", "TRADER_LLAMA", "TRIDENT", "TROPICAL_FISH", "TURTLE", "VEX", "VILLAGER", "VINDICATOR", "WANDERING_TRADER", "WARDEN", "WIND_CHARGE", "WITCH", "WITHER", "WITHER_SKELETON", "WITHER_SKULL", "WOLF", "ZOGLIN", "ZOMBIE", "ZOMBIE_HORSE", "ZOMBIE_NAUTILUS", "ZOMBIE_VILLAGER", "ZOMBIFIED_PIGLIN", "UNKNOWN" ]
+    },
+    "Equipment" : {
+      "type" : "object",
+      "properties" : {
+        "head" : {
+          "type" : "string"
+        },
+        "chest" : {
+          "type" : "string"
+        },
+        "legs" : {
+          "type" : "string"
+        },
+        "feet" : {
+          "type" : "string"
+        },
+        "mainHand" : {
+          "type" : "string"
+        },
+        "offHand" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ExecutionInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "repeating" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Extension" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "$ref" : "#/$defs/ExtensionType"
+        },
+        "entityType" : {
+          "$ref" : "#/$defs/EntityType"
+        },
+        "equipment" : {
+          "$ref" : "#/$defs/Equipment"
+        }
+      },
+      "required" : [ "type" ]
+    },
+    "ExtensionType" : {
+      "type" : "string",
+      "enum" : [ "NONE", "RIDER", "CARRIER" ]
+    },
+    "Flag" : {
+      "type" : "string",
+      "enum" : [ "DARKEN_SCREEN", "PLAY_BOSS_MUSIC", "CREATE_WORLD_FOG" ]
+    },
+    "GlobalDrops" : {
+      "type" : "object",
+      "properties" : {
+        "weights" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        },
+        "drops" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Drop"
+          }
+        },
+        "xpModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "xpValue" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "weights", "drops", "xpModifier", "xpValue" ]
+    },
+    "Graph" : {
+      "type" : "object",
+      "properties" : {
+        "nodes" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/NodeInstance"
+          }
+        }
+      },
+      "required" : [ "nodes" ]
+    },
+    "GraphProblem" : {
+      "type" : "object",
+      "properties" : {
+        "severity" : {
+          "$ref" : "#/$defs/Severity"
+        },
+        "node" : {
+          "type" : "string"
+        },
+        "port" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "trace" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/MacroFrame"
+          }
+        }
+      },
+      "required" : [ "severity", "message", "trace" ]
+    },
+    "Interval" : {
+      "type" : "object",
+      "properties" : {
+        "interval" : {
+          "type" : "integer",
+          "default" : 5
+        },
+        "probability" : {
+          "type" : "integer",
+          "default" : 100
+        }
+      }
+    },
+    "ItemKind" : {
+      "type" : "string",
+      "enum" : [ "REGISTERED", "DEFINED" ]
+    },
+    "LengthMode" : {
+      "type" : "string",
+      "enum" : [ "NORMAL", "EXTENDED", "RANGE" ]
+    },
+    "LightningSettings" : {
+      "type" : "object",
+      "properties" : {
+        "lightning" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "lightningChance" : {
+          "type" : "integer",
+          "default" : 100
+        },
+        "thunder" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "thunderChance" : {
+          "type" : "integer",
+          "default" : 100
+        }
+      }
+    },
+    "Macro" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "category" : {
+          "type" : "string"
+        },
+        "body" : {
+          "$ref" : "#/$defs/Graph"
+        }
+      },
+      "required" : [ "id", "name", "description", "category", "body" ]
+    },
+    "MacroFrame" : {
+      "type" : "object",
+      "properties" : {
+        "macro" : {
+          "type" : "string"
+        },
+        "node" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "macro", "node" ]
+    },
+    "Method" : {
+      "type" : "string",
+      "enum" : [ "CHAT", "TITLE", "SUBTITLE", "ACTION_BAR" ]
+    },
+    "MobDrops" : {
+      "type" : "object",
+      "properties" : {
+        "weightsScope" : {
+          "$ref" : "#/$defs/ConfigurationScope"
+        },
+        "weights" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        },
+        "dropTables" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/ConfigurationScope"
+          }
+        },
+        "dropList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Drop"
+          }
+        },
+        "xpScope" : {
+          "$ref" : "#/$defs/ConfigurationScope"
+        },
+        "xpModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "xpValue" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue" ]
+    },
+    "MobSettings" : {
+      "type" : "object",
+      "properties" : {
+        "spawning" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/MobSpawning"
+          } ],
+          "default" : {
+            "ignoredReasons" : [ ],
+            "mobs" : { },
+            "spawnPercentage" : 50
+          }
+        },
+        "creepers" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/CreeperSettings"
+          } ],
+          "default" : {
+            "always" : false,
+            "blockDamage" : false
+          }
+        },
+        "forcePhantoms" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "displayNames" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "damageModifier" : {
+          "type" : "number",
+          "default" : 2.0
+        },
+        "healthMultiplier" : {
+          "type" : "number",
+          "default" : 2.0
+        }
+      }
+    },
+    "MobSpawning" : {
+      "type" : "object",
+      "properties" : {
+        "spawnPercentage" : {
+          "type" : "integer",
+          "default" : 50
+        },
+        "ignoredReasons" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SpawnReason"
+          },
+          "uniqueItems" : true,
+          "default" : [ ]
+        },
+        "mobs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          },
+          "default" : { }
+        }
+      }
+    },
+    "MoonPhase" : {
+      "type" : "object",
+      "properties" : {
+        "probabilities" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          },
+          "default" : {
+            "FULL_MOON" : 0,
+            "WANING_GIBBOUS" : 10,
+            "LAST_QUARTER" : 20,
+            "WANING_CRESCENT" : 40,
+            "NEW_MOON" : 100,
+            "WAXING_CRESCENT" : 40,
+            "FIRST_QUARTER" : 20,
+            "WAXING_GIBBOUS" : 10
+          }
+        }
+      }
+    },
+    "NightEffect" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "effect" : {
+          "type" : "string",
+          "default" : "minecraft:darkness"
+        },
+        "seconds" : {
+          "type" : "integer",
+          "default" : 5
+        }
+      }
+    },
+    "NightLength" : {
+      "type" : "object",
+      "properties" : {
+        "mode" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/LengthMode"
+          } ],
+          "default" : "NORMAL"
+        },
+        "seconds" : {
+          "type" : "integer",
+          "default" : 600
+        },
+        "maxSeconds" : {
+          "type" : "integer",
+          "default" : 900
+        }
+      }
+    },
+    "NightSelection" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/NightSelectionType"
+          } ],
+          "default" : "RANDOM"
+        },
+        "random" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Random"
+          } ],
+          "default" : {
+            "probability" : 60
+          }
+        },
+        "moonPhase" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/MoonPhase"
+          } ],
+          "default" : {
+            "probabilities" : {
+              "FULL_MOON" : 0,
+              "WANING_GIBBOUS" : 10,
+              "LAST_QUARTER" : 20,
+              "WANING_CRESCENT" : 40,
+              "NEW_MOON" : 100,
+              "WAXING_CRESCENT" : 40,
+              "FIRST_QUARTER" : 20,
+              "WAXING_GIBBOUS" : 10
+            }
+          }
+        },
+        "interval" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Interval"
+          } ],
+          "default" : {
+            "interval" : 5,
+            "probability" : 100
+          }
+        },
+        "phase" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Phase"
+          } ],
+          "default" : {
+            "probabilities" : [ 50, 50, 50 ]
+          }
+        },
+        "curve" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Curve"
+          } ],
+          "default" : {
+            "max" : 80,
+            "min" : 20,
+            "period" : 10
+          }
+        }
+      }
+    },
+    "NightSelectionType" : {
+      "type" : "string",
+      "enum" : [ "RANDOM", "MOON_PHASE", "REAL_MOON_PHASE", "INTERVAL", "PHASE", "CURVE" ]
+    },
+    "NightSettings" : {
+      "type" : "object",
+      "properties" : {
+        "begin" : {
+          "type" : "integer",
+          "default" : 13000
+        },
+        "end" : {
+          "type" : "integer",
+          "default" : 23000
+        },
+        "skippable" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "length" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/NightLength"
+          } ],
+          "default" : {
+            "maxSeconds" : 900,
+            "mode" : "NORMAL",
+            "seconds" : 600
+          }
+        },
+        "beginCommands" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "default" : [ ]
+        },
+        "endCommands" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "default" : [ ]
+        },
+        "blockedCommands" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "default" : [ ]
+        }
+      }
+    },
+    "NodeInstance" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string"
+        },
+        "config" : {
+          "type" : "object",
+          "additionalProperties" : { }
+        },
+        "inputs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/Edge"
+          }
+        },
+        "literals" : {
+          "type" : "object",
+          "additionalProperties" : { }
+        },
+        "executions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "editor" : { }
+      }
+    },
+    "NodeType" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "kind" : {
+          "type" : "string"
+        },
+        "category" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "macroOnly" : {
+          "type" : "boolean"
+        },
+        "inputs" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/PortInfo"
+          }
+        },
+        "outputs" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/PortInfo"
+          }
+        },
+        "executions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/ExecutionInfo"
+          }
+        },
+        "config" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/ConfigInfo"
+          }
+        },
+        "family" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Operation" : {
+      "type" : "string",
+      "enum" : [ "ADD_NUMBER", "ADD_SCALAR", "MULTIPLY_SCALAR_1" ]
+    },
+    "Overlay" : {
+      "type" : "string",
+      "enum" : [ "PROGRESS", "NOTCHED_6", "NOTCHED_10", "NOTCHED_12", "NOTCHED_20" ]
+    },
+    "Phase" : {
+      "type" : "object",
+      "properties" : {
+        "probabilities" : {
+          "type" : "array",
+          "items" : {
+            "type" : "integer"
+          },
+          "default" : [ 50, 50, 50 ]
+        }
+      }
+    },
+    "PlayerDeathActions" : {
+      "type" : "object",
+      "properties" : {
+        "lightning" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/LightningSettings"
+          } ],
+          "default" : {
+            "lightning" : true,
+            "lightningChance" : 100,
+            "thunder" : true,
+            "thunderChance" : 100
+          }
+        },
+        "shockwave" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ShockwaveSettings"
+          } ],
+          "default" : {
+            "chance" : 10,
+            "effects" : [ {
+              "effect" : "minecraft:nausea",
+              "seconds" : 5.0
+            } ],
+            "minSeconds" : 0.1,
+            "power" : 10.0,
+            "range" : 10.0
+          }
+        },
+        "loseInventoryChance" : {
+          "type" : "integer",
+          "default" : 0
+        },
+        "loseExperienceChance" : {
+          "type" : "integer",
+          "default" : 0
+        },
+        "deathCommands" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "default" : [ ]
+        },
+        "respawnCommands" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "default" : [ ]
+        },
+        "respawnEffects" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/TimedEffect"
+          },
+          "default" : [ {
+            "effect" : "minecraft:nausea",
+            "seconds" : 5.0
+          } ]
+        }
+      }
+    },
+    "PortInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "type" : {
+          "$ref" : "#/$defs/TypeRef"
+        },
+        "optional" : {
+          "type" : "boolean"
+        },
+        "literal" : {
+          "type" : "boolean"
+        },
+        "group" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Random" : {
+      "type" : "object",
+      "properties" : {
+        "probability" : {
+          "type" : "integer",
+          "default" : 60
+        }
+      }
+    },
+    "Reach" : {
+      "type" : "string",
+      "enum" : [ "SERVER", "WORLD", "NONE" ]
+    },
+    "SettingsPayload" : {
+      "type" : "object",
+      "properties" : {
+        "main" : {
+          "$ref" : "#/$defs/ConfigFile"
+        },
+        "globalDrops" : {
+          "$ref" : "#/$defs/GlobalDrops"
+        },
+        "worlds" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/WorldPayload"
+          }
+        }
+      },
+      "required" : [ "main", "globalDrops", "worlds" ]
+    },
+    "Severity" : {
+      "type" : "string",
+      "enum" : [ "ERROR", "WARNING" ]
+    },
+    "ShockwaveSettings" : {
+      "type" : "object",
+      "properties" : {
+        "chance" : {
+          "type" : "integer",
+          "default" : 10
+        },
+        "power" : {
+          "type" : "number",
+          "default" : 10.0
+        },
+        "range" : {
+          "type" : "number",
+          "default" : 10.0
+        },
+        "minSeconds" : {
+          "type" : "number",
+          "default" : 0.1
+        },
+        "effects" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/TimedEffect"
+          },
+          "default" : [ {
+            "effect" : "minecraft:nausea",
+            "seconds" : 5.0
+          } ]
+        }
+      }
+    },
+    "SoundEntry" : {
+      "type" : "object",
+      "properties" : {
+        "sound" : {
+          "type" : "string",
+          "default" : "minecraft:entity.lightning_bolt.thunder"
+        },
+        "pitches" : {
+          "type" : "array",
+          "items" : {
+            "type" : "number"
+          },
+          "default" : [ 1.0 ]
+        },
+        "volumes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "number"
+          },
+          "default" : [ 1.0 ]
+        }
+      }
+    },
+    "SoundSettings" : {
+      "type" : "object",
+      "properties" : {
+        "channel" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Source"
+          } ],
+          "default" : "AMBIENT"
+        },
+        "minInterval" : {
+          "type" : "integer",
+          "default" : 10
+        },
+        "maxInterval" : {
+          "type" : "integer",
+          "default" : 40
+        },
+        "begin" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SoundEntry"
+          },
+          "default" : [ {
+            "pitches" : [ 0.8, 1.0 ],
+            "sound" : "minecraft:entity.lightning_bolt.thunder",
+            "volumes" : [ 1.0 ]
+          } ]
+        },
+        "end" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SoundEntry"
+          },
+          "default" : [ {
+            "pitches" : [ 0.8, 1.0 ],
+            "sound" : "minecraft:entity.lightning_bolt.thunder",
+            "volumes" : [ 1.0 ]
+          } ]
+        },
+        "ambience" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SoundEntry"
+          },
+          "default" : [ {
+            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "sound" : "minecraft:ambient.basalt_deltas.additions",
+            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+          }, {
+            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "sound" : "minecraft:ambient.crimson_forest.additions",
+            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+          }, {
+            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "sound" : "minecraft:ambient.nether_wastes.additions",
+            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+          }, {
+            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "sound" : "minecraft:ambient.soul_sand_valley.additions",
+            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+          } ]
+        }
+      }
+    },
+    "Source" : {
+      "type" : "string",
+      "enum" : [ "MASTER", "MUSIC", "RECORD", "WEATHER", "BLOCK", "HOSTILE", "NEUTRAL", "PLAYER", "AMBIENT", "VOICE", "UI" ]
+    },
+    "SpawnConditions" : {
+      "type" : "object",
+      "properties" : {
+        "worlds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "biomes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "minY" : {
+          "type" : "integer"
+        },
+        "maxY" : {
+          "type" : "integer"
+        },
+        "maxLight" : {
+          "type" : "integer"
+        },
+        "surface" : {
+          "$ref" : "#/$defs/Surface"
+        }
+      },
+      "required" : [ "worlds", "biomes", "surface" ]
+    },
+    "SpawnReason" : {
+      "type" : "string",
+      "enum" : [ "NATURAL", "JOCKEY", "CHUNK_GEN", "SPAWNER", "TRIAL_SPAWNER", "EGG", "SPAWNER_EGG", "LIGHTNING", "BUILD_SNOWMAN", "BUILD_IRONGOLEM", "BUILD_COPPERGOLEM", "BUILD_WITHER", "VILLAGE_DEFENSE", "VILLAGE_INVASION", "BREEDING", "SLIME_SPLIT", "REINFORCEMENTS", "NETHER_PORTAL", "DISPENSE_EGG", "INFECTION", "CURED", "OCELOT_BABY", "SILVERFISH_BLOCK", "MOUNT", "TRAP", "ENDER_PEARL", "SHOULDER_ENTITY", "DROWNED", "SHEARED", "EXPLOSION", "RAID", "PATROL", "BEEHIVE", "PIGLIN_ZOMBIFIED", "SPELL", "FROZEN", "METAMORPHOSIS", "DUPLICATION", "COMMAND", "ENCHANTMENT", "OMINOUS_ITEM_SPAWNER", "BUCKET", "POTION_EFFECT", "REANIMATE", "REHYDRATION", "CUSTOM", "DEFAULT" ]
+    },
+    "SpawnRules" : {
+      "type" : "object",
+      "properties" : {
+        "weight" : {
+          "type" : "integer"
+        },
+        "nightOnly" : {
+          "type" : "boolean"
+        },
+        "despawn" : {
+          "$ref" : "#/$defs/Despawn"
+        },
+        "reasons" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SpawnReason"
+          },
+          "uniqueItems" : true
+        },
+        "conditions" : {
+          "$ref" : "#/$defs/SpawnConditions"
+        }
+      },
+      "required" : [ "weight", "nightOnly", "despawn", "reasons", "conditions" ]
+    },
+    "Surface" : {
+      "type" : "string",
+      "enum" : [ "ANY", "SKY_VISIBLE", "UNDERGROUND" ]
+    },
+    "TimedEffect" : {
+      "type" : "object",
+      "properties" : {
+        "effect" : {
+          "type" : "string",
+          "default" : "minecraft:nausea"
+        },
+        "seconds" : {
+          "type" : "number",
+          "default" : 5.0
+        }
+      }
+    },
+    "TypeInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "raw" : {
+          "type" : "string"
+        },
+        "arguments" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "literal" : {
+          "type" : "boolean"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "assignableTo" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "format" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TypeRef" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "variable" : {
+          "type" : "string"
+        },
+        "raw" : {
+          "type" : "string"
+        },
+        "arguments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/TypeRef"
+          }
+        },
+        "numeric" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "ValueModifier" : {
+      "type" : "string",
+      "enum" : [ "DEFAULT", "MULTIPLY", "VALUE" ]
+    },
+    "WorldDrops" : {
+      "type" : "object",
+      "properties" : {
+        "weightsScope" : {
+          "$ref" : "#/$defs/ConfigurationScope"
+        },
+        "weights" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        },
+        "dropTables" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/ConfigurationScope"
+          }
+        },
+        "dropList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Drop"
+          }
+        },
+        "xpScope" : {
+          "$ref" : "#/$defs/ConfigurationScope"
+        },
+        "xpModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "xpValue" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue" ]
+    },
+    "WorldPayload" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "settings" : {
+          "$ref" : "#/$defs/WorldSettings"
+        }
+      },
+      "required" : [ "name", "settings" ]
+    },
+    "WorldSettings" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "nightSelection" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/NightSelection"
+          } ],
+          "default" : {
+            "curve" : {
+              "max" : 80,
+              "min" : 20,
+              "period" : 10
+            },
+            "interval" : {
+              "interval" : 5,
+              "probability" : 100
+            },
+            "moonPhase" : {
+              "probabilities" : {
+                "FULL_MOON" : 0,
+                "WANING_GIBBOUS" : 10,
+                "LAST_QUARTER" : 20,
+                "WANING_CRESCENT" : 40,
+                "NEW_MOON" : 100,
+                "WAXING_CRESCENT" : 40,
+                "FIRST_QUARTER" : 20,
+                "WAXING_GIBBOUS" : 10
+              }
+            },
+            "phase" : {
+              "probabilities" : [ 50, 50, 50 ]
+            },
+            "random" : {
+              "probability" : 60
+            },
+            "type" : "RANDOM"
+          }
+        },
+        "nightSettings" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/NightSettings"
+          } ],
+          "default" : {
+            "begin" : 13000,
+            "beginCommands" : [ ],
+            "blockedCommands" : [ ],
+            "end" : 23000,
+            "endCommands" : [ ],
+            "length" : {
+              "maxSeconds" : 900,
+              "mode" : "NORMAL",
+              "seconds" : 600
+            },
+            "skippable" : false
+          }
+        },
+        "mobSettings" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/MobSettings"
+          } ],
+          "default" : {
+            "creepers" : {
+              "always" : false,
+              "blockDamage" : false
+            },
+            "damageModifier" : 2.0,
+            "displayNames" : true,
+            "forcePhantoms" : true,
+            "healthMultiplier" : 2.0,
+            "spawning" : {
+              "ignoredReasons" : [ ],
+              "mobs" : { },
+              "spawnPercentage" : 50
+            }
+          }
+        },
+        "announcement" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/AnnouncementSettings"
+          } ],
+          "default" : {
+            "bossBar" : {
+              "color" : "RED",
+              "enabled" : true,
+              "flags" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ],
+              "overlay" : "PROGRESS",
+              "title" : "<red><bold><lang:bloodnight.bossbar.title>"
+            },
+            "effect" : {
+              "effect" : "minecraft:darkness",
+              "enabled" : true,
+              "seconds" : 5
+            },
+            "joinWarning" : true
+          }
+        },
+        "soundSettings" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/SoundSettings"
+          } ],
+          "default" : {
+            "ambience" : [ {
+              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "sound" : "minecraft:ambient.basalt_deltas.additions",
+              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            }, {
+              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "sound" : "minecraft:ambient.crimson_forest.additions",
+              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            }, {
+              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "sound" : "minecraft:ambient.nether_wastes.additions",
+              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            }, {
+              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "sound" : "minecraft:ambient.soul_sand_valley.additions",
+              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            } ],
+            "begin" : [ {
+              "pitches" : [ 0.8, 1.0 ],
+              "sound" : "minecraft:entity.lightning_bolt.thunder",
+              "volumes" : [ 1.0 ]
+            } ],
+            "channel" : "AMBIENT",
+            "end" : [ {
+              "pitches" : [ 0.8, 1.0 ],
+              "sound" : "minecraft:entity.lightning_bolt.thunder",
+              "volumes" : [ 1.0 ]
+            } ],
+            "maxInterval" : 40,
+            "minInterval" : 10
+          }
+        },
+        "deathActions" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/DeathActionSettings"
+          } ],
+          "default" : {
+            "mob" : {
+              "lightning" : {
+                "lightning" : true,
+                "lightningChance" : 100,
+                "thunder" : true,
+                "thunderChance" : 100
+              },
+              "shockwave" : {
+                "chance" : 10,
+                "effects" : [ {
+                  "effect" : "minecraft:nausea",
+                  "seconds" : 5.0
+                } ],
+                "minSeconds" : 0.1,
+                "power" : 10.0,
+                "range" : 10.0
+              }
+            },
+            "player" : {
+              "deathCommands" : [ ],
+              "lightning" : {
+                "lightning" : true,
+                "lightningChance" : 100,
+                "thunder" : true,
+                "thunderChance" : 100
+              },
+              "loseExperienceChance" : 0,
+              "loseInventoryChance" : 0,
+              "respawnCommands" : [ ],
+              "respawnEffects" : [ {
+                "effect" : "minecraft:nausea",
+                "seconds" : 5.0
+              } ],
+              "shockwave" : {
+                "chance" : 10,
+                "effects" : [ {
+                  "effect" : "minecraft:nausea",
+                  "seconds" : 5.0
+                } ],
+                "minSeconds" : 0.1,
+                "power" : 10.0,
+                "range" : 10.0
+              }
+            }
+          }
+        },
+        "worldDrops" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/WorldDrops"
+          } ],
+          "default" : {
+            "weightsScope" : "GLOBAL",
+            "weights" : {
+              "1" : 90,
+              "2" : 50,
+              "3" : 10
+            },
+            "dropTables" : [ "GLOBAL", "WORLD" ],
+            "dropList" : [ ],
+            "xpScope" : "GLOBAL",
+            "xpModifier" : "MULTIPLY",
+            "xpValue" : 4.0
+          }
+        }
+      }
+    }
+  }
+}

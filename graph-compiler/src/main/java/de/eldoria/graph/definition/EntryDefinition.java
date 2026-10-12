@@ -16,13 +16,30 @@ import java.util.Objects;
  * @param method     name of the host interface method
  * @param parameters parameters of that method, in order
  * @param emitter    expression for each output, usually derived from a parameter
+ * @param guard      when the entry's chains run, e.g. from a config field; {@link EntryGuard#NONE} for always
  */
 public record EntryDefinition(
-        NodeDescriptor descriptor, String method, List<EntryParameter> parameters, OutputEmitter<EntryContext> emitter)
+        NodeDescriptor descriptor,
+        String method,
+        List<EntryParameter> parameters,
+        OutputEmitter<EntryContext> emitter,
+        EntryGuard guard)
         implements NodeDefinition {
+    /**
+     * An entry whose chains run on every call of the host method.
+     */
+    public EntryDefinition(
+            NodeDescriptor descriptor,
+            String method,
+            List<EntryParameter> parameters,
+            OutputEmitter<EntryContext> emitter) {
+        this(descriptor, method, parameters, emitter, EntryGuard.NONE);
+    }
+
     public EntryDefinition {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(emitter, "emitter");
+        Objects.requireNonNull(guard, "guard");
         parameters = List.copyOf(parameters);
         Shapes.require(descriptor, NodeKind.ENTRY);
         if (!descriptor.inputs().isEmpty()) {

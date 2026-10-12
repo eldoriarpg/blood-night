@@ -35,7 +35,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Turns a spawned entity into a custom mob: extension entity, tags, equipment, name and attributes.
+ * Turns a spawned entity into a custom mob: extension entity, tags, equipment, name and attributes. An equipment slot
+ * names an item of the {@link ItemRegistry}, or a plain item by its material key such as {@code minecraft:diamond_helmet}.
  * <p>
  * The name is MiniMessage, shown above the mob when its world shows names. Health and damage follow
  * {@link Attributes}; further attribute changes are added as modifiers keyed {@code bloodnight:custom_mob_<n>}, so
@@ -160,8 +161,6 @@ public final class MobOutfitter {
 
     @Nullable
     private ItemStack item(@Nullable String id) {
-        if (id == null) return null;
-        ItemStack item = items.get().registrations().get(id);
-        return item == null ? null : item.clone();
+        return id == null ? null : items.get().item(id);
     }
 }

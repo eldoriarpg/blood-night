@@ -13,6 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The global drops, used where world or mob drop settings are scoped {@code GLOBAL}.
+ *
+ * @param weights    weights of how many drops fall, by count
+ * @param drops      the global drop list
+ * @param xpModifier how the experience a mob drops changes
+ * @param xpValue    the number it changes by
+ */
 public record GlobalDrops(Map<Integer, Integer> weights, List<Drop> drops, ValueModifier xpModifier, double xpValue) {
     public static GlobalDrops defaultDrops() {
         Map<Integer, Integer> weights = new HashMap<>() {

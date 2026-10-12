@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.web;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.function.Function;
  * @param sessionLifetime    how long a session lives without being used ({@code SESSION_HOURS}, 168)
  * @param sessionsPerHour    sessions one address may open per hour ({@code SESSIONS_PER_HOUR}, 20)
  * @param maxPayloadBytes    largest request body ({@code MAX_PAYLOAD_MB}, 10)
+ * @param assetCache         where Minecraft's item assets are kept once fetched ({@code ASSET_CACHE},
+ *                           {@code /var/cache/bloodnight/assets})
  * @param database           the database connection
  */
 public record ServiceConfig(
@@ -30,6 +33,7 @@ public record ServiceConfig(
         Duration sessionLifetime,
         int sessionsPerHour,
         long maxPayloadBytes,
+        Path assetCache,
         DatabaseConfig database) {
 
     /**
@@ -50,7 +54,7 @@ public record ServiceConfig(
         Function<String, String> env = environment::get;
         return new ServiceConfig(
                 integer(env, "PORT", 8080),
-                text(env, "EDITOR_URL", "http://localhost:3000/session/{id}#{token}"),
+                text(env, "EDITOR_URL", "http://localhost:4000/session/{id}#{token}"),
                 Arrays.stream(text(env, "ALLOWED_ORIGINS", "").split(","))
                         .map(String::strip)
                         .filter(origin -> !origin.isEmpty())
@@ -58,6 +62,7 @@ public record ServiceConfig(
                 Duration.ofHours(integer(env, "SESSION_HOURS", 168)),
                 integer(env, "SESSIONS_PER_HOUR", 20),
                 integer(env, "MAX_PAYLOAD_MB", 10) * 1024L * 1024L,
+                Path.of(text(env, "ASSET_CACHE", "/var/cache/bloodnight/assets")),
                 new DatabaseConfig(
                         text(env, "DB_HOST", "localhost"),
                         integer(env, "DB_PORT", 5432),

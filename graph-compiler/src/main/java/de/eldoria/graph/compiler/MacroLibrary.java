@@ -153,17 +153,21 @@ public final class MacroLibrary {
             List<GraphProblem> found = new ArrayList<>();
             Map<String, String> inputNodes = new TreeMap<>();
             Map<String, PortType> inputTypes = new TreeMap<>();
+            Map<String, String> inputTypeIds = new TreeMap<>();
             Map<String, String> outputNodes = new TreeMap<>();
             Map<String, String> endNodes = new TreeMap<>();
             List<String> starts = new ArrayList<>();
             macro.body().nodes().forEach((nodeId, node) -> {
                 String type = node.type();
-                if (type.startsWith(MacroBoundary.INPUT_PREFIX)) {
+                if (type.equals(MacroBoundary.INPUT)) {
                     name(nodeId, node, found).ifPresent(name -> {
                         register(inputNodes, name, nodeId, found);
-                        PortType portType =
-                                platform.types().selectable().get(type.substring(MacroBoundary.INPUT_PREFIX.length()));
-                        if (portType != null) inputTypes.put(name, portType);
+                        String picked = MacroBoundary.inputType(node, platform.types());
+                        PortType portType = platform.types().selectable().get(picked);
+                        if (portType != null) {
+                            inputTypes.put(name, portType);
+                            inputTypeIds.put(name, picked);
+                        }
                     });
                 } else if (type.equals(MacroBoundary.OUTPUT)) {
                     name(nodeId, node, found).ifPresent(name -> register(outputNodes, name, nodeId, found));
@@ -215,13 +219,15 @@ public final class MacroLibrary {
             endNodes.keySet().forEach(descriptor::execution);
             definitions.put(
                     TYPE_PREFIX + macro.id(),
-                    new MacroDefinition(descriptor.build(), macro, inputNodes, outputNodes, start, endNodes));
+                    new MacroDefinition(
+                            descriptor.build(), macro, inputNodes, inputTypeIds, outputNodes, start, endNodes));
         }
 
         private GraphPlatform analysisPlatform() {
             try {
                 return GraphPlatform.builder(MacroBody.class)
                         .types(platform.types())
+                        .bindings(platform.bindings())
                         .define(analysisNodes)
                         .define(definitions.values())
                         .build();

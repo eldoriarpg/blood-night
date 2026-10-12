@@ -99,7 +99,7 @@ class PayloadValidatorTest {
         String graph = """
                 {"mobs":{"a":{"id":"a","attributes":{"entityType":"ZOMBIE"},"behaviour":{"nodes":{
                   "define":{"type":"routine.define","config":{"name":"jump"}},
-                  "height":{"type":"routine.parameter.number","config":{"name":"height","routine":"jump"}},
+                  "height":{"type":"routine.parameter","config":{"name":"height","routine":"jump","type":"number"}},
                   "five":{"type":"value.number"},
                   "use":{"type":"routine.jump","inputs":{"height":{"node":"five","port":"value"}}},
                   "wrong":{"type":"routine.jump","inputs":{"width":{"node":"five","port":"value"}}},

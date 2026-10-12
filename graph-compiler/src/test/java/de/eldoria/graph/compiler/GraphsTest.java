@@ -94,7 +94,7 @@ class GraphsTest {
     @Test
     void knowsMacrosAndMacroBoundaries() {
         Graphs body = Graphs.macroBody(PLATFORM, MacroLibrary.empty());
-        body.node("x", "macro.input.number").config("name", "x");
+        body.node("x", "macro.input").config("type", "number").config("name", "x");
         body.node("add", "math.add").input("a", "x", "value").input("b", "x", "value");
         body.node("out", "macro.output").config("name", "result").input("value", "add", "result");
         MacroLibrary macros = MacroLibrary.compile(PLATFORM, List.of(Macro.of("double_it", body.build())));

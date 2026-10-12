@@ -5,6 +5,7 @@
  */
 package de.eldoria.graph.definition;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,7 +24,28 @@ final class Primitives {
             double.class, Double.class,
             void.class, Void.class);
 
+    private static final List<Class<?>> NUMBERS =
+            List.of(byte.class, short.class, int.class, long.class, float.class, double.class);
+
     private Primitives() {}
+
+    /**
+     * @param type a class
+     * @return the primitive number type it is or wraps, if any
+     */
+    static Optional<Class<?>> number(Class<?> type) {
+        Class<?> primitive = unbox(type).orElse(type);
+        return NUMBERS.contains(primitive) ? Optional.of(primitive) : Optional.empty();
+    }
+
+    /**
+     * @param a a primitive number type
+     * @param b a primitive number type
+     * @return the wider of both, e.g. {@code double} for {@code int} and {@code double}
+     */
+    static Class<?> wider(Class<?> a, Class<?> b) {
+        return NUMBERS.indexOf(a) >= NUMBERS.indexOf(b) ? a : b;
+    }
 
     /**
      * @param type a primitive class

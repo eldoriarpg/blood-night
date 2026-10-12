@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Checks a graph against a platform before any code is emitted.
@@ -45,14 +46,28 @@ import java.util.Set;
 final class GraphValidator {
     private final GraphPlatform platform;
     private final Map<String, NodeDefinition> extra;
+    private final Map<String, PortType> graphBindings;
 
     /**
      * @param platform the platform
      * @param extra    definitions only the compiler itself places, such as macro pass-through nodes
      */
     GraphValidator(GraphPlatform platform, Map<String, NodeDefinition> extra) {
+        this(platform, extra, Map.of());
+    }
+
+    /**
+     * @param platform the platform
+     * @param extra    definitions only the compiler itself places, such as macro pass-through nodes
+     * @param bindings the graph-wide type variables this graph binds; the others take the platform's fallback
+     */
+    GraphValidator(GraphPlatform platform, Map<String, NodeDefinition> extra, Map<String, PortType> bindings) {
         this.platform = platform;
         this.extra = Map.copyOf(extra);
+        Map<String, PortType> graphBindings = new HashMap<>();
+        platform.bindings().forEach((variable, binding) -> graphBindings.put(variable, binding.fallback()));
+        graphBindings.putAll(bindings);
+        this.graphBindings = Map.copyOf(graphBindings);
     }
 
     /**
@@ -69,6 +84,8 @@ final class GraphValidator {
         private final List<GraphProblem> problems = new ArrayList<>();
         private final Map<String, NodeDefinition> definitions = new LinkedHashMap<>();
         private final Map<String, Map<String, CodeBlock>> config = new HashMap<>();
+        private final Map<String, Map<String, PortType>> configTypes = new HashMap<>();
+        private final Map<String, Map<String, PortType>> selections = new HashMap<>();
         private final Map<String, Map<String, PortType>> inputTypes = new HashMap<>();
         private final Map<String, Map<String, PortType>> outputTypes = new HashMap<>();
         private final Map<String, Map<String, PortType>> sourceTypes = new HashMap<>();
@@ -111,7 +128,8 @@ final class GraphValidator {
                             Map.copyOf(outputTypes.get(id)),
                             Map.copyOf(sourceTypes.get(id)),
                             Map.copyOf(literals.get(id)),
-                            Map.copyOf(config.get(id)))));
+                            Map.copyOf(config.get(id)),
+                            Map.copyOf(configTypes.get(id)))));
             List<String> entries = definitions.entrySet().stream()
                     .filter(entry -> entry.getValue() instanceof EntryDefinition)
                     .map(Map.Entry::getKey)
@@ -156,19 +174,46 @@ final class GraphValidator {
             instance.config().keySet().stream()
                     .filter(field -> descriptor.configField(field).isEmpty())
                     .forEach(field -> problems.add(GraphProblem.error(id, field, "Unknown config field")));
+            Map<String, PortType> selected = selectedTypes(id, instance, descriptor);
+            Map<String, PortType> types = new HashMap<>();
             for (ConfigField field : descriptor.config()) {
                 JsonNode value = instance.config().getOrDefault(field.id(), field.defaultValue());
                 if (value == null) {
                     problems.add(GraphProblem.error(id, field.id(), "Required config value is missing"));
                     continue;
                 }
+                PortType type = field.type().resolve(selected);
+                types.put(field.id(), type);
+                if (type.hasVariables() || value.isNull()) continue;
                 try {
-                    literals.put(field.id(), platform.types().literal(field.type(), value));
+                    literals.put(field.id(), platform.types().literal(type, value));
                 } catch (IllegalArgumentException e) {
                     problems.add(GraphProblem.error(id, field.id(), e.getMessage()));
                 }
             }
             config.put(id, literals);
+            configTypes.put(id, types);
+            selections.put(id, selected);
+        }
+
+        /**
+         * The types the node's type fields pick, by the variable each binds.
+         */
+        private Map<String, PortType> selectedTypes(String id, NodeInstance instance, NodeDescriptor descriptor) {
+            Map<String, PortType> selected = new HashMap<>();
+            for (ConfigField field : descriptor.config()) {
+                if (field.selects() == null) continue;
+                JsonNode value = instance.config().getOrDefault(field.id(), field.defaultValue());
+                String choice = value == null ? "" : value.asString("");
+                PortType type = platform.types().selectable().get(choice);
+                if (!field.choices().contains(choice) || type == null) {
+                    problems.add(GraphProblem.error(
+                            id, field.id(), "Pick one of %s".formatted(String.join(", ", field.choices()))));
+                    continue;
+                }
+                selected.put(field.selects(), type);
+            }
+            return selected;
         }
 
         private void checkInputs(String id, NodeDefinition definition) {
@@ -254,8 +299,9 @@ final class GraphValidator {
             });
         }
 
-        private Optional<PortType> literal(String id, Port port, JsonNode value, Map<String, CodeBlock> code) {
-            Optional<PortType> type = literalType(port, value);
+        private Optional<PortType> literal(
+                String id, Port port, PortType resolved, JsonNode value, Map<String, CodeBlock> code) {
+            Optional<PortType> type = literalType(resolved, value);
             if (type.isEmpty()) {
                 problems.add(GraphProblem.error(
                         id,
@@ -278,23 +324,25 @@ final class GraphValidator {
             if (!resolving.add(id)) return;
             NodeDefinition definition = definitions.get(id);
             NodeInstance instance = graph.nodes().get(id);
-            Map<String, PortType> bindings = new HashMap<>();
+            Map<String, PortType> bindings = new HashMap<>(graphBindings);
+            bindings.putAll(selections.getOrDefault(id, Map.of()));
             Map<String, PortType> sources = new LinkedHashMap<>();
 
             Map<String, CodeBlock> literalCode = new HashMap<>();
             for (Port port : definition.descriptor().inputs()) {
                 JsonNode literal = instance.literals().get(port.id());
                 if (literal != null && !instance.inputs().containsKey(port.id())) {
-                    literal(id, port, literal, literalCode).ifPresent(type -> {
-                        sources.put(port.id(), type);
-                        if (!TypeInference.unify(port.type(), type, bindings)) {
-                            problems.add(GraphProblem.error(
-                                    id,
-                                    port.id(),
-                                    "Conflicting types for %s: %s"
-                                            .formatted(port.type().id(), type.id())));
-                        }
-                    });
+                    literal(id, port, port.type().resolve(bindings), literal, literalCode)
+                            .ifPresent(type -> {
+                                sources.put(port.id(), type);
+                                if (!TypeInference.unify(port.type(), type, bindings)) {
+                                    problems.add(GraphProblem.error(
+                                            id,
+                                            port.id(),
+                                            "Conflicting types for %s: %s"
+                                                    .formatted(port.type().id(), type.id())));
+                                }
+                            });
                     continue;
                 }
                 Edge edge = instance.inputs().get(port.id());
@@ -321,6 +369,7 @@ final class GraphValidator {
                 }
             }
 
+            bindUnusedNumbers(definition, bindings);
             Map<String, PortType> inputs = new HashMap<>();
             for (Port port : definition.descriptor().inputs()) {
                 PortType expected = port.type().resolve(bindings);
@@ -351,19 +400,33 @@ final class GraphValidator {
     }
 
     /**
+     * Numeric variables nothing bound default to {@code double}, so a math node without inputs still has a type.
+     */
+    private static void bindUnusedNumbers(NodeDefinition definition, Map<String, PortType> bindings) {
+        Stream.concat(definition.descriptor().inputs().stream(), definition.descriptor().outputs().stream())
+                .map(Port::type)
+                .filter(type -> type instanceof PortType.Variable variable && variable.numeric())
+                .forEach(type -> bindings.putIfAbsent(((PortType.Variable) type).name(), PortType.of(double.class)));
+    }
+
+    /**
      * Type of a value typed into an input: the port's own type when it has a literal codec, otherwise the type the
      * JSON value suggests (text, integer, number, boolean), as long as the port accepts it. Ports of types without a
      * literal form, such as locations, take no values.
      */
-    private Optional<PortType> literalType(Port port, JsonNode value) {
-        if (platform.types().codec(port.type()).isPresent()) return Optional.of(port.type());
+    /**
+     * The type of a value typed into an input: the input's own type when it has a literal form, which a type the
+     * node picks gives a variable input, else the type the value's JSON shape suggests, if the input takes it.
+     */
+    private Optional<PortType> literalType(PortType type, JsonNode value) {
+        if (platform.types().codec(type).isPresent()) return Optional.of(type);
         PortType inferred;
         if (value.isBoolean()) inferred = PortType.of(boolean.class);
         else if (value.isIntegralNumber() && value.canConvertToInt()) inferred = PortType.of(int.class);
         else if (value.isNumber()) inferred = PortType.of(double.class);
         else if (value.isString()) inferred = PortType.of(String.class);
         else return Optional.empty();
-        return port.type().accepts(inferred) ? Optional.of(inferred) : Optional.empty();
+        return type.accepts(inferred) ? Optional.of(inferred) : Optional.empty();
     }
 
     /**
@@ -374,16 +437,26 @@ final class GraphValidator {
 
         /**
          * Binds the variables in {@code expected} so that it matches {@code actual}. Variables bind to boxed types,
-         * because they end up as type arguments.
+         * because they end up as type arguments; numeric variables bind to the widest primitive number they meet, at
+         * least {@code int}, since Java computes with nothing narrower.
          *
          * @return false when a variable would need two different types
          */
         static boolean unify(PortType expected, PortType actual, Map<String, PortType> bindings) {
             return switch (expected) {
+                case PortType.Variable variable
+                when variable.numeric() -> {
+                    if (!PortType.isNumber(actual)) yield false;
+                    PortType bound = bindings.get(variable.name());
+                    bindings.put(
+                            variable.name(),
+                            PortType.widerNumber(bound == null ? PortType.of(int.class) : bound, actual));
+                    yield true;
+                }
                 case PortType.Variable variable -> {
                     PortType boxed = actual.boxed();
                     PortType bound = bindings.putIfAbsent(variable.name(), boxed);
-                    yield bound == null || bound.equals(boxed);
+                    yield bound == null || bound.boxed().equals(boxed);
                 }
                 case PortType.Concrete concrete -> {
                     if (!concrete.hasVariables() || !(actual instanceof PortType.Concrete source)) yield true;

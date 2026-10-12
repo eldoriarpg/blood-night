@@ -36,14 +36,14 @@ final class Catalogs {
                                 List.of()),
                         node(
                                 "entity.burn",
-                                List.of(new PortInfo("ticks", "Ticks", "", NUMBER, false, true)),
+                                List.of(new PortInfo("ticks", "Ticks", "", NUMBER, false, true, null)),
                                 List.of(),
                                 List.of(new ExecutionInfo("next", "Next", false)),
                                 List.of(new ConfigInfo("mode", "Mode", NUMBER, null))),
                         node(
                                 "value.number",
                                 List.of(),
-                                List.of(new PortInfo("value", "Value", "", NUMBER, false, false)),
+                                List.of(new PortInfo("value", "Value", "", NUMBER, false, false, null)),
                                 List.of(),
                                 List.of())),
                 List.of(),

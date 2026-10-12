@@ -65,6 +65,10 @@ class MacroTest {
         return NodeInstance.of(type).config("name", StringNode.valueOf(name));
     }
 
+    private static NodeInstance.Builder input(String type, String name) {
+        return named("macro.input", name).config("type", StringNode.valueOf(type));
+    }
+
     private static NodeInstance.Builder number(double value) {
         return NodeInstance.of("value.number").config("value", DoubleNode.valueOf(value));
     }
@@ -87,7 +91,7 @@ class MacroTest {
                 "Adds a number to itself",
                 "macro",
                 Graph.builder()
-                        .node("x", named("macro.input.number", "x"))
+                        .node("x", input("number", "x"))
                         .node(
                                 "add",
                                 NodeInstance.of("math.add")
@@ -105,7 +109,7 @@ class MacroTest {
                 "check",
                 Graph.builder()
                         .node("start", NodeInstance.of("macro.start").chain("next", "branch"))
-                        .node("value", named("macro.input.integer", "value"))
+                        .node("value", input("integer", "value"))
                         .node("ten", number(10))
                         .node(
                                 "greater",
@@ -127,7 +131,7 @@ class MacroTest {
         return Macro.of(
                 "quadruple",
                 Graph.builder()
-                        .node("x", named("macro.input.number", "x"))
+                        .node("x", input("number", "x"))
                         .node("first", NodeInstance.of("macro.double_it").input("x", "x", "value"))
                         .node("second", NodeInstance.of("macro.double_it").input("x", "first", "result"))
                         .node("out", named("macro.output", "result").input("value", "second", "result"))
@@ -390,7 +394,7 @@ class MacroTest {
         Macro unnamed = Macro.of(
                 "unnamed",
                 Graph.builder()
-                        .node("x", NodeInstance.of("macro.input.number"))
+                        .node("x", NodeInstance.of("macro.input").config("type", StringNode.valueOf("number")))
                         .node("out", NodeInstance.of("macro.output").input("value", "x", "value"))
                         .build());
         Macro empty = Macro.of("empty", Graph.builder().build());
@@ -398,7 +402,7 @@ class MacroTest {
                 "with_entry",
                 Graph.builder()
                         .node("start", NodeInstance.of("entry.start"))
-                        .node("x", named("macro.input.number", "x"))
+                        .node("x", input("number", "x"))
                         .node("out", named("macro.output", "x").input("value", "x", "value"))
                         .build());
         Macro uses = Macro.of(

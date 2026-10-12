@@ -26,12 +26,12 @@ import java.util.stream.Collectors;
 /**
  * Checks an edited payload as far as the service can without a server: its shape, the graphs of mobs and macros
  * against the server's catalog (known node types, ports, connections to existing nodes and outputs) and that mobs
- * only use items the server registered. Anything that needs the server, such as entity types or effect keys, is left
- * to the server when it pulls the result. Catalogs leave empty port lists out, so a missing list counts as empty.
+ * only use items of the payload or material keys such as {@code minecraft:diamond_helmet}, whose existence is
+ * left to the server like anything else that needs it (entity types, effect keys) when it pulls the result. Catalogs leave empty port lists out, so a missing list counts as empty.
  * <p>
  * Uses of macros ({@code macro.<id>}) need a macro of that id in the payload; uses of routines
  * ({@code routine.<name>}) need a {@code routine.define} of that name in the same graph, and their inputs are the
- * names of that routine's {@code routine.parameter.*} nodes.
+ * names of that routine's {@code routine.parameter} nodes.
  */
 final class PayloadValidator {
     private static final String ROUTINE = "routine.";
@@ -100,7 +100,7 @@ final class PayloadValidator {
         JsonNode drops = mob.path("mobDrops").path("dropList");
         for (int i = 0; i < drops.size(); i++) {
             JsonNode item = drops.get(i).path("itemId");
-            if (item.isString() && !items.contains(item.asString())) {
+            if (item.isString() && !knownItem(items, item.asString())) {
                 problems.add(new PayloadProblem(
                         path + "/mobDrops/dropList/" + i + "/itemId", "Unknown item " + item.asString()));
             }
@@ -113,10 +113,14 @@ final class PayloadValidator {
             String path, JsonNode equipment, Set<String> items, List<PayloadProblem> problems) {
         for (String slot : SLOTS) {
             JsonNode item = equipment.path(slot);
-            if (item.isString() && !items.contains(item.asString())) {
+            if (item.isString() && !knownItem(items, item.asString())) {
                 problems.add(new PayloadProblem(path + "/" + slot, "Unknown item " + item.asString()));
             }
         }
+    }
+
+    private static boolean knownItem(Set<String> items, String id) {
+        return items.contains(id) || id.contains(":");
     }
 
     private void validateGraph(String path, JsonNode graph, Set<String> macros, List<PayloadProblem> problems) {
@@ -169,7 +173,7 @@ final class PayloadValidator {
             }
         }
         for (JsonNode node : instances) {
-            if (!node.path("type").asString("").startsWith("routine.parameter.")) continue;
+            if (!node.path("type").asString("").equals("routine.parameter")) continue;
             Set<String> parameters =
                     routines.get(node.path("config").path("routine").asString(""));
             if (parameters != null)

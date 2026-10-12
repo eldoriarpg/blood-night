@@ -31,6 +31,9 @@ import java.util.stream.Stream;
  * @param config      literal values set in the editor
  * @param stateful    whether evaluating the node changes state, e.g. a cooldown that starts again when it is read;
  *                    such values are evaluated exactly where the graph says and never moved into other code
+ * @param family      the id of the node the editor shows in place of this one, when this is one of its variants,
+ *                    e.g. the read and change nodes of one type standing in for a single "Mutate"; {@code null}
+ *                    otherwise
  */
 public record NodeDescriptor(
         String id,
@@ -42,7 +45,8 @@ public record NodeDescriptor(
         List<Port> outputs,
         List<ExecutionPort> executions,
         List<ConfigField> config,
-        boolean stateful) {
+        boolean stateful,
+        @Nullable String family) {
     public NodeDescriptor {
         Ids.checkPath(id, "node");
         Objects.requireNonNull(kind, "kind");
@@ -132,6 +136,7 @@ public record NodeDescriptor(
         private String name;
         private String description = "";
         private boolean stateful;
+        private @Nullable String family;
 
         private Builder(String id, NodeKind kind) {
             this.id = Ids.checkPath(id, "node");
@@ -188,7 +193,15 @@ public record NodeDescriptor(
         }
 
         public Builder input(String id, String name, PortType type, boolean optional, String description) {
-            inputs.add(new Port(id, name, type, optional, description));
+            return input(id, name, type, optional, description, null);
+        }
+
+        /**
+         * Adds an input drawn in a group of the node, e.g. the properties one type declares.
+         */
+        public Builder input(
+                String id, String name, PortType type, boolean optional, String description, @Nullable String group) {
+            inputs.add(new Port(id, name, type, optional, description, group));
             return this;
         }
 
@@ -211,7 +224,14 @@ public record NodeDescriptor(
         }
 
         public Builder output(String id, String name, PortType type, String description) {
-            outputs.add(new Port(id, name, type, false, description));
+            return output(id, name, type, description, null);
+        }
+
+        /**
+         * Adds an output drawn in a group of the node, e.g. the properties one type declares.
+         */
+        public Builder output(String id, String name, PortType type, String description, @Nullable String group) {
+            outputs.add(new Port(id, name, type, false, description, group));
             return this;
         }
 
@@ -250,6 +270,30 @@ public record NodeDescriptor(
         }
 
         /**
+         * Adds a field the editor draws beside a port, e.g. the value a switch's case matches beside that case.
+         *
+         * @param port the input or execution port it belongs to
+         */
+        public Builder configBeside(
+                String id, String name, PortType type, @Nullable JsonNode defaultValue, String port) {
+            config.add(new ConfigField(id, name, type, defaultValue, null, List.of(), port));
+            return this;
+        }
+
+        /**
+         * Adds a field that picks the type a variable of the node binds to; see {@link ConfigField#selecting}.
+         *
+         * @param id       field id
+         * @param variable the variable it binds
+         * @param choices  allowed selectable type ids; the first is the default
+         * @return this builder
+         */
+        public Builder typeConfig(String id, String variable, List<String> choices) {
+            config.add(ConfigField.selecting(id, Ids.humanize(id), variable, choices));
+            return this;
+        }
+
+        /**
          * Marks evaluating the node as changing state, such as a cooldown that starts again when it is read, so
          * generated code evaluates it exactly where the graph says. Random values do not need this: moving them
          * changes nothing else.
@@ -262,11 +306,46 @@ public record NodeDescriptor(
         }
 
         /**
+         * Marks the node as a variant of another the editor shows in its place; see {@link NodeDescriptor#family()}.
+         *
+         * @param family the id of the node shown instead
+         * @return this builder
+         */
+        public Builder family(String family) {
+            this.family = Ids.checkPath(family, "family");
+            return this;
+        }
+
+        /**
+         * Sets the description of a declared input or output, e.g. after a helper declared the ports.
+         *
+         * @param port        the port's id; an input and an output of the same id both take it
+         * @param description what the port carries
+         * @return this builder
+         * @throws IllegalArgumentException when the node has no such port
+         */
+        public Builder describe(String port, String description) {
+            boolean found = replace(inputs, port, description) | replace(outputs, port, description);
+            if (!found) throw new IllegalArgumentException("%s has no port %s".formatted(id, port));
+            return this;
+        }
+
+        private static boolean replace(List<Port> ports, String id, String description) {
+            for (int i = 0; i < ports.size(); i++) {
+                Port port = ports.get(i);
+                if (!port.id().equals(id)) continue;
+                ports.set(i, new Port(port.id(), port.name(), port.type(), port.optional(), description, port.group()));
+                return true;
+            }
+            return false;
+        }
+
+        /**
          * @return the descriptor
          */
         public NodeDescriptor build() {
             return new NodeDescriptor(
-                    id, kind, category, name, description, inputs, outputs, executions, config, stateful);
+                    id, kind, category, name, description, inputs, outputs, executions, config, stateful, family);
         }
     }
 }

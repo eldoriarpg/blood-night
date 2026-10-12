@@ -49,13 +49,19 @@ final class Calls {
     }
 
     /**
-     * Builds the node for a call.
+     * Builds the node for a call, named by {@code title}.
      *
      * @throws IllegalArgumentException when the method does not exist, is static, declares checked exceptions, uses
      *                                  type variables, or is a query without return value
      */
     static NodeDefinition node(
-            Class<?> type, String prefix, String category, String typeName, Call call, Documentation docs) {
+            Class<?> type,
+            String prefix,
+            String category,
+            String typeName,
+            String title,
+            Call call,
+            Documentation docs) {
         Method method = method(type, call);
         Type[] generic = method.getGenericParameterTypes();
         boolean returns = method.getReturnType() != void.class;
@@ -66,19 +72,24 @@ final class Calls {
         NodeDescriptor.Builder descriptor = NodeDescriptor.builder(
                         prefix + "." + call.name(), call.action() ? NodeKind.ACTION : NodeKind.PURE)
                 .category(category)
-                .name(Names.humanize(call.name()))
+                .name(title)
                 .description(description)
                 .input(TARGET, typeName, PortType.of(type), false, docs.of(type).orElse(""));
         for (int i = 0; i < generic.length; i++) {
             Param param = call.params().get(i);
             PortType input = declared(generic[i], param);
-            descriptor.input(param.name(), Names.humanize(param.name()), input, false, "");
+            descriptor.input(
+                    param.name(),
+                    Names.humanize(param.name()),
+                    input,
+                    false,
+                    docs.parameter(method, i).orElse(param.description()));
         }
         if (returns) {
             PortType output = PortType.of(method.getGenericReturnType());
             if (output.hasVariables())
                 throw new IllegalArgumentException("%s returns a type variable".formatted(method));
-            descriptor.output(RESULT, "Result", output, "");
+            descriptor.output(RESULT, "Result", output, docs.returns(method).orElse(""));
         }
         if (call.action()) descriptor.execution(NEXT);
 

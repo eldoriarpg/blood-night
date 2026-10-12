@@ -80,6 +80,7 @@ class EditorClientTest {
                                     List.of(),
                                     List.of(),
                                     List.of(),
+                                    null,
                                     SESSION.expires()));
                 }
             } else {

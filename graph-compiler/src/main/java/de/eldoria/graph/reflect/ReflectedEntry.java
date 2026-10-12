@@ -6,11 +6,14 @@
 package de.eldoria.graph.reflect;
 
 import com.palantir.javapoet.CodeBlock;
+import de.eldoria.graph.definition.ConfigField;
 import de.eldoria.graph.definition.EntryDefinition;
+import de.eldoria.graph.definition.EntryGuard;
 import de.eldoria.graph.definition.EntryParameter;
 import de.eldoria.graph.definition.NodeDescriptor;
 import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
+import tools.jackson.databind.JsonNode;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -71,6 +74,8 @@ public final class ReflectedEntry {
         private final Set<String> accessors = new HashSet<>();
         private boolean flatten = true;
         private boolean fluent;
+        private final List<ConfigField> config = new ArrayList<>();
+        private EntryGuard guard = EntryGuard.NONE;
 
         private Builder(Class<?> host, String method, String id) {
             this.host = Objects.requireNonNull(host, "host");
@@ -167,6 +172,31 @@ public final class ReflectedEntry {
         }
 
         /**
+         * Adds a config field, set per entry node in the editor and read by the guard, e.g. which victims a kill
+         * entry reacts to.
+         *
+         * @param id           field id
+         * @param type         the field's type, an enum for a picker
+         * @param defaultValue the value when nothing is set
+         * @return this builder
+         */
+        public Builder config(String id, Class<?> type, JsonNode defaultValue) {
+            config.add(new ConfigField(id, Names.humanize(id), PortType.of(type), defaultValue));
+            return this;
+        }
+
+        /**
+         * Sets when the entry's chains run; see {@link EntryGuard}.
+         *
+         * @param guard the guard
+         * @return this builder
+         */
+        public Builder guard(EntryGuard guard) {
+            this.guard = Objects.requireNonNull(guard, "guard");
+            return this;
+        }
+
+        /**
          * @param rules which getters qualify
          * @return the entry definition
          * @throws IllegalArgumentException when the host method cannot be found unambiguously
@@ -200,7 +230,10 @@ public final class ReflectedEntry {
                                 output,
                                 CodeBlock.of(
                                         "$N.$N()", parameter, getter.method().getName()));
-                        rules.documentation().of(getter.method()).ifPresent(doc -> docs.put(output, doc));
+                        rules.documentation()
+                                .of(getter.method())
+                                .or(() -> rules.documentation().returns(getter.method()))
+                                .ifPresent(doc -> docs.put(output, doc));
                     }
                 }
             }
@@ -217,6 +250,7 @@ public final class ReflectedEntry {
                     .name(name)
                     .description(description)
                     .execution(NEXT);
+            config.forEach(field -> descriptor.config(field.id(), field.name(), field.type(), field.defaultValue()));
             types.forEach((output, type) -> {
                 if (!excluded.contains(output))
                     descriptor.output(
@@ -225,11 +259,16 @@ public final class ReflectedEntry {
                             type,
                             docs.getOrDefault(output, ""));
             });
-            return new EntryDefinition(descriptor.build(), method, entryParameters, (port, ctx) -> {
-                CodeBlock code = outputs.get(port);
-                if (code == null) throw new IllegalArgumentException(id + " has no output " + port);
-                return code;
-            });
+            return new EntryDefinition(
+                    descriptor.build(),
+                    method,
+                    entryParameters,
+                    (port, ctx) -> {
+                        CodeBlock code = outputs.get(port);
+                        if (code == null) throw new IllegalArgumentException(id + " has no output " + port);
+                        return code;
+                    },
+                    guard);
         }
 
         private Method hostMethod() {

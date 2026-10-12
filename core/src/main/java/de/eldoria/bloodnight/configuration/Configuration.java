@@ -137,14 +137,16 @@ public class Configuration {
 
     /**
      * Hashes the files an editor session replaces, to tell later whether they changed: {@code config.yml},
-     * {@code global_drops.yml}, {@code mobs.yml}, {@code macros.yml} and the files of the given worlds.
+     * {@code global_drops.yml}, {@code mobs.yml}, {@code items.yml}, {@code macros.yml} and the files of the given
+     * worlds.
      *
      * @param worlds the worlds whose settings are covered
      * @return SHA-256 per file, by path relative to the data folder; {@value #MISSING} for a file that does not exist
      */
     public Map<String, String> fileHashes(Collection<? extends World> worlds) throws IOException {
         Path base = configurations.base();
-        List<String> files = new ArrayList<>(List.of("config.yml", "global_drops.yml", "mobs.yml", "macros.yml"));
+        List<String> files =
+                new ArrayList<>(List.of("config.yml", "global_drops.yml", "mobs.yml", "items.yml", "macros.yml"));
         worlds.forEach(world -> files.add("worlds/" + world.getUID() + ".yml"));
         Map<String, String> hashes = new TreeMap<>();
         for (String file : files) {
@@ -169,6 +171,13 @@ public class Configuration {
         MobRegistry registry = new MobRegistry();
         mobs.forEach(registry::add);
         replace(MOBS, registry);
+    }
+
+    /**
+     * Replaces the items and writes {@code items.yml}.
+     */
+    public void replaceItems(ItemRegistry items) {
+        replace(ITEMS, items);
     }
 
     /**

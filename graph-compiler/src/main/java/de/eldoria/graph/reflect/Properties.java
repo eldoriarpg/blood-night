@@ -25,6 +25,13 @@ import java.util.TreeMap;
  * Finds the readable and writable properties of a class.
  */
 final class Properties {
+    private static final List<Class<?>> WIDEST_FIRST = List.of(
+            double.class, Double.class,
+            float.class, Float.class,
+            long.class, Long.class,
+            int.class, Integer.class,
+            short.class, Short.class,
+            byte.class, Byte.class);
 
     private static final Set<String> OBJECT_METHODS =
             Set.of("toString", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
@@ -148,8 +155,9 @@ final class Properties {
 
     /**
      * Public single-argument {@code setX} methods. Their return value is ignored, so fluent setters work too. When
-     * several overloads take one argument, the first by parameter type name keeps the plain id and the others get
-     * the parameter type appended.
+     * several overloads take one argument, the widest number type comes first (double, float, long, int, short, byte),
+     * then the others by parameter type name; the first keeps the plain id and the others get the parameter type
+     * appended.
      *
      * @return setters ordered by id
      */
@@ -174,7 +182,8 @@ final class Properties {
         }
         Map<String, Setter> byId = new TreeMap<>();
         byProperty.forEach((property, methods) -> {
-            methods.sort(Comparator.comparing(method -> method.getParameterTypes()[0].getName()));
+            methods.sort(Comparator.comparing((Method method) -> narrowness(method.getParameterTypes()[0]))
+                    .thenComparing(method -> method.getParameterTypes()[0].getName()));
             for (Method method : methods) {
                 Optional<PortType> portType = portType(method.getGenericParameterTypes()[0], rules);
                 if (portType.isEmpty()) continue;
@@ -197,6 +206,11 @@ final class Properties {
                     }));
         }
         return List.copyOf(byId.values());
+    }
+
+    private static int narrowness(Class<?> type) {
+        int index = WIDEST_FIRST.indexOf(type);
+        return index < 0 ? WIDEST_FIRST.size() : index / 2;
     }
 
     private static Optional<String> propertyOf(Method method, Class<?> owner) {

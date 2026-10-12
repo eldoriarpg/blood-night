@@ -120,6 +120,7 @@ public final class BukkitTypes {
                 .name(EntityType.class, "Entity Type")
                 .name(ItemType.class, "Item Type")
                 .name(BlockType.class, "Block Type")
+                .codec(new ColorCodec())
                 .codec(registry(EntityType.class, RegistryKey.ENTITY_TYPE, "ENTITY_TYPE", null))
                 .codec(registry(PotionEffectType.class, RegistryKey.MOB_EFFECT, "MOB_EFFECT", MobEffectKeys.class))
                 .codec(registry(ItemType.class, RegistryKey.ITEM, "ITEM", ItemTypeKeys.class))
@@ -142,6 +143,15 @@ public final class BukkitTypes {
                 .selectable("damage_cause", PortType.of(EntityDamageEvent.DamageCause.class))
                 .selectable("entity_type", PortType.of(EntityType.class))
                 .selectable("potion_effect_type", PortType.of(PotionEffectType.class))
+                .selectable("item_type", PortType.of(ItemType.class))
+                .selectable("block_type", PortType.of(BlockType.class))
+                .selectable("attribute", PortType.of(Attribute.class))
+                .selectable("enchantment", PortType.of(Enchantment.class))
+                .selectable("sound", PortType.of(Sound.class))
+                .selectable("particle", PortType.of(Particle.class))
+                .selectable("biome", PortType.of(Biome.class))
+                .selectable("potion", PortType.of(PotionType.class))
+                .selectable("color", PortType.of(Color.class))
                 .build();
     }
 

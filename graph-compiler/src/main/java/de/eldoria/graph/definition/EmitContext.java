@@ -8,6 +8,7 @@ package de.eldoria.graph.definition;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
+import tools.jackson.databind.JsonNode;
 
 /**
  * What a node definition can use while emitting code for one node instance.
@@ -47,6 +48,15 @@ public interface EmitContext {
     CodeBlock config(String field);
 
     /**
+     * The value of a config field as the graph stores it, for emitters that choose code by it rather than pass it
+     * on, e.g. leaving out a check that a setting makes pointless.
+     *
+     * @param field config field id
+     * @return the value typed in, or the field's default
+     */
+    JsonNode configValue(String field);
+
+    /**
      * @param port output port id
      * @return whether any node reads this output; an unread result need not be kept in a variable
      */
@@ -83,7 +93,7 @@ public interface EmitContext {
     /**
      * Declares a field shared by every node instance of the graph asking for the same name, one per behaviour
      * instance. This is where state lives that several triggers read and write, such as named timers. The first
-     * declaration decides type and initial value.
+     * declaration decides type and initial value; a later one of another type is reported as a problem.
      *
      * @param name        name, shared across the graph
      * @param type        field type
@@ -108,4 +118,13 @@ public interface EmitContext {
      * @throws IllegalStateException when the platform declares no context type
      */
     CodeBlock context();
+
+    /**
+     * Runs a statement once per tick, at the start of the platform's clock method, whether or not the graph has an
+     * entry there; the same statement added twice runs once. This is how waiting nodes hand back pending work.
+     *
+     * @param statement the statement, without its semicolon
+     * @throws IllegalStateException when the platform has no clock
+     */
+    void everyTick(CodeBlock statement);
 }

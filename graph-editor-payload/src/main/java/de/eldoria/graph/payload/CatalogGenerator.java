@@ -53,7 +53,7 @@ public final class CatalogGenerator {
 
     /**
      * @param platform the platform
-     * @return its catalog, including the macro boundary nodes
+     * @return its catalog, including the macro and routine boundary nodes
      */
     public static Catalog generate(GraphPlatform platform) {
         return new CatalogGenerator(platform).run();
@@ -95,11 +95,19 @@ public final class CatalogGenerator {
                             describe(node.inputs(), other.inputs()),
                             describe(node.outputs(), other.outputs()),
                             node.executions(),
-                            node.config());
+                            node.config(),
+                            node.family());
                 })
                 .toList();
-        Catalog unversioned = new Catalog(catalog.format(), "", nodes, catalog.types(), catalog.selectable());
-        return new Catalog(catalog.format(), hash(write(unversioned)), nodes, catalog.types(), catalog.selectable());
+        Catalog unversioned =
+                new Catalog(catalog.format(), "", nodes, catalog.types(), catalog.selectable(), catalog.bindings());
+        return new Catalog(
+                catalog.format(),
+                hash(write(unversioned)),
+                nodes,
+                catalog.types(),
+                catalog.selectable(),
+                catalog.bindings());
     }
 
     private static List<PortInfo> describe(List<PortInfo> ports, List<PortInfo> source) {
@@ -115,7 +123,8 @@ public final class CatalogGenerator {
                                 texts.getOrDefault(port.id(), port.description()),
                                 port.type(),
                                 port.optional(),
-                                port.literal()))
+                                port.literal(),
+                                port.group()))
                 .toList();
     }
 
@@ -139,6 +148,12 @@ public final class CatalogGenerator {
             register(type);
             selectable.put(id, type.id());
         });
+        Map<String, String> bindings = new TreeMap<>();
+        platform.bindings().forEach((variable, binding) -> {
+            register(binding.fallback());
+            binding.candidates().forEach(this::register);
+            bindings.put(variable, binding.fallback().id());
+        });
 
         List<TypeInfo> table = new ArrayList<>();
         for (PortType.Concrete type : concrete.values()) {
@@ -153,10 +168,11 @@ public final class CatalogGenerator {
                     type.arguments().stream().map(PortType::id).toList(),
                     types.codec(type).isPresent(),
                     types.enumValues(type),
-                    assignable));
+                    assignable,
+                    types.format(type)));
         }
-        Catalog unversioned = new Catalog(Catalog.FORMAT, "", nodes, table, selectable);
-        return new Catalog(Catalog.FORMAT, hash(write(unversioned)), nodes, table, selectable);
+        Catalog unversioned = new Catalog(Catalog.FORMAT, "", nodes, table, selectable, bindings);
+        return new Catalog(Catalog.FORMAT, hash(write(unversioned)), nodes, table, selectable, bindings);
     }
 
     private NodeType node(NodeDefinition definition, boolean macroOnly) {
@@ -173,14 +189,21 @@ public final class CatalogGenerator {
                 descriptor.executions().stream()
                         .map(CatalogGenerator::execution)
                         .toList(),
-                descriptor.config().stream().map(this::config).toList());
+                descriptor.config().stream().map(this::config).toList(),
+                descriptor.family());
     }
 
     private PortInfo port(Port port, boolean input) {
         boolean literal = input
                 && (types.codec(port.type()).isPresent() || SCALARS.stream().anyMatch(port.type()::accepts));
         return new PortInfo(
-                port.id(), port.name(), port.description(), ref(port.type()), input && port.optional(), literal);
+                port.id(),
+                port.name(),
+                port.description(),
+                ref(port.type()),
+                input && port.optional(),
+                literal,
+                port.group());
     }
 
     private static ExecutionInfo execution(ExecutionPort port) {
@@ -188,12 +211,19 @@ public final class CatalogGenerator {
     }
 
     private ConfigInfo config(ConfigField field) {
-        return new ConfigInfo(field.id(), field.name(), ref(field.type()), field.defaultValue());
+        return new ConfigInfo(
+                field.id(),
+                field.name(),
+                ref(field.type()),
+                field.defaultValue(),
+                field.selects(),
+                field.choices(),
+                field.beside());
     }
 
     private TypeRef ref(PortType type) {
         return switch (type) {
-            case PortType.Variable variable -> new TypeRef(null, variable.name(), null, List.of());
+            case PortType.Variable variable -> new TypeRef(null, variable.name(), null, List.of(), variable.numeric());
             case PortType.Concrete generic
             when generic.hasVariables() ->
                 new TypeRef(

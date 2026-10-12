@@ -1,0 +1,1203 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "BloodNight web",
+    "version" : "1"
+  },
+  "paths" : {
+    "/api/v1/editor/catalogs/{version}" : {
+      "head" : {
+        "operationId" : "hasCatalog",
+        "summary" : "Whether the service has a catalog",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "operationId" : "putCatalog",
+        "summary" : "Uploads a catalog",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Catalog"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions" : {
+      "post" : {
+        "operationId" : "openSession",
+        "summary" : "Opens a session",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateSession"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SessionCreated"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}" : {
+      "get" : {
+        "operationId" : "getSession",
+        "summary" : "The session",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "either",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SessionView"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "closeSession",
+        "summary" : "Closes the session",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "pull",
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/participants" : {
+      "post" : {
+        "operationId" : "addParticipant",
+        "summary" : "Lets someone else edit",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "pull",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AddParticipant"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ParticipantCreated"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/locks" : {
+      "post" : {
+        "operationId" : "takeSection",
+        "summary" : "Takes a section",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LockRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "releaseSection",
+        "summary" : "Releases a section",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LockRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/payload" : {
+      "put" : {
+        "operationId" : "replacePayload",
+        "summary" : "Replaces the whole payload",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : { }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChangeAccepted"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/changes" : {
+      "post" : {
+        "operationId" : "applyChanges",
+        "summary" : "Applies a change",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ChangeBatch"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChangeAccepted"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/revisions" : {
+      "get" : {
+        "operationId" : "listRevisions",
+        "summary" : "The revisions",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/RevisionInfo"
+                  }
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/revisions/{revision}" : {
+      "get" : {
+        "operationId" : "getRevision",
+        "summary" : "The payload at a revision",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "revision",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : { }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/revisions/{revision}/restore" : {
+      "post" : {
+        "operationId" : "restoreRevision",
+        "summary" : "Restores a revision",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "revision",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChangeAccepted"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/submit" : {
+      "post" : {
+        "operationId" : "submitSession",
+        "summary" : "Marks the session as done",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "participant",
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/editor/sessions/{id}/result" : {
+      "get" : {
+        "operationId" : "pullResult",
+        "summary" : "The submitted session",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "pull",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SessionView"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{version}/items" : {
+      "get" : {
+        "operationId" : "getItemAssets",
+        "summary" : "Every item of a Minecraft version with its icon and names",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ItemIndex"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{version}/textures/{folder}/{name}" : {
+      "get" : {
+        "operationId" : "getItemTexture",
+        "summary" : "An item icon as PNG",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "folder",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AddParticipant" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name" ]
+      },
+      "Catalog" : {
+        "type" : "object",
+        "properties" : {
+          "format" : {
+            "type" : "integer"
+          },
+          "version" : {
+            "type" : "string"
+          },
+          "nodes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/NodeType"
+            }
+          },
+          "types" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TypeInfo"
+            }
+          },
+          "selectable" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "bindings" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "format", "version", "nodes", "types", "selectable", "bindings" ]
+      },
+      "ChangeAccepted" : {
+        "type" : "object",
+        "properties" : {
+          "revision" : {
+            "type" : "integer"
+          },
+          "problems" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PayloadProblem"
+            }
+          }
+        },
+        "required" : [ "revision", "problems" ]
+      },
+      "ChangeBatch" : {
+        "type" : "object",
+        "properties" : {
+          "operations" : { }
+        },
+        "required" : [ "operations" ]
+      },
+      "ConfigInfo" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/TypeRef"
+          },
+          "defaultValue" : { },
+          "selects" : {
+            "type" : "string"
+          },
+          "choices" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "beside" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CreateSession" : {
+        "type" : "object",
+        "properties" : {
+          "catalog" : {
+            "type" : "string"
+          },
+          "payload" : { },
+          "participant" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "catalog", "payload", "participant" ]
+      },
+      "ErrorBody" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "integer"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "details" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "title", "status", "type" ]
+      },
+      "ExecutionInfo" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "repeating" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "ItemAsset" : {
+        "type" : "object",
+        "properties" : {
+          "texture" : {
+            "type" : "string"
+          },
+          "names" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "names" ]
+      },
+      "ItemIndex" : {
+        "type" : "object",
+        "properties" : {
+          "version" : {
+            "type" : "string"
+          },
+          "items" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ItemAsset"
+            }
+          },
+          "names" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "required" : [ "version", "items", "names" ]
+      },
+      "LockInfo" : {
+        "type" : "object",
+        "properties" : {
+          "section" : {
+            "type" : "string"
+          },
+          "holder" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "section", "holder" ]
+      },
+      "LockRequest" : {
+        "type" : "object",
+        "properties" : {
+          "section" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "section" ]
+      },
+      "NodeType" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "macroOnly" : {
+            "type" : "boolean"
+          },
+          "inputs" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PortInfo"
+            }
+          },
+          "outputs" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PortInfo"
+            }
+          },
+          "executions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ExecutionInfo"
+            }
+          },
+          "config" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ConfigInfo"
+            }
+          },
+          "family" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ParticipantCreated" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "editorUrl" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name", "editorUrl" ]
+      },
+      "PayloadProblem" : {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "path", "message" ]
+      },
+      "PortInfo" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/TypeRef"
+          },
+          "optional" : {
+            "type" : "boolean"
+          },
+          "literal" : {
+            "type" : "boolean"
+          },
+          "group" : {
+            "type" : "string"
+          }
+        }
+      },
+      "RevisionInfo" : {
+        "type" : "object",
+        "properties" : {
+          "revision" : {
+            "type" : "integer"
+          },
+          "created" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "operations" : {
+            "type" : "integer"
+          },
+          "author" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "revision", "created", "operations" ]
+      },
+      "SessionCreated" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "editorUrl" : {
+            "type" : "string"
+          },
+          "pullToken" : {
+            "type" : "string"
+          },
+          "expires" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "id", "editorUrl", "pullToken", "expires" ]
+      },
+      "SessionState" : {
+        "type" : "string",
+        "enum" : [ "EDITING", "SUBMITTED" ]
+      },
+      "SessionView" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/SessionState"
+          },
+          "revision" : {
+            "type" : "integer"
+          },
+          "catalog" : {
+            "type" : "string"
+          },
+          "payload" : { },
+          "problems" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PayloadProblem"
+            }
+          },
+          "locks" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LockInfo"
+            }
+          },
+          "online" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "you" : {
+            "type" : "string"
+          },
+          "expires" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "id", "state", "revision", "catalog", "payload", "problems", "locks", "online", "expires" ]
+      },
+      "StreamEvent" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/StreamEventType"
+          },
+          "revision" : {
+            "type" : "integer"
+          },
+          "author" : {
+            "type" : "string"
+          },
+          "operations" : { },
+          "section" : {
+            "type" : "string"
+          },
+          "holder" : {
+            "type" : "string"
+          },
+          "participants" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "locks" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LockInfo"
+            }
+          }
+        }
+      },
+      "StreamEventType" : {
+        "type" : "string",
+        "enum" : [ "HELLO", "CHANGE", "LOCK", "UNLOCK", "PRESENCE", "SUBMITTED", "CLOSED" ]
+      },
+      "TypeInfo" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "raw" : {
+            "type" : "string"
+          },
+          "arguments" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "literal" : {
+            "type" : "boolean"
+          },
+          "values" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "assignableTo" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "format" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TypeRef" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "variable" : {
+            "type" : "string"
+          },
+          "raw" : {
+            "type" : "string"
+          },
+          "arguments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TypeRef"
+            }
+          },
+          "numeric" : {
+            "type" : "boolean"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "bearer" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "description" : "A participant token, or the server's pull token, as the operation says"
+      }
+    }
+  }
+}

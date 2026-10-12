@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * A reusable subgraph defined by users and shared across graphs.
  * <p>
- * Its body is an ordinary graph whose boundary nodes ({@code macro.input.*}, {@code macro.output},
+ * Its body is an ordinary graph whose boundary nodes ({@code macro.input}, {@code macro.output},
  * {@code macro.start}, {@code macro.end}) define the ports the macro shows when used as a node of type
  * {@code macro.<id>}. Graphs store only that use node; the body is spliced in when compiling.
  *

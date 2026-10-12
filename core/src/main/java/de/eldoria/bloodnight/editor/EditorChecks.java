@@ -6,8 +6,11 @@
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobTypes;
 import de.eldoria.bloodnight.mob.meta.Drop;
 import de.eldoria.bloodnight.mob.meta.Equipment;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
@@ -18,28 +21,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Checks a result from the editor against the server before it is applied: each mob is stored under its own id, mobs
- * only use registered items, and the files it replaces did not change since the session opened. Worlds the server does not know are reported separately, they are skipped.
+ * and their extensions are entity types a mob can be ({@link MobTypes}), mobs only use registered items or item
+ * materials, and the files it replaces did not change since the session opened.
+ * Worlds the server does not know are reported separately; they are skipped.
  */
 public final class EditorChecks {
     private EditorChecks() {}
 
     /**
      * @param result the result
-     * @param items  the ids of the registered items
+     * @param items  whether the server knows an item id
      * @return why the result cannot be applied; empty when it can
      */
-    public static List<String> problems(EditorResult result, Set<String> items) {
+    public static List<String> problems(EditorResult result, Predicate<String> items) {
         List<String> problems = new ArrayList<>();
         for (Map.Entry<String, CustomMob> entry : result.mobs().entrySet()) {
             CustomMob mob = entry.getValue();
             if (!entry.getKey().equals(mob.id())) {
                 problems.add("Mob %s is stored as %s".formatted(mob.id(), entry.getKey()));
             }
+            EntityType type = mob.attributes().entityType();
+            if (type != null && !MobTypes.isMob(type)) {
+                problems.add("Mob %s cannot be a %s, which is no mob".formatted(mob.id(), type.name()));
+            }
+            EntityType extension = mob.extension().entityType();
+            if (extension != null && !MobTypes.isMob(extension)) {
+                problems.add("The extension of mob %s cannot be a %s, which is no mob"
+                        .formatted(mob.id(), extension.name()));
+            }
             for (String item : usedItems(mob)) {
-                if (!items.contains(item)) problems.add("Mob %s uses unknown item %s".formatted(mob.id(), item));
+                if (!items.test(item) && !result.items().containsKey(item) && !isMaterial(item)) {
+                    problems.add("Mob %s uses unknown item %s".formatted(mob.id(), item));
+                }
             }
         }
         return problems;
@@ -92,6 +109,11 @@ public final class EditorChecks {
                 hashes.put(entry.getKey(), entry.getValue().asString());
         }
         return hashes;
+    }
+
+    private static boolean isMaterial(String id) {
+        Material material = Material.matchMaterial(id);
+        return material != null && material.isItem();
     }
 
     private static List<String> usedItems(CustomMob mob) {

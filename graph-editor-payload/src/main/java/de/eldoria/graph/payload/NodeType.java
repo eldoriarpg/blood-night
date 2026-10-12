@@ -6,6 +6,7 @@
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ import java.util.List;
  * @param outputs     data outputs
  * @param executions  execution outputs
  * @param config      values set on the node
+ * @param family      for a variant of another node: that node's id; the editor offers only that node and switches
+ *                    between its variants, e.g. the read and change nodes of each type behind one "Mutate"
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record NodeType(
@@ -34,4 +37,22 @@ public record NodeType(
         List<PortInfo> inputs,
         List<PortInfo> outputs,
         List<ExecutionInfo> executions,
-        List<ConfigInfo> config) {}
+        List<ConfigInfo> config,
+        @Nullable String family) {
+    /**
+     * A node that is no variant of another.
+     */
+    public NodeType(
+            String id,
+            String kind,
+            String category,
+            String name,
+            String description,
+            boolean macroOnly,
+            List<PortInfo> inputs,
+            List<PortInfo> outputs,
+            List<ExecutionInfo> executions,
+            List<ConfigInfo> config) {
+        this(id, kind, category, name, description, macroOnly, inputs, outputs, executions, config, null);
+    }
+}

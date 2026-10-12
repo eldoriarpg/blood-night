@@ -6,6 +6,7 @@
 package de.eldoria.graph.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
  * @param literal      whether values of the type can be typed in
  * @param values       allowed typed-in values, e.g. enum constants or registry keys; empty when any value is fine
  * @param assignableTo ids of the other types that accept a value of this type
+ * @param format       how values are typed in when not as text or a choice, e.g. {@code color}; absent otherwise
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record TypeInfo(
@@ -28,4 +30,5 @@ public record TypeInfo(
         List<String> arguments,
         boolean literal,
         List<String> values,
-        List<String> assignableTo) {}
+        List<String> assignableTo,
+        @Nullable String format) {}

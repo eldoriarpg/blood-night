@@ -1,0 +1,139 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+@import "tailwindcss";
+@import "@fontsource/bitter/500.css";
+@import "@fontsource/bitter/700.css";
+@import "@fontsource/jetbrains-mono/400.css";
+
+@theme {
+    --color-ground: #0e0909;
+    --color-surface: #161011;
+    --color-raised: #1e1516;
+    --color-hover: #271b1c;
+    --color-selected: #2b1a1c;
+    --color-line: #3a2527;
+    --color-line-soft: #2a1c1d;
+
+    --color-ink: #f2e6e4;
+    --color-ink-muted: #b39c99;
+    --color-ink-faint: #8f7774;
+
+    --color-accent: #c8243a;
+    --color-accent-hover: #ad1d31;
+    --color-accent-contrast: #ffffff;
+    --color-accent-text: #ff6b77;
+    --color-focus: #e0414f;
+
+    --color-held: #f1b55c;
+    --color-held-bg: #3a2a12;
+    --color-problem: #ff8b95;
+    --color-problem-bg: #3d1418;
+
+    --color-node-event: #8c1d2b;
+    --color-node-action: #2c4a70;
+    --color-node-value: #2d5e3f;
+    --color-node-flow: #4a3f41;
+    --color-node-macro: #5e3570;
+
+    --color-pin-exec: #e9dcda;
+    --color-pin-entity: #5aa9e6;
+    --color-pin-number: #7fd18f;
+    --color-pin-boolean: #ff6b77;
+    --color-pin-text: #e88fc5;
+    --color-pin-location: #e6d36b;
+    --color-pin-item: #c4a3ff;
+    --color-pin-other: #b39c99;
+
+    --color-primary: #c8243a;
+    --color-primary-text: #ffffff;
+    --color-error: #ff8b95;
+    --color-error-text: #ff8b95;
+    --color-success: #7fd18f;
+    --color-info: #f1b55c;
+
+    --font-sans: system-ui, 'Segoe UI', sans-serif;
+    --font-heading: 'Bitter', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --radius-control: 8px;
+    --radius-panel: 10px;
+    --radius-node: 6px;
+    --radius-theme: 8px;
+
+    --animate-fade-in: fade-in 0.15s ease;
+    --animate-fade-out: fade-out 0.15s ease;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+    }
+
+    @keyframes fade-out {
+        to {
+            opacity: 0;
+        }
+    }
+}
+
+:root {
+    --bg: var(--color-ground);
+    --bg-accent: var(--color-raised);
+    --text: var(--color-ink);
+    --text-muted: var(--color-ink-muted);
+    --text-faint: var(--color-ink-faint);
+    --border: var(--color-line);
+    --link: var(--color-accent-text);
+
+    color-scheme: dark;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    background: var(--bg);
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-heading);
+}
+
+code,
+kbd,
+samp {
+    font-family: var(--font-mono);
+}
+
+::selection {
+    background: var(--color-selected);
+    color: var(--text);
+}
+
+input::placeholder {
+    color: var(--text-faint);
+    opacity: 1;
+}
+
+@layer base {
+    :focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+}
+
+a:not(.row-link) {
+    color: var(--link);
+    text-decoration: none;
+}
+
+a:not(.row-link):hover {
+    text-decoration: underline;
+}

@@ -20,6 +20,7 @@ import de.eldoria.bloodnight.graph.TriggerDispatcher;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
+import de.eldoria.bloodnight.mobs.DropHandler;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
@@ -119,6 +120,14 @@ public final class BloodNight extends JavaPlugin {
         plugins.registerEvents(new DamageHandler(), this);
         plugins.registerEvents(new TargetPolicy(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
+        plugins.registerEvents(
+                new DropHandler(
+                        id -> configuration.mobs().get(id),
+                        world -> configuration.worldConfig(world).worldDrops(),
+                        () -> configuration.globalDrops(),
+                        id -> configuration.items().item(id),
+                        RandomGenerator.getDefault()),
+                this);
         getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));
         tickTask = getServer().getScheduler().runTaskTimer(this, coordinator::tick, 1, 1);
         MobIds.use(() -> configuration.mobs().all().stream().map(CustomMob::id).toList());

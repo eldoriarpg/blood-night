@@ -6,12 +6,21 @@
 package de.eldoria.bloodnight.mob.defaults;
 
 import de.eldoria.bloodnight.graph.BloodNightNodes;
+import de.eldoria.bloodnight.graph.MobBindings;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.graph.compiler.Graphs;
 import de.eldoria.graph.compiler.Routines;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.StdNodes;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.inventory.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,12 +44,35 @@ final class MobGraph implements BloodNightNodes {
     private static final int PARTICLE_MILLIS = 250;
 
     private final Graphs graphs;
+    private final String selfType;
+    private final String extensionType;
     private final Map<String, String> shared = new HashMap<>();
     private final Map<String, Graphs.NodeBuilder> entries = new HashMap<>();
     private int next;
 
-    MobGraph(GraphPlatform platform) {
-        this.graphs = Graphs.with(platform);
+    /**
+     * @param platform  the platform
+     * @param entity    the mob's entity type; Self has this type in the graph
+     * @param extension the extension's entity type, if the mob has one
+     */
+    MobGraph(GraphPlatform platform, EntityType entity, @Nullable EntityType extension) {
+        this.graphs = Graphs.with(platform).bindings(MobBindings.of(entity, extension));
+        this.selfType = reflected(entity);
+        this.extensionType = reflected(extension);
+    }
+
+    /**
+     * The most specific reflected entity type an entity type is, whose read and mutate nodes take it.
+     */
+    private static String reflected(@Nullable EntityType type) {
+        Class<?> entity = type == null ? null : type.getEntityClass();
+        if (entity == null) return "entity";
+        if (Creeper.class.isAssignableFrom(entity)) return "creeper";
+        if (Player.class.isAssignableFrom(entity)) return "player";
+        if (Mob.class.isAssignableFrom(entity)) return "mob";
+        if (LivingEntity.class.isAssignableFrom(entity)) return "living_entity";
+        if (Projectile.class.isAssignableFrom(entity)) return "projectile";
+        return "entity";
     }
 
     Graph build() {
@@ -87,7 +119,8 @@ final class MobGraph implements BloodNightNodes {
      * @param selectable the parameter's type, e.g. {@code living_entity}
      */
     String parameter(String routine, String name, String selectable) {
-        return node(Routines.PARAMETER_PREFIX + selectable)
+        return node(Routines.PARAMETER)
+                .config("type", selectable)
                 .config("routine", routine)
                 .config("name", name)
                 .id();
@@ -105,33 +138,71 @@ final class MobGraph implements BloodNightNodes {
     }
 
     /**
-     * The mob as a more specific type; output {@code result}.
+     * Every property of the mob, read through the read node of its own type; outputs such as {@code location},
+     * {@code eye_location}, {@code equipment}, {@code target}.
      */
-    String selfAs(String selectable) {
-        return once("self_as_" + selectable, () -> as(selectable, self(), "entity"));
-    }
-
-    /**
-     * The getters of the mob; outputs such as {@code location}, {@code eye_location}, {@code world}, {@code target}.
-     */
-    String selfMob() {
+    String selfRead() {
         return once(
-                "self_mob",
-                () -> node(MOB_GET).input(TARGET, selfAs("mob"), RESULT).id());
+                "self_read",
+                () -> node(selfType + ".read").input(TARGET, self(), "entity").id());
     }
 
     /**
-     * The getters of any entity; outputs such as {@code location}, {@code world}.
+     * A new mutate node of the mob's own type, changing the properties given to it.
      */
-    String entity(String node, String port) {
-        return node(ENTITY_GET).input(TARGET, node, port).id();
+    Graphs.NodeBuilder selfMutate() {
+        return node(selfType + ".mutate").input(TARGET, self(), "entity");
+    }
+
+    /**
+     * Every property of the extension, read through the read node of its own type; its outputs are missing when the
+     * mob has no extension.
+     */
+    String extensionRead() {
+        return once("extension_read", () -> node(extensionType + ".read")
+                .input(TARGET, extension(), "entity")
+                .id());
+    }
+
+    /**
+     * The entity riding or carrying the mob, as its own type; output {@code entity}, missing when there is none.
+     */
+    String extension() {
+        return once("extension", () -> node(MOB_EXTENSION).id());
+    }
+
+    /**
+     * A new mutate node of the extension's own type.
+     */
+    Graphs.NodeBuilder extensionMutate() {
+        return node(extensionType + ".mutate").input(TARGET, extension(), "entity");
+    }
+
+    /**
+     * Every property of a living entity, such as the mob's target; outputs such as {@code location}, {@code health}.
+     */
+    String living(String node, String port) {
+        return node(LIVING_ENTITY_READ).input(TARGET, node, port).id();
+    }
+
+    /**
+     * A fixed value of a selectable type.
+     *
+     * @param type  the selectable type, e.g. {@code damage_cause}
+     * @param value the value as the editor stores it
+     */
+    String value(String type, Object value) {
+        return node(StdNodes.VALUE).config("type", type).config(VALUE, value).id();
     }
 
     /**
      * A value as a more specific type; outputs {@code result} and {@code matches}.
      */
     String as(String selectable, String node, String port) {
-        return node(StdNodes.cast(selectable)).input(VALUE, node, port).id();
+        return node(StdNodes.CAST)
+                .config("type", selectable)
+                .input(VALUE, node, port)
+                .id();
     }
 
     /**
@@ -172,7 +243,7 @@ final class MobGraph implements BloodNightNodes {
      * Spawns particles around the mob once.
      */
     String particlesAround(String particle, int count) {
-        return particlesAt(particle, count, selfMob(), "eye_location");
+        return particlesAt(particle, count, selfRead(), "eye_location");
     }
 
     /**
@@ -180,7 +251,7 @@ final class MobGraph implements BloodNightNodes {
      */
     String particlesAt(String particle, int count, String node, String port) {
         return node(WORLD_SPAWN_PARTICLE)
-                .input(TARGET, selfMob(), "world")
+                .input(TARGET, selfRead(), "world")
                 .literal("particle", particle)
                 .input("location", node, port)
                 .literal("count", count)
@@ -197,10 +268,10 @@ final class MobGraph implements BloodNightNodes {
      * @param port its output
      */
     String particlesAroundWith(String particle, int count, String node, String port) {
-        return node(WORLD_SPAWN_PARTICLE_WITH_DATA)
-                .input(TARGET, selfMob(), "world")
+        return node(WORLD_SPAWN_PARTICLE)
+                .input(TARGET, selfRead(), "world")
                 .literal("particle", particle)
-                .input("location", selfMob(), "eye_location")
+                .input("location", selfRead(), "eye_location")
                 .literal("count", count)
                 .literal("offset_x", 1.5)
                 .literal("offset_y", 1.0)
@@ -241,10 +312,10 @@ final class MobGraph implements BloodNightNodes {
                 .input("color", color(red, green, blue), RESULT)
                 .literal("size", size)
                 .id();
-        return node(WORLD_SPAWN_PARTICLE_WITH_DATA)
-                .input(TARGET, selfMob(), "world")
+        return node(WORLD_SPAWN_PARTICLE)
+                .input(TARGET, selfRead(), "world")
                 .literal("particle", "minecraft:dust")
-                .input("location", selfMob(), "eye_location")
+                .input("location", selfRead(), "eye_location")
                 .literal("count", count)
                 .literal("offset_x", 1.5)
                 .literal("offset_y", 1.0)
@@ -265,7 +336,10 @@ final class MobGraph implements BloodNightNodes {
      * Runs a chain at most once every so many milliseconds.
      */
     String every(int millis, String... chain) {
-        String cooldown = node(FUNCTION_COOLDOWN).literal(VALUE, millis).id();
+        String cooldown = node(FUNCTION_COOLDOWN)
+                .config("unit", "MILLISECONDS")
+                .literal("duration", millis)
+                .id();
         return when(cooldown, RESULT, chain);
     }
 
@@ -311,7 +385,7 @@ final class MobGraph implements BloodNightNodes {
     String after(String timer, double seconds, String... chain) {
         String elapsed = node(TIMER_ELAPSED).config("timer", timer).id();
         String passed = node(LOGIC_GREATER_OR_EQUAL)
-                .input("first", elapsed, "seconds")
+                .input("first", elapsed, "elapsed")
                 .literal("second", seconds)
                 .id();
         return when(passed, RESULT, chain);
@@ -325,41 +399,41 @@ final class MobGraph implements BloodNightNodes {
      * Cancels the event of a trigger.
      */
     String cancel(String trigger) {
-        return node(CANCELLABLE_SET_CANCELLED)
+        return node(CANCELLABLE_MUTATE)
                 .input(TARGET, trigger, "event")
-                .literal(VALUE, true)
+                .literal("cancelled", true)
                 .id();
     }
 
     /**
      * Puts an item into an equipment slot of the mob.
      *
-     * @param setter one of the {@code equipment.set_*} node types
-     * @param item   item type key, {@code minecraft:air} to empty the slot
+     * @param slot the slot
+     * @param item item type key, {@code minecraft:air} to empty the slot
      */
-    String equip(String setter, String item) {
-        return equip(selfMob(), setter, item);
+    String equip(EquipmentSlot slot, String item) {
+        return equip(selfRead(), slot, item);
     }
 
     /**
-     * Puts an item into an equipment slot of a mob.
+     * Puts an item into an equipment slot of a living entity, read from the {@code equipment} output of its getter.
      */
-    String equip(String mobGetter, String setter, String item) {
+    String equip(String livingGetter, EquipmentSlot slot, String item) {
         String stack = node(ITEM_TYPE_CREATE_ITEM_STACK).literal(TARGET, item).id();
-        return node(setter)
-                .input(TARGET, mobGetter, "equipment")
-                .input(VALUE, stack, RESULT)
+        return node(EQUIPMENT_EQUIP)
+                .input(TARGET, livingGetter, "equipment")
+                .literal("slot", slot.name())
+                .input("item", stack, RESULT)
                 .id();
     }
 
     /**
-     * Calls a setter of the creeper this mob is.
+     * Sets a property of the creeper this mob is.
+     *
+     * @param property the property's input of the creeper's set node, e.g. {@code max_fuse_ticks}
      */
-    String creeper(String setter, Object value) {
-        return node(setter)
-                .input(TARGET, selfAs("creeper"), RESULT)
-                .literal(VALUE, value)
-                .id();
+    String creeper(String property, Object value) {
+        return selfMutate().literal(property, value).id();
     }
 
     /**
@@ -368,7 +442,7 @@ final class MobGraph implements BloodNightNodes {
     String sound(String player, String port, String sound, double volume, double pitch) {
         return node(PLAYER_PLAY_SOUND)
                 .input(TARGET, player, port)
-                .input("location", entity(player, port), "location")
+                .input("location", node(PLAYER_READ).input(TARGET, player, port).id(), "location")
                 .literal("sound", sound)
                 .literal("volume", volume)
                 .literal("pitch", pitch)
@@ -396,7 +470,7 @@ final class MobGraph implements BloodNightNodes {
         return node(LIVING_ENTITY_LAUNCH_PROJECTILE)
                 .config("projectile", projectile)
                 .input("shooter", self(), "entity")
-                .input(TARGET, selfMob(), TARGET)
+                .input(TARGET, selfRead(), TARGET)
                 .literal("speed", speed)
                 .id();
     }
@@ -406,14 +480,11 @@ final class MobGraph implements BloodNightNodes {
      */
     String targetNearestPlayer() {
         String nearest = node(WORLD_NEAREST_PLAYER)
-                .input("location", selfMob(), "location")
+                .input("location", selfRead(), "location")
                 .literal("radius", 16.0)
                 .id();
-        String target = node(MOB_SET_TARGET)
-                .input(TARGET, selfAs("mob"), RESULT)
-                .input(VALUE, nearest, "player")
-                .id();
-        String noTarget = node(LOGIC_IS_NULL).input(VALUE, selfMob(), TARGET).id();
+        String target = selfMutate().input("target_value", nearest, "player").id();
+        String noTarget = node(LOGIC_IS_NULL).input(VALUE, selfRead(), TARGET).id();
         return when(noTarget, RESULT, present(nearest, "player", target));
     }
 
@@ -422,12 +493,8 @@ final class MobGraph implements BloodNightNodes {
      */
     void forwardTargetToExtension() {
         String trigger = entry(EVENT_TARGET_CHANGE);
-        String extension = as("mob", node(MOB_EXTENSION).id(), "entity");
-        String target = node(MOB_SET_TARGET)
-                .input(TARGET, extension, RESULT)
-                .input(VALUE, trigger, TARGET)
-                .id();
-        on(EVENT_TARGET_CHANGE, when(extension, "matches", target));
+        String target = extensionMutate().input("target_value", trigger, TARGET).id();
+        on(EVENT_TARGET_CHANGE, present(extension(), "entity", target));
     }
 
     private String once(String key, Supplier<String> create) {

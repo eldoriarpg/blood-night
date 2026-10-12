@@ -36,6 +36,7 @@ record ValidatedGraph(
      * @param sourceTypes type of the value connected or typed into each input, before any boxing for type variables
      * @param literals    code for every input set to a value instead of an edge
      * @param config      literal for every config field, defaults applied
+     * @param configTypes type of every config field, with the variables type fields bind resolved
      */
     record Node(
             String id,
@@ -45,5 +46,6 @@ record ValidatedGraph(
             Map<String, PortType> outputTypes,
             Map<String, PortType> sourceTypes,
             Map<String, CodeBlock> literals,
-            Map<String, CodeBlock> config) {}
+            Map<String, CodeBlock> config,
+            Map<String, PortType> configTypes) {}
 }

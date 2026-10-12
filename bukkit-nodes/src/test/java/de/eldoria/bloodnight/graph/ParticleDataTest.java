@@ -41,7 +41,7 @@ class ParticleDataTest {
         Graphs graphs = Graphs.with(platform);
         graphs.node("tick", BloodNightNodes.MOB_TICK).chain("next", "spawn");
         graphs.node("self", BloodNightNodes.MOB_SELF);
-        graphs.node("get", BloodNightNodes.ENTITY_GET).input("target", "self", "entity");
+        graphs.node("get", BloodNightNodes.ENTITY_READ).input("target", "self", "entity");
         Graphs.NodeBuilder spawn = graphs.node("spawn", type)
                 .input("target", "get", "world")
                 .literal("particle", particle)
@@ -55,10 +55,8 @@ class ParticleDataTest {
     }
 
     private static Graphs withPower(String particle) {
-        Graphs graphs = spawn(
-                BloodNightNodes.WORLD_SPAWN_PARTICLE_WITH_DATA,
-                particle,
-                spawn -> spawn.input("data", "power", "power"));
+        Graphs graphs =
+                spawn(BloodNightNodes.WORLD_SPAWN_PARTICLE, particle, spawn -> spawn.input("data", "power", "power"));
         graphs.node("power", BloodNightNodes.PARTICLE_POWER).literal("power", 1.0);
         return graphs;
     }
@@ -91,17 +89,15 @@ class ParticleDataTest {
 
     @Test
     void dataForParticlesTakingNoneIsRefused() {
-        String problem = problem(spawn(
-                BloodNightNodes.WORLD_SPAWN_PARTICLE_WITH_DATA, "minecraft:flame", spawn -> spawn.literal("data", 1)));
+        String problem = problem(
+                spawn(BloodNightNodes.WORLD_SPAWN_PARTICLE, "minecraft:flame", spawn -> spawn.literal("data", 1)));
         assertTrue(problem.contains("takes no data"), problem);
     }
 
     @Test
     void dataCannotBeTypedIn() {
         String problem = problem(spawn(
-                BloodNightNodes.WORLD_SPAWN_PARTICLE_WITH_DATA,
-                "minecraft:dragon_breath",
-                spawn -> spawn.literal("data", 1.0)));
+                BloodNightNodes.WORLD_SPAWN_PARTICLE, "minecraft:dragon_breath", spawn -> spawn.literal("data", 1.0)));
         assertTrue(problem.contains("cannot be typed in"), problem);
     }
 }
