@@ -252,7 +252,8 @@ function keys(defs, definition, prefix) {
       rows.push(...keys(defs, resolved, path + '.'))
       continue
     }
-    rows.push([path, typeOf(defs, resolved), shown(property.default)])
+    const limit = property.maxItems === undefined ? '' : `, at most ${property.maxItems}`
+    rows.push([path, typeOf(defs, resolved) + limit, shown(property.default)])
   }
   return rows
 }

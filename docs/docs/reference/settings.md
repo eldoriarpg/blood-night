@@ -56,7 +56,7 @@ Settings for one world. Every world has its own file.
 | `nightSelection.moonPhase.probabilities` | map | `{"FULL_MOON":0,"WANING_GIBBOUS":10,"LAST_QUARTER":20,"WANING_CRESCENT":40,"NEW_MOON":100,"WAXING_CRESCENT":40,"FIRST_QUARTER":20,"WAXING_GIBBOUS":10}` |
 | `nightSelection.interval.interval` | whole number | `5` |
 | `nightSelection.interval.probability` | whole number | `100` |
-| `nightSelection.phase.probabilities` | list of whole number | `[50,50,50]` |
+| `nightSelection.phase.probabilities` | list of whole number, at most 100 | `[50,50,50]` |
 | `nightSelection.curve.min` | whole number | `20` |
 | `nightSelection.curve.max` | whole number | `80` |
 | `nightSelection.curve.period` | whole number | `10` |

@@ -82,6 +82,8 @@ phase:
 
 Here night 1 has no chance, night 2 has 20, night 3 has 50, night 4 is always a blood night. Then it repeats.
 
+A cycle can have up to 100 nights.
+
 ### CURVE
 
 The chance goes up and down like a wave.
