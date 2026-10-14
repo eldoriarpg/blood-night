@@ -11,8 +11,8 @@ services:
       interval: 5s
       retries: 10
 
-  web:
-    image: ghcr.io/eldoriarpg/blood-night-web:${BLOODNIGHT_VERSION:-latest}
+  backend:
+    image: ghcr.io/eldoriarpg/bloodnight-backend:${BLOODNIGHT_VERSION:-latest}
     restart: unless-stopped
     environment:
       DB_HOST: postgres
@@ -25,14 +25,14 @@ services:
         condition: service_healthy
 
   frontend:
-    image: ghcr.io/eldoriarpg/blood-night-frontend:${BLOODNIGHT_VERSION:-latest}
+    image: ghcr.io/eldoriarpg/bloodnight-frontend:${BLOODNIGHT_VERSION:-latest}
     restart: unless-stopped
     environment:
-      NUXT_BACKEND_URL: http://web:8080
+      NUXT_BACKEND_URL: http://backend:8080
     ports:
       - "${PORT:-4000}:4000"
     depends_on:
-      - web
+      - backend
 
 volumes:
   postgres:

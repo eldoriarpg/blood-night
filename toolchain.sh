@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRONTEND="$ROOT/web/frontend"
 DOCS="$ROOT/docs"
-COMPOSE=(docker compose -p bloodnight -f "$ROOT/.docker/compose.yaml")
+COMPOSE=(docker compose -p bloodnight -f "$ROOT/.docker/compose.dev.yaml")
 COMMAND_GROUPS=(be fe docs docker)
 
 usage() {
@@ -59,12 +59,12 @@ Generated files
   api-types             Payload schema, API description and the frontend types, after changing a record or a
                         settings class the editor sees
 
-Docker (.docker/compose.yaml, needs DB_PASSWORD)
-  docker-up             Database, web backend on :8080 and frontend on :4000, rebuilt
-  docker-db             Only the database, on 127.0.0.1 at DB_PORT (default 5432) for be-backend
+Docker for local testing (.docker/compose.dev.yaml; .docker/compose.prod.yaml is for hosting)
+  docker-up             Database, web backend on :8080, frontend on :4000 and the resource pack on :8765, rebuilt
+  docker-db             Only the database, on 127.0.0.1 at DB_PORT (default 5462) for be-backend
   docker-backend        Database and web backend, rebuilt
-  docker-down           Stops everything, keeps the data
-  docker-reset          Stops everything and deletes the data
+  docker-down           Stops everything; the database starts empty next time
+  docker-reset          Stops everything and deletes the item asset cache too
   docker-logs [service] Follows the logs
 
 Everything
@@ -153,13 +153,6 @@ be() {
     cd "$ROOT"
 }
 
-needs_password() {
-    if [ -z "${DB_PASSWORD:-}" ]; then
-        echo "toolchain: set DB_PASSWORD for the database, e.g. DB_PASSWORD=\$(op read op://...) ./toolchain.sh $1" >&2
-        exit 1
-    fi
-}
-
 is_group() {
     local candidate
     for candidate in "${COMMAND_GROUPS[@]}"; do
@@ -196,7 +189,7 @@ case "$cmd" in
     be-jar)          be; run ./gradlew :core:shadowJar ;;
     be-server)       be; run ./gradlew :core:runServer ;;
     be-folia)        be; run ./gradlew :core:runFolia ;;
-    be-backend)      be; ASSET_CACHE="${ASSET_CACHE:-$ROOT/web/backend/build/asset-cache}" run ./gradlew :web-backend:run ;;
+    be-backend)      be; DB_PORT="${DB_PORT:-5462}" DB_PASSWORD="${DB_PASSWORD:-bloodnight}" ASSET_CACHE="${ASSET_CACHE:-$ROOT/web/backend/build/asset-cache}" run ./gradlew :web-backend:run ;;
     fe-install)       fe; run npm install "$@" ;;
     fe-install-clean) fe; run npm ci "$@" ;;
     fe-dev)           fe; run npx nuxi dev "$@" ;;
@@ -227,12 +220,12 @@ case "$cmd" in
         fe
         run node scripts/generate-api-types.mjs
         ;;
-    docker-up)      needs_password "$cmd"; "${COMPOSE[@]}" up -d --build ;;
-    docker-db)      needs_password "$cmd"; "${COMPOSE[@]}" -f "$ROOT/.docker/compose.database-port.yaml" up -d postgres ;;
-    docker-backend) needs_password "$cmd"; "${COMPOSE[@]}" up -d --build postgres web ;;
-    docker-down)    DB_PASSWORD="${DB_PASSWORD:-unused}" "${COMPOSE[@]}" down ;;
-    docker-reset)   DB_PASSWORD="${DB_PASSWORD:-unused}" "${COMPOSE[@]}" down -v ;;
-    docker-logs)    DB_PASSWORD="${DB_PASSWORD:-unused}" "${COMPOSE[@]}" logs -f "$@" ;;
+    docker-up)      docs; run node scripts/pack.mjs; "${COMPOSE[@]}" up -d --build ;;
+    docker-db)      "${COMPOSE[@]}" up -d postgres ;;
+    docker-backend) "${COMPOSE[@]}" up -d --build postgres backend ;;
+    docker-down)    "${COMPOSE[@]}" down ;;
+    docker-reset)   "${COMPOSE[@]}" down -v ;;
+    docker-logs)    "${COMPOSE[@]}" logs -f "$@" ;;
     verify)
         "$0" be-build
         "$0" fe-test

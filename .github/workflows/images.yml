@@ -17,10 +17,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: blood-night-web
-            dockerfile: .docker/web.Dockerfile
-          - name: blood-night-frontend
-            dockerfile: .docker/web-frontend.Dockerfile
+          - name: bloodnight-backend
+            dockerfile: .docker/backend.Dockerfile
+          - name: bloodnight-frontend
+            dockerfile: .docker/frontend.Dockerfile
     steps:
       - uses: actions/checkout@v7
       - name: Set up Buildx

@@ -1,0 +1,88 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_PASSWORD: bloodnight
+    tmpfs:
+      - /var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${DB_PORT:-5462}:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    image: bloodnight-backend:dev
+    build:
+      context: ..
+      dockerfile: .docker/backend.dev.Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PASSWORD: bloodnight
+      EDITOR_URL: ${EDITOR_URL:-http://localhost:4000/session/{id}#{token}}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+    volumes:
+      - ..:/home/gradle/project
+      - gradle-home:/home/gradle/.gradle
+      - gradle-project:/home/gradle/project/.gradle
+      - gradle-buildsrc:/home/gradle/project/buildSrc/.gradle
+      - gradle-build-buildSrc:/home/gradle/project/buildSrc/build
+      - gradle-build-graph-model:/home/gradle/project/graph-model/build
+      - gradle-build-graph-compiler:/home/gradle/project/graph-compiler/build
+      - gradle-build-graph-std:/home/gradle/project/graph-std/build
+      - gradle-build-graph-editor-payload:/home/gradle/project/graph-editor-payload/build
+      - gradle-build-bukkit-nodes:/home/gradle/project/bukkit-nodes/build
+      - gradle-build-catalog:/home/gradle/project/catalog/build
+      - gradle-build-core:/home/gradle/project/core/build
+      - gradle-build-api:/home/gradle/project/api/build
+      - gradle-build-web-api:/home/gradle/project/web/api/build
+      - gradle-build-web-backend:/home/gradle/project/web/backend/build
+      - gradle-build-tools-json-schema:/home/gradle/project/tools/json-schema/build
+      - assets:/var/cache/bloodnight/assets
+    ports:
+      - "${PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: bloodnight-frontend:dev
+    build:
+      context: ..
+      dockerfile: .docker/frontend.dev.Dockerfile
+    environment:
+      NUXT_BACKEND_URL: http://backend:8080
+    volumes:
+      - ../web/frontend:/build
+      - frontend-node-modules:/build/node_modules
+    ports:
+      - "${FRONTEND_PORT:-4000}:4000"
+    depends_on:
+      - backend
+
+  pack:
+    image: nginx:alpine
+    volumes:
+      - ../docs/static/pack:/usr/share/nginx/html:ro
+    ports:
+      - "127.0.0.1:${PACK_PORT:-8765}:80"
+
+volumes:
+  assets:
+  gradle-home:
+  gradle-project:
+  gradle-buildsrc:
+  gradle-build-buildSrc:
+  gradle-build-graph-model:
+  gradle-build-graph-compiler:
+  gradle-build-graph-std:
+  gradle-build-graph-editor-payload:
+  gradle-build-bukkit-nodes:
+  gradle-build-catalog:
+  gradle-build-core:
+  gradle-build-api:
+  gradle-build-web-api:
+  gradle-build-web-backend:
+  gradle-build-tools-json-schema:
+  frontend-node-modules:

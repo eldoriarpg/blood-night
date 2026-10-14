@@ -3,3 +3,4 @@ build/
 .docusaurus/
 .cache-loader/
 static/pack/
+static/self-hosting/compose.yaml
