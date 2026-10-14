@@ -57,6 +57,9 @@ final class BloodNightCommand {
     @Subcommand
     final ItemCommand item;
 
+    @Subcommand
+    final SettingsCommand settings;
+
     BloodNightCommand(BloodNight plugin) {
         this.plugin = plugin;
         reload = new ReloadCommand(plugin);
@@ -68,6 +71,7 @@ final class BloodNightCommand {
         night = new NightCommand(plugin);
         editor = new EditorCommand(plugin);
         item = new ItemCommand(plugin);
+        settings = new SettingsCommand(plugin);
     }
 
     /**
@@ -94,6 +98,7 @@ final class BloodNightCommand {
         subcommands.put("editor", "editor [new | apply [force] | cancel]");
         subcommands.put("spawn", "spawn <mob>");
         subcommands.put("item", "item <register | remove <id>>");
+        subcommands.put("settings", "settings <server | world> <path> [value]");
         subcommands.put("reload", "reload");
         subcommands.put("problems", "problems [mob]");
         subcommands.put("source", "source <mob>");
