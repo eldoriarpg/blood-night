@@ -14,15 +14,16 @@ import java.util.List;
 /**
  * How a blood night looks and feels to the players in the world, on top of the announcement.
  * <p>
- * {@code sky} turns the sky, fog, clouds and light red through the plugin's data pack. The rest happens for each
- * player on their own client and ends with the night: a red screen edge, short darkness pulses, rain, particles around
+ * {@code sky} turns the sky, fog, clouds and light red through the plugin's data pack, hangs the clouds low and dark
+ * and hides the stars, so the night looks overcast without rain. The rest happens for each player on their own client
+ * and ends with the night: a red screen edge, short darkness pulses, rain (off by default), particles around
  * the camera, a heartbeat, the resource pack's screen effect and, when switched on, scares.
  */
 public class AtmosphereSettings {
     private boolean sky = true;
     private boolean vignette = true;
     private boolean darknessPulses = true;
-    private boolean rain = true;
+    private boolean rain = false;
     private boolean heartbeat = true;
     private boolean screenEffect = true;
     private List<AmbientParticle> particles = new ArrayList<>(

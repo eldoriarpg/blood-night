@@ -41,6 +41,7 @@ class HauntingTest extends AtmosphereTest {
 
     @Test
     void playersAreHauntedDuringTheNightOnly() {
+        atmosphere = MAPPER.readValue("{\"rain\":true}", atmosphere.getClass());
         bloodNight();
         haunting.tick();
         assertNotNull(player.getWorldBorder());
@@ -49,6 +50,13 @@ class HauntingTest extends AtmosphereTest {
         day();
         haunting.tick();
         assertNull(player.getWorldBorder());
+        assertNull(player.getPlayerWeather());
+    }
+
+    @Test
+    void itDoesNotRainUnlessRainIsOn() {
+        bloodNight();
+        haunting.tick();
         assertNull(player.getPlayerWeather());
     }
 
