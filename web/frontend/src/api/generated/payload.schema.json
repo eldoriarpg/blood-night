@@ -207,7 +207,7 @@
           } ],
           "default" : {
             "timeoutSeconds" : 30,
-            "url" : "http://localhost:8080"
+            "url" : "https://bloodnight.eldoria.de"
           }
         }
       }
@@ -549,7 +549,7 @@
       "properties" : {
         "url" : {
           "type" : "string",
-          "default" : "http://localhost:8080"
+          "default" : "https://bloodnight.eldoria.de"
         },
         "timeoutSeconds" : {
           "type" : "integer",
