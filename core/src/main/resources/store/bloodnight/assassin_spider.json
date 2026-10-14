@@ -1,0 +1,336 @@
+{
+  "format" : 1,
+  "id" : "assassin_spider",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Meuchelspinne",
+    "en" : "Assassin Spider"
+  },
+  "descriptions" : {
+    "de" : "Springt bis zu 5 Blöcke hoch und landet aus bis zu 12 Blöcken Entfernung auf dir.",
+    "en" : "Leaps up to 5 blocks high and lands on you from up to 12 blocks away."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "assassin_spider",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.assassin_spider:'Assassin Spider'>",
+      "entityType" : "SPIDER",
+      "exactType" : false,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "and_6" : {
+          "type" : "logic.and",
+          "inputs" : {
+            "first" : {
+              "node" : "greater_4",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "less_5",
+              "port" : "result"
+            }
+          }
+        },
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_14",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_7", "spawn_particle_13" ]
+          }
+        },
+        "branch_16" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "and_6",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_15" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_0",
+              "port" : "on_ground"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_16" ]
+          }
+        },
+        "branch_19" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_18",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_17" ]
+          }
+        },
+        "cooldown_14" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 4000
+          }
+        },
+        "create_8" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "divide_10",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "divide_12",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "y" : 0.9
+          }
+        },
+        "distance_3" : {
+          "type" : "location.distance",
+          "inputs" : {
+            "other" : {
+              "node" : "read_2",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "location"
+            }
+          }
+        },
+        "divide_10" : {
+          "type" : "math.divide",
+          "inputs" : {
+            "first" : {
+              "node" : "subtract_9",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 22.0
+          }
+        },
+        "divide_12" : {
+          "type" : "math.divide",
+          "inputs" : {
+            "first" : {
+              "node" : "subtract_11",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 22.0
+          }
+        },
+        "greater_4" : {
+          "type" : "logic.greater",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_3",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "is_null_18" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "less_5" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_3",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 12.0
+          }
+        },
+        "mutate_7" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "velocity" : {
+              "node" : "create_8",
+              "port" : "result"
+            }
+          }
+        },
+        "night_end_22" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_21" ]
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_13" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 15,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:crit"
+          }
+        },
+        "spawn_particle_21" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "subtract_11" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "read_0",
+              "port" : "z"
+            }
+          }
+        },
+        "subtract_9" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "read_0",
+              "port" : "x"
+            }
+          }
+        },
+        "tick_20" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_19" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Assassin Spider",
+    "de": "Meuchelspinne"
+  },
+  "descriptions": {
+    "en": "Leaps up to 5 blocks high and lands on you from up to 12 blocks away.",
+    "de": "Springt bis zu 5 Blöcke hoch und landet aus bis zu 12 Blöcken Entfernung auf dir."
+  },
+  "requires": []
+}
