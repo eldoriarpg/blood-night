@@ -199,6 +199,8 @@ export default {
         },
         form: {
             onePerLine: 'One per line.',
+            addSuggested: 'Type or pick, then press Enter',
+            remove: 'Remove {entry}',
             badJson: 'This is not valid JSON, it was not saved.',
             newKey: 'New key',
             add: 'Add',

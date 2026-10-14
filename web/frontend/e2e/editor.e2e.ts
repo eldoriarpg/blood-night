@@ -621,3 +621,27 @@ test('the setup wizard sends everything as one change', async ({page}) => {
     await page.getByRole('button', {name: 'Open the full editor'}).click()
     await expect(page.getByRole('button', {name: 'speed_creeper'})).toBeVisible()
 })
+
+/** The read-only preview lays out a graph without positions for itself and saves nothing. */
+test('the preview arranges a graph without positions', async ({page}) => {
+    const stage = await stageEditor(page, {}, true)
+    await page.goto(stage.link)
+
+    const tick = page.locator('.vue-flow__node').filter({hasText: 'Every tick'})
+    const ignite = page.locator('.vue-flow__node').filter({hasText: 'Ignite'})
+    await expect.poll(async () => {
+        const [first, second] = [await tick.boundingBox(), await ignite.boundingBox()]
+        return first !== null && second !== null && first.x + first.width <= second.x
+    }).toBe(true)
+    expect(stage.changes).toEqual([])
+})
+
+/** Values their modifier ignores stay hidden until the modifier uses them. */
+test('mob attributes show only the values that are used', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+
+    await page.getByRole('button', {name: 'Attributes'}).click()
+    await expect(page.getByText('Health from').first()).toBeVisible()
+    await expect(page.getByText('Health', {exact: true})).toHaveCount(0)
+})

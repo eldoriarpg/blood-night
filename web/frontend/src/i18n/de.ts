@@ -199,6 +199,8 @@ export default {
         },
         form: {
             onePerLine: 'Eins pro Zeile.',
+            addSuggested: 'Tippen oder wählen, dann Enter',
+            remove: '{entry} entfernen',
             badJson: 'Das ist kein gültiges JSON, es wurde nicht gespeichert.',
             newKey: 'Neuer Schlüssel',
             add: 'Hinzufügen',

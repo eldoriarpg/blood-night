@@ -10,13 +10,17 @@ import de.eldoria.bloodnight.mob.MobTypes;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
+import org.bukkit.Registry;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 /**
  * What the server offers to pick from, for the editor's item fields: the materials that are items and the
@@ -29,6 +33,8 @@ import java.util.TreeMap;
  *                         {@code org.bukkit.entity.Creeper}; the editor types Self and Extension of a mob by it
  * @param mobTypes         the entity types a custom mob or its extension can be, by name, sorted; see {@link MobTypes}
  * @param mythicTypes      the MythicMobs mobs a custom mob can spawn as, sorted; empty without MythicMobs
+ * @param attributes       attribute keys a mob's attributes can change, sorted
+ * @param biomes           biome keys and biome tags ({@code #minecraft:is_nether}) spawn rules can name, sorted
  */
 public record EditorChoices(
         String minecraftVersion,
@@ -36,7 +42,9 @@ public record EditorChoices(
         List<String> enchantments,
         Map<String, String> entityClasses,
         List<String> mobTypes,
-        List<String> mythicTypes) {
+        List<String> mythicTypes,
+        List<String> attributes,
+        List<String> biomes) {
     /**
      * @return the choices of the running server
      */
@@ -61,6 +69,22 @@ public record EditorChoices(
                 enchantments,
                 entityClasses,
                 MobTypes.all(),
-                Integrations.mythicMobTypes());
+                Integrations.mythicMobTypes(),
+                keys(RegistryKey.ATTRIBUTE),
+                biomeKeys());
+    }
+
+    private static List<String> keys(RegistryKey<? extends Keyed> key) {
+        return RegistryAccess.registryAccess().getRegistry(key).stream()
+                .map(entry -> entry.getKey().asString())
+                .sorted()
+                .toList();
+    }
+
+    private static List<String> biomeKeys() {
+        Registry<Biome> registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME);
+        Stream<String> tags =
+                registry.getTags().stream().map(tag -> "#" + tag.tagKey().key().asString());
+        return Stream.concat(keys(RegistryKey.BIOME).stream(), tags).sorted().toList();
     }
 }

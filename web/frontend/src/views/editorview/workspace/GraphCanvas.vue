@@ -31,8 +31,8 @@ import type {PatchOperation} from '~/util/patch/jsonPatch'
  * wired; a double click on the empty canvas opens the same picker with every node, so nodes can be added without the
  * palette. A double click on a node opens its details. Dragging on the empty canvas selects the nodes in a box; holding
  * Space drags the view instead. Every node keeps the position saved with it: a graph opened without any is arranged
- * (see {@link arrange}) and saved, unplaced nodes of a placed graph are saved where they are shown, so moving one node
- * never moves another. Arrange lays the whole graph out again. Read only while someone else holds the graph's
+ * (see {@link arrange}) and saved, or while read only just shown arranged; unplaced nodes of a placed graph are saved
+ * where they are shown, so moving one node never moves another. Arrange lays the whole graph out again. Read only while someone else holds the graph's
  * section. The play button of a node starting a chain lights up the nodes and wires it reaches, one after another in
  * the order they run (see {@link executionOrder}), each with its step number. Nodes snap to the grid the background dots draw; holding Alt while dragging places them freely. Settings and
  * values are edited on the nodes themselves. A double click on a wire puts a reroute on it there, a dot that only
@@ -87,10 +87,14 @@ useEventListener('keyup', (event: KeyboardEvent) => {
 const view = computed(() => graphView(props.graph, props.catalog, props.macros, props.bindings))
 const edgesById = computed(() => new Map(view.value.edges.map(edge => [edge.id, edge])))
 const playback = graphPlayback()
+const shownPositions = ref<ReadonlyMap<string, Position>>(new Map())
+watch(() => Object.keys(props.graph.nodes ?? {}).join(), () => {
+  shownPositions.value = new Map()
+})
 const nodes = computed(() => view.value.nodes.map(node => ({
   id: node.id,
   type: 'blueprint',
-  position: node.position,
+  position: shownPositions.value.get(node.id) ?? node.position,
   data: node,
   class: playback.current.value === node.id ? 'bn-lit bn-current' : playback.order.value.has(node.id) ? 'bn-lit' : '',
 })))
@@ -305,15 +309,26 @@ async function arrangeAll(): Promise<void> {
   if (await save(positions)) void nextTick(() => flow.fitView())
 }
 
+/** Lays out a graph that may not be changed, for this view only, so a read-only graph without positions is readable. */
+async function arrangeShown(): Promise<void> {
+  if (flow.getNodes.value.length === 0) return
+  const arranged = await arrange(measured(), view.value.edges)
+  shownPositions.value = new Map([...arranged].map(([id, position]) => [id, onGrid(position)]))
+  void nextTick(() => flow.fitView())
+}
+
 /**
  * Saves a position for every node that has none: the whole graph arranged when no node has one, else the unplaced
  * nodes where they are shown.
  */
 async function placeUnplaced(): Promise<void> {
-  if (props.readOnly) return
   const nodes = props.graph.nodes ?? {}
   const unplaced = Object.keys(nodes).filter(id => !storedPosition(nodes[id]!))
   if (unplaced.length === 0) return
+  if (props.readOnly) {
+    if (unplaced.length === Object.keys(nodes).length) await arrangeShown()
+    return
+  }
   if (unplaced.length === Object.keys(nodes).length) {
     await arrangeAll()
     return
