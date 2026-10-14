@@ -21,6 +21,7 @@ import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
+import de.eldoria.bloodnight.mobs.movement.Steering;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
@@ -105,6 +106,7 @@ class MobSpawnerTest {
                 mobs::get,
                 world -> nights.running(world),
                 tasks,
+                Steering.NONE,
                 Logger.getLogger("test"));
         NightSelection every = JsonMapper.builder()
                 .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY))

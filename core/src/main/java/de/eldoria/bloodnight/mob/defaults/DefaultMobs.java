@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.mob.defaults;
 
+import de.eldoria.bloodnight.api.MovementPreset;
 import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -13,6 +14,7 @@ import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.bloodnight.mob.meta.Movement;
 import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
@@ -97,25 +99,25 @@ public final class DefaultMobs implements BloodNightNodes {
         DefaultMobs mobs = new DefaultMobs(platform, names);
         return List.of(
                 subtypesToo(mobs.armoredZombie()),
-                subtypesToo(mobs.knightZombie()),
-                subtypesToo(mobs.invisibleZombie()),
-                subtypesToo(mobs.speedZombie()),
-                mobs.invisibleSkeleton(),
-                mobs.magicSkeleton(),
-                mobs.speedCreeper(),
+                subtypesToo(moving(mobs.knightZombie(), MovementPreset.HIT_AND_RUN)),
+                subtypesToo(moving(mobs.invisibleZombie(), MovementPreset.STALKER)),
+                subtypesToo(moving(mobs.speedZombie(), MovementPreset.PACK)),
+                moving(mobs.invisibleSkeleton(), MovementPreset.KEEP_DISTANCE),
+                moving(mobs.magicSkeleton(), MovementPreset.KEEP_DISTANCE),
+                moving(mobs.speedCreeper(), MovementPreset.AGGRESSIVE),
                 mobs.toxicCreeper(),
                 mobs.unstableCreeper(),
                 mobs.nervousPoweredCreeper(),
-                mobs.enderCreeper(),
+                moving(mobs.enderCreeper(), MovementPreset.STALKER),
                 mobs.ghostCreeper(),
-                mobs.fearfulEnderman(),
+                moving(mobs.fearfulEnderman(), MovementPreset.STALKER),
                 mobs.toxicEnderman(),
                 mobs.fearfulPhantom(),
                 mobs.firePhantom(),
                 mobs.phantomSoul(),
-                mobs.fireWizard(),
-                mobs.thunderWizard(),
-                mobs.witherWizard(),
+                moving(mobs.fireWizard(), MovementPreset.KEEP_DISTANCE),
+                moving(mobs.thunderWizard(), MovementPreset.KEEP_DISTANCE),
+                moving(mobs.witherWizard(), MovementPreset.KEEP_DISTANCE),
                 subtypesToo(mobs.blazeRider()),
                 subtypesToo(mobs.speedSkeletonRider()),
                 subtypesToo(mobs.witherSkeletonRider()),
@@ -735,6 +737,13 @@ public final class DefaultMobs implements BloodNightNodes {
                                             graph.every(4000, leap, graph.particlesAround("minecraft:crit", 15))))));
             smokeAtNightEnd(graph);
         });
+    }
+
+    /**
+     * @return the mob moving by the preset, with its default numbers
+     */
+    private static CustomMob moving(CustomMob mob, MovementPreset preset) {
+        return mob.withMovement(Movement.of(preset));
     }
 
     /**

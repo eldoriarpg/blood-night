@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.NightEnd;
+import de.eldoria.bloodnight.mobs.movement.Steering;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
@@ -58,6 +59,7 @@ public final class MobCoordinator {
     private final Function<String, CustomMob> definitions;
     private final Function<World, OptionalLong> runningNight;
     private final Tasks tasks;
+    private final Steering steering;
     private final Logger logger;
     private volatile Behaviours behaviours = Behaviours.empty();
 
@@ -67,6 +69,7 @@ public final class MobCoordinator {
      * @param definitions  mob definition by id, or {@code null}
      * @param runningNight the number of the blood night running in a world, if any
      * @param tasks        runs work on the mobs' threads
+     * @param steering     gives mobs their movement
      * @param logger       receives behaviour failures
      */
     public MobCoordinator(
@@ -75,12 +78,14 @@ public final class MobCoordinator {
             Function<String, CustomMob> definitions,
             Function<World, OptionalLong> runningNight,
             Tasks tasks,
+            Steering steering,
             Logger logger) {
         this.outfitter = outfitter;
         this.items = items;
         this.definitions = definitions;
         this.runningNight = runningNight;
         this.tasks = tasks;
+        this.steering = steering;
         this.logger = logger;
     }
 
@@ -201,6 +206,7 @@ public final class MobCoordinator {
 
     private ActiveMob track(LivingEntity entity, CustomMob mob, @Nullable Entity extension) {
         ActiveMob active = new ActiveMob(mob, entity, extension, instantiate(mob, entity, extension));
+        steering.steer(entity, mob.movement());
         UUID id = entity.getUniqueId();
         Tracked tracked =
                 new Tracked(active, runningNight.apply(entity.getWorld()), Math.floorMod(id.hashCode(), SPREAD));
@@ -281,7 +287,12 @@ public final class MobCoordinator {
     private CompiledBehaviour instantiate(CustomMob mob, LivingEntity entity, @Nullable Entity extension) {
         return behaviours
                 .of(mob.id())
-                .map(compiled -> compiled.instantiate(new LivingMobContext(entity, extension, items, tasks)))
+                .map(compiled -> compiled.instantiate(new LivingMobContext(
+                        entity,
+                        extension,
+                        items,
+                        tasks,
+                        preset -> steering.steer(entity, mob.movement().with(preset)))))
                 .orElse(NONE);
     }
 

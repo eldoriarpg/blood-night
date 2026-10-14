@@ -179,7 +179,7 @@ export default {
         sheet: {
             title: {mobs: 'Mob-Einstellungen', macros: 'Makro-Einstellungen'},
             open: {mobs: 'Mob-Einstellungen', macros: 'Makro-Einstellungen'},
-            parts: {attributes: 'Attribute', spawn: 'Spawn-Regeln', equipment: 'Ausrüstung', extension: 'Erweiterung', mobDrops: 'Drops'},
+            parts: {attributes: 'Attribute', spawn: 'Spawn-Regeln', equipment: 'Ausrüstung', extension: 'Erweiterung', mobDrops: 'Drops', movement: 'Bewegung'},
             set: 'Einrichten',
             close: 'Schließen',
             cancel: 'Abbrechen',
@@ -278,6 +278,16 @@ export default {
             restored: 'Revision {number} wiederhergestellt.',
         },
         enums: {
+            MovementPreset: {
+                VANILLA: 'Wie der normale Mob',
+                AGGRESSIVE: 'Aggressiv: jagt den nächsten Spieler in Reichweite',
+                KEEP_DISTANCE: 'Hält Abstand, für Mobs, die schießen',
+                HIT_AND_RUN: 'Zuschlagen und weg: weicht nach jedem Treffer zurück',
+                STALKER: 'Pirscht: kommt näher, wenn du wegschaust',
+                COWARD: 'Feigling: flieht verletzt, heilt sich, kommt zurück',
+                PACK: 'Rudel: greift an, was seinesgleichen angreift',
+                GUARD: 'Wache: bleibt nah an seinem Spawn',
+            },
             Color: {
                 PINK: 'Rosa',
                 BLUE: 'Blau',
@@ -436,6 +446,10 @@ export default {
     },
     settings: {
         fields: {
+            closest: 'Mindestens (Blöcke)',
+            farthest: 'Höchstens (Blöcke)',
+            fleeBelow: 'Flieht unter (Anteil am Leben, 0 bis 1)',
+            preset: 'Bewegt sich',
             always: 'Immer, nicht nur in Blutnächten',
             ambience: 'Atmosphäre',
             amount: 'Menge',

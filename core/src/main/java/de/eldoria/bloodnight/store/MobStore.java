@@ -91,7 +91,10 @@ public final class MobStore {
             StoreEntry entry = entry(origin).orElseThrow();
             result.put(
                     mob.id(),
-                    mob.withLogic(entry.mob().behaviour(), entry.mob().extension())
+                    mob.withLogic(
+                                    entry.mob().behaviour(),
+                                    entry.mob().extension(),
+                                    entry.mob().movement())
                             .withOrigin(origin(entry)));
             done.add(mob.id());
         }

@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
+import de.eldoria.bloodnight.mob.meta.Movement;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.graph.model.Graph;
 import org.jspecify.annotations.Nullable;
@@ -29,6 +30,7 @@ import java.util.Objects;
  * @param extension entity riding or carrying the mob
  * @param spawn     when the mob takes over spawning entities and when it goes again
  * @param origin    the store entry the mob was installed from; {@code null} for the user's own mobs
+ * @param movement  how it moves on top of its vanilla AI
  */
 public record CustomMob(
         String id,
@@ -38,13 +40,30 @@ public record CustomMob(
         MobDrops mobDrops,
         Extension extension,
         SpawnRules spawn,
-        @Nullable MobOrigin origin) {
+        @Nullable MobOrigin origin,
+        Movement movement) {
     public CustomMob {
         Objects.requireNonNull(id, "Mob id can not be null");
         if (!id.equals(id.toLowerCase())) throw new IllegalArgumentException("Mob id must be lower case.");
         Objects.requireNonNull(behaviour, "Behaviour can not be null");
         Objects.requireNonNull(extension, "Extension can not be null");
         Objects.requireNonNull(spawn, "Spawn rules can not be null");
+        movement = Movement.orVanilla(movement);
+    }
+
+    /**
+     * A mob that moves as its vanilla entity does.
+     */
+    public CustomMob(
+            String id,
+            @Nullable Equipment equipment,
+            Attributes attributes,
+            Graph behaviour,
+            MobDrops mobDrops,
+            Extension extension,
+            SpawnRules spawn,
+            @Nullable MobOrigin origin) {
+        this(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, Movement.VANILLA);
     }
 
     /**
@@ -65,18 +84,26 @@ public record CustomMob(
      * @return the same mob with another origin
      */
     public CustomMob withOrigin(@Nullable MobOrigin origin) {
-        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin);
+        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
     }
 
     /**
-     * @return the same mob, tuning and origin kept, with another behaviour and extension
+     * @return the same mob, tuning and origin kept, with another behaviour, extension and movement
      */
-    public CustomMob withLogic(Graph behaviour, Extension extension) {
-        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin);
+    public CustomMob withLogic(Graph behaviour, Extension extension, Movement movement) {
+        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
     }
 
     /**
-     * Reads a mob; one without {@code behaviour} gets an empty graph, one without {@code spawn} the default rules.
+     * @return the same mob moving another way
+     */
+    public CustomMob withMovement(Movement movement) {
+        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
+    }
+
+    /**
+     * Reads a mob; one without {@code behaviour} gets an empty graph, one without {@code spawn} the default rules, one
+     * without {@code movement} the vanilla one.
      */
     @JsonCreator
     static CustomMob read(
@@ -87,7 +114,8 @@ public record CustomMob(
             @JsonProperty("mobDrops") MobDrops mobDrops,
             @JsonProperty("extension") Extension extension,
             @JsonProperty("spawn") @Nullable SpawnRules spawn,
-            @JsonProperty("origin") @Nullable MobOrigin origin) {
+            @JsonProperty("origin") @Nullable MobOrigin origin,
+            @JsonProperty("movement") @Nullable Movement movement) {
         return new CustomMob(
                 id,
                 equipment,
@@ -96,6 +124,7 @@ public record CustomMob(
                 mobDrops,
                 extension,
                 Objects.requireNonNullElseGet(spawn, SpawnRules::defaults),
-                origin);
+                origin,
+                Movement.orVanilla(movement));
     }
 }

@@ -27,4 +27,10 @@ describe('modified values', () => {
         const world = [field('damageModifier', 'number'), field('damage', 'number')]
         expect(shownFields(world, {damageModifier: 2}).map(entry => entry.key)).toEqual(['damageModifier', 'damage'])
     })
+
+    it('shows only the numbers a movement preset reads', () => {
+        const movement = [{...field('preset', 'choice', 'VANILLA'), enumName: 'MovementPreset'}, field('range', 'number'), field('closest', 'number'), field('farthest', 'number')]
+        expect(shownFields(movement, {preset: 'KEEP_DISTANCE'}).map(entry => entry.key)).toEqual(['preset', 'closest', 'farthest'])
+        expect(shownFields(movement, {}).map(entry => entry.key)).toEqual(['preset'])
+    })
 })

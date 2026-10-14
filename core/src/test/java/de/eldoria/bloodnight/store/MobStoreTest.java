@@ -95,7 +95,7 @@ class MobStoreTest {
     @Test
     void changedMobsOnlyUpdateWhenAsked() {
         CustomMob installed = only(store(OLD).install(List.of(), "classic"));
-        CustomMob edited = installed.withLogic(EDITED, installed.extension());
+        CustomMob edited = installed.withLogic(EDITED, installed.extension(), installed.movement());
         MobStore newer = store(NEW);
 
         assertEquals(StoreState.CHANGED_OUTDATED, newer.state(edited));

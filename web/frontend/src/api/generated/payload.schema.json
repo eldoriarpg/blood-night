@@ -444,9 +444,12 @@
         },
         "origin" : {
           "$ref" : "#/$defs/MobOrigin"
+        },
+        "movement" : {
+          "$ref" : "#/$defs/Movement"
         }
       },
-      "required" : [ "id", "attributes", "behaviour", "mobDrops", "extension", "spawn" ]
+      "required" : [ "id", "attributes", "behaviour", "mobDrops", "extension", "spawn", "movement" ]
     },
     "DeathActionSettings" : {
       "type" : "object",
@@ -1157,6 +1160,34 @@
           }
         }
       }
+    },
+    "Movement" : {
+      "type" : "object",
+      "properties" : {
+        "preset" : {
+          "$ref" : "#/$defs/MovementPreset"
+        },
+        "range" : {
+          "type" : "number"
+        },
+        "closest" : {
+          "type" : "number"
+        },
+        "farthest" : {
+          "type" : "number"
+        },
+        "seconds" : {
+          "type" : "number"
+        },
+        "fleeBelow" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "preset", "range", "closest", "farthest", "seconds", "fleeBelow" ]
+    },
+    "MovementPreset" : {
+      "type" : "string",
+      "enum" : [ "VANILLA", "AGGRESSIVE", "KEEP_DISTANCE", "HIT_AND_RUN", "STALKER", "COWARD", "PACK", "GUARD" ]
     },
     "NightEffect" : {
       "type" : "object",

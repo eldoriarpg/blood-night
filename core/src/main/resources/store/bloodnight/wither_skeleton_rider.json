@@ -267,6 +267,14 @@
         "surface" : "ANY"
       }
     },
-    "origin" : null
+    "origin" : null,
+    "movement" : {
+      "preset" : "VANILLA",
+      "range" : 24.0,
+      "closest" : 6.0,
+      "farthest" : 10.0,
+      "seconds" : 3.0,
+      "fleeBelow" : 0.3
+    }
   }
 }
