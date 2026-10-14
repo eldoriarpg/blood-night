@@ -459,6 +459,7 @@ export default {
             offHand: 'Off hand',
             operation: 'Operation',
             overlay: 'Overlay',
+            overrides: 'Per mob in this world',
             particle: 'Particle',
             particles: 'Particles around players',
             period: 'Period (nights)',

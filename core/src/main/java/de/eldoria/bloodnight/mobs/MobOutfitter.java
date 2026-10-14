@@ -77,10 +77,11 @@ public final class MobOutfitter {
         MobTags.setupTags(entity, extension, mob);
         equip(entity, mob.equipment());
         MobSettings mobSettings = settings.apply(entity.getWorld());
-        name(entity, mob.attributes(), mobSettings.displayNames());
-        health(entity, mob.attributes(), mobSettings.healthMultiplier());
+        Attributes attributes = mobSettings.attributes(mob);
+        name(entity, attributes, mobSettings.displayNames());
+        health(entity, attributes, mobSettings.healthMultiplier());
         if (extension instanceof LivingEntity living) shareMaxHealth(entity, living);
-        damage(entity, mob.attributes());
+        damage(entity, attributes);
         change(entity, mob.attributes().changes());
         return extension;
     }

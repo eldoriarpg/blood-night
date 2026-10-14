@@ -5,8 +5,14 @@
  */
 package de.eldoria.bloodnight.configuration.elements.world;
 
+import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeOverride;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.CreeperSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
+import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.Attributes;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * How mobs behave in a world during blood nights.
@@ -23,6 +29,7 @@ public class MobSettings {
     private boolean displayNames = false;
     private double damageModifier = 2;
     private double healthMultiplier = 2;
+    private Map<String, AttributeOverride> overrides = new HashMap<>();
 
     public MobSpawning spawning() {
         return spawning;
@@ -45,6 +52,21 @@ public class MobSettings {
      */
     public double damageModifier() {
         return Math.max(damageModifier, 0);
+    }
+
+    /**
+     * @return this world's own names, health and damage of custom mobs, by mob id
+     */
+    public Map<String, AttributeOverride> overrides() {
+        return overrides;
+    }
+
+    /**
+     * @return the mob's attributes in this world, its override put in
+     */
+    public Attributes attributes(CustomMob mob) {
+        AttributeOverride override = overrides.get(mob.id());
+        return override == null ? mob.attributes() : override.apply(mob.attributes());
     }
 
     /**

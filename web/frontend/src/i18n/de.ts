@@ -463,6 +463,7 @@ export default {
             offHand: 'Nebenhand',
             operation: 'Operation',
             overlay: 'Darstellung',
+            overrides: 'Pro Mob in dieser Welt',
             particle: 'Partikel',
             particles: 'Partikel um die Spieler',
             period: 'Zeitraum (Nächte)',

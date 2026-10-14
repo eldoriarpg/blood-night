@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeOverride;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -26,6 +27,8 @@ import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -166,6 +169,18 @@ class MobSpawnerTest {
                 2 * mob.getAttribute(Attribute.MOVEMENT_SPEED).getBaseValue(),
                 mob.getAttribute(Attribute.MOVEMENT_SPEED).getValue(),
                 1e-9);
+    }
+
+    @Test
+    void worldsCanOverrideNameAndHealth() {
+        settings.mobSettings()
+                .overrides()
+                .put("strong", new AttributeOverride("<green>Tame", ValueModifier.VALUE, 80.0, null, null));
+        at(13_000);
+        LivingEntity mob = spawned();
+
+        assertEquals(80, mob.getAttribute(Attribute.MAX_HEALTH).getValue());
+        assertEquals(Component.text("Tame", NamedTextColor.GREEN), mob.customName());
     }
 
     @Test

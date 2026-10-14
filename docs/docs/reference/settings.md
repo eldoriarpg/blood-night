@@ -112,6 +112,7 @@ Settings for one world. Every world has its own file.
 | `mobSettings.displayNames` | true or false | `false` |
 | `mobSettings.damageModifier` | number | `2` |
 | `mobSettings.healthMultiplier` | number | `2` |
+| `mobSettings.overrides` | map | `{}` |
 | `announcement.bossBar.enabled` | true or false | `true` |
 | `announcement.bossBar.title` | text | `<red><bold><name>` |
 | `announcement.bossBar.color` | `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, `WHITE` | `RED` |
@@ -237,6 +238,7 @@ mobSettings:
   displayNames: false
   forcePhantoms: true
   healthMultiplier: 2
+  overrides: {}
   spawning:
     ignoredReasons:
       - CUSTOM
