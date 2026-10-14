@@ -55,11 +55,11 @@
         },
         {
           "ticks": 200,
-          "value": "#c0601010"
+          "value": "#e0501010"
         },
         {
           "ticks": 1000000,
-          "value": "#c0601010"
+          "value": "#e0501010"
         },
         {
           "ticks": 1000200,
@@ -148,6 +148,28 @@
         {
           "ticks": 1000000,
           "value": 0.0
+        },
+        {
+          "ticks": 1000200,
+          "value": 1.0
+        }
+      ]
+    },
+    "minecraft:visual/cloud_height": {
+      "ease": "in_out_sine",
+      "modifier": "multiply",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": 1.0
+        },
+        {
+          "ticks": 200,
+          "value": 0.65
+        },
+        {
+          "ticks": 1000000,
+          "value": 0.65
         },
         {
           "ticks": 1000200,

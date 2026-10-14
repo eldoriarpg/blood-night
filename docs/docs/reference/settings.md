@@ -128,7 +128,7 @@ Settings for one world. Every world has its own file.
 | `atmosphere.sky` | true or false | `true` |
 | `atmosphere.vignette` | true or false | `true` |
 | `atmosphere.darknessPulses` | true or false | `true` |
-| `atmosphere.rain` | true or false | `true` |
+| `atmosphere.rain` | true or false | `false` |
 | `atmosphere.heartbeat` | true or false | `true` |
 | `atmosphere.screenEffect` | true or false | `true` |
 | `atmosphere.particles` | list of map | `[{"particle":"minecraft:ash","perSecond":12},{"particle":"minecraft:crimson_spore","perSecond":4}]` |
@@ -268,7 +268,7 @@ atmosphere:
       perSecond: 12
     - particle: minecraft:crimson_spore
       perSecond: 4
-  rain: true
+  rain: false
   scares:
     chancePerMinute: 10
     enabled: false

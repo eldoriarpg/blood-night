@@ -20,7 +20,7 @@ atmosphere:
   sky: true
   vignette: true
   darknessPulses: true
-  rain: true
+  rain: false
   heartbeat: true
   screenEffect: true
   particles:
@@ -36,8 +36,9 @@ atmosphere:
 
 ## A red sky
 
-`sky: true` turns the sky, the fog, the clouds and the light red. The fog also comes closer and the stars go out. It
-fades in over ten seconds when the night begins and fades out when it ends.
+`sky: true` turns the sky, the fog, the clouds and the light red. The fog also comes closer and the stars go out. The
+clouds hang low and dark, so the night looks overcast without any rain. It fades in over ten seconds when the night
+begins and fades out when it ends.
 
 BloodNight brings its own small data pack for this. It loads by itself, you don't need to install anything. It works
 in every world of the normal overworld kind. The Nether and the End keep their sky.
@@ -48,7 +49,7 @@ in every world of the normal overworld kind. The Nether and the End keep their s
 |---|---|
 | `vignette` | The edge of the screen glows red. |
 | `darknessPulses` | Every minute or so the screen goes dark for a moment. |
-| `rain` | It rains for them, even if the weather is clear. |
+| `rain` | It rains for them, even if the weather is clear. Off by default. |
 | `heartbeat` | They hear a heartbeat when a monster is within 20 blocks. Far away it is slow and faint. The closer the monster gets, the faster and louder it beats. Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. |
 | `particles` | Ash and spores drift around them. Add or remove particles as you like. |
 

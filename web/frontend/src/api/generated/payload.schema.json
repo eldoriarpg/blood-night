@@ -95,7 +95,7 @@
         },
         "rain" : {
           "type" : "boolean",
-          "default" : true
+          "default" : false
         },
         "heartbeat" : {
           "type" : "boolean",
@@ -2274,7 +2274,7 @@
               "particle" : "minecraft:crimson_spore",
               "perSecond" : 4
             } ],
-            "rain" : true,
+            "rain" : false,
             "scares" : {
               "chancePerMinute" : 10,
               "enabled" : false,
