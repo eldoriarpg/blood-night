@@ -299,6 +299,30 @@ public final class BukkitNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
+    public static final StatementDefinition SPAWN_TNT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_SPAWN_TNT, NodeKind.ACTION)
+                    .category("world")
+                    .name("Spawn Lit TNT")
+                    .description("Spawns burning TNT that hurts what stands near but breaks no blocks")
+                    .input("location", Location.class)
+                    .optionalInput("seconds", double.class)
+                    .optionalInput("power", double.class)
+                    .execution(NEXT)
+                    .describe("location", "Where it lies")
+                    .describe("seconds", "How long the fuse burns; 2 when not given")
+                    .describe("power", "How strong the explosion is, 4 for normal TNT; 4 when not given")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.spawnTnt($L, $L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("location"),
+                            ctx.connected("seconds") ? ctx.input("seconds") : CodeBlock.of("2"),
+                            ctx.connected("power") ? ctx.input("power") : CodeBlock.of("4"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
     public static final StatementDefinition RUN_COMMAND = new StatementDefinition(
             NodeDescriptor.builder(BloodNightNodes.SERVER_RUN_COMMAND, NodeKind.ACTION)
                     .category("server")
@@ -643,6 +667,7 @@ public final class BukkitNodes {
                 DAMAGE,
                 SPAWN_PARTICLE,
                 STRIKE_LIGHTNING,
+                SPAWN_TNT,
                 RUN_COMMAND,
                 PLAYER_RUN_COMMAND,
                 BROADCAST,

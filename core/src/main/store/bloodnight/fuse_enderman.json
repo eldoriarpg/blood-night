@@ -1,0 +1,12 @@
+{
+  "pack": "end",
+  "names": {
+    "en": "Fuse Enderman",
+    "de": "Zünder-Enderman"
+  },
+  "descriptions": {
+    "en": "Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks.",
+    "de": "Legt alle 6 Sekunden brennendes TNT neben dich. Es verletzt, zerstört aber keine Blöcke."
+  },
+  "requires": []
+}

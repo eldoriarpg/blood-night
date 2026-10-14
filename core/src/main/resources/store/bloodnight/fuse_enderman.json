@@ -1,0 +1,355 @@
+{
+  "format" : 1,
+  "id" : "fuse_enderman",
+  "pack" : "end",
+  "names" : {
+    "de" : "Zünder-Enderman",
+    "en" : "Fuse Enderman"
+  },
+  "descriptions" : {
+    "de" : "Legt alle 6 Sekunden brennendes TNT neben dich. Es verletzt, zerstört aber keine Blöcke.",
+    "en" : "Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "fuse_enderman",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.fuse_enderman:'Fuse Enderman'>",
+      "entityType" : "ENDERMAN",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "add_6" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "random_number_4",
+              "port" : "result"
+            }
+          }
+        },
+        "add_7" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "y"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_8" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "random_number_5",
+              "port" : "result"
+            }
+          }
+        },
+        "branch_14" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_13",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_11" ]
+          }
+        },
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_12",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_14" ]
+          }
+        },
+        "branch_20" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_19",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_18" ]
+          }
+        },
+        "branch_22" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_21",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_tnt_3" ]
+          }
+        },
+        "branch_24" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_23",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_22" ]
+          }
+        },
+        "cooldown_19" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "cooldown_21" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 6000
+          }
+        },
+        "create_16" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_17",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 1.0
+          }
+        },
+        "create_9" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_2",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_6",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "add_7",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "add_8",
+              "port" : "result"
+            }
+          }
+        },
+        "is_null_12" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_13" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_10",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_23" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "mutate_11" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "nearest_player_10",
+              "port" : "player"
+            }
+          }
+        },
+        "nearest_player_10" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 16.0
+          }
+        },
+        "random_number_4" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -2.0,
+            "upper" : 2.0
+          }
+        },
+        "random_number_5" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -2.0,
+            "upper" : 2.0
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "rgb_17" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 40,
+            "red" : 200
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_18" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_16",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 3,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_tnt_3" : {
+          "type" : "world.spawn_tnt",
+          "inputs" : {
+            "location" : {
+              "node" : "create_9",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "power" : 3.0,
+            "seconds" : 2.0
+          }
+        },
+        "tick_25" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_15", "branch_20", "branch_24" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ "#minecraft:is_end" ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

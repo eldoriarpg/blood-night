@@ -54,6 +54,7 @@ import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.rules.CommandBlocker;
 import de.eldoria.bloodnight.rules.CreeperGuard;
 import de.eldoria.bloodnight.rules.DeathActionHandler;
+import de.eldoria.bloodnight.rules.HarmlessExplosions;
 import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
 import de.eldoria.bloodnight.rules.WorldRules;
@@ -312,6 +313,7 @@ public final class BloodNight extends JavaPlugin {
                 tasks);
         plugins.registerEvents(phantoms, this);
         plugins.registerEvents(new CreeperGuard(bloodNights, configuration::worldConfig), this);
+        plugins.registerEvents(new HarmlessExplosions(), this);
         worldRules = new WorldRules(
                 bloodNights,
                 world -> configuration.worldConfig(world).nightRules(),

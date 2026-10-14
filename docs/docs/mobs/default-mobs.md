@@ -11,7 +11,7 @@ copy them or delete them.
 Their names show in each player's language, English or German so far. Players without the
 [resource pack](../nights/atmosphere.md#the-resource-pack) may see the English names.
 
-The first 30 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
+The first 33 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
 different, see below.
 
 ## Zombies
@@ -97,6 +97,9 @@ Cave spiders can become these too.
 
 | ID | What it does |
 |---|---|
+| `launcher_enderman` | Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go. |
+| `grabber_enderman` | Every 10 seconds it grabs mobs around it and puts them down in front of you. |
+| `fuse_enderman` | Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks. |
 | `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning, its hits wither. It never spawns by chance. |
 
 Open any of them in the [web editor](../editor/sessions.md) to see how they work. They are good examples for your

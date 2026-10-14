@@ -16,7 +16,7 @@ The mobs come in packs:
 |---|---|
 | `classic` | The mobs BloodNight always had |
 | `newer` | Mobs for breezes, bogged, pillagers, drowned, silverfish and a leaping spider |
-| `end` | The Blood Dragon for [dragon fights](../nights/nether-and-end.md#the-dragon-fight) |
+| `end` | Endermen that launch, grab and blow you up, and the Blood Dragon for [dragon fights](../nights/nether-and-end.md#the-dragon-fight) |
 
 The [list of ready-made mobs](default-mobs.md) says what each mob does.
 

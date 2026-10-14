@@ -1,0 +1,12 @@
+{
+  "pack": "end",
+  "names": {
+    "en": "Launcher Enderman",
+    "de": "Schleuder-Enderman"
+  },
+  "descriptions": {
+    "en": "Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go.",
+    "de": "Packt dich. Schleich innerhalb einer Sekunde, sonst trägt er dich bis zu 20 Blöcke in die Luft und lässt los."
+  },
+  "requires": []
+}

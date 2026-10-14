@@ -394,6 +394,20 @@ Reads the properties of a World
 | Void Damage Min Build Height Offset | Number | Gets the offset applied to getMinHeight() to determine the height at which void damage starts to apply. |
 | Weather Duration | Integer | Get the remaining time in ticks of the current conditions. |
 
+## Spawn Lit TNT
+
+`world.spawn_tnt`
+
+Spawns burning TNT that hurts what stands near but breaks no blocks
+
+| In | Type | What it is |
+|---|---|---|
+| Location | Location | Where it lies |
+| Seconds (optional) | Number | How long the fuse burns; 2 when not given |
+| Power (optional) | Number | How strong the explosion is, 4 for normal TNT; 4 when not given |
+
+Goes on with: **Next**
+
 ## Spawn Particle
 
 `world.spawn_particle`
