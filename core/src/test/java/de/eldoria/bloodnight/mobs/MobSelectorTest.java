@@ -7,7 +7,9 @@ package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.SpawnContext;
+import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.model.Graph;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -48,6 +50,25 @@ class MobSelectorTest {
         var day = new SpawnContext("world", ignored -> true, 64, 0, true, SpawnReason.NATURAL, false);
         assertTrue(MobSelector.candidates(List.of(common), EntityType.ZOMBIE, day, this::weight)
                 .isEmpty());
+    }
+
+    @Test
+    void theClosestTypeWins() {
+        CustomMob zombie = Mobs.zombie("zombie", Graph.builder().build());
+        CustomMob husk = new CustomMob(
+                "husk",
+                zombie.equipment(),
+                new Attributes("Husk", EntityType.HUSK, false, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
+                zombie.behaviour(),
+                zombie.mobDrops(),
+                zombie.extension(),
+                zombie.spawn());
+        List<CustomMob> both = List.of(zombie, husk);
+
+        assertEquals(List.of(husk), MobSelector.candidates(both, EntityType.HUSK, NIGHT, ignored -> 1));
+        assertEquals(List.of(zombie), MobSelector.candidates(both, EntityType.ZOMBIE, NIGHT, ignored -> 1));
+        assertEquals(List.of(zombie), MobSelector.candidates(both, EntityType.DROWNED, NIGHT, ignored -> 1));
+        assertEquals(1, MobSelector.distance(EntityType.CAVE_SPIDER, EntityType.SPIDER));
     }
 
     @Test

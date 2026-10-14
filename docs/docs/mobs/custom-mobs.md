@@ -55,7 +55,9 @@ mobs:
 `exactType` decides about relatives. A husk is a kind of zombie.
 
 - `exactType: true`: only zombies become this mob.
-- `exactType: false`: zombies, husks, drowned and zombie villagers can become this mob.
+- `exactType: false`: zombies, husks, drowned, zombie villagers and zombified piglins can become this mob.
+
+The closest fit wins. A husk takes a husk mob when there is one. Only when there is none, it takes a zombie mob.
 
 ## Name
 
