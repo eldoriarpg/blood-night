@@ -12,6 +12,8 @@ import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Mo
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -63,6 +65,15 @@ class NightProbabilityTest {
         assertEquals(0, phases.probability(new Night(0, NOW)));
         assertEquals(100, phases.probability(new Night(1, NOW)));
         assertEquals(30, phases.probability(new Night(5, NOW)));
+    }
+
+    @Test
+    void phasesBeyondTheHundredthAreIgnored() {
+        String probabilities = IntStream.range(0, 150).mapToObj(String::valueOf).collect(Collectors.joining(","));
+        NightSelection phases =
+                Selections.of("{\"type\":\"PHASE\",\"phase\":{\"probabilities\":[%s]}}".formatted(probabilities));
+        assertEquals(99, phases.probability(new Night(99, NOW)));
+        assertEquals(0, phases.probability(new Night(100, NOW)));
     }
 
     @Test

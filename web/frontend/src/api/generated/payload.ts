@@ -626,6 +626,9 @@ export interface Interval {
  * via the `definition` "Phase".
  */
 export interface Phase {
+  /**
+   * @maxItems 100
+   */
   probabilities?: number[];
 }
 /**

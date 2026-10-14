@@ -1,0 +1,192 @@
+announcement:
+  bossBar:
+    color: "RED"
+    enabled: true
+    flags:
+    - "DARKEN_SCREEN"
+    - "CREATE_WORLD_FOG"
+    overlay: "PROGRESS"
+    title: "<red><bold><lang:bloodnight.bossbar.title>"
+  effect:
+    effect: "minecraft:darkness"
+    enabled: true
+    seconds: 5
+  joinWarning: true
+deathActions:
+  mob:
+    lightning:
+      lightning: true
+      lightningChance: 100
+      thunder: true
+      thunderChance: 100
+    shockwave:
+      chance: 10
+      effects:
+      - effect: "minecraft:nausea"
+        seconds: 5.0
+      minSeconds: 0.1
+      power: 10.0
+      range: 10.0
+  player:
+    deathCommands: []
+    lightning:
+      lightning: true
+      lightningChance: 100
+      thunder: true
+      thunderChance: 100
+    loseExperienceChance: 0
+    loseInventoryChance: 0
+    respawnCommands: []
+    respawnEffects:
+    - effect: "minecraft:nausea"
+      seconds: 5.0
+    shockwave:
+      chance: 10
+      effects:
+      - effect: "minecraft:nausea"
+        seconds: 5.0
+      minSeconds: 0.1
+      power: 10.0
+      range: 10.0
+enabled: true
+mobSettings:
+  creepers:
+    always: false
+    blockDamage: false
+  damageModifier: 2.0
+  displayNames: true
+  forcePhantoms: true
+  healthMultiplier: 2.0
+  spawning:
+    ignoredReasons: []
+    mobs: {}
+    spawnPercentage: 50
+nightSelection:
+  curve:
+    max: 80
+    min: 20
+    period: 10
+  interval:
+    interval: 5
+    probability: 100
+  moonPhase:
+    probabilities:
+      FULL_MOON: 0
+      WANING_GIBBOUS: 10
+      LAST_QUARTER: 20
+      WANING_CRESCENT: 40
+      NEW_MOON: 100
+      WAXING_CRESCENT: 40
+      FIRST_QUARTER: 20
+      WAXING_GIBBOUS: 10
+  phase:
+    probabilities:
+    - 50
+    - 50
+    - 50
+  random:
+    probability: 60
+  type: "RANDOM"
+nightSettings:
+  begin: 13000
+  beginCommands: []
+  blockedCommands: []
+  end: 23000
+  endCommands: []
+  length:
+    maxSeconds: 900
+    mode: "NORMAL"
+    seconds: 600
+  skippable: false
+soundSettings:
+  ambience:
+  - pitches:
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+    sound: "minecraft:ambient.basalt_deltas.additions"
+    volumes:
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+  - pitches:
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+    sound: "minecraft:ambient.crimson_forest.additions"
+    volumes:
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+  - pitches:
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+    sound: "minecraft:ambient.nether_wastes.additions"
+    volumes:
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+  - pitches:
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+    - 1.2
+    - 1.4
+    - 1.6
+    sound: "minecraft:ambient.soul_sand_valley.additions"
+    volumes:
+    - 0.2
+    - 0.4
+    - 0.6
+    - 0.8
+    - 1.0
+  begin:
+  - pitches:
+    - 0.8
+    - 1.0
+    sound: "minecraft:entity.lightning_bolt.thunder"
+    volumes:
+    - 1.0
+  channel: "AMBIENT"
+  end:
+  - pitches:
+    - 0.8
+    - 1.0
+    sound: "minecraft:entity.lightning_bolt.thunder"
+    volumes:
+    - 1.0
+  maxInterval: 40
+  minInterval: 10
+worldDrops:
+  weightsScope: "GLOBAL"
+  weights:
+    1: 90
+    2: 50
+    3: 10
+  dropTables:
+  - "GLOBAL"
+  - "WORLD"
+  dropList: []
+  xpScope: "GLOBAL"
+  xpModifier: "MULTIPLY"
+  xpValue: 4.0

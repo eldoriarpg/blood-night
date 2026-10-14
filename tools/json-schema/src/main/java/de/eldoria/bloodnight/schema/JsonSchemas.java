@@ -212,6 +212,8 @@ public final class JsonSchemas {
         for (Field field : fields(clazz, new ArrayList<>())) {
             if (ignored(field)) continue;
             ObjectNode property = schema(field.getGenericType());
+            MaxItems maxItems = field.getAnnotation(MaxItems.class);
+            if (maxItems != null) property.put("maxItems", maxItems.value());
             JsonNode value = defaultValue(field, instance);
             if (value != null && !value.isNull()) {
                 if (property.has("$ref")) {

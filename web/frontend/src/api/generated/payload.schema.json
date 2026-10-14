@@ -1130,6 +1130,7 @@
           "items" : {
             "type" : "integer"
           },
+          "maxItems" : 100,
           "default" : [ 50, 50, 50 ]
         }
       }

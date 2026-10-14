@@ -16,6 +16,7 @@ dependencies {
     api(libs.bundles.jackson.full)
     api(libs.jackson.bukkit.paper)
     api(libs.ocular)
+    compileOnly(project(":json-schema"))
     testImplementation(project(":json-schema"))
     compileOnly(libs.strokkcommands.annotations)
     annotationProcessor(libs.strokkcommands.processor)
