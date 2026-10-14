@@ -18,6 +18,7 @@ import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.platform.NodeRule;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
@@ -162,9 +163,18 @@ final class GraphValidator {
                             : Optional.empty();
                 }
             };
-            for (NodeRule rule : rules) {
-                rule.check(node, (port, message) -> problems.add(GraphProblem.error(id, port, message)));
-            }
+            NodeRule.Report report = new NodeRule.Report() {
+                @Override
+                public void error(String port, String message) {
+                    problems.add(GraphProblem.error(id, port, message));
+                }
+
+                @Override
+                public void warning(@Nullable String port, String message) {
+                    problems.add(GraphProblem.warning(id, port, message));
+                }
+            };
+            for (NodeRule rule : rules) rule.check(node, report);
         }
 
         private void checkConfig(String id, NodeDefinition definition) {

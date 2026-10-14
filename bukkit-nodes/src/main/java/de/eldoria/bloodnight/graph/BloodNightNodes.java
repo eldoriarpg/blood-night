@@ -88,6 +88,11 @@ public interface BloodNightNodes extends StdNodes {
     String SERVER_RUN_COMMAND = "server.run_command";
     String SERVER_BROADCAST = "server.broadcast";
     String PLAYER_RUN_COMMAND = "player.run_command";
+    String PLACEHOLDER_PARSE = "placeholder.parse";
+    String ECONOMY_DEPOSIT = "economy.deposit";
+    String ECONOMY_WITHDRAW = "economy.withdraw";
+    String ECONOMY_BALANCE = "economy.balance";
+    String MYTHIC_CAST_SKILL = "mythic.cast_skill";
     String WORLD_LINE_TRACE = "world.line_trace";
     String LOCATION_DISTANCE = "location.distance";
     String VECTOR_CREATE = "vector.create";

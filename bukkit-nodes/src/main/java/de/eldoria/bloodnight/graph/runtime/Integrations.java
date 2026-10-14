@@ -1,0 +1,114 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+package de.eldoria.bloodnight.graph.runtime;
+
+import de.eldoria.bloodnight.api.MobContext;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jspecify.annotations.Nullable;
+
+import java.lang.reflect.Method;
+
+/**
+ * What the nodes of other plugins call: PlaceholderAPI, Vault's economy and MythicMobs. Each plugin is reached through
+ * reflection on its own class loader, so none of them is needed to build or run. Without the plugin a node does
+ * nothing: texts stay as they are, balances are 0, nothing is paid and no skill is cast.
+ */
+public final class Integrations {
+    private Integrations() {}
+
+    /**
+     * @return the text with PlaceholderAPI's placeholders filled in for the player, or as it is without PlaceholderAPI
+     */
+    public static String placeholders(String text, @Nullable Player player) {
+        try {
+            Class<?> api = pluginClass("PlaceholderAPI", "me.clip.placeholderapi.PlaceholderAPI");
+            if (api == null) return text;
+            Object filled = api.getMethod("setPlaceholders", OfflinePlayer.class, String.class)
+                    .invoke(null, player, text);
+            return filled instanceof String result ? result : text;
+        } catch (ReflectiveOperationException | LinkageError e) {
+            return text;
+        }
+    }
+
+    /**
+     * Pays a player through Vault, on the global region.
+     */
+    public static void deposit(MobContext context, Player player, double amount) {
+        context.global(() -> economy("depositPlayer", player, amount));
+    }
+
+    /**
+     * Takes money from a player through Vault, on the global region.
+     */
+    public static void withdraw(MobContext context, Player player, double amount) {
+        context.global(() -> economy("withdrawPlayer", player, amount));
+    }
+
+    /**
+     * @return the player's balance in Vault's economy, 0 without one
+     */
+    public static double balance(Player player) {
+        Object balance = economy("getBalance", player);
+        return balance instanceof Number number ? number.doubleValue() : 0;
+    }
+
+    /**
+     * Lets an entity cast a MythicMobs skill.
+     *
+     * @return whether the skill was cast
+     */
+    public static boolean castSkill(Entity caster, String skill) {
+        try {
+            Class<?> bukkit = pluginClass("MythicMobs", "io.lumine.mythic.bukkit.MythicBukkit");
+            if (bukkit == null) return false;
+            Object helper = call(bukkit.getMethod("inst").invoke(null), "getAPIHelper");
+            if (helper == null) return false;
+            Object cast = helper.getClass()
+                    .getMethod("castSkill", Entity.class, String.class)
+                    .invoke(helper, caster, skill);
+            return Boolean.TRUE.equals(cast);
+        } catch (ReflectiveOperationException | LinkageError e) {
+            return false;
+        }
+    }
+
+    private static @Nullable Object economy(String method, Player player, Object... more) {
+        try {
+            Class<?> type = pluginClass("Vault", "net.milkbowl.vault.economy.Economy");
+            if (type == null) return null;
+            RegisteredServiceProvider<?> registration =
+                    Bukkit.getServicesManager().getRegistration(type);
+            if (registration == null) return null;
+            Object economy = registration.getProvider();
+            Class<?>[] parameters = more.length == 0
+                    ? new Class<?>[] {OfflinePlayer.class}
+                    : new Class<?>[] {OfflinePlayer.class, double.class};
+            Object[] arguments = more.length == 0 ? new Object[] {player} : new Object[] {player, more[0]};
+            return type.getMethod(method, parameters).invoke(economy, arguments);
+        } catch (ReflectiveOperationException | LinkageError e) {
+            return null;
+        }
+    }
+
+    private static @Nullable Class<?> pluginClass(String plugin, String name) throws ClassNotFoundException {
+        Plugin found = Bukkit.getPluginManager().getPlugin(plugin);
+        if (found == null || !found.isEnabled()) return null;
+        return Class.forName(name, true, found.getClass().getClassLoader());
+    }
+
+    private static @Nullable Object call(@Nullable Object target, String method) throws ReflectiveOperationException {
+        if (target == null) return null;
+        Method found = target.getClass().getMethod(method);
+        found.setAccessible(true);
+        return found.invoke(target);
+    }
+}

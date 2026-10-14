@@ -1,7 +1,7 @@
 ---
 title: Variables
 description: "Variables: every node of this group, with its inputs and outputs."
-sidebar_position: 23
+sidebar_position: 24
 ---
 
 {/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
