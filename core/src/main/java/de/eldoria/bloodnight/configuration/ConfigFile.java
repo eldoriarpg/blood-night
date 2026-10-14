@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.configuration.elements.Announcements;
 import de.eldoria.bloodnight.configuration.elements.EditorSettings;
+import de.eldoria.bloodnight.configuration.elements.ResourcePackSettings;
 
 /**
  * The server-wide settings in {@code config.yml}; everything about nights and mobs is set per world.
@@ -14,6 +15,7 @@ import de.eldoria.bloodnight.configuration.elements.EditorSettings;
 public class ConfigFile {
     private Announcements announcements = new Announcements();
     private EditorSettings editor = new EditorSettings();
+    private ResourcePackSettings resourcePack = new ResourcePackSettings();
 
     /**
      * @return how blood nights are announced
@@ -27,5 +29,12 @@ public class ConfigFile {
      */
     public EditorSettings editor() {
         return editor;
+    }
+
+    /**
+     * @return the resource pack offered to players
+     */
+    public ResourcePackSettings resourcePack() {
+        return resourcePack;
     }
 }

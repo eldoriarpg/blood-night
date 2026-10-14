@@ -300,6 +300,11 @@ export type Overlay = 'PROGRESS' | 'NOTCHED_6' | 'NOTCHED_10' | 'NOTCHED_12' | '
 export type Flag = 'DARKEN_SCREEN' | 'PLAY_BOSS_MUSIC' | 'CREATE_WORLD_FOG';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Scare".
+ */
+export type Scare = 'FLINCH' | 'SCREAM' | 'GUARDIAN';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Source".
  */
 export type Source =
@@ -531,6 +536,7 @@ export interface SettingsPayload {
 export interface ConfigFile {
   announcements?: Announcements;
   editor?: EditorSettings;
+  resourcePack?: ResourcePackSettings;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -550,6 +556,16 @@ export interface Announcements {
 export interface EditorSettings {
   url?: string;
   timeoutSeconds?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ResourcePackSettings".
+ */
+export interface ResourcePackSettings {
+  offer?: boolean;
+  url?: string;
+  required?: boolean;
+  prompt?: string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -581,6 +597,7 @@ export interface WorldSettings {
   nightSettings?: NightSettings;
   mobSettings?: MobSettings;
   announcement?: AnnouncementSettings;
+  atmosphere?: AtmosphereSettings;
   soundSettings?: SoundSettings;
   deathActions?: DeathActionSettings;
   worldDrops?: WorldDrops;
@@ -721,6 +738,37 @@ export interface NightEffect {
   enabled?: boolean;
   effect?: string;
   seconds?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "AtmosphereSettings".
+ */
+export interface AtmosphereSettings {
+  sky?: boolean;
+  vignette?: boolean;
+  darknessPulses?: boolean;
+  rain?: boolean;
+  heartbeat?: boolean;
+  screenEffect?: boolean;
+  particles?: AmbientParticle[];
+  scares?: Scares;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "AmbientParticle".
+ */
+export interface AmbientParticle {
+  particle?: string;
+  perSecond?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Scares".
+ */
+export interface Scares {
+  enabled?: boolean;
+  chancePerMinute?: number;
+  kinds?: Scare[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1191,6 +1239,12 @@ export const Reach = {
     NONE: "NONE",
     SERVER: "SERVER",
     WORLD: "WORLD",
+} as const;
+
+export const Scare = {
+    FLINCH: "FLINCH",
+    GUARDIAN: "GUARDIAN",
+    SCREAM: "SCREAM",
 } as const;
 
 export const Severity = {

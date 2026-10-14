@@ -30,6 +30,10 @@ Settings for the whole server.
 | `announcements.fallbackLocale` | text | `en_US` |
 | `editor.url` | text | `https://bloodnight.eldoria.de` |
 | `editor.timeoutSeconds` | whole number | `30` |
+| `resourcePack.offer` | true or false | `true` |
+| `resourcePack.url` | text | `https://bloodnight.docs.eldoria.de/pack/bloodnight.zip` |
+| `resourcePack.required` | true or false | `false` |
+| `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
 
 The whole file with its defaults:
 
@@ -43,6 +47,11 @@ announcements:
 editor:
   timeoutSeconds: 30
   url: https://bloodnight.eldoria.de
+resourcePack:
+  offer: true
+  prompt: <red>BloodNight would like to show its blood nights with a few extra effects.
+  required: false
+  url: https://bloodnight.docs.eldoria.de/pack/bloodnight.zip
 ```
 
 ## worlds/&lt;world id&gt;.yml
@@ -88,6 +97,16 @@ Settings for one world. Every world has its own file.
 | `announcement.effect.effect` | text | `minecraft:darkness` |
 | `announcement.effect.seconds` | whole number | `5` |
 | `announcement.joinWarning` | true or false | `true` |
+| `atmosphere.sky` | true or false | `true` |
+| `atmosphere.vignette` | true or false | `true` |
+| `atmosphere.darknessPulses` | true or false | `true` |
+| `atmosphere.rain` | true or false | `true` |
+| `atmosphere.heartbeat` | true or false | `true` |
+| `atmosphere.screenEffect` | true or false | `true` |
+| `atmosphere.particles` | list of map | `[{"particle":"minecraft:ash","perSecond":12},{"particle":"minecraft:crimson_spore","perSecond":4}]` |
+| `atmosphere.scares.enabled` | true or false | `false` |
+| `atmosphere.scares.chancePerMinute` | whole number | `10` |
+| `atmosphere.scares.kinds` | list of `FLINCH`, `SCREAM`, `GUARDIAN` | `["FLINCH","SCREAM","GUARDIAN"]` |
 | `soundSettings.channel` | `MASTER`, `MUSIC`, `RECORD`, `WEATHER`, `BLOCK`, `HOSTILE`, `NEUTRAL`, `PLAYER`, `AMBIENT`, `VOICE`, `UI` | `AMBIENT` |
 | `soundSettings.minInterval` | whole number | `10` |
 | `soundSettings.maxInterval` | whole number | `40` |
@@ -192,6 +211,25 @@ announcement:
     enabled: true
     seconds: 5
   joinWarning: true
+atmosphere:
+  darknessPulses: true
+  heartbeat: true
+  particles:
+    - particle: minecraft:ash
+      perSecond: 12
+    - particle: minecraft:crimson_spore
+      perSecond: 4
+  rain: true
+  scares:
+    chancePerMinute: 10
+    enabled: false
+    kinds:
+      - FLINCH
+      - SCREAM
+      - GUARDIAN
+  screenEffect: true
+  sky: true
+  vignette: true
 soundSettings:
   ambience:
     - pitches:

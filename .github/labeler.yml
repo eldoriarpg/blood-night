@@ -27,6 +27,7 @@
   - changed-files:
       - any-glob-to-any-file:
           - "core/src/main/**"
+          - "resourcepack/**"
 "a:editor":
   - changed-files:
       - any-glob-to-any-file:

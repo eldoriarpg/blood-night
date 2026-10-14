@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "BloodNight: the blood night sky",
+    "min_format": [107, 1],
+    "max_format": 121
+  }
+}
