@@ -60,3 +60,9 @@ To turn this off, set this in `config.yml`:
 updates:
   notice: false
 ```
+
+## Usage numbers
+
+BloodNight sends anonymous numbers to [bStats](https://bstats.org/plugin/bukkit/BloodNight/34688): how many worlds
+have blood nights, how they pick them, how many mobs you have and which plugins it works with. No names, no worlds,
+no players. To switch it off for all plugins, set `enabled: false` in `plugins/bStats/config.yml`.

@@ -17,6 +17,7 @@ mockbukkit = "4.117.0"
 placeholderapi = "2.12.3"
 miniplaceholders = "3.2.0"
 worldguard = "7.0.19"
+bstats = "3.2.1"
 ecj = "3.46.100"
 javapoet = "0.20.0"
 shadow = "9.6.1"
@@ -52,6 +53,7 @@ mockbukkit = { module = "org.mockbukkit.mockbukkit:mockbukkit-v26.2", version.re
 placeholderapi = { module = "me.clip:placeholderapi", version.ref = "placeholderapi" }
 miniplaceholders = { module = "io.github.miniplaceholders:miniplaceholders-api", version.ref = "miniplaceholders" }
 worldguard = { module = "com.sk89q.worldguard:worldguard-bukkit", version.ref = "worldguard" }
+bstats = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 ecj = { module = "org.eclipse.jdt:ecj", version.ref = "ecj" }
 javapoet = { module = "com.palantir.javapoet:javapoet", version.ref = "javapoet" }
 javaparser = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
