@@ -1,5 +1,6 @@
 ---
 title: Players
+description: "Players: every node of this group, with its inputs and outputs."
 sidebar_position: 14
 ---
 

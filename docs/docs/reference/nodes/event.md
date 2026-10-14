@@ -1,5 +1,6 @@
 ---
 title: Triggers and events
+description: "Triggers and events: every node of this group, with its inputs and outputs."
 sidebar_position: 20
 ---
 

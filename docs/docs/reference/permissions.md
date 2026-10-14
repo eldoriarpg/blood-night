@@ -1,5 +1,6 @@
 ---
 title: Permissions
+description: Every permission of BloodNight and what it allows.
 sidebar_position: 2
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Projectiles
+description: "Projectiles: every node of this group, with its inputs and outputs."
 sidebar_position: 15
 ---
 

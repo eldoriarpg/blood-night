@@ -1,5 +1,6 @@
 ---
 title: Blocks
+description: "Blocks: every node of this group, with its inputs and outputs."
 sidebar_position: 1
 ---
 
