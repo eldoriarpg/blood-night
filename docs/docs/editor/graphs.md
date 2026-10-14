@@ -78,6 +78,7 @@ Some nodes work with other plugins:
 | Fill In Placeholders | PlaceholderAPI | Fills placeholders like `%player_name%` into a text |
 | Give Money, Take Money, Balance | Vault and an economy plugin | Pays a player, takes money or reads how much they have |
 | Cast Mythic Skill | MythicMobs | Lets the mob cast a MythicMobs skill |
+| Spawn Mythic Mob | MythicMobs | Spawns a MythicMobs mob at a place |
 
 You can use these nodes on any server. If the plugin is missing, the node does nothing. The mob still works, and
 `/bn problems` and the editor show which plugin is missing.

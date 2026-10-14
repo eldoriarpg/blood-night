@@ -60,6 +60,8 @@ public final class MobOutfitter {
     }
 
     /**
+     * Only tags a MythicMobs mob, which MythicMobs outfits itself.
+     *
      * @param entity the entity becoming the mob
      * @param mob    the mob definition
      * @return the extension entity, if the mob has one
@@ -67,6 +69,10 @@ public final class MobOutfitter {
      */
     @Nullable
     public Entity outfit(LivingEntity entity, CustomMob mob) {
+        if (mob.attributes().mythic()) {
+            MobTags.setupTags(entity, null, mob);
+            return null;
+        }
         Entity extension = mob.extension().type() != ExtensionType.NONE ? spawnExtension(entity, mob) : null;
         MobTags.setupTags(entity, extension, mob);
         equip(entity, mob.equipment());

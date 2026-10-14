@@ -59,7 +59,8 @@ class EditorResultTest {
                         List.of("minecraft:stone"),
                         List.of("minecraft:sharpness"),
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
-                        List.of("CREEPER")),
+                        List.of("CREEPER"),
+                        List.of("SkeletalKnight")),
                 Map.of("mobs.yml", "abc"));
 
         EditorResult result = EditorResult.of(EditorPayload.MAPPER.readTree(payload.asJson()));

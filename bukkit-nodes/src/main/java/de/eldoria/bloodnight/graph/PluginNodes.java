@@ -14,6 +14,7 @@ import de.eldoria.graph.definition.NodeKind;
 import de.eldoria.graph.definition.PortType;
 import de.eldoria.graph.definition.StatementDefinition;
 import de.eldoria.graph.platform.NodeRule;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -86,6 +87,30 @@ public final class PluginNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
+    public static final StatementDefinition SPAWN_MYTHIC = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.MYTHIC_SPAWN, NodeKind.ACTION)
+                    .category("plugins")
+                    .name("Spawn Mythic Mob")
+                    .description("Spawns a MythicMobs mob by its name. Needs MythicMobs")
+                    .input("type", String.class)
+                    .input("location", Location.class)
+                    .optionalInput("level", int.class)
+                    .execution(NEXT)
+                    .describe("type", "The mob's name in MythicMobs")
+                    .describe("location", "Where it spawns")
+                    .describe("level", "Its level; 1 when not given")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.spawnMythicMob($L, $L, $L, $L)",
+                            Integrations.class,
+                            ctx.context(),
+                            ctx.input("type"),
+                            ctx.input("location"),
+                            ctx.connected("level") ? ctx.input("level") : CodeBlock.of("1"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
     /**
      * Which plugin each node needs, by node id.
      */
@@ -94,7 +119,8 @@ public final class PluginNodes {
             BloodNightNodes.ECONOMY_DEPOSIT, "Vault",
             BloodNightNodes.ECONOMY_WITHDRAW, "Vault",
             BloodNightNodes.ECONOMY_BALANCE, "Vault",
-            BloodNightNodes.MYTHIC_CAST_SKILL, "MythicMobs");
+            BloodNightNodes.MYTHIC_CAST_SKILL, "MythicMobs",
+            BloodNightNodes.MYTHIC_SPAWN, "MythicMobs");
 
     private PluginNodes() {}
 
@@ -109,7 +135,7 @@ public final class PluginNodes {
      * @return every node of this kind
      */
     public static List<NodeDefinition> all() {
-        return List.of(PLACEHOLDERS, DEPOSIT, WITHDRAW, BALANCE, CAST_SKILL);
+        return List.of(PLACEHOLDERS, DEPOSIT, WITHDRAW, BALANCE, CAST_SKILL, SPAWN_MYTHIC);
     }
 
     /**

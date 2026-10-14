@@ -26,6 +26,9 @@ import java.util.Objects;
  * @param damageModifier how {@code damage} applies
  * @param damage         the damage value
  * @param changes        further changes to any attribute
+ * @param mythicType     a MythicMobs mob that spawns in place of the entity, empty for none; health, damage,
+ *                       equipment and extension are then MythicMobs' business
+ * @param mythicLevel    the level of that MythicMobs mob, at least 1
  */
 public record Attributes(
         String displayName,
@@ -35,9 +38,35 @@ public record Attributes(
         double health,
         ValueModifier damageModifier,
         double damage,
-        List<AttributeChange> changes) {
+        List<AttributeChange> changes,
+        String mythicType,
+        int mythicLevel) {
     public Attributes {
         changes = List.copyOf(Objects.requireNonNullElse(changes, List.of()));
+        mythicType = Objects.requireNonNullElse(mythicType, "");
+        mythicLevel = Math.max(mythicLevel, 1);
+    }
+
+    /**
+     * Attributes of a vanilla based mob.
+     */
+    public Attributes(
+            String displayName,
+            EntityType entityType,
+            boolean exactType,
+            ValueModifier healthModifier,
+            double health,
+            ValueModifier damageModifier,
+            double damage,
+            List<AttributeChange> changes) {
+        this(displayName, entityType, exactType, healthModifier, health, damageModifier, damage, changes, "", 1);
+    }
+
+    /**
+     * @return whether a MythicMobs mob spawns in place of the entity
+     */
+    public boolean mythic() {
+        return !mythicType.isBlank();
     }
 
     /**

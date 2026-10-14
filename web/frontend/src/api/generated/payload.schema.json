@@ -174,9 +174,15 @@
           "items" : {
             "$ref" : "#/$defs/AttributeChange"
           }
+        },
+        "mythicType" : {
+          "type" : "string"
+        },
+        "mythicLevel" : {
+          "type" : "integer"
         }
       },
-      "required" : [ "displayName", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes" ]
+      "required" : [ "displayName", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes", "mythicType", "mythicLevel" ]
     },
     "BossBarSettings" : {
       "type" : "object",
@@ -552,9 +558,15 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "mythicTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes" ]
+      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes", "mythicTypes" ]
     },
     "EditorItem" : {
       "type" : "object",

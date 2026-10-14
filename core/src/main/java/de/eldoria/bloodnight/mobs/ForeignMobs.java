@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
+import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.jspecify.annotations.Nullable;
@@ -16,6 +17,7 @@ import java.util.function.Supplier;
 /**
  * Tells mobs other plugins own from the rest, so BloodNight leaves them alone: Citizens NPCs (their {@code NPC}
  * metadata), MythicMobs mobs (asked through MythicMobs itself when it runs), and entities carrying a configured data key.
+ * A MythicMobs mob BloodNight spawned as one of its own mobs is no foreign mob.
  * <p>
  * MythicMobs is reached through reflection on its own class loader, so the plugin needs no MythicMobs classes to
  * build or run.
@@ -38,6 +40,7 @@ public final class ForeignMobs {
      * @return whether another plugin owns the entity
      */
     public boolean isForeign(Entity entity) {
+        if (MobTags.isCustomMob(entity)) return false;
         if (entity.hasMetadata("NPC")) return true;
         MythicLookup lookup = mythic();
         if (lookup != null && lookup.isMythicMob(entity)) return true;

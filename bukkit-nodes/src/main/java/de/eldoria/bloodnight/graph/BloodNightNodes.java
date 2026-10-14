@@ -93,6 +93,7 @@ public interface BloodNightNodes extends StdNodes {
     String ECONOMY_WITHDRAW = "economy.withdraw";
     String ECONOMY_BALANCE = "economy.balance";
     String MYTHIC_CAST_SKILL = "mythic.cast_skill";
+    String MYTHIC_SPAWN = "mythic.spawn";
     String WORLD_LINE_TRACE = "world.line_trace";
     String LOCATION_DISTANCE = "location.distance";
     String VECTOR_CREATE = "vector.create";

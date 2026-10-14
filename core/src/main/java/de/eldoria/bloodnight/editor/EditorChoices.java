@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import de.eldoria.bloodnight.graph.runtime.Integrations;
 import de.eldoria.bloodnight.mob.MobTypes;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -27,13 +28,15 @@ import java.util.TreeMap;
  * @param entityClasses    the Bukkit interface of each entity type, by type name, e.g. {@code CREEPER} to
  *                         {@code org.bukkit.entity.Creeper}; the editor types Self and Extension of a mob by it
  * @param mobTypes         the entity types a custom mob or its extension can be, by name, sorted; see {@link MobTypes}
+ * @param mythicTypes      the MythicMobs mobs a custom mob can spawn as, sorted; empty without MythicMobs
  */
 public record EditorChoices(
         String minecraftVersion,
         List<String> materials,
         List<String> enchantments,
         Map<String, String> entityClasses,
-        List<String> mobTypes) {
+        List<String> mobTypes,
+        List<String> mythicTypes) {
     /**
      * @return the choices of the running server
      */
@@ -52,6 +55,12 @@ public record EditorChoices(
             Class<?> entityClass = type.getEntityClass();
             if (entityClass != null) entityClasses.put(type.name(), entityClass.getName());
         }
-        return new EditorChoices(Bukkit.getMinecraftVersion(), materials, enchantments, entityClasses, MobTypes.all());
+        return new EditorChoices(
+                Bukkit.getMinecraftVersion(),
+                materials,
+                enchantments,
+                entityClasses,
+                MobTypes.all(),
+                Integrations.mythicMobTypes());
     }
 }

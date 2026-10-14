@@ -26,7 +26,8 @@ import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
 /**
  * One field of a settings form, drawn by its kind; a change is saved as soon as it is made, or when a typed value
  * is left. Fields naming an item pick one
- * of the payload's items or the server's materials with icons and names. Choices show their names in the editor's
+ * of the payload's items or the server's materials with icons and names. A MythicMobs type is picked from the
+ * server's MythicMobs mobs when it has any. Choices show their names in the editor's
  * language and store their keys; long lists of choices are searched rather than scrolled.
  */
 const props = defineProps<{
@@ -64,6 +65,11 @@ const choiceValue = computed(() => typeof current.value === 'string' ? current.v
 const choiceLabels = useChoiceLabels()
 const options = computed(() => fieldOptions(props.field, session.payload.value?.choices?.mobTypes ?? [], current.value))
 const optionLabels = computed(() => choiceLabels.labels(options.value, {enumName: props.field.enumName}))
+const mythicTypes = computed(() => session.payload.value?.choices?.mythicTypes ?? [])
+const mythicField = computed(() => props.field.key === 'mythicType' && mythicTypes.value.length > 0)
+const mythicOptions = computed(() => choiceValue.value && !mythicTypes.value.includes(choiceValue.value)
+  ? [choiceValue.value, ...mythicTypes.value]
+  : mythicTypes.value)
 
 watch(current, value => {
   draft.value = typeof value === 'number' || typeof value === 'string' ? value : undefined
@@ -86,6 +92,9 @@ function save(value: unknown): void {
     </LabelledField>
     <LabelledField v-else-if="itemField" :label="label">
       <ItemPicker :choices="itemChoices" :label="label" :model-value="textDraft" :read-only="readOnly" clearable @update:model-value="save"/>
+    </LabelledField>
+    <LabelledField v-else-if="mythicField" :label="label">
+      <ChoicePicker :label="label" :model-value="choiceValue || undefined" :options="mythicOptions" :read-only="readOnly" clearable @update:model-value="save($event ?? '')"/>
     </LabelledField>
     <LabelledField v-else-if="field.kind === 'text'" v-slot="{id}" :label="label">
       <TextInput :id="id" v-model="textDraft" :disabled="readOnly" @focusout="save(draft)"/>

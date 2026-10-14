@@ -387,6 +387,8 @@ export interface Attributes {
   damageModifier: ValueModifier;
   damage: number;
   changes: AttributeChange[];
+  mythicType: string;
+  mythicLevel: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -960,6 +962,7 @@ export interface EditorChoices {
     [k: string]: string;
   };
   mobTypes: string[];
+  mythicTypes: string[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
