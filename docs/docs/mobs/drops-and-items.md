@@ -86,3 +86,44 @@ mobDrops:
 | `VALUE` | Exactly `xpValue` |
 
 By default, special mobs give 4 times the normal experience. All drop lists start empty, so add your own items.
+
+## Normal loot of special mobs
+
+`vanillaLoot` in `mobDrops` decides what happens to the normal loot of a special mob:
+
+| `vanillaLoot` | What drops |
+|---|---|
+| `KEEP` | The normal loot, as always |
+| `MULTIPLY` | More normal loot, like ordinary monsters in a blood night (see below) |
+| `CLEAR` | No normal loot. Only the drops from the tables. |
+
+Items a mob wears or holds always drop as normal.
+
+## Ordinary monsters
+
+During a blood night, ordinary monsters drop more too. They need to be killed by a player. You set this in
+`worldDrops.vanilla` in the world file:
+
+```yaml
+worldDrops:
+  vanilla:
+    enabled: true
+    lootMultiplier: 2
+    extraDrops: false
+    xpModifier: MULTIPLY
+    xpValue: 2
+    excludedTypes: []
+    excludedReasons: [SPAWNER, TRIAL_SPAWNER, NETHER_PORTAL]
+```
+
+- `lootMultiplier`: how much loot drops. `2` means twice as much. A stack never grows past its size.
+- `extraDrops`: with `true`, ordinary monsters also get drops from the world's tables.
+- `xpModifier` and `xpValue`: their experience, like in the table above.
+- `excludedTypes`: kinds of mobs that keep their normal loot, like `ZOMBIFIED_PIGLIN`.
+- `excludedReasons`: mobs from spawners or nether portals keep their normal loot. This stops mob farms from getting
+  more.
+
+Items a monster wears or holds are never multiplied. During a blood night, monsters can't pick up items either. So a
+dropped diamond can't come back twice.
+
+Mobs of other plugins keep their loot (see [mobs of other plugins](spawning.md#mobs-of-other-plugins)).

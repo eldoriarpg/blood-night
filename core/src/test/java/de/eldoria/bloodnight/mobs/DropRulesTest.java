@@ -7,10 +7,12 @@ package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.configuration.elements.ConfigurationScope;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
+import de.eldoria.bloodnight.configuration.elements.world.VanillaDrops;
 import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
 import de.eldoria.bloodnight.mob.meta.Drop;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
+import de.eldoria.bloodnight.mob.meta.VanillaLoot;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayDeque;
@@ -33,7 +35,8 @@ class DropRulesTest {
             List.of(GEM),
             ConfigurationScope.WORLD,
             ValueModifier.VALUE,
-            7);
+            7,
+            VanillaDrops.defaultDrops());
 
     /**
      * Answers {@code nextInt(bound)} with the given values in order.
@@ -72,7 +75,8 @@ class DropRulesTest {
                 List.of(SWORD),
                 ConfigurationScope.GLOBAL,
                 ValueModifier.DEFAULT,
-                0);
+                0,
+                VanillaLoot.KEEP);
 
         DropRules rules = DropRules.of(mob, WORLD, GLOBAL);
 

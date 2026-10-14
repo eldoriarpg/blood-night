@@ -906,9 +906,12 @@
         },
         "xpValue" : {
           "type" : "number"
+        },
+        "vanillaLoot" : {
+          "$ref" : "#/$defs/VanillaLoot"
         }
       },
-      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue" ]
+      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue", "vanillaLoot" ]
     },
     "MobSettings" : {
       "type" : "object",
@@ -1728,6 +1731,45 @@
       "type" : "string",
       "enum" : [ "DEFAULT", "MULTIPLY", "VALUE" ]
     },
+    "VanillaDrops" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean"
+        },
+        "lootMultiplier" : {
+          "type" : "number"
+        },
+        "extraDrops" : {
+          "type" : "boolean"
+        },
+        "xpModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "xpValue" : {
+          "type" : "number"
+        },
+        "excludedTypes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/EntityType"
+          },
+          "uniqueItems" : true
+        },
+        "excludedReasons" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SpawnReason"
+          },
+          "uniqueItems" : true
+        }
+      },
+      "required" : [ "enabled", "lootMultiplier", "extraDrops", "xpModifier", "xpValue", "excludedTypes", "excludedReasons" ]
+    },
+    "VanillaLoot" : {
+      "type" : "string",
+      "enum" : [ "KEEP", "MULTIPLY", "CLEAR" ]
+    },
     "WorldDrops" : {
       "type" : "object",
       "properties" : {
@@ -1760,9 +1802,12 @@
         },
         "xpValue" : {
           "type" : "number"
+        },
+        "vanilla" : {
+          "$ref" : "#/$defs/VanillaDrops"
         }
       },
-      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue" ]
+      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue", "vanilla" ]
     },
     "WorldPayload" : {
       "type" : "object",
@@ -2011,7 +2056,16 @@
             "dropList" : [ ],
             "xpScope" : "GLOBAL",
             "xpModifier" : "MULTIPLY",
-            "xpValue" : 4.0
+            "xpValue" : 4.0,
+            "vanilla" : {
+              "enabled" : true,
+              "lootMultiplier" : 2.0,
+              "extraDrops" : false,
+              "xpModifier" : "MULTIPLY",
+              "xpValue" : 2.0,
+              "excludedTypes" : [ ],
+              "excludedReasons" : [ "SPAWNER", "TRIAL_SPAWNER", "NETHER_PORTAL" ]
+            }
           }
         }
       }

@@ -26,6 +26,7 @@ import java.util.Map;
  * @param xpScope      whose {@code xpModifier} and {@code xpValue} change the experience dropped
  * @param xpModifier   how the experience changes
  * @param xpValue      the number it changes by
+ * @param vanilla      what ordinary enemies a player kills during a blood night drop
  */
 public record WorldDrops(
         ConfigurationScope weightsScope,
@@ -34,7 +35,15 @@ public record WorldDrops(
         List<Drop> dropList,
         ConfigurationScope xpScope,
         ValueModifier xpModifier,
-        double xpValue) {
+        double xpValue,
+        VanillaDrops vanilla) {
+    /**
+     * Fills in the vanilla drop settings when a file has none.
+     */
+    public WorldDrops {
+        if (vanilla == null) vanilla = VanillaDrops.defaultDrops();
+    }
+
     public static WorldDrops defaultDrops() {
         Map<Integer, Integer> weights = new HashMap<>() {
             {
@@ -56,6 +65,7 @@ public record WorldDrops(
                 new ArrayList<>(),
                 ConfigurationScope.GLOBAL,
                 ValueModifier.MULTIPLY,
-                4);
+                4,
+                VanillaDrops.defaultDrops());
     }
 }
