@@ -47,7 +47,10 @@ class JsonSchemasTest {
         private int begin = 13000;
         private Mode mode = Mode.STRETCHED;
         private Set<Mode> allowed = EnumSet.of(Mode.NORMAL);
+
+        @MaxItems(3)
         private List<String> commands = new ArrayList<>(List.of("say hi"));
+
         private Inner inner = new Inner();
 
         @JsonProperty("skip")
@@ -108,6 +111,7 @@ class JsonSchemasTest {
         assertEquals("NORMAL", definition(document, "Mode").at("/enum/0").asString());
         assertTrue(night.at("/properties/allowed/uniqueItems").asBoolean());
         assertEquals("say hi", night.at("/properties/commands/default/0").asString());
+        assertEquals(3, night.at("/properties/commands/maxItems").asInt());
         assertEquals("#/$defs/Inner", night.at("/properties/inner/allOf/0/$ref").asString());
         assertTrue(night.at("/properties/skip").isObject());
         assertFalse(night.path("properties").has("cache"));

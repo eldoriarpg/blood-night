@@ -157,7 +157,10 @@ public final class BloodNight extends JavaPlugin {
         despawner = new NightDespawner(coordinator, bloodNights);
         despawnTask = getServer().getScheduler().runTaskTimer(this, despawner::tick, 1, 1);
         stretch = new NightStretch(
-                getServer(), world -> configuration.worldConfig(world).nightSettings(), selector::times);
+                getServer(),
+                world -> configuration.worldConfig(world).nightSettings(),
+                selector::times,
+                selector::seed);
         plugins.registerEvents(
                 new NightSkipGuard(
                         bloodNights,

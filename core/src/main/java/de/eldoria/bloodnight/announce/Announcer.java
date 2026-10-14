@@ -32,8 +32,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Lets players know about blood nights: announces begin and end, shows a boss bar while one runs, applies the begin
- * effect, plays the begin, end and ambience sounds, warns players entering or leaving a world with a running blood
+ * Lets players know about blood nights: announces begin and end, shows a boss bar while one runs, applies the night
+ * effect at begin and end, plays the begin, end and ambience sounds, warns players entering or leaving a world with a running blood
  * night and tells sleepers that a blood night cannot be slept through.
  * <p>
  * {@link #tick()} runs every second and keeps boss bars and ambience going.
@@ -92,6 +92,7 @@ public final class Announcer implements Listener {
                 world,
                 worldSettings.soundSettings(),
                 worldSettings.soundSettings().end());
+        applyEffect(world, worldSettings.announcement().effect());
     }
 
     @EventHandler

@@ -1,0 +1,4407 @@
+mobs:
+  armored_zombie:
+    id: "armored_zombie"
+    equipment:
+      head: "minecraft:diamond_helmet"
+      chest: "minecraft:diamond_chestplate"
+      legs: "minecraft:diamond_leggings"
+      feet: "minecraft:diamond_boots"
+      mainHand: null
+      offHand: null
+    attributes:
+      displayName: "Armored Zombie"
+      entityType: "ZOMBIE"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes: {}
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  thunder_wizard:
+    id: "thunder_wizard"
+    equipment: null
+    attributes:
+      displayName: "Thunder Wizard"
+      entityType: "WITCH"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_13:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_12"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_11"
+        branch_14:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "has_line_of_sight_8"
+              port: "result"
+          executions:
+            "true":
+            - "set_6"
+        branch_16:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_15"
+              port: "result"
+          executions:
+            "true":
+            - "branch_14"
+        branch_18:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_17"
+              port: "result"
+          executions:
+            "false":
+            - "branch_16"
+        cooldown_12:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        cooldown_15:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 4000
+        create_9:
+          type: "spell.create"
+          inputs:
+            color:
+              node: "rgb_10"
+              port: "result"
+          literals:
+            power: 1.0
+        delay_5:
+          type: "flow.delay"
+          literals:
+            duration: 1.5
+          executions:
+            next:
+            - "strike_lightning_4"
+        get_3:
+          type: "variable.get"
+          config:
+            name: "mark"
+            type: "location"
+        has_line_of_sight_8:
+          type: "living_entity.has_line_of_sight"
+          inputs:
+            other:
+              node: "read_0"
+              port: "target"
+            target:
+              node: "self_1"
+              port: "entity"
+        is_null_17:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "read_0"
+              port: "target"
+        mutate_21:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "projectile_shoot_20"
+              port: "event"
+          literals:
+            cancelled: true
+        night_end_23:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_22"
+        projectile_shoot_20:
+          type: "event.projectile_shoot"
+          executions:
+            next:
+            - "mutate_21"
+        read_0:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        read_2:
+          type: "living_entity.read"
+          inputs:
+            target:
+              node: "read_0"
+              port: "target"
+        rgb_10:
+          type: "color.rgb"
+          literals:
+            blue: 255
+            green: 255
+            red: 255
+        self_1:
+          type: "mob.self"
+        set_6:
+          type: "variable.set"
+          config:
+            name: "mark"
+            type: "location"
+          inputs:
+            value:
+              node: "read_2"
+              port: "location"
+          executions:
+            next:
+            - "strike_lightning_7"
+            - "delay_5"
+        spawn_particle_11:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "create_9"
+              port: "result"
+            location:
+              node: "read_0"
+              port: "eye_location"
+            target:
+              node: "read_0"
+              port: "world"
+          literals:
+            count: 15
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:instant_effect"
+        spawn_particle_22:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_0"
+              port: "eye_location"
+            target:
+              node: "read_0"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        strike_lightning_4:
+          type: "world.strike_lightning"
+          inputs:
+            location:
+              node: "get_3"
+              port: "value"
+            target:
+              node: "read_0"
+              port: "world"
+        strike_lightning_7:
+          type: "world.strike_lightning"
+          inputs:
+            location:
+              node: "set_6"
+              port: "value"
+            target:
+              node: "read_0"
+              port: "world"
+          literals:
+            effect_only: true
+        tick_19:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_13"
+            - "branch_18"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  toxic_enderman:
+    id: "toxic_enderman"
+    equipment: null
+    attributes:
+      displayName: "Toxic Enderman"
+      entityType: "ENDERMAN"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_12:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_11"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_10"
+        branch_6:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_5"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_3"
+        branch_7:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_4"
+              port: "result"
+          executions:
+            "true":
+            - "branch_6"
+        cooldown_11:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        create_8:
+          type: "dust.create"
+          inputs:
+            color:
+              node: "rgb_9"
+              port: "result"
+          literals:
+            size: 2.0
+        is_null_4:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "read_1"
+              port: "target"
+        is_null_5:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "nearest_player_0"
+              port: "player"
+        mutate_3:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "self_2"
+              port: "entity"
+            target_value:
+              node: "nearest_player_0"
+              port: "player"
+        nearest_player_0:
+          type: "world.nearest_player"
+          inputs:
+            location:
+              node: "read_1"
+              port: "location"
+          literals:
+            radius: 16.0
+        night_end_19:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_18"
+        power_17:
+          type: "particle.power"
+          literals:
+            power: 1.0
+        read_1:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_2"
+              port: "entity"
+        rgb_16:
+          type: "color.rgb"
+          literals:
+            blue: 0
+            green: 128
+            red: 0
+        rgb_9:
+          type: "color.rgb"
+          literals:
+            blue: 0
+            green: 128
+            red: 0
+        self_2:
+          type: "mob.self"
+        spawn_particle_10:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "create_8"
+              port: "result"
+            location:
+              node: "read_1"
+              port: "eye_location"
+            target:
+              node: "read_1"
+              port: "world"
+          literals:
+            count: 5
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dust"
+        spawn_particle_18:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "power_17"
+              port: "power"
+            location:
+              node: "read_1"
+              port: "eye_location"
+            target:
+              node: "read_1"
+              port: "world"
+          literals:
+            count: 10
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dragon_breath"
+        spawn_potion_cloud_15:
+          type: "world.spawn_potion_cloud"
+          inputs:
+            color:
+              node: "rgb_16"
+              port: "result"
+            location:
+              node: "teleport_14"
+              port: "from"
+          literals:
+            potion: "minecraft:strong_poison"
+            radius: 4.0
+            radius_per_tick: 0.01
+            seconds: 10
+        teleport_14:
+          type: "event.teleport"
+          executions:
+            next:
+            - "spawn_potion_cloud_15"
+        tick_13:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_7"
+            - "branch_12"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  fire_wizard:
+    id: "fire_wizard"
+    equipment:
+      head: null
+      chest: null
+      legs: null
+      feet: null
+      mainHand: "minecraft:fire_charge"
+      offHand: null
+    attributes:
+      displayName: "Fire Wizard"
+      entityType: "WITCH"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        attribute_18:
+          type: "living_entity.attribute"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            attribute: "minecraft:attack_damage"
+        branch_15:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_13"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_14"
+        branch_22:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_21"
+              port: "result"
+          executions:
+            "false":
+            - "damage_20"
+        branch_23:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_17"
+              port: "matches"
+          executions:
+            "true":
+            - "branch_22"
+        branch_4:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_3"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_2"
+        branch_7:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_6"
+              port: "result"
+          executions:
+            "true":
+            - "launch_projectile_5"
+        branch_9:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_8"
+              port: "result"
+          executions:
+            "false":
+            - "branch_7"
+        cast_17:
+          type: "cast"
+          config:
+            type: "player"
+          inputs:
+            value:
+              node: "projectile_hit_16"
+              port: "hit_entity"
+        cooldown_3:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        cooldown_6:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 5000
+        damage_20:
+          type: "living_entity.damage"
+          inputs:
+            amount:
+              node: "read_19"
+              port: "value"
+            source:
+              node: "self_1"
+              port: "entity"
+            target:
+              node: "cast_17"
+              port: "result"
+        equal_13:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "projectile_shoot_11"
+              port: "entity_type"
+            second:
+              node: "value_12"
+              port: "value"
+        is_null_21:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "attribute_18"
+              port: "result"
+        is_null_8:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "read_0"
+              port: "target"
+        launch_projectile_5:
+          type: "living_entity.launch_projectile"
+          config:
+            projectile: "LARGE_FIREBALL"
+          inputs:
+            shooter:
+              node: "self_1"
+              port: "entity"
+            target:
+              node: "read_0"
+              port: "target"
+          literals:
+            speed: 4.0
+        mutate_14:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "projectile_shoot_11"
+              port: "event"
+          literals:
+            cancelled: true
+        night_end_25:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_24"
+        projectile_hit_16:
+          type: "event.projectile_hit"
+          executions:
+            next:
+            - "branch_23"
+        projectile_shoot_11:
+          type: "event.projectile_shoot"
+          executions:
+            next:
+            - "branch_15"
+        read_0:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        read_19:
+          type: "attribute.read"
+          inputs:
+            target:
+              node: "attribute_18"
+              port: "result"
+        self_1:
+          type: "mob.self"
+        spawn_particle_2:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_0"
+              port: "eye_location"
+            target:
+              node: "read_0"
+              port: "world"
+          literals:
+            count: 5
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dripping_lava"
+        spawn_particle_24:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_0"
+              port: "eye_location"
+            target:
+              node: "read_0"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        tick_10:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_4"
+            - "branch_9"
+        value_12:
+          type: "value"
+          config:
+            type: "entity_type"
+            value: "minecraft:fireball"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  speed_zombie:
+    id: "speed_zombie"
+    equipment: null
+    attributes:
+      displayName: "Speed Zombie"
+      entityType: "ZOMBIE"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_0:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 4
+            effect: "minecraft:speed"
+            seconds: 60.0
+            visible: true
+        branch_3:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_2"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_0"
+        cooldown_2:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        self_1:
+          type: "mob.self"
+        tick_4:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_3"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  invisible_zombie:
+    id: "invisible_zombie"
+    equipment: null
+    attributes:
+      displayName: "Invisible Zombie"
+      entityType: "ZOMBIE"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_13:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 0
+            effect: "minecraft:invisibility"
+            seconds: 2.0
+        branch_15:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_14"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_13"
+        branch_18:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "greater_or_equal_17"
+              port: "result"
+          executions:
+            "true":
+            - "branch_15"
+        cooldown_14:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 1000
+        create_item_stack_10:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        create_item_stack_2:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        create_item_stack_4:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        create_item_stack_6:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        create_item_stack_8:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        damage_by_entity_22:
+          type: "event.damage_by_entity"
+          executions:
+            next:
+            - "reset_21"
+            - "remove_potion_effect_20"
+        damage_by_player_25:
+          type: "event.damage_by_player"
+          executions:
+            next:
+            - "reset_24"
+            - "remove_potion_effect_23"
+        elapsed_16:
+          type: "timer.elapsed"
+          config:
+            timer: "damaged"
+        equip_11:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_10"
+              port: "result"
+            target:
+              node: "read_0"
+              port: "equipment"
+          literals:
+            slot: "FEET"
+        equip_3:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_2"
+              port: "result"
+            target:
+              node: "read_0"
+              port: "equipment"
+          literals:
+            slot: "HAND"
+        equip_5:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_4"
+              port: "result"
+            target:
+              node: "read_0"
+              port: "equipment"
+          literals:
+            slot: "HEAD"
+        equip_7:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_6"
+              port: "result"
+            target:
+              node: "read_0"
+              port: "equipment"
+          literals:
+            slot: "CHEST"
+        equip_9:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_8"
+              port: "result"
+            target:
+              node: "read_0"
+              port: "equipment"
+          literals:
+            slot: "LEGS"
+        greater_or_equal_17:
+          type: "logic.greater_or_equal"
+          inputs:
+            first:
+              node: "elapsed_16"
+              port: "elapsed"
+          literals:
+            second: 10.0
+        read_0:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        remove_potion_effect_20:
+          type: "living_entity.remove_potion_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            type: "minecraft:invisibility"
+        remove_potion_effect_23:
+          type: "living_entity.remove_potion_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            type: "minecraft:invisibility"
+        reset_21:
+          type: "timer.reset"
+          config:
+            timer: "damaged"
+        reset_24:
+          type: "timer.reset"
+          config:
+            timer: "damaged"
+        self_1:
+          type: "mob.self"
+        spawn_12:
+          type: "mob.spawn"
+          executions:
+            next:
+            - "equip_3"
+            - "equip_5"
+            - "equip_7"
+            - "equip_9"
+            - "equip_11"
+        tick_19:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_18"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  toxic_creeper:
+    id: "toxic_creeper"
+    equipment: null
+    attributes:
+      displayName: "Toxic Creeper"
+      entityType: "CREEPER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_8:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_7"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_5"
+        cooldown_7:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        create_3:
+          type: "dust.create"
+          inputs:
+            color:
+              node: "rgb_4"
+              port: "result"
+          literals:
+            size: 2.0
+        explode_10:
+          type: "event.explode"
+          executions:
+            next:
+            - "spawn_potion_cloud_11"
+        mutate_0:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            max_fuse_ticks: 20
+        read_6:
+          type: "creeper.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        rgb_12:
+          type: "color.rgb"
+          literals:
+            blue: 0
+            green: 128
+            red: 0
+        rgb_4:
+          type: "color.rgb"
+          literals:
+            blue: 0
+            green: 128
+            red: 0
+        self_1:
+          type: "mob.self"
+        spawn_2:
+          type: "mob.spawn"
+          executions:
+            next:
+            - "mutate_0"
+        spawn_particle_5:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "create_3"
+              port: "result"
+            location:
+              node: "read_6"
+              port: "eye_location"
+            target:
+              node: "read_6"
+              port: "world"
+          literals:
+            count: 5
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dust"
+        spawn_potion_cloud_11:
+          type: "world.spawn_potion_cloud"
+          inputs:
+            color:
+              node: "rgb_12"
+              port: "result"
+            location:
+              node: "explode_10"
+              port: "location"
+          literals:
+            potion: "minecraft:strong_poison"
+            radius: 3.0
+            radius_per_tick: 0.01
+            seconds: 10
+        tick_9:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_8"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  unstable_creeper:
+    id: "unstable_creeper"
+    equipment: null
+    attributes:
+      displayName: "Unstable Creeper"
+      entityType: "CREEPER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_17:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "or_11"
+              port: "result"
+          executions:
+            "true":
+            - "explode_16"
+        branch_25:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "or_19"
+              port: "result"
+          executions:
+            "true":
+            - "explode_24"
+        branch_8:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_7"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_6"
+        cooldown_7:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        damage_by_entity_10:
+          type: "event.damage_by_entity"
+          executions:
+            next:
+            - "branch_17"
+        damage_by_player_18:
+          type: "event.damage_by_player"
+          executions:
+            next:
+            - "branch_25"
+        equal_13:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "damage_by_entity_10"
+              port: "cause"
+            second:
+              node: "value_12"
+              port: "value"
+        equal_15:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "damage_by_entity_10"
+              port: "cause"
+            second:
+              node: "value_14"
+              port: "value"
+        equal_21:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "damage_by_player_18"
+              port: "cause"
+            second:
+              node: "value_20"
+              port: "value"
+        equal_23:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "damage_by_player_18"
+              port: "cause"
+            second:
+              node: "value_22"
+              port: "value"
+        explode_16:
+          type: "creeper.explode"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        explode_24:
+          type: "creeper.explode"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        mutate_0:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            explosion_radius: 10
+        mutate_2:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            powered: true
+        mutate_3:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            max_fuse_ticks: 50
+        or_11:
+          type: "logic.or"
+          inputs:
+            first:
+              node: "equal_13"
+              port: "result"
+            second:
+              node: "equal_15"
+              port: "result"
+        or_19:
+          type: "logic.or"
+          inputs:
+            first:
+              node: "equal_21"
+              port: "result"
+            second:
+              node: "equal_23"
+              port: "result"
+        read_5:
+          type: "creeper.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        self_1:
+          type: "mob.self"
+        spawn_4:
+          type: "mob.spawn"
+          executions:
+            next:
+            - "mutate_0"
+            - "mutate_2"
+            - "mutate_3"
+        spawn_particle_6:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_5"
+              port: "eye_location"
+            target:
+              node: "read_5"
+              port: "world"
+          literals:
+            count: 2
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:end_rod"
+        tick_9:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_8"
+        value_12:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "ENTITY_ATTACK"
+        value_14:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "PROJECTILE"
+        value_20:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "ENTITY_ATTACK"
+        value_22:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "PROJECTILE"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  fearful_enderman:
+    id: "fearful_enderman"
+    equipment: null
+    attributes:
+      displayName: "Fearful Enderman"
+      entityType: "ENDERMAN"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_14:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_13"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:blindness"
+            seconds: 7.0
+        branch_10:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_9"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_8"
+        branch_15:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_13"
+              port: "matches"
+          executions:
+            "true":
+            - "apply_effect_14"
+        branch_6:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_5"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_3"
+        branch_7:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_4"
+              port: "result"
+          executions:
+            "true":
+            - "branch_6"
+        cast_13:
+          type: "cast"
+          config:
+            type: "player"
+          inputs:
+            value:
+              node: "hit_12"
+              port: "entity"
+        cooldown_9:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        hit_12:
+          type: "event.hit"
+          executions:
+            next:
+            - "branch_15"
+        is_null_4:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "read_1"
+              port: "target"
+        is_null_5:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "nearest_player_0"
+              port: "player"
+        mutate_3:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "self_2"
+              port: "entity"
+            target_value:
+              node: "nearest_player_0"
+              port: "player"
+        nearest_player_0:
+          type: "world.nearest_player"
+          inputs:
+            location:
+              node: "read_1"
+              port: "location"
+          literals:
+            radius: 16.0
+        night_end_18:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_17"
+        power_16:
+          type: "particle.power"
+          literals:
+            power: 1.0
+        read_1:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_2"
+              port: "entity"
+        self_2:
+          type: "mob.self"
+        spawn_particle_17:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "power_16"
+              port: "power"
+            location:
+              node: "read_1"
+              port: "eye_location"
+            target:
+              node: "read_1"
+              port: "world"
+          literals:
+            count: 10
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dragon_breath"
+        spawn_particle_8:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_1"
+              port: "eye_location"
+            target:
+              node: "read_1"
+              port: "world"
+          literals:
+            count: 10
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:witch"
+        tick_11:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_7"
+            - "branch_10"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  phantom_soul:
+    id: "phantom_soul"
+    equipment: null
+    attributes:
+      displayName: "Phantom Soul"
+      entityType: "PHANTOM"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_0:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:glowing"
+            seconds: 60.0
+            visible: true
+        apply_effect_10:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_9"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:blindness"
+            seconds: 0.5
+        apply_effect_4:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:invisibility"
+            seconds: 60.0
+            visible: false
+        branch_11:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_9"
+              port: "matches"
+          executions:
+            "true":
+            - "apply_effect_10"
+        branch_3:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_2"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_0"
+        branch_6:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_5"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_4"
+        cast_9:
+          type: "cast"
+          config:
+            type: "player"
+          inputs:
+            value:
+              node: "hit_8"
+              port: "entity"
+        cooldown_2:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        cooldown_5:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        hit_8:
+          type: "event.hit"
+          executions:
+            next:
+            - "branch_11"
+        night_end_14:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_13"
+        read_12:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        self_1:
+          type: "mob.self"
+        spawn_particle_13:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_12"
+              port: "eye_location"
+            target:
+              node: "read_12"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        tick_7:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_3"
+            - "branch_6"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  knight_zombie:
+    id: "knight_zombie"
+    equipment:
+      head: "minecraft:chainmail_helmet"
+      chest: "minecraft:chainmail_chestplate"
+      legs: "minecraft:chainmail_leggings"
+      feet: "minecraft:chainmail_boots"
+      mainHand: "minecraft:golden_axe"
+      offHand: null
+    attributes:
+      displayName: "Knight Zombie"
+      entityType: "ZOMBIE"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_5:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_1"
+              port: "result"
+          literals:
+            amplifier: 2
+            effect: "minecraft:slowness"
+            seconds: 1.0
+        branch_10:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_1"
+              port: "matches"
+          executions:
+            "true":
+            - "branch_9"
+        branch_17:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "chance_16"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_13"
+            - "play_sound_14"
+        branch_18:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_12"
+              port: "matches"
+          executions:
+            "true":
+            - "branch_17"
+        branch_9:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "chance_8"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_4"
+            - "mutate_3"
+            - "apply_effect_5"
+            - "play_sound_6"
+        cast_1:
+          type: "cast"
+          config:
+            type: "player"
+          inputs:
+            value:
+              node: "hit_0"
+              port: "entity"
+        cast_12:
+          type: "cast"
+          config:
+            type: "player"
+          inputs:
+            value:
+              node: "damage_by_player_11"
+              port: "attacker"
+        chance_16:
+          type: "function.chance"
+          literals:
+            percent: 12.0
+        chance_8:
+          type: "function.chance"
+          literals:
+            percent: 15.0
+        create_2:
+          type: "vector.create"
+          literals:
+            x: 0.0
+            "y": 1.0
+            z: 0.0
+        damage_by_player_11:
+          type: "event.damage_by_player"
+          executions:
+            next:
+            - "branch_18"
+        hit_0:
+          type: "event.hit"
+          executions:
+            next:
+            - "branch_10"
+        mutate_13:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "damage_by_player_11"
+              port: "event"
+          literals:
+            cancelled: true
+        mutate_3:
+          type: "entity.mutate"
+          inputs:
+            target:
+              node: "cast_1"
+              port: "result"
+            velocity:
+              node: "create_2"
+              port: "result"
+        mutate_4:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "hit_0"
+              port: "event"
+          literals:
+            cancelled: true
+        play_sound_14:
+          type: "player.play_sound"
+          inputs:
+            location:
+              node: "read_15"
+              port: "location"
+            target:
+              node: "cast_12"
+              port: "result"
+          literals:
+            pitch: 1.0
+            sound: "minecraft:item.shield.block"
+            volume: 15.0
+        play_sound_6:
+          type: "player.play_sound"
+          inputs:
+            location:
+              node: "read_7"
+              port: "location"
+            target:
+              node: "cast_1"
+              port: "result"
+          literals:
+            pitch: 3.0
+            sound: "minecraft:block.bubble_column.bubble_pop"
+            volume: 15.0
+        read_15:
+          type: "player.read"
+          inputs:
+            target:
+              node: "cast_12"
+              port: "result"
+        read_7:
+          type: "player.read"
+          inputs:
+            target:
+              node: "cast_1"
+              port: "result"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  speed_skeleton_rider:
+    id: "speed_skeleton_rider"
+    equipment: null
+    attributes:
+      displayName: "Speed Skeleton Rider"
+      entityType: "SPIDER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_15:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:speed"
+            seconds: 60.0
+            visible: true
+        branch_13:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "read_12"
+              port: "dead"
+          executions:
+            "false":
+            - "damage_10"
+        branch_17:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_16"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_15"
+        branch_4:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_3"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_1"
+        branch_9:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_7"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_8"
+        cooldown_16:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        damage_10:
+          type: "living_entity.damage"
+          inputs:
+            amount:
+              node: "read_12"
+              port: "health"
+            target:
+              node: "self_11"
+              port: "entity"
+        equal_7:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "extension_damage_5"
+              port: "cause"
+            second:
+              node: "value_6"
+              port: "value"
+        extension_2:
+          type: "mob.extension"
+        extension_damage_5:
+          type: "event.extension_damage"
+          executions:
+            next:
+            - "branch_9"
+        extension_death_14:
+          type: "event.extension_death"
+          executions:
+            next:
+            - "branch_13"
+        is_null_3:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_2"
+              port: "entity"
+        mutate_1:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "extension_2"
+              port: "entity"
+            target_value:
+              node: "target_change_0"
+              port: "target"
+        mutate_8:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "extension_damage_5"
+              port: "event"
+          literals:
+            cancelled: true
+        night_end_20:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_19"
+        read_12:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+        self_11:
+          type: "mob.self"
+        spawn_particle_19:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_12"
+              port: "eye_location"
+            target:
+              node: "read_12"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        target_change_0:
+          type: "event.target_change"
+          executions:
+            next:
+            - "branch_4"
+        tick_18:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_17"
+        value_6:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "SUFFOCATION"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "CARRIER"
+      entityType: "SKELETON"
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  fire_phantom:
+    id: "fire_phantom"
+    equipment: null
+    attributes:
+      displayName: "Fire Phantom"
+      entityType: "PHANTOM"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_4:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_3"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_1"
+        branch_7:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_6"
+              port: "result"
+          executions:
+            "false":
+            - "remove_5"
+        extension_2:
+          type: "mob.extension"
+        is_null_3:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_2"
+              port: "entity"
+        is_null_6:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_2"
+              port: "entity"
+        mutate_1:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "extension_2"
+              port: "entity"
+            target_value:
+              node: "target_change_0"
+              port: "target"
+        night_end_8:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "branch_7"
+        remove_5:
+          type: "entity.remove"
+          inputs:
+            target:
+              node: "extension_2"
+              port: "entity"
+        target_change_0:
+          type: "event.target_change"
+          executions:
+            next:
+            - "branch_4"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "CARRIER"
+      entityType: "BLAZE"
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  ghost_creeper:
+    id: "ghost_creeper"
+    equipment: null
+    attributes:
+      displayName: "Ghost Creeper"
+      entityType: "CREEPER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_10:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+          literals:
+            amplifier: 4
+            effect: "minecraft:speed"
+            seconds: 60.0
+            visible: false
+        branch_13:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_12"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_10"
+        branch_19:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_17"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_18"
+        branch_24:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_22"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_23"
+        branch_27:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "read_26"
+              port: "dead"
+          executions:
+            "false":
+            - "damage_25"
+        branch_31:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_30"
+              port: "result"
+          executions:
+            "false":
+            - "remove_29"
+        branch_8:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_7"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_1"
+            - "equip_4"
+            - "equip_6"
+        cooldown_12:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        create_item_stack_3:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        create_item_stack_5:
+          type: "item_type.create_item_stack"
+          literals:
+            target: "minecraft:air"
+        damage_15:
+          type: "event.damage"
+          executions:
+            next:
+            - "branch_19"
+        damage_25:
+          type: "living_entity.damage"
+          inputs:
+            amount:
+              node: "read_26"
+              port: "health"
+            target:
+              node: "self_11"
+              port: "entity"
+        equal_17:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "damage_15"
+              port: "cause"
+            second:
+              node: "value_16"
+              port: "value"
+        equal_22:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "extension_damage_20"
+              port: "cause"
+            second:
+              node: "value_21"
+              port: "value"
+        equip_4:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_3"
+              port: "result"
+            target:
+              node: "read_2"
+              port: "equipment"
+          literals:
+            slot: "HAND"
+        equip_6:
+          type: "equipment.equip"
+          inputs:
+            item:
+              node: "create_item_stack_5"
+              port: "result"
+            target:
+              node: "read_2"
+              port: "equipment"
+          literals:
+            slot: "OFF_HAND"
+        explode_32:
+          type: "event.explode"
+          executions:
+            next:
+            - "branch_31"
+        extension_0:
+          type: "mob.extension"
+        extension_damage_20:
+          type: "event.extension_damage"
+          executions:
+            next:
+            - "branch_24"
+        extension_death_28:
+          type: "event.extension_death"
+          executions:
+            next:
+            - "branch_27"
+        is_null_30:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_0"
+              port: "entity"
+        is_null_7:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_0"
+              port: "entity"
+        mutate_1:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "extension_0"
+              port: "entity"
+          literals:
+            invisible: true
+        mutate_18:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "damage_15"
+              port: "event"
+          literals:
+            cancelled: true
+        mutate_23:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "extension_damage_20"
+              port: "event"
+          literals:
+            cancelled: true
+        read_2:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "extension_0"
+              port: "entity"
+        read_26:
+          type: "creeper.read"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+        remove_29:
+          type: "entity.remove"
+          inputs:
+            target:
+              node: "extension_0"
+              port: "entity"
+        self_11:
+          type: "mob.self"
+        spawn_9:
+          type: "mob.spawn"
+          executions:
+            next:
+            - "branch_8"
+        tick_14:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_13"
+        value_16:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "SUFFOCATION"
+        value_21:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "SUFFOCATION"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "RIDER"
+      entityType: "VEX"
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  blaze_rider:
+    id: "blaze_rider"
+    equipment: null
+    attributes:
+      displayName: "Blaze Rider"
+      entityType: "SPIDER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_13:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "read_12"
+              port: "dead"
+          executions:
+            "false":
+            - "damage_10"
+        branch_4:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_3"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_1"
+        branch_9:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_7"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_8"
+        damage_10:
+          type: "living_entity.damage"
+          inputs:
+            amount:
+              node: "read_12"
+              port: "health"
+            target:
+              node: "self_11"
+              port: "entity"
+        equal_7:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "extension_damage_5"
+              port: "cause"
+            second:
+              node: "value_6"
+              port: "value"
+        extension_2:
+          type: "mob.extension"
+        extension_damage_5:
+          type: "event.extension_damage"
+          executions:
+            next:
+            - "branch_9"
+        extension_death_14:
+          type: "event.extension_death"
+          executions:
+            next:
+            - "branch_13"
+        is_null_3:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_2"
+              port: "entity"
+        mutate_1:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "extension_2"
+              port: "entity"
+            target_value:
+              node: "target_change_0"
+              port: "target"
+        mutate_8:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "extension_damage_5"
+              port: "event"
+          literals:
+            cancelled: true
+        night_end_16:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_15"
+        read_12:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+        self_11:
+          type: "mob.self"
+        spawn_particle_15:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_12"
+              port: "eye_location"
+            target:
+              node: "read_12"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        target_change_0:
+          type: "event.target_change"
+          executions:
+            next:
+            - "branch_4"
+        value_6:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "SUFFOCATION"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "CARRIER"
+      entityType: "BLAZE"
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  fearful_phantom:
+    id: "fearful_phantom"
+    equipment: null
+    attributes:
+      displayName: "Fearful Phantom"
+      entityType: "PHANTOM"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_0:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:glowing"
+            seconds: 60.0
+            visible: true
+        apply_effect_7:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 2
+            effect: "minecraft:slowness"
+            seconds: 7.0
+        branch_3:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_2"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_0"
+        branch_8:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_6"
+              port: "matches"
+          executions:
+            "true":
+            - "apply_effect_7"
+        cast_6:
+          type: "cast"
+          config:
+            type: "player"
+          inputs:
+            value:
+              node: "hit_5"
+              port: "entity"
+        cooldown_2:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        hit_5:
+          type: "event.hit"
+          executions:
+            next:
+            - "branch_8"
+        night_end_11:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_10"
+        read_9:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        self_1:
+          type: "mob.self"
+        spawn_particle_10:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_9"
+              port: "eye_location"
+            target:
+              node: "read_9"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        tick_4:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_3"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  speed_creeper:
+    id: "speed_creeper"
+    equipment: null
+    attributes:
+      displayName: "Speed Creeper"
+      entityType: "CREEPER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_3:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 4
+            effect: "minecraft:speed"
+            seconds: 60.0
+            visible: true
+        branch_5:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_4"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_3"
+        cooldown_4:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        explosion_prime_7:
+          type: "event.explosion_prime"
+          executions:
+            next:
+            - "mutate_8"
+        ignite_9:
+          type: "creeper.ignite"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        mutate_0:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            max_fuse_ticks: 10
+        mutate_10:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            max_fuse_ticks: 0
+        mutate_8:
+          type: "event_data.explosion_prime.mutate"
+          inputs:
+            target:
+              node: "explosion_prime_7"
+              port: "event"
+          literals:
+            fire: true
+        night_end_11:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "mutate_10"
+            - "ignite_9"
+        self_1:
+          type: "mob.self"
+        spawn_2:
+          type: "mob.spawn"
+          executions:
+            next:
+            - "mutate_0"
+        tick_6:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_5"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  wither_wizard:
+    id: "wither_wizard"
+    equipment:
+      head: null
+      chest: null
+      legs: null
+      feet: null
+      mainHand: "minecraft:wither_skeleton_skull"
+      offHand: null
+    attributes:
+      displayName: "Wither Wizard"
+      entityType: "WITCH"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        branch_11:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_10"
+              port: "result"
+          executions:
+            "false":
+            - "branch_9"
+        branch_17:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_15"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_16"
+        branch_6:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_5"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_2"
+        branch_9:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_8"
+              port: "result"
+          executions:
+            "true":
+            - "launch_projectile_7"
+        cooldown_5:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        cooldown_8:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 5000
+        create_0:
+          type: "spell.create"
+          inputs:
+            color:
+              node: "rgb_1"
+              port: "result"
+          literals:
+            power: 1.0
+        equal_15:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "projectile_shoot_13"
+              port: "entity_type"
+            second:
+              node: "value_14"
+              port: "value"
+        is_null_10:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "read_3"
+              port: "target"
+        launch_projectile_7:
+          type: "living_entity.launch_projectile"
+          config:
+            projectile: "WITHER_SKULL"
+          inputs:
+            shooter:
+              node: "self_4"
+              port: "entity"
+            target:
+              node: "read_3"
+              port: "target"
+          literals:
+            speed: 4.0
+        mutate_16:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "projectile_shoot_13"
+              port: "event"
+          literals:
+            cancelled: true
+        night_end_19:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_18"
+        projectile_shoot_13:
+          type: "event.projectile_shoot"
+          executions:
+            next:
+            - "branch_17"
+        read_3:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_4"
+              port: "entity"
+        rgb_1:
+          type: "color.rgb"
+          literals:
+            blue: 255
+            green: 255
+            red: 255
+        self_4:
+          type: "mob.self"
+        spawn_particle_18:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_3"
+              port: "eye_location"
+            target:
+              node: "read_3"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        spawn_particle_2:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "create_0"
+              port: "result"
+            location:
+              node: "read_3"
+              port: "eye_location"
+            target:
+              node: "read_3"
+              port: "world"
+          literals:
+            count: 15
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:instant_effect"
+        tick_12:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_6"
+            - "branch_11"
+        value_14:
+          type: "value"
+          config:
+            type: "entity_type"
+            value: "minecraft:wither_skull"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  toxic_slime:
+    id: "toxic_slime"
+    equipment: null
+    attributes:
+      displayName: "Toxic Slime"
+      entityType: "SLIME"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        death_0:
+          type: "event.death"
+          executions:
+            next:
+            - "spawn_potion_cloud_2"
+        read_1:
+          type: "living_entity.read"
+          inputs:
+            target:
+              node: "death_0"
+              port: "entity"
+        rgb_3:
+          type: "color.rgb"
+          literals:
+            blue: 49
+            green: 147
+            red: 78
+        spawn_potion_cloud_2:
+          type: "world.spawn_potion_cloud"
+          inputs:
+            color:
+              node: "rgb_3"
+              port: "result"
+            location:
+              node: "read_1"
+              port: "location"
+          literals:
+            potion: "minecraft:strong_poison"
+            radius: 3.0
+            radius_per_tick: 0.01
+            seconds: 5
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  ender_creeper:
+    id: "ender_creeper"
+    equipment: null
+    attributes:
+      displayName: "Ender Creeper"
+      entityType: "CREEPER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        add_10:
+          type: "math.add"
+          inputs:
+            first:
+              node: "read_1"
+              port: "z"
+            second:
+              node: "random_number_7"
+              port: "result"
+        add_14:
+          type: "math.add"
+          inputs:
+            first:
+              node: "read_1"
+              port: "x"
+            second:
+              node: "random_number_12"
+              port: "result"
+        add_15:
+          type: "math.add"
+          inputs:
+            first:
+              node: "read_1"
+              port: "y"
+          literals:
+            second: 1.0
+        add_16:
+          type: "math.add"
+          inputs:
+            first:
+              node: "read_1"
+              port: "z"
+            second:
+              node: "random_number_13"
+              port: "result"
+        add_8:
+          type: "math.add"
+          inputs:
+            first:
+              node: "read_1"
+              port: "x"
+            second:
+              node: "random_number_6"
+              port: "result"
+        add_9:
+          type: "math.add"
+          inputs:
+            first:
+              node: "read_1"
+              port: "y"
+          literals:
+            second: 0.0
+        and_22:
+          type: "logic.and"
+          inputs:
+            first:
+              node: "read_18"
+              port: "passable"
+            second:
+              node: "read_20"
+              port: "passable"
+        block_at_19:
+          type: "world.block_at"
+          inputs:
+            location:
+              node: "create_11"
+              port: "result"
+            target:
+              node: "read_1"
+              port: "world"
+        block_at_21:
+          type: "world.block_at"
+          inputs:
+            location:
+              node: "create_17"
+              port: "result"
+            target:
+              node: "read_1"
+              port: "world"
+        branch_26:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "and_22"
+              port: "result"
+          executions:
+            "true":
+            - "teleport_23"
+            - "reset_25"
+            - "spawn_particle_24"
+        branch_27:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "greater_5"
+              port: "result"
+          executions:
+            "true":
+            - "branch_26"
+        branch_30:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "greater_or_equal_29"
+              port: "result"
+          executions:
+            "true":
+            - "branch_27"
+        branch_32:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_31"
+              port: "result"
+          executions:
+            "false":
+            - "branch_30"
+        branch_38:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_37"
+              port: "result"
+          executions:
+            "true":
+            - "spawn_particle_36"
+        branch_46:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_44"
+              port: "matches"
+          executions:
+            "true":
+            - "mutate_45"
+        branch_51:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_49"
+              port: "matches"
+          executions:
+            "true":
+            - "mutate_50"
+        cast_44:
+          type: "cast"
+          config:
+            type: "living_entity"
+          inputs:
+            value:
+              node: "damage_by_entity_43"
+              port: "attacker"
+        cast_49:
+          type: "cast"
+          config:
+            type: "living_entity"
+          inputs:
+            value:
+              node: "damage_by_player_48"
+              port: "attacker"
+        cooldown_37:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 250
+        create_11:
+          type: "location.create"
+          inputs:
+            world:
+              node: "read_1"
+              port: "world"
+            x:
+              node: "add_8"
+              port: "result"
+            "y":
+              node: "add_9"
+              port: "result"
+            z:
+              node: "add_10"
+              port: "result"
+        create_17:
+          type: "location.create"
+          inputs:
+            world:
+              node: "read_1"
+              port: "world"
+            x:
+              node: "add_14"
+              port: "result"
+            "y":
+              node: "add_15"
+              port: "result"
+            z:
+              node: "add_16"
+              port: "result"
+        create_34:
+          type: "dust.create"
+          inputs:
+            color:
+              node: "rgb_35"
+              port: "result"
+          literals:
+            size: 2.0
+        damage_by_entity_43:
+          type: "event.damage_by_entity"
+          executions:
+            next:
+            - "branch_46"
+            - "teleport_near_47"
+        damage_by_player_48:
+          type: "event.damage_by_player"
+          executions:
+            next:
+            - "branch_51"
+            - "teleport_near_52"
+        define_33:
+          type: "routine.define"
+          config:
+            name: "teleport_near"
+          executions:
+            next:
+            - "branch_32"
+        distance_2:
+          type: "location.distance"
+          inputs:
+            other:
+              node: "read_1"
+              port: "location"
+            target:
+              node: "read_3"
+              port: "location"
+        elapsed_28:
+          type: "timer.elapsed"
+          config:
+            timer: "teleport"
+        greater_5:
+          type: "logic.greater"
+          inputs:
+            first:
+              node: "distance_2"
+              port: "result"
+          literals:
+            second: 5.0
+        greater_or_equal_29:
+          type: "logic.greater_or_equal"
+          inputs:
+            first:
+              node: "elapsed_28"
+              port: "elapsed"
+          literals:
+            second: 5.0
+        is_null_31:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "parameter_0"
+              port: "value"
+        mutate_45:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_4"
+              port: "entity"
+            target_value:
+              node: "cast_44"
+              port: "result"
+        mutate_50:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_4"
+              port: "entity"
+            target_value:
+              node: "cast_49"
+              port: "result"
+        parameter_0:
+          type: "routine.parameter"
+          config:
+            name: "target"
+            routine: "teleport_near"
+            type: "living_entity"
+        random_number_12:
+          type: "function.random_number"
+          literals:
+            lower: -2.0
+            upper: 2.0
+        random_number_13:
+          type: "function.random_number"
+          literals:
+            lower: -2.0
+            upper: 2.0
+        random_number_6:
+          type: "function.random_number"
+          literals:
+            lower: -2.0
+            upper: 2.0
+        random_number_7:
+          type: "function.random_number"
+          literals:
+            lower: -2.0
+            upper: 2.0
+        read_1:
+          type: "living_entity.read"
+          inputs:
+            target:
+              node: "parameter_0"
+              port: "value"
+        read_18:
+          type: "block.read"
+          inputs:
+            target:
+              node: "block_at_19"
+              port: "result"
+        read_20:
+          type: "block.read"
+          inputs:
+            target:
+              node: "block_at_21"
+              port: "result"
+        read_3:
+          type: "creeper.read"
+          inputs:
+            target:
+              node: "self_4"
+              port: "entity"
+        reset_25:
+          type: "timer.reset"
+          config:
+            timer: "teleport"
+        rgb_35:
+          type: "color.rgb"
+          literals:
+            blue: 128
+            green: 0
+            red: 128
+        self_4:
+          type: "mob.self"
+        spawn_particle_24:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_1"
+              port: "location"
+            target:
+              node: "read_3"
+              port: "world"
+          literals:
+            count: 10
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:portal"
+        spawn_particle_36:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "create_34"
+              port: "result"
+            location:
+              node: "read_3"
+              port: "eye_location"
+            target:
+              node: "read_3"
+              port: "world"
+          literals:
+            count: 5
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dust"
+        target_change_41:
+          type: "event.target_change"
+          executions:
+            next:
+            - "teleport_near_42"
+        teleport_23:
+          type: "entity.teleport"
+          inputs:
+            location:
+              node: "create_11"
+              port: "result"
+            target:
+              node: "self_4"
+              port: "entity"
+        teleport_near_39:
+          type: "routine.teleport_near"
+          inputs:
+            target:
+              node: "read_3"
+              port: "target"
+        teleport_near_42:
+          type: "routine.teleport_near"
+          inputs:
+            target:
+              node: "target_change_41"
+              port: "target"
+        teleport_near_47:
+          type: "routine.teleport_near"
+          inputs:
+            target:
+              node: "cast_44"
+              port: "result"
+        teleport_near_52:
+          type: "routine.teleport_near"
+          inputs:
+            target:
+              node: "cast_49"
+              port: "result"
+        tick_40:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_38"
+            - "teleport_near_39"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  invisible_skeleton:
+    id: "invisible_skeleton"
+    equipment: null
+    attributes:
+      displayName: "Invisible Skeleton"
+      entityType: "SKELETON"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_0:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:invisibility"
+            seconds: 60.0
+            visible: false
+        branch_3:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_2"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_0"
+        cooldown_2:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        night_end_7:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_6"
+        read_5:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        self_1:
+          type: "mob.self"
+        spawn_particle_6:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_5"
+              port: "eye_location"
+            target:
+              node: "read_5"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        tick_4:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_3"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  magic_skeleton:
+    id: "magic_skeleton"
+    equipment: null
+    attributes:
+      displayName: "Magic Skeleton"
+      entityType: "SKELETON"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_0:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:night_vision"
+            seconds: 60.0
+            visible: true
+        apply_effect_10:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 2
+            effect: "minecraft:slowness"
+            seconds: 6.0
+        apply_effect_11:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:instant_damage"
+            seconds: 2.0
+        apply_effect_12:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:levitation"
+            seconds: 5.0
+        apply_effect_13:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:nausea"
+            seconds: 5.0
+        apply_effect_14:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:weakness"
+            seconds: 5.0
+        apply_effect_15:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:poison"
+            seconds: 6.0
+        apply_effect_16:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 2
+            effect: "minecraft:poison"
+            seconds: 4.0
+        apply_effect_9:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "cast_6"
+              port: "result"
+          literals:
+            amplifier: 1
+            effect: "minecraft:slowness"
+            seconds: 8.0
+        branch_17:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cast_6"
+              port: "matches"
+          executions:
+            "true":
+            - "switch_8"
+        branch_3:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_2"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_0"
+        cast_6:
+          type: "cast"
+          config:
+            type: "living_entity"
+          inputs:
+            value:
+              node: "projectile_hit_5"
+              port: "hit_entity"
+        cooldown_2:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        night_end_20:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_19"
+        projectile_hit_5:
+          type: "event.projectile_hit"
+          executions:
+            next:
+            - "branch_17"
+        random_integer_7:
+          type: "function.random_integer"
+          literals:
+            lower: 0
+            upper: 7
+        read_18:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        self_1:
+          type: "mob.self"
+        spawn_particle_19:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_18"
+              port: "eye_location"
+            target:
+              node: "read_18"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        switch_8:
+          type: "flow.switch"
+          config:
+            case_0: 0
+            case_1: 1
+            case_2: 2
+            case_3: 3
+            case_4: 4
+            case_5: 5
+            case_6: 6
+            case_7: 7
+          inputs:
+            value:
+              node: "random_integer_7"
+              port: "result"
+          executions:
+            case_0:
+            - "apply_effect_9"
+            case_1:
+            - "apply_effect_10"
+            case_2:
+            - "apply_effect_11"
+            case_3:
+            - "apply_effect_12"
+            case_4:
+            - "apply_effect_13"
+            case_5:
+            - "apply_effect_14"
+            case_6:
+            - "apply_effect_15"
+            case_7:
+            - "apply_effect_16"
+        tick_4:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_3"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  wither_skeleton_rider:
+    id: "wither_skeleton_rider"
+    equipment: null
+    attributes:
+      displayName: "Wither Skeleton Rider"
+      entityType: "SPIDER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_15:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+          literals:
+            amplifier: 1
+            effect: "minecraft:speed"
+            seconds: 60.0
+            visible: true
+        branch_13:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "read_12"
+              port: "dead"
+          executions:
+            "false":
+            - "damage_10"
+        branch_17:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_16"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_15"
+        branch_4:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "is_null_3"
+              port: "result"
+          executions:
+            "false":
+            - "mutate_1"
+        branch_9:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "equal_7"
+              port: "result"
+          executions:
+            "true":
+            - "mutate_8"
+        cooldown_16:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        damage_10:
+          type: "living_entity.damage"
+          inputs:
+            amount:
+              node: "read_12"
+              port: "health"
+            target:
+              node: "self_11"
+              port: "entity"
+        equal_7:
+          type: "logic.equal"
+          inputs:
+            first:
+              node: "extension_damage_5"
+              port: "cause"
+            second:
+              node: "value_6"
+              port: "value"
+        extension_2:
+          type: "mob.extension"
+        extension_damage_5:
+          type: "event.extension_damage"
+          executions:
+            next:
+            - "branch_9"
+        extension_death_14:
+          type: "event.extension_death"
+          executions:
+            next:
+            - "branch_13"
+        is_null_3:
+          type: "logic.is_null"
+          inputs:
+            value:
+              node: "extension_2"
+              port: "entity"
+        mutate_1:
+          type: "mob.mutate"
+          inputs:
+            target:
+              node: "extension_2"
+              port: "entity"
+            target_value:
+              node: "target_change_0"
+              port: "target"
+        mutate_8:
+          type: "cancellable.mutate"
+          inputs:
+            target:
+              node: "extension_damage_5"
+              port: "event"
+          literals:
+            cancelled: true
+        night_end_20:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "spawn_particle_19"
+        read_12:
+          type: "mob.read"
+          inputs:
+            target:
+              node: "self_11"
+              port: "entity"
+        self_11:
+          type: "mob.self"
+        spawn_particle_19:
+          type: "world.spawn_particle"
+          inputs:
+            location:
+              node: "read_12"
+              port: "eye_location"
+            target:
+              node: "read_12"
+              port: "world"
+          literals:
+            count: 30
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:campfire_cosy_smoke"
+        target_change_0:
+          type: "event.target_change"
+          executions:
+            next:
+            - "branch_4"
+        tick_18:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_17"
+        value_6:
+          type: "value"
+          config:
+            type: "damage_cause"
+            value: "SUFFOCATION"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "CARRIER"
+      entityType: "WITHER_SKELETON"
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"
+  nervous_powered_creeper:
+    id: "nervous_powered_creeper"
+    equipment: null
+    attributes:
+      displayName: "Nervous Powered Creeper"
+      entityType: "CREEPER"
+      exactType: true
+      healthModifier: "DEFAULT"
+      health: 2.0
+      damageModifier: "DEFAULT"
+      damage: 2.0
+      changes: []
+    behaviour:
+      nodes:
+        apply_effect_8:
+          type: "living_entity.apply_effect"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            amplifier: 2
+            effect: "minecraft:speed"
+            seconds: 60.0
+            visible: false
+        branch_10:
+          type: "flow.branch"
+          inputs:
+            condition:
+              node: "cooldown_9"
+              port: "result"
+          executions:
+            "true":
+            - "apply_effect_8"
+        cooldown_9:
+          type: "function.cooldown"
+          config:
+            unit: "MILLISECONDS"
+          literals:
+            duration: 30000
+        create_3:
+          type: "dust.create"
+          inputs:
+            color:
+              node: "rgb_4"
+              port: "result"
+          literals:
+            size: 4.0
+        ignite_12:
+          type: "creeper.ignite"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        mutate_0:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            powered: true
+        mutate_13:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            max_fuse_ticks: 0
+        mutate_2:
+          type: "creeper.mutate"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+          literals:
+            max_fuse_ticks: 1
+        night_end_14:
+          type: "mob.night_end"
+          executions:
+            next:
+            - "mutate_13"
+            - "ignite_12"
+        read_6:
+          type: "creeper.read"
+          inputs:
+            target:
+              node: "self_1"
+              port: "entity"
+        rgb_4:
+          type: "color.rgb"
+          literals:
+            blue: 0
+            green: 0
+            red: 255
+        self_1:
+          type: "mob.self"
+        spawn_7:
+          type: "mob.spawn"
+          executions:
+            next:
+            - "mutate_0"
+            - "mutate_2"
+            - "spawn_particle_5"
+        spawn_particle_5:
+          type: "world.spawn_particle"
+          inputs:
+            data:
+              node: "create_3"
+              port: "result"
+            location:
+              node: "read_6"
+              port: "eye_location"
+            target:
+              node: "read_6"
+              port: "world"
+          literals:
+            count: 10
+            offset_x: 1.5
+            offset_y: 1.0
+            offset_z: 1.5
+            particle: "minecraft:dust"
+        tick_11:
+          type: "mob.tick"
+          executions:
+            next:
+            - "branch_10"
+    mobDrops:
+      weightsScope: "GLOBAL"
+      weights:
+        1: 90
+        2: 50
+        3: 10
+      dropTables:
+      - "GLOBAL"
+      - "WORLD"
+      - "MOB"
+      dropList: []
+      xpScope: "GLOBAL"
+      xpModifier: "MULTIPLY"
+      xpValue: 4.0
+    extension:
+      type: "NONE"
+      entityType: null
+      equipment: null
+    spawn:
+      weight: 10
+      nightOnly: true
+      despawn: "NIGHT_END"
+      reasons: []
+      conditions:
+        worlds: []
+        biomes: []
+        minY: null
+        maxY: null
+        maxLight: null
+        surface: "ANY"

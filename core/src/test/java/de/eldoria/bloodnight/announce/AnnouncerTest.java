@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.World;
@@ -41,7 +42,7 @@ class AnnouncerTest {
                     .withGetterVisibility(JsonAutoDetect.Visibility.NONE))
             .build();
     private static final NightTimes TIMES = new NightTimes(13_000, 23_000);
-    private final WorldSettings settings = new WorldSettings();
+    private WorldSettings settings = new WorldSettings();
     private ServerMock server;
     private World world;
     private World other;
@@ -112,9 +113,11 @@ class AnnouncerTest {
         assertFalse(player.getHeardSounds().isEmpty());
         at(18_000);
         assertEquals(0.5f, player.activeBossBars().iterator().next().progress());
+        player.removePotionEffect(PotionEffectType.DARKNESS);
         at(23_000);
         assertEquals(Messages.NIGHT_END, key(player.nextComponentMessage()));
         assertFalse(player.activeBossBars().iterator().hasNext());
+        assertNotNull(player.getPotionEffect(PotionEffectType.DARKNESS));
     }
 
     @Test
@@ -147,5 +150,19 @@ class AnnouncerTest {
         at(13_000);
         announcer.clear();
         assertFalse(player.activeBossBars().iterator().hasNext());
+    }
+
+    @Test
+    void changedBarSettingsApplyToTheRunningNight() {
+        PlayerMock player = player(world);
+        at(13_000);
+        settings = MAPPER.readValue(
+                "{\"announcement\":{\"bossBar\":{\"title\":\"changed\",\"color\":\"BLUE\",\"flags\":[]}}}",
+                WorldSettings.class);
+        at(14_000);
+        BossBar bar = player.activeBossBars().iterator().next();
+        assertEquals(Component.text("changed"), bar.name());
+        assertEquals(BossBar.Color.BLUE, bar.color());
+        assertTrue(bar.flags().isEmpty());
     }
 }

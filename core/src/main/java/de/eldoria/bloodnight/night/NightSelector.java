@@ -136,6 +136,14 @@ public final class NightSelector {
         }
     }
 
+    /**
+     * @return a seed for random choices about a night other than whether it is a blood night, e.g. its length: the
+     *     same for the same night, hidden like the roll
+     */
+    public long seed(World world, long night) {
+        return salt(world) ^ ~(night * MIX);
+    }
+
     private int roll(World world, long night) {
         return new SplittableRandom(salt(world) ^ (night * MIX)).nextInt(100);
     }

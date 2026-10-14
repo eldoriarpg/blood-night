@@ -6,11 +6,10 @@
 package de.eldoria.bloodnight.configuration.elements;
 
 /**
- * Where the web editor's service runs.
+ * Where the web editor's service runs: the hosted one by default, or a server's own.
  */
 public class EditorSettings {
-    // TODO: default to the hosted editor service once it runs
-    private String url = "http://localhost:8080";
+    private String url = "https://bloodnight.eldoria.de";
     private int timeoutSeconds = 30;
 
     /**

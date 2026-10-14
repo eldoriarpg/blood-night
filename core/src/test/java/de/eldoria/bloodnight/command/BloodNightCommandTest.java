@@ -12,6 +12,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import de.eldoria.bloodnight.BloodNight;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,8 +21,12 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
+import java.io.InputStreamReader;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -92,5 +97,30 @@ class BloodNightCommandTest {
                         granted + " grants " + subcommand);
             }
         }
+    }
+
+    @Test
+    void adminGrantsEverySubcommand() throws Exception {
+        Set<String> adminChildren = declaredPermissions()
+                .getConfigurationSection("permissions/bloodnight.admin/children")
+                .getKeys(false);
+        PlayerMock player = server.addPlayer();
+        adminChildren.forEach(permission -> player.addAttachment(plugin, permission, true));
+        CommandSourceStack source = source(player);
+
+        for (CommandNode<CommandSourceStack> subcommand : tree().getChildren()) {
+            assertTrue(subcommand.canUse(source), subcommand.getName());
+        }
+    }
+
+    private static YamlConfiguration declaredPermissions() throws Exception {
+        YamlConfiguration descriptor = new YamlConfiguration();
+        descriptor.options().pathSeparator('/');
+        try (var reader = new InputStreamReader(
+                Objects.requireNonNull(BloodNightCommandTest.class.getResourceAsStream("/paper-plugin.yml")),
+                StandardCharsets.UTF_8)) {
+            descriptor.load(reader);
+        }
+        return descriptor;
     }
 }
