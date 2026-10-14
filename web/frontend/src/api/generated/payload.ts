@@ -198,9 +198,9 @@ export type VanillaLoot = 'KEEP' | 'MULTIPLY' | 'CLEAR';
 export type ExtensionType = 'NONE' | 'RIDER' | 'CARRIER';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Despawn".
+ * via the `definition` "NightEnd".
  */
-export type Despawn = 'NIGHT_END' | 'NEVER';
+export type NightEnd = 'REMOVE' | 'KEEP' | 'REVERT';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "SpawnReason".
@@ -475,7 +475,7 @@ export interface Extension {
 export interface SpawnRules {
   weight: number;
   nightOnly: boolean;
-  despawn: Despawn;
+  nightEnd: NightEnd;
   reasons: SpawnReason[];
   conditions: SpawnConditions;
 }
@@ -1090,11 +1090,6 @@ export const ConfigurationScope = {
     WORLD: "WORLD",
 } as const;
 
-export const Despawn = {
-    NEVER: "NEVER",
-    NIGHT_END: "NIGHT_END",
-} as const;
-
 export const DifficultyChange = {
     EASY: "EASY",
     HARD: "HARD",
@@ -1293,6 +1288,12 @@ export const Method = {
     CHAT: "CHAT",
     SUBTITLE: "SUBTITLE",
     TITLE: "TITLE",
+} as const;
+
+export const NightEnd = {
+    KEEP: "KEEP",
+    REMOVE: "REMOVE",
+    REVERT: "REVERT",
 } as const;
 
 export const NightSelectionType = {

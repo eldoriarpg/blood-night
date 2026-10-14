@@ -29,7 +29,7 @@ Each special mob has a `spawn` part in `mobs.yml`:
 spawn:
   weight: 10
   nightOnly: true
-  despawn: NIGHT_END
+  nightEnd: REMOVE
   reasons: []
   conditions:
     worlds: []
@@ -44,7 +44,7 @@ spawn:
 |---|---|
 | `weight` | How often this mob is picked. 0 means it never spawns by itself. |
 | `nightOnly` | `true`: only during blood nights. `false`: at any time. |
-| `despawn` | `NIGHT_END`: the mob goes away when the blood night ends. `NEVER`: it stays. |
+| `nightEnd` | What happens when the blood night ends. See below. |
 | `reasons` | Only for these spawn reasons, like `NATURAL` or `SPAWNER`. Empty means any reason. |
 | `worlds` | Only in these worlds. Empty means all worlds. |
 | `biomes` | Only in these biomes, like `minecraft:desert`. A tag works too: `#minecraft:is_forest`. |
@@ -102,7 +102,14 @@ foreignMobs:
 
 ## When the night ends
 
-When a blood night ends, every special mob runs its "On Night End" part first. Then mobs with
-`despawn: NIGHT_END` go away, a few each tick so the server does not lag.
+When a blood night ends, every special mob runs its "On Night End" part first. Then `nightEnd` decides:
+
+| `nightEnd` | What happens |
+|---|---|
+| `REMOVE` | The mob goes away. |
+| `KEEP` | The mob stays as it is, with everything it does. |
+| `REVERT` | The mob stays as a normal mob. It loses its name, its rider and its extra health and damage. It keeps its armour. |
+
+This happens to a few mobs each tick, so the server does not lag.
 
 Mobs you spawn with `/bloodnight spawn` outside a blood night stay.

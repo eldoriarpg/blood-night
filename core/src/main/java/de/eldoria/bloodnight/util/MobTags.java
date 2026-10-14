@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataType;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.UUID;
@@ -184,6 +185,14 @@ public final class MobTags {
      */
     public static void markNight(Entity entity, long night) {
         entity.getPersistentDataContainer().set(NIGHT, PersistentDataType.LONG, night);
+    }
+
+    /**
+     * Removes every BloodNight tag, so the entity is an ordinary mob again.
+     */
+    public static void clear(Entity entity) {
+        var data = entity.getPersistentDataContainer();
+        for (NamespacedKey key : List.of(CUSTOM_MOB, EXTENDS, EXTENDED, NIGHT)) data.remove(key);
     }
 
     /**

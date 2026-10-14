@@ -484,10 +484,6 @@
         }
       }
     },
-    "Despawn" : {
-      "type" : "string",
-      "enum" : [ "NIGHT_END", "NEVER" ]
-    },
     "DifficultyChange" : {
       "type" : "string",
       "enum" : [ "UNCHANGED", "PEACEFUL", "EASY", "NORMAL", "HARD" ]
@@ -1018,6 +1014,10 @@
           "default" : 5
         }
       }
+    },
+    "NightEnd" : {
+      "type" : "string",
+      "enum" : [ "REMOVE", "KEEP", "REVERT" ]
     },
     "NightLength" : {
       "type" : "object",
@@ -1648,8 +1648,8 @@
         "nightOnly" : {
           "type" : "boolean"
         },
-        "despawn" : {
-          "$ref" : "#/$defs/Despawn"
+        "nightEnd" : {
+          "$ref" : "#/$defs/NightEnd"
         },
         "reasons" : {
           "type" : "array",
@@ -1662,7 +1662,7 @@
           "$ref" : "#/$defs/SpawnConditions"
         }
       },
-      "required" : [ "weight", "nightOnly", "despawn", "reasons", "conditions" ]
+      "required" : [ "weight", "nightOnly", "nightEnd", "reasons", "conditions" ]
     },
     "Surface" : {
       "type" : "string",

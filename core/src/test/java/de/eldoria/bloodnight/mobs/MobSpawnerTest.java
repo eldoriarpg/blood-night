@@ -15,6 +15,9 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.AttributeChange;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.NightEnd;
+import de.eldoria.bloodnight.mob.meta.SpawnConditions;
+import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
@@ -25,6 +28,7 @@ import de.eldoria.graph.model.Graph;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -42,11 +46,13 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Set;
 import java.util.SplittableRandom;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MobSpawnerTest {
@@ -184,6 +190,32 @@ class MobSpawnerTest {
         assertEquals(CreatureSpawnEvent.SpawnReason.CUSTOM, spawned.getEntitySpawnReason());
         for (int i = 0; i < 100; i++) spawner.handleSpawnedMob(spawned);
         assertFalse(MobTags.isCustomMob(spawned));
+    }
+
+    @Test
+    void revertedMobsStayAsOrdinaryMobs() {
+        CustomMob strong = mobs.get("strong");
+        mobs.add(new CustomMob(
+                "fading",
+                strong.equipment(),
+                strong.attributes(),
+                strong.behaviour(),
+                strong.mobDrops(),
+                strong.extension(),
+                new SpawnRules(1_000_000, true, NightEnd.REVERT, Set.of(), SpawnConditions.any())));
+        at(13_000);
+        LivingEntity mob = spawned();
+        assertEquals("fading", MobTags.getCustomMobId(mob).orElseThrow());
+        at(24_000);
+        server.getScheduler().performTicks(20);
+
+        assertTrue(mob.isValid());
+        assertFalse(MobTags.isCustomMob(mob));
+        assertNull(mob.customName());
+        AttributeInstance health = mob.getAttribute(Attribute.MAX_HEALTH);
+        assertEquals(health.getBaseValue(), health.getValue());
+        AttributeInstance speed = mob.getAttribute(Attribute.MOVEMENT_SPEED);
+        assertEquals(speed.getBaseValue(), speed.getValue());
     }
 
     @Test

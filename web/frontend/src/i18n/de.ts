@@ -243,7 +243,6 @@ export default {
                 SONIC_BOOM: 'Schallstoß',
                 CUSTOM: 'Plugin',
             },
-            Despawn: {NIGHT_END: 'Wenn die Nacht endet', NEVER: 'Nie'},
             DifficultyChange: {UNCHANGED: 'Unverändert', PEACEFUL: 'Friedlich', EASY: 'Einfach', NORMAL: 'Normal', HARD: 'Schwer'},
             EquipmentSlot: {
                 HAND: 'Haupthand',
@@ -263,6 +262,7 @@ export default {
             },
             LengthMode: {NORMAL: 'Normal', EXTENDED: 'Verlängert', RANGE: 'Innerhalb einer Spanne'},
             Method: {CHAT: 'Chat', TITLE: 'Titel', SUBTITLE: 'Untertitel', ACTION_BAR: 'Aktionsleiste'},
+            NightEnd: {REMOVE: 'Entfernen', KEEP: 'So behalten', REVERT: 'Zum normalen Mob machen'},
             NightSelectionType: {
                 RANDOM: 'Zufällig',
                 MOON_PHASE: 'Mondphase',
@@ -385,7 +385,6 @@ export default {
             deathActions: 'Todesaktionen',
             deathCommands: 'Befehle beim Tod',
             description: 'Beschreibung',
-            despawn: 'Verschwinden',
             difficulty: 'Schwierigkeit',
             displayName: 'Anzeigename',
             displayNames: 'Mobnamen zeigen',
@@ -450,6 +449,7 @@ export default {
             monsterTicksPerSpawn: 'Ticks zwischen Monster-Spawns (-1 unverändert)',
             moonPhase: 'Mondphase',
             name: 'Name',
+            nightEnd: 'Am Ende der Nacht',
             nightOnly: 'Nur in Blutnächten',
             nightRules: 'Weltregeln in Blutnächten',
             nightSelection: 'Nachtauswahl',
