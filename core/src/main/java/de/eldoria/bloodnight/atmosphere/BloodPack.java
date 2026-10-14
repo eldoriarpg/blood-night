@@ -19,6 +19,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,7 @@ public final class BloodPack implements Listener {
     private final Supplier<ResourcePackSettings> settings;
     private final Tasks tasks;
     private final Logger logger;
+    private final BooleanSupplier merged;
     private volatile CompletableFuture<ResourcePackInfo> pack =
             CompletableFuture.failedFuture(new IllegalStateException());
 
@@ -43,11 +45,13 @@ public final class BloodPack implements Listener {
      * @param settings the server's resource pack settings
      * @param tasks    sends the offer on the player's thread
      * @param logger   told when the pack cannot be downloaded
+     * @param merged   whether a pack plugin sends the pack with its own, so BloodNight offers nothing itself
      */
-    public BloodPack(Supplier<ResourcePackSettings> settings, Tasks tasks, Logger logger) {
+    public BloodPack(Supplier<ResourcePackSettings> settings, Tasks tasks, Logger logger, BooleanSupplier merged) {
         this.settings = settings;
         this.tasks = tasks;
         this.logger = logger;
+        this.merged = merged;
     }
 
     /**
@@ -55,7 +59,7 @@ public final class BloodPack implements Listener {
      */
     public void refresh() {
         ResourcePackSettings current = settings.get();
-        if (!current.offer()) {
+        if (!current.offer() || merged.getAsBoolean()) {
             pack = CompletableFuture.failedFuture(new IllegalStateException("Not offered"));
             return;
         }

@@ -31,6 +31,7 @@ Settings for the whole server.
 | `editor.url` | text | `https://bloodnight.eldoria.de` |
 | `editor.timeoutSeconds` | whole number | `30` |
 | `resourcePack.offer` | true or false | `true` |
+| `resourcePack.mergeIntoPackPlugins` | true or false | `true` |
 | `resourcePack.url` | text | `https://bloodnight.docs.eldoria.de/pack/bloodnight.zip` |
 | `resourcePack.required` | true or false | `false` |
 | `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
@@ -54,6 +55,7 @@ editor:
   timeoutSeconds: 30
   url: https://bloodnight.eldoria.de
 resourcePack:
+  mergeIntoPackPlugins: true
   offer: true
   prompt: <red>BloodNight would like to show its blood nights with a few extra effects.
   required: false

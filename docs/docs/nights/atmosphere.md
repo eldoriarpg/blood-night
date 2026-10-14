@@ -91,3 +91,16 @@ resourcePack:
 | `prompt` | The message shown with the question. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html). |
 
 `screenEffect: false` in a world turns the effect off there, even for players with the pack.
+
+### With other resource packs
+
+Players can have BloodNight's pack and your server's pack at the same time. They just get asked twice.
+
+Some plugins build one pack for the whole server and send only that: Nexo, Oraxen and ItemsAdder. When one of them
+is installed, BloodNight puts its pack into theirs by itself. It then offers no pack of its own, so players are asked
+only once. The first time, rebuild their pack: `/nexo reload pack`, `/oraxen reload pack` or `/iazip`.
+
+To stop this, set `mergeIntoPackPlugins: false` under `resourcePack`.
+
+For any other pack, run `/bn pack export`. It writes BloodNight's pack to `plugins/BloodNight/pack`, as
+`bloodnight.zip` and as a folder. Copy the `assets` folder into your own pack.

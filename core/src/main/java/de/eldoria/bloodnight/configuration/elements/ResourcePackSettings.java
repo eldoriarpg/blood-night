@@ -11,9 +11,18 @@ package de.eldoria.bloodnight.configuration.elements;
  */
 public class ResourcePackSettings {
     private boolean offer = true;
+    private boolean mergeIntoPackPlugins = true;
     private String url = "https://bloodnight.docs.eldoria.de/pack/bloodnight.zip";
     private boolean required = false;
     private String prompt = "<red>BloodNight would like to show its blood nights with a few extra effects.";
+
+    /**
+     * @return whether the pack goes into installed pack plugins (Nexo, Oraxen, ItemsAdder), which then send it with
+     *     their own pack instead of BloodNight offering it on its own
+     */
+    public boolean mergeIntoPackPlugins() {
+        return mergeIntoPackPlugins;
+    }
 
     /**
      * @return whether players are offered the pack when they join

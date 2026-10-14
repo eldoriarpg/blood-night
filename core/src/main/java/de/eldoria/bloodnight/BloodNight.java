@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.api.BloodNightService;
 import de.eldoria.bloodnight.atmosphere.BloodPack;
 import de.eldoria.bloodnight.atmosphere.BloodSky;
 import de.eldoria.bloodnight.atmosphere.Haunting;
+import de.eldoria.bloodnight.atmosphere.PackMerge;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
@@ -77,6 +78,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -349,7 +351,9 @@ public final class BloodNight extends JavaPlugin {
                 getServer()::createWorldBorder,
                 regions);
         plugins.registerEvents(haunting, this);
-        bloodPack = new BloodPack(() -> configuration.main().resourcePack(), tasks, getLogger());
+        mergePack();
+        bloodPack = new BloodPack(() -> configuration.main().resourcePack(), tasks, getLogger(), () -> !packTargets()
+                .isEmpty());
         plugins.registerEvents(bloodPack, this);
         bloodPack.refresh();
         tasks.global(() -> bloodSky.restore(getServer().getWorlds()));
@@ -509,6 +513,35 @@ public final class BloodNight extends JavaPlugin {
     /**
      * @return offers the resource pack to joining players
      */
+    /**
+     * @return the installed pack plugins BloodNight's pack goes into; empty when merging is off
+     */
+    public List<PackMerge.Target> packTargets() {
+        if (!configuration.main().resourcePack().mergeIntoPackPlugins()) return List.of();
+        return PackMerge.installed(name -> getServer().getPluginManager().getPlugin(name) != null);
+    }
+
+    /**
+     * Puts the resource pack into the installed pack plugins, before they build their packs.
+     */
+    public void mergePack() {
+        List<PackMerge.Target> targets = packTargets();
+        if (targets.isEmpty()) return;
+        try {
+            PackMerge pack = PackMerge.bundled();
+            Path plugins = getDataFolder().toPath().toAbsolutePath().getParent();
+            for (PackMerge.Target target : targets) {
+                if (pack.install(plugins, target)) {
+                    getLogger()
+                            .info("Resource pack added to %s. If its pack is already built, run %s"
+                                    .formatted(target.plugin(), target.reload()));
+                }
+            }
+        } catch (IOException | UncheckedIOException e) {
+            getLogger().log(Level.WARNING, "The resource pack could not be merged into the pack plugins", e);
+        }
+    }
+
     public MobStore store() {
         return mobStore;
     }
