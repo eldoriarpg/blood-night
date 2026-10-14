@@ -15,6 +15,8 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight spawn <mob>}: spawns a mob where a player stands, or at the spawn of the first world for the
  * console. The mob is spawned on the thread owning that place.
@@ -30,14 +32,14 @@ final class SpawnCommand {
 
     @DefaultExecutes
     void usage(CommandSender sender) {
-        sender.sendMessage("Usage: /bloodnight spawn <mob>");
+        Replies.send(sender, "usage", arg("usage", "/bloodnight spawn <mob>"));
     }
 
     @Executes
     void spawn(CommandSender sender, @MobSuggestions String mob) {
         CustomMob definition = plugin.configuration().mobs().get(mob);
         if (definition == null) {
-            sender.sendMessage("Unknown mob " + mob);
+            Replies.send(sender, "spawn.unknown", arg("mob", mob));
             return;
         }
         Location location = sender instanceof Player player
@@ -48,10 +50,15 @@ final class SpawnCommand {
 
     private void spawn(CommandSender sender, String mob, Location location) {
         if (plugin.service().spawn(mob, location).isEmpty()) {
-            sender.sendMessage("Mob %s is not a living entity type".formatted(mob));
+            Replies.send(sender, "spawn.not_living", arg("mob", mob));
             return;
         }
-        sender.sendMessage("Spawned %s at %d %d %d"
-                .formatted(mob, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+        Replies.send(
+                sender,
+                "spawn.spawned",
+                arg("mob", mob),
+                arg("x", location.getBlockX()),
+                arg("y", location.getBlockY()),
+                arg("z", location.getBlockZ()));
     }
 }

@@ -11,6 +11,8 @@ import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight debug [mob]}: fires the debug entry on every mob, or on the mobs of one id.
  */
@@ -25,13 +27,11 @@ final class DebugCommand {
 
     @Executes
     void all(CommandSender sender) {
-        sender.sendMessage(
-                "Debug trigger fired on %d mobs".formatted(plugin.coordinator().debug(null)));
+        Replies.send(sender, "debug.fired", arg("count", plugin.coordinator().debug(null)));
     }
 
     @Executes
     void mob(CommandSender sender, @MobSuggestions String mob) {
-        sender.sendMessage(
-                "Debug trigger fired on %d mobs".formatted(plugin.coordinator().debug(mob)));
+        Replies.send(sender, "debug.fired", arg("count", plugin.coordinator().debug(mob)));
     }
 }

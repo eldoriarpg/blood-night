@@ -20,6 +20,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight item register}: keeps the item in the player's main hand, with all its data, under a generated id
  * that mob equipment and drops can name; the same item always gets the same id. {@code /bloodnight item remove <id>}
@@ -37,18 +39,18 @@ final class ItemCommand {
 
     @DefaultExecutes
     void usage(CommandSender sender) {
-        sender.sendMessage("Usage: /bloodnight item <register | remove <id>>");
+        Replies.send(sender, "usage", arg("usage", "/bloodnight item <register | remove <id>>"));
     }
 
     @Executes("register")
     void register(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can register the item in their hand");
+            Replies.send(sender, "item.players");
             return;
         }
         ItemStack held = player.getInventory().getItemInMainHand();
         if (held.isEmpty()) {
-            sender.sendMessage(Component.text("Hold the item to register in your main hand", NamedTextColor.RED));
+            Replies.send(sender, "item.hold");
             return;
         }
         ItemStack item = held.clone();
@@ -59,11 +61,10 @@ final class ItemCommand {
         ItemRegistry items = copy(plugin.configuration().items());
         String id = items.register(held);
         plugin.configuration().replaceItems(items);
-        sender.sendMessage(Component.text("Registered as ")
-                .append(Component.text(id, NamedTextColor.GOLD)
-                        .clickEvent(ClickEvent.copyToClipboard(id))
-                        .hoverEvent(Component.text("Click to copy")))
-                .append(Component.text("; mobs can wear and drop it under this id")));
+        Component copyable = Component.text(id, NamedTextColor.GOLD)
+                .clickEvent(ClickEvent.copyToClipboard(id))
+                .hoverEvent(Replies.text("item.copy"));
+        Replies.send(sender, "item.registered", arg("id", copyable));
     }
 
     @Executes("remove")
@@ -74,11 +75,11 @@ final class ItemCommand {
     private void unregister(CommandSender sender, String id) {
         ItemRegistry items = copy(plugin.configuration().items());
         if (!items.unregister(id)) {
-            sender.sendMessage(Component.text("No registered item " + id, NamedTextColor.RED));
+            Replies.send(sender, "item.unknown", arg("id", id));
             return;
         }
         plugin.configuration().replaceItems(items);
-        sender.sendMessage("Removed " + id);
+        Replies.send(sender, "item.removed", arg("id", id));
     }
 
     private static ItemRegistry copy(ItemRegistry items) {

@@ -13,6 +13,11 @@ import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.paper.Description;
 import org.bukkit.command.CommandSender;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight}: administration of the plugin, one class per subcommand, each declaring its own path and
  * permission. Each subcommand has its own
@@ -22,10 +27,8 @@ import org.bukkit.command.CommandSender;
 @Aliases("bn")
 @Description("Blood night administration")
 final class BloodNightCommand {
-    private static final String USAGE =
-            "/bloodnight <reload | spawn <mob> | problems [mob] | source <mob> | debug [mob] | export"
-                    + " | night [force | cancel] [world] | editor [new | apply [force] | cancel]"
-                    + " | item [register | remove <id>]>";
+    private static final Map<String, String> SUBCOMMANDS = subcommands();
+    private final BloodNight plugin;
 
     @Subcommand
     final ReloadCommand reload;
@@ -55,6 +58,7 @@ final class BloodNightCommand {
     final ItemCommand item;
 
     BloodNightCommand(BloodNight plugin) {
+        this.plugin = plugin;
         reload = new ReloadCommand(plugin);
         spawn = new SpawnCommand(plugin);
         problems = new ProblemsCommand(plugin);
@@ -66,8 +70,35 @@ final class BloodNightCommand {
         item = new ItemCommand(plugin);
     }
 
+    /**
+     * The version, every subcommand the sender may use with a short description, and where to read more.
+     */
     @DefaultExecutes
-    void usage(CommandSender sender) {
-        sender.sendMessage("Usage: " + USAGE);
+    void help(CommandSender sender) {
+        Replies.send(
+                sender, "help.header", arg("version", plugin.getPluginMeta().getVersion()));
+        SUBCOMMANDS.forEach((name, syntax) -> {
+            if (!sender.hasPermission("bloodnight.command." + name)) return;
+            Replies.send(
+                    sender,
+                    "help.line",
+                    arg("syntax", "/bloodnight " + syntax),
+                    arg("description", Replies.text("help." + name)));
+        });
+        Replies.send(sender, "help.docs");
+    }
+
+    private static Map<String, String> subcommands() {
+        Map<String, String> subcommands = new LinkedHashMap<>();
+        subcommands.put("night", "night [force | cancel] [world]");
+        subcommands.put("editor", "editor [new | apply [force] | cancel]");
+        subcommands.put("spawn", "spawn <mob>");
+        subcommands.put("item", "item <register | remove <id>>");
+        subcommands.put("reload", "reload");
+        subcommands.put("problems", "problems [mob]");
+        subcommands.put("source", "source <mob>");
+        subcommands.put("debug", "debug [mob]");
+        subcommands.put("export", "export");
+        return subcommands;
     }
 }

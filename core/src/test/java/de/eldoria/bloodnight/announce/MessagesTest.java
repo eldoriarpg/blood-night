@@ -21,11 +21,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -60,6 +65,8 @@ class MessagesTest {
         }
     }
 
+    private static final String COMMANDS = "bloodnight.command.";
+
     @Test
     void englishHasEveryText() throws IOException {
         Set<String> expected = new HashSet<>(Set.of(
@@ -70,7 +77,31 @@ class MessagesTest {
         for (NightKind kind : List.of(NightKind.NIGHT, NightKind.TIDE, NightKind.ECLIPSE)) {
             for (String text : List.of("begin", "end", "joined", "left", "name")) expected.add(kind.key(text));
         }
-        assertEquals(expected, bundle("en").stringPropertyNames());
+        Set<String> announcements = new HashSet<>(bundle("en").stringPropertyNames());
+        announcements.removeIf(key ->
+                key.startsWith(COMMANDS) && !key.equals(Messages.COMMAND_BLOCKED) || key.startsWith("bloodnight.mob."));
+        assertEquals(expected, announcements);
+    }
+
+    @Test
+    void germanHasEveryCommandText() throws IOException {
+        Set<String> english = new HashSet<>(bundle("en").stringPropertyNames());
+        english.removeIf(key -> !key.startsWith(COMMANDS));
+        assertTrue(bundle("de").stringPropertyNames().containsAll(english));
+    }
+
+    @Test
+    void everyCommandTextTheCommandsUseExists() throws IOException {
+        Pattern used = Pattern.compile("Replies\\.(?:send|text)\\(\\s*(?:sender,\\s*)?\"([a-z_.]+)\"(?!\\s*\\+)");
+        Set<String> english = bundle("en").stringPropertyNames();
+        try (Stream<Path> files = Files.list(Path.of("src/main/java/de/eldoria/bloodnight/command"))) {
+            for (Path file : files.toList()) {
+                Matcher matcher = used.matcher(Files.readString(file));
+                while (matcher.find()) {
+                    assertTrue(english.contains(COMMANDS + matcher.group(1)), file + ": " + matcher.group(1));
+                }
+            }
+        }
     }
 
     @ParameterizedTest

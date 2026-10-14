@@ -37,6 +37,8 @@ import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight editor [new | apply [force] | cancel]}: opens a web editor session with the server's mobs,
  * macros, items and settings, applies the session once it is marked as done in the editor, or closes it.
@@ -91,16 +93,18 @@ final class EditorCommand {
         client().addParticipant(open.get(), participant(sender))
                 .whenComplete((joined, error) -> sync(() -> {
                     if (error != null) {
-                        sender.sendMessage(Component.text(reason(error), NamedTextColor.RED));
+                        Replies.send(sender, "editor.failed", arg("error", reason(error)));
                         return;
                     }
                     if (joined.isEmpty()) {
-                        sender.sendMessage("The last editor session expired, opening a new one");
+                        Replies.send(sender, "editor.expired");
                         openNew(sender, Optional.empty());
                         return;
                     }
-                    sender.sendMessage(
-                            link("Continue editing here: ", joined.get().editorUrl()));
+                    Replies.send(
+                            sender,
+                            "editor.continue",
+                            arg("link", link(joined.get().editorUrl())));
                     client().view(open.get())
                             .thenAccept(view -> view.ifPresent(found -> sync(() -> warnChanged(sender, found))));
                 }));
@@ -121,20 +125,20 @@ final class EditorCommand {
                             plugin.getServer().getWorlds())
                     .asJson();
         } catch (IOException e) {
-            sender.sendMessage(Component.text("The files cannot be read: " + e.getMessage(), NamedTextColor.RED));
+            Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
             return;
         }
         String catalog = CatalogGenerator.write(plugin.catalog());
-        sender.sendMessage("Opening an editor session...");
+        Replies.send(sender, "editor.opening");
         client().open(plugin.catalog().version(), catalog, payload, participant(sender))
                 .whenComplete((session, error) -> sync(() -> {
                     if (error != null) {
-                        sender.sendMessage(Component.text(reason(error), NamedTextColor.RED));
+                        Replies.send(sender, "editor.failed", arg("error", reason(error)));
                         return;
                     }
                     previous.ifPresent(old -> client().close(old));
                     sessions().save(session);
-                    sender.sendMessage(link("Edit here: ", session.editorUrl()));
+                    Replies.send(sender, "editor.opened", arg("link", link(session.editorUrl())));
                 }));
     }
 
@@ -142,11 +146,8 @@ final class EditorCommand {
         return sender instanceof Player player ? player.getName() : "Console";
     }
 
-    private static Component link(String prefix, String editorUrl) {
-        return Component.text(prefix)
-                .append(Component.text(editorUrl, NamedTextColor.AQUA).clickEvent(ClickEvent.openUrl(editorUrl)))
-                .append(Component.text(
-                        ". When you are done, mark the session as done and run /bloodnight editor apply."));
+    private static Component link(String editorUrl) {
+        return Component.text(editorUrl, NamedTextColor.AQUA).clickEvent(ClickEvent.openUrl(editorUrl));
     }
 
     private void warnChanged(CommandSender sender, SessionView view) {
@@ -159,11 +160,9 @@ final class EditorCommand {
             return;
         }
         if (changed.isEmpty()) return;
-        sender.sendMessage(Component.text(
-                "These files changed on the server since the session was opened:", NamedTextColor.YELLOW));
-        changed.forEach(file -> sender.sendMessage(" - " + file));
-        sender.sendMessage("Applying the session would overwrite them; /bloodnight editor new starts over from the"
-                + " server's files.");
+        Replies.send(sender, "editor.changed");
+        changed.forEach(file -> Replies.send(sender, "editor.item", arg("item", file)));
+        Replies.send(sender, "editor.changed_hint");
     }
 
     @Executes("apply")
@@ -179,14 +178,14 @@ final class EditorCommand {
     private void apply(CommandSender sender, boolean force) {
         Optional<SessionCreated> session = sessions().load();
         if (session.isEmpty()) {
-            sender.sendMessage("There is no open editor session, open one with /bloodnight editor");
+            Replies.send(sender, "editor.none_open");
             return;
         }
-        sender.sendMessage("Pulling the editor session...");
+        Replies.send(sender, "editor.pulling");
         client().pull(session.get())
                 .whenComplete((view, error) -> sync(() -> {
                     if (error != null) {
-                        sender.sendMessage(Component.text(reason(error), NamedTextColor.RED));
+                        Replies.send(sender, "editor.failed", arg("error", reason(error)));
                         return;
                     }
                     if (apply(sender, view, force)) {
@@ -204,12 +203,12 @@ final class EditorCommand {
     private void close(CommandSender sender) {
         Optional<SessionCreated> session = sessions().load();
         if (session.isEmpty()) {
-            sender.sendMessage("There is no open editor session");
+            Replies.send(sender, "editor.none");
             return;
         }
         sessions().clear();
         client().close(session.get());
-        sender.sendMessage("The editor session was closed");
+        Replies.send(sender, "editor.closed");
     }
 
     private boolean apply(CommandSender sender, SessionView view, boolean force) {
@@ -217,14 +216,14 @@ final class EditorCommand {
         try {
             result = EditorResult.of(view.payload());
         } catch (RuntimeException e) {
-            sender.sendMessage(Component.text("The session cannot be read: " + e.getMessage(), NamedTextColor.RED));
+            Replies.send(sender, "editor.session_unreadable", arg("error", String.valueOf(e.getMessage())));
             return false;
         }
         List<String> problems =
                 EditorChecks.problems(result, plugin.configuration().items()::knows);
         if (!problems.isEmpty()) {
-            sender.sendMessage(Component.text("The session was not applied:", NamedTextColor.RED));
-            problems.forEach(problem -> sender.sendMessage(" - " + problem));
+            Replies.send(sender, "editor.not_applied");
+            problems.forEach(problem -> Replies.send(sender, "editor.item", arg("item", problem)));
             return false;
         }
         if (!force && !unchanged(sender, result)) return false;
@@ -234,8 +233,7 @@ final class EditorCommand {
         try {
             backup = plugin.configuration().backup();
         } catch (IOException e) {
-            sender.sendMessage(Component.text(
-                    "Could not back up the files, nothing was changed: " + e.getMessage(), NamedTextColor.RED));
+            Replies.send(sender, "editor.backup_failed", arg("error", String.valueOf(e.getMessage())));
             return false;
         }
         plugin.configuration().replaceMobs(result.mobs().values());
@@ -252,11 +250,18 @@ final class EditorCommand {
             });
             Set<String> known = worlds.keySet();
             EditorChecks.unknownWorlds(result, known)
-                    .forEach(uid -> sender.sendMessage("Skipped the settings of unknown world %s (%s)"
-                            .formatted(settings.worlds().get(uid).name(), uid)));
+                    .forEach(uid -> Replies.send(
+                            sender,
+                            "editor.unknown_world",
+                            arg("world", settings.worlds().get(uid).name()),
+                            arg("uid", uid)));
         }
-        sender.sendMessage("Applied %d mobs and %d macros, previous files are in %s"
-                .formatted(result.mobs().size(), result.macros().size(), backup));
+        Replies.send(
+                sender,
+                "editor.applied",
+                arg("mobs", result.mobs().size()),
+                arg("macros", result.macros().size()),
+                arg("backup", backup));
         ReloadCommand.reload(plugin, sender);
         return true;
     }
@@ -267,14 +272,13 @@ final class EditorCommand {
             changed = EditorChecks.changedFiles(
                     result, plugin.configuration().fileHashes(plugin.getServer().getWorlds()));
         } catch (IOException e) {
-            sender.sendMessage(Component.text("The files cannot be read: " + e.getMessage(), NamedTextColor.RED));
+            Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
             return false;
         }
         if (changed.isEmpty()) return true;
-        sender.sendMessage(Component.text(
-                "The session was not applied, these files changed since it was opened:", NamedTextColor.RED));
-        changed.forEach(file -> sender.sendMessage(" - " + file));
-        sender.sendMessage("Run /bloodnight editor apply force to overwrite them anyway; they are backed up first.");
+        Replies.send(sender, "editor.conflict");
+        changed.forEach(file -> Replies.send(sender, "editor.item", arg("item", file)));
+        Replies.send(sender, "editor.conflict_hint");
         return false;
     }
 

@@ -17,9 +17,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockbukkit.mockbukkit.MockBukkit;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,6 +49,27 @@ class DefaultMobsTest {
         assertEquals(30, mobs.size());
         assertEquals(30, mobs.stream().map(CustomMob::id).distinct().count());
         assertTrue(mobs.stream().anyMatch(mob -> mob.id().equals(DefaultMobs.BLOOD_DRAGON)));
+    }
+
+    @Test
+    void everyMobHasItsNameInEveryShippedLanguage() throws IOException {
+        for (String language : List.of("en", "de")) {
+            Properties texts = new Properties();
+            try (var stream =
+                    getClass().getClassLoader().getResourceAsStream("messages/%s.properties".formatted(language))) {
+                texts.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            }
+            for (String file : List.of("en_us", "de_de")) {
+                String pack =
+                        Files.readString(Path.of("../resourcepack/assets/bloodnight/lang/%s.json".formatted(file)));
+                for (CustomMob mob : mobs) {
+                    String key = "bloodnight.mob." + mob.id();
+                    assertTrue(texts.containsKey(key), language + ": " + key);
+                    assertTrue(pack.contains('"' + key + '"'), file + ": " + key);
+                    assertTrue(mob.attributes().displayName().contains("<lang_or:" + key + ":"), key);
+                }
+            }
+        }
     }
 
     @Test

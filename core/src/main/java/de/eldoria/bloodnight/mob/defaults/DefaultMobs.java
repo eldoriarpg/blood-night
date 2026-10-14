@@ -836,7 +836,7 @@ public final class DefaultMobs implements BloodNightNodes {
      * dragon fight turns the dragon into it (see {@link #BLOOD_DRAGON}).
      */
     private CustomMob bloodDragon() {
-        CustomMob dragon = mob(BLOOD_DRAGON, "<dark_red>Blood Dragon", EntityType.ENDER_DRAGON, graph -> {
+        CustomMob dragon = mob(BLOOD_DRAGON, "Blood Dragon", EntityType.ENDER_DRAGON, graph -> {
             String nearest = graph.node(WORLD_NEAREST_PLAYER)
                     .input("location", graph.selfRead(), "location")
                     .literal("radius", 128.0)
@@ -869,7 +869,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 dragon.id(),
                 dragon.equipment(),
                 new Attributes(
-                        base.displayName(),
+                        "<dark_red>" + base.displayName(),
                         base.entityType(),
                         true,
                         ValueModifier.VALUE,
@@ -907,11 +907,19 @@ public final class DefaultMobs implements BloodNightNodes {
         return new CustomMob(
                 id,
                 equipment,
-                new Attributes(name, type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
+                new Attributes(translated(id, name), type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
                 built(id, graph),
                 MobDrops.defaultDrops(),
                 extension,
                 SpawnRules.defaults());
+    }
+
+    /**
+     * The name of a default mob as MiniMessage: the text {@code bloodnight.mob.<id>} in the player's language, from the
+     * plugin's texts or the resource pack, else the English name.
+     */
+    static String translated(String id, String name) {
+        return "<lang_or:bloodnight.mob.%s:'%s'>".formatted(id, name);
     }
 
     private static Graph built(String id, MobGraph graph) {

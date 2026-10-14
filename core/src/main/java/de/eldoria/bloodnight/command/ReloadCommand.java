@@ -11,6 +11,8 @@ import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight reload}: reads the configuration files again and recompiles every mob.
  */
@@ -44,13 +46,14 @@ final class ReloadCommand {
         plugin.configuration()
                 .problems()
                 .keySet()
-                .forEach(file -> sender.sendMessage("%s could not be read, see the console".formatted(file)));
-        sender.sendMessage("Compiling behaviours...");
+                .forEach(file -> Replies.send(sender, "reload.unreadable", arg("file", file)));
+        Replies.send(sender, "reload.compiling");
         plugin.recompile()
-                .thenAccept(result -> sender.sendMessage("Compiled %d mobs (%d from cache), %d with problems"
-                        .formatted(
-                                result.compiled().size(),
-                                result.fromCache(),
-                                result.problems().size())));
+                .thenAccept(result -> Replies.send(
+                        sender,
+                        "reload.compiled",
+                        arg("compiled", result.compiled().size()),
+                        arg("cached", result.fromCache()),
+                        arg("problems", result.problems().size())));
     }
 }
