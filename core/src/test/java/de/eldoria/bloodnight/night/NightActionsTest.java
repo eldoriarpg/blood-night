@@ -52,8 +52,7 @@ class NightActionsTest {
         NightSelection always = Selections.of("{\"type\":\"RANDOM\",\"random\":{\"probability\":100}}");
         selector = new NightSelector(
                 ignored -> always, ignored -> TIMES, Clock.fixed(Instant.EPOCH, ZoneOffset.UTC), () -> 20);
-        nights = new BloodNights(
-                selector, ignored -> true, server.getPluginManager(), ignored -> {}, Logger.getLogger("test"));
+        nights = new BloodNights(selector, ignored -> true, server.getPluginManager(), Logger.getLogger("test"));
         stretch = new NightStretch(server, ignored -> settings, ignored -> TIMES, (world, night) -> night);
         server.getPluginManager().registerEvents(new NightSkipGuard(nights, ignored -> settings.skippable()), plugin);
         server.getPluginManager().registerEvents(new NightCommands(server, ignored -> settings), plugin);

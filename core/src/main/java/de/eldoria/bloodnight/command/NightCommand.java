@@ -19,6 +19,8 @@ import java.util.Optional;
 /**
  * {@code /bloodnight night [force|cancel] [world]}: shows a world's night selection and next blood night, or forces or
  * cancels its coming night. Without a world, a player's own world or the first world for the console.
+ * <p>
+ * The night is read and changed on the global region, which owns world time and world data.
  */
 @Subcommand("night")
 @Permission("bloodnight.command.night")
@@ -42,6 +44,10 @@ final class NightCommand {
     }
 
     private void show(CommandSender sender, World world) {
+        plugin.tasks().globalNow(() -> report(sender, world));
+    }
+
+    private void report(CommandSender sender, World world) {
         long coming = plugin.selector().times(world).upcoming(world.getFullTime());
         sender.sendMessage("%s: %s, blood night %s"
                 .formatted(
@@ -72,8 +78,10 @@ final class NightCommand {
     }
 
     private void force(CommandSender sender, World world) {
-        long night = plugin.bloodNights().force(world);
-        sender.sendMessage("Night %d in %s is a blood night".formatted(night, world.getName()));
+        plugin.tasks().globalNow(() -> {
+            long night = plugin.bloodNights().force(world);
+            sender.sendMessage("Night %d in %s is a blood night".formatted(night, world.getName()));
+        });
     }
 
     @Executes("cancel")
@@ -89,8 +97,10 @@ final class NightCommand {
     }
 
     private void cancel(CommandSender sender, World world) {
-        long night = plugin.bloodNights().cancel(world);
-        sender.sendMessage("Night %d in %s is an ordinary night".formatted(night, world.getName()));
+        plugin.tasks().globalNow(() -> {
+            long night = plugin.bloodNights().cancel(world);
+            sender.sendMessage("Night %d in %s is an ordinary night".formatted(night, world.getName()));
+        });
     }
 
     private static String describe(long coming, Prediction prediction) {

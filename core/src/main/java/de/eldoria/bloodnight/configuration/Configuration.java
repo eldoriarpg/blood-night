@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -50,6 +51,10 @@ import java.util.stream.Stream;
  * <p>
  * Settings files (the main configuration, global drops, worlds) are written back once read, so options added by a
  * newer version appear in existing files with their defaults. User data files are never written back.
+ * <p>
+ * Listeners read the configuration from every region thread on Folia. A file is read once and kept until the next
+ * reload or replace; reading, writing and reloading happen under this object's lock, handing out what was read does
+ * not.
  */
 public class Configuration {
     public static final Key<MobRegistry> MOBS = Key.builder(Path.of("mobs.yml"), MobRegistry::new)
@@ -78,6 +83,7 @@ public class Configuration {
     private final Set<Key<?>> worlds = new LinkedHashSet<>();
     private final Set<Key<?>> completed = new HashSet<>();
     private final Map<String, String> problems = new LinkedHashMap<>();
+    private final Map<Object, Object> cache = new ConcurrentHashMap<>();
 
     public Configuration(Plugin plugin) {
         this(plugin.getDataFolder().toPath(), plugin.getClass().getClassLoader());
@@ -96,13 +102,32 @@ public class Configuration {
     }
 
     public ConfigFile main() {
-        ConfigFile main = configurations.main();
-        complete(MAIN);
-        return main;
+        return cached(MAIN, () -> {
+            ConfigFile main = configurations.main();
+            complete(MAIN);
+            return main;
+        });
     }
 
     public WorldSettings worldConfig(World world) {
-        return settings(worldKey(world));
+        return cached(world.getUID(), () -> settings(worldKey(world)));
+    }
+
+    /**
+     * Reads a file once and keeps it until the next reload or replace: readers on any thread get it without a lock, a
+     * file is read under the lock.
+     */
+    @SuppressWarnings("unchecked")
+    private <V> V cached(Object key, Supplier<V> read) {
+        Object known = cache.get(key);
+        if (known != null) return (V) known;
+        synchronized (this) {
+            known = cache.get(key);
+            if (known != null) return (V) known;
+            V value = read.get();
+            cache.put(key, value);
+            return value;
+        }
     }
 
     private Key<WorldSettings> worldKey(World world) {
@@ -118,7 +143,7 @@ public class Configuration {
      *
      * @return the backup's directory
      */
-    public Path backup() throws IOException {
+    public synchronized Path backup() throws IOException {
         Path base = configurations.base();
         Path target = base.resolve("backups").resolve(BACKUP_TIME.format(LocalDateTime.now()));
         for (String file : List.of("config.yml", "global_drops.yml", "mobs.yml", "items.yml", "macros.yml", "worlds")) {
@@ -143,7 +168,7 @@ public class Configuration {
      * @param worlds the worlds whose settings are covered
      * @return SHA-256 per file, by path relative to the data folder; {@value #MISSING} for a file that does not exist
      */
-    public Map<String, String> fileHashes(Collection<? extends World> worlds) throws IOException {
+    public synchronized Map<String, String> fileHashes(Collection<? extends World> worlds) throws IOException {
         Path base = configurations.base();
         List<String> files =
                 new ArrayList<>(List.of("config.yml", "global_drops.yml", "mobs.yml", "items.yml", "macros.yml"));
@@ -208,7 +233,8 @@ public class Configuration {
         replace(worldKey(world), settings);
     }
 
-    private <V> void replace(Key<V> key, V value) {
+    private synchronized <V> void replace(Key<V> key, V value) {
+        cache.clear();
         problems.remove(key.path().toString());
         configurations.replace(key, value);
         configurations.save(key);
@@ -216,7 +242,7 @@ public class Configuration {
     }
 
     public MobRegistry mobs() {
-        return userData(MOBS, MobRegistry::new);
+        return cached(MOBS, () -> userData(MOBS, MobRegistry::new));
     }
 
     /**
@@ -225,8 +251,9 @@ public class Configuration {
      *
      * @param defaults the mobs to write, only asked for when they are needed
      */
-    public void seedMobs(Supplier<? extends Collection<CustomMob>> defaults) {
+    public synchronized void seedMobs(Supplier<? extends Collection<CustomMob>> defaults) {
         if (configurations.exists(MOBS)) return;
+        cache.clear();
         MobRegistry registry = new MobRegistry();
         defaults.get().forEach(registry::add);
         configurations.replace(MOBS, registry);
@@ -234,22 +261,23 @@ public class Configuration {
     }
 
     public ItemRegistry items() {
-        return userData(ITEMS, ItemRegistry::new);
+        return cached(ITEMS, () -> userData(ITEMS, ItemRegistry::new));
     }
 
     public MacroFile macros() {
-        return userData(MACROS, MacroFile::new);
+        return cached(MACROS, () -> userData(MACROS, MacroFile::new));
     }
 
     public GlobalDrops globalDrops() {
-        return settings(GLOBAL_DROPS);
+        return cached(GLOBAL_DROPS, () -> settings(GLOBAL_DROPS));
     }
 
     /**
      * Reads every loaded configuration file again. User data files that do not read are left as they are and
      * reported; the other files still reload.
      */
-    public void reload() {
+    public synchronized void reload() {
+        cache.clear();
         problems.clear();
         completed.clear();
         if (configurations.loaded(MAIN)) configurations.reload(MAIN);
@@ -268,8 +296,8 @@ public class Configuration {
     /**
      * @return why user data files could not be read, by file; empty when all read
      */
-    public Map<String, String> problems() {
-        return Collections.unmodifiableMap(problems);
+    public synchronized Map<String, String> problems() {
+        return Collections.unmodifiableMap(new LinkedHashMap<>(problems));
     }
 
     private <V> V settings(Key<V> key) {

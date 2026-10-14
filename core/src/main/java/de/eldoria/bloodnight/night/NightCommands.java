@@ -20,7 +20,8 @@ import java.util.function.Function;
 
 /**
  * Runs a world's begin and end commands from the console when a blood night begins and ends. {@code {world}} is the
- * world's name; a command with {@code {player}} runs once for every player in the world.
+ * world's name; a command with {@code {player}} runs once for every player in the world. The events come from the
+ * global region, the thread console commands belong to.
  */
 public final class NightCommands implements Listener {
     private final Server server;

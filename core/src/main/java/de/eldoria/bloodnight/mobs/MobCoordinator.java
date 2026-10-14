@@ -9,66 +9,84 @@ import de.eldoria.bloodnight.api.CompiledBehaviour;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.Despawn;
+import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 /**
- * Holds every living custom mob and its behaviour instance.
+ * Holds every living custom mob and its behaviour instance, and runs each mob on its own entity's thread.
  * <p>
- * Each mob gets its own instance of its compiled behaviour, so state like cooldowns is per mob. After a reload,
- * {@link #rebind} gives every living mob a fresh instance of its new behaviour; nothing references the old classes
- * afterwards, so their class loaders can be collected. Exceptions thrown by a behaviour are logged once per mob and
- * message, then swallowed, so one broken graph cannot stop the tick loop.
+ * Each mob gets its own instance of its compiled behaviour, so state like cooldowns is per mob. Every mob has a task on
+ * its entity's scheduler that runs its tick entry each tick. The same task notices when the blood night of the mob's
+ * world ends: it runs the night end entry once, and a mob that despawns at night end and spawned in that night goes
+ * within the following second (spread over the second, so a night end with many mobs does not stall a tick). On Folia
+ * each mob therefore only ever runs on the thread of its region; on Paper all of it runs on the main thread. A mob in a
+ * chunk that is loaded but does not tick runs nothing, and goes once it ticks again.
+ * <p>
+ * After a reload, {@link #rebind} gives every living mob a fresh instance of its new behaviour; nothing references the
+ * old classes afterwards, so their class loaders can be collected. Exceptions thrown by a behaviour are logged once per
+ * mob and message, then swallowed, so one broken graph cannot stop other mobs.
  */
 public final class MobCoordinator {
     private static final CompiledBehaviour NONE = new CompiledBehaviour() {};
+    private static final int SPREAD = 20;
 
-    private final Map<Integer, ActiveMob> mobs = new HashMap<>();
-    private final Map<Integer, Integer> baseByExtension = new HashMap<>();
-    private final Set<String> reported = new HashSet<>();
-    private final Map<String, List<String>> failures = new HashMap<>();
+    private final Map<UUID, Tracked> mobs = new ConcurrentHashMap<>();
+    private final Map<UUID, UUID> baseByExtension = new ConcurrentHashMap<>();
+    private final Set<String> reported = ConcurrentHashMap.newKeySet();
+    private final Map<String, List<String>> failures = new ConcurrentHashMap<>();
     private final MobOutfitter outfitter;
     private final Supplier<ItemRegistry> items;
     private final Function<String, CustomMob> definitions;
+    private final Function<World, OptionalLong> runningNight;
+    private final Tasks tasks;
     private final Logger logger;
-    private Behaviours behaviours = Behaviours.empty();
+    private volatile Behaviours behaviours = Behaviours.empty();
 
     /**
-     * @param outfitter   turns entities into custom mobs
-     * @param items       the current item registry
-     * @param definitions mob definition by id, or {@code null}
-     * @param logger      receives behaviour failures
+     * @param outfitter    turns entities into custom mobs
+     * @param items        the current item registry
+     * @param definitions  mob definition by id, or {@code null}
+     * @param runningNight the number of the blood night running in a world, if any
+     * @param tasks        runs work on the mobs' threads
+     * @param logger       receives behaviour failures
      */
     public MobCoordinator(
             MobOutfitter outfitter,
             Supplier<ItemRegistry> items,
             Function<String, CustomMob> definitions,
+            Function<World, OptionalLong> runningNight,
+            Tasks tasks,
             Logger logger) {
         this.outfitter = outfitter;
         this.items = items;
         this.definitions = definitions;
+        this.runningNight = runningNight;
+        this.tasks = tasks;
         this.logger = logger;
     }
 
     /**
-     * Turns an entity into a custom mob: outfits it, gives it its behaviour and runs the behaviour's spawn entry.
+     * Turns an entity into a custom mob: outfits it, gives it its behaviour and runs the behaviour's spawn entry. Runs
+     * on the entity's thread.
      *
      * @param entity the entity
      * @param mob    the mob definition
@@ -82,13 +100,16 @@ public final class MobCoordinator {
     }
 
     /**
-     * Takes over an entity that already is a custom mob, e.g. after its chunk was loaded again.
+     * Takes over an entity that already is a custom mob, e.g. after its chunk was loaded again. An extension carries
+     * its mob's id too, but is never a mob of its own. Runs on the entity's thread.
      *
      * @param entity the entity
      * @return the active mob, if the entity is tagged with a known mob
      */
     public Optional<ActiveMob> attach(LivingEntity entity) {
-        if (mobs.containsKey(entity.getEntityId())) return Optional.of(mobs.get(entity.getEntityId()));
+        Tracked known = mobs.get(entity.getUniqueId());
+        if (known != null) return Optional.of(known.active);
+        if (MobTags.isExtension(entity)) return Optional.empty();
         Optional<CustomMob> mob = MobTags.getCustomMobId(entity).map(definitions);
         if (mob.isEmpty()) return Optional.empty();
         Entity extension = MobTags.getExtension(entity)
@@ -102,8 +123,7 @@ public final class MobCoordinator {
      * @return the behaviour, if the entity is a custom mob
      */
     public Optional<CompiledBehaviour> behaviour(Entity entity) {
-        ActiveMob mob = mobs.get(entity.getEntityId());
-        return mob == null ? Optional.empty() : Optional.of(mob.behaviour());
+        return mob(entity).map(ActiveMob::behaviour);
     }
 
     /**
@@ -111,9 +131,7 @@ public final class MobCoordinator {
      * @return the behaviour of the mob the entity rides or carries, if it is a custom mob's extension
      */
     public Optional<CompiledBehaviour> extensionBehaviour(Entity entity) {
-        Integer base = baseByExtension.get(entity.getEntityId());
-        ActiveMob mob = base == null ? null : mobs.get(base);
-        return mob == null ? Optional.empty() : Optional.of(mob.behaviour());
+        return base(entity).map(ActiveMob::behaviour);
     }
 
     /**
@@ -121,7 +139,8 @@ public final class MobCoordinator {
      * @return the active mob, if the entity is one
      */
     public Optional<ActiveMob> mob(Entity entity) {
-        return Optional.ofNullable(mobs.get(entity.getEntityId()));
+        Tracked tracked = mobs.get(entity.getUniqueId());
+        return tracked == null ? Optional.empty() : Optional.of(tracked.active);
     }
 
     /**
@@ -130,56 +149,33 @@ public final class MobCoordinator {
      * @param entity the entity
      */
     public void remove(Entity entity) {
-        forget(entity.getEntityId());
+        forget(entity.getUniqueId());
     }
 
     /**
-     * Runs the tick entry of every mob and forgets mobs that are no longer valid.
-     */
-    public void tick() {
-        for (ActiveMob mob : new ArrayList<>(mobs.values())) {
-            if (!mob.entity().isValid()) {
-                forget(mob.entity().getEntityId());
-                continue;
-            }
-            guard(mob, "mob.tick", () -> mob.behaviour().onTick());
-        }
-    }
-
-    /**
-     * Runs the night end entry of every valid mob in a world.
-     *
-     * @param world the world whose night ended
-     * @return how many mobs were triggered
-     */
-    public int endNight(World world) {
-        int count = 0;
-        for (ActiveMob mob : new ArrayList<>(mobs.values())) {
-            if (!mob.entity().isValid() || !mob.entity().getWorld().equals(world)) continue;
-            guard(mob, "mob.night_end", () -> mob.behaviour().onNightEnd());
-            count++;
-        }
-        return count;
-    }
-
-    /**
-     * Fires the debug entry.
+     * Fires the debug entry, each mob on its own thread.
      *
      * @param mobId only mobs of this id, or {@code null} for all
      * @return how many mobs were triggered
      */
     public int debug(@Nullable String mobId) {
         int count = 0;
-        for (ActiveMob mob : new ArrayList<>(mobs.values())) {
+        for (Tracked tracked : mobs.values()) {
+            ActiveMob mob = tracked.active;
             if (mobId != null && !mob.mob().id().equals(mobId)) continue;
-            guard(mob, "debug.trigger", () -> mob.behaviour().onDebug());
+            tasks.entity(
+                    mob.entity(),
+                    () -> guard(current(mob), "debug.trigger", () -> current(mob)
+                            .behaviour()
+                            .onDebug()));
             count++;
         }
         return count;
     }
 
     /**
-     * Switches to new behaviours: every living mob gets a fresh instance, built from its current definition.
+     * Switches to new behaviours: every living mob gets a fresh instance, built from its current definition. A mob
+     * running right now finishes with its old instance.
      *
      * @param behaviours the newly compiled behaviours
      */
@@ -187,16 +183,12 @@ public final class MobCoordinator {
         this.behaviours = behaviours;
         reported.clear();
         failures.clear();
-        for (ActiveMob mob : new ArrayList<>(mobs.values())) {
+        for (Tracked tracked : mobs.values()) {
+            ActiveMob mob = tracked.active;
             CustomMob definition =
                     Optional.ofNullable(definitions.apply(mob.mob().id())).orElse(mob.mob());
-            mobs.put(
-                    mob.entity().getEntityId(),
-                    new ActiveMob(
-                            definition,
-                            mob.entity(),
-                            mob.extension(),
-                            instantiate(definition, mob.entity(), mob.extension())));
+            tracked.active = new ActiveMob(
+                    definition, mob.entity(), mob.extension(), instantiate(definition, mob.entity(), mob.extension()));
         }
     }
 
@@ -204,26 +196,81 @@ public final class MobCoordinator {
      * @return every active mob
      */
     public Collection<ActiveMob> active() {
-        return Collections.unmodifiableCollection(mobs.values());
+        return mobs.values().stream().map(tracked -> tracked.active).toList();
     }
 
     private ActiveMob track(LivingEntity entity, CustomMob mob, @Nullable Entity extension) {
         ActiveMob active = new ActiveMob(mob, entity, extension, instantiate(mob, entity, extension));
-        mobs.put(entity.getEntityId(), active);
-        if (extension != null) baseByExtension.put(extension.getEntityId(), entity.getEntityId());
+        UUID id = entity.getUniqueId();
+        Tracked tracked =
+                new Tracked(active, runningNight.apply(entity.getWorld()), Math.floorMod(id.hashCode(), SPREAD));
+        mobs.put(id, tracked);
+        if (extension != null) baseByExtension.put(extension.getUniqueId(), id);
+        tasks.entityLoop(entity, () -> tick(id, tracked), () -> mobs.remove(id, tracked));
         return active;
     }
 
-    private void forget(int entityId) {
-        ActiveMob mob = mobs.remove(entityId);
-        Entity extension = mob == null ? null : mob.extension();
-        if (extension != null) baseByExtension.remove(extension.getEntityId());
+    /**
+     * One tick of a mob, on its thread.
+     *
+     * @return whether the mob goes on: false once it is forgotten, taken over by a newer tracking, gone or despawned
+     */
+    private boolean tick(UUID id, Tracked tracked) {
+        if (mobs.get(id) != tracked) return false;
+        ActiveMob mob = tracked.active;
+        if (!mob.entity().isValid()) {
+            forget(id);
+            return false;
+        }
+        OptionalLong running = runningNight.apply(mob.entity().getWorld());
+        if (tracked.seenNight.isPresent() && !tracked.seenNight.equals(running)) {
+            guard(mob, "mob.night_end", () -> mob.behaviour().onNightEnd());
+        }
+        tracked.seenNight = running;
+        if (tracked.age++ % SPREAD == tracked.offset && expired(mob, running)) {
+            despawn(mob);
+            return false;
+        }
+        guard(mob, "mob.tick", () -> mob.behaviour().onTick());
+        return true;
+    }
+
+    private static boolean expired(ActiveMob mob, OptionalLong running) {
+        if (mob.mob().spawn().despawn() != Despawn.NIGHT_END) return false;
+        OptionalLong night = MobTags.getNight(mob.entity());
+        if (night.isEmpty()) return false;
+        return running.isEmpty() || running.getAsLong() != night.getAsLong();
+    }
+
+    private void despawn(ActiveMob mob) {
+        Entity extension = mob.extension();
+        if (extension != null) tasks.entityNow(extension, extension::remove);
+        mob.entity().remove();
+        forget(mob.entity().getUniqueId());
+    }
+
+    private void forget(UUID id) {
+        Tracked tracked = mobs.remove(id);
+        if (tracked == null) return;
+        Entity extension = tracked.active.extension();
+        if (extension != null) baseByExtension.remove(extension.getUniqueId());
+    }
+
+    private Optional<ActiveMob> base(Entity extension) {
+        UUID base = baseByExtension.get(extension.getUniqueId());
+        Tracked tracked = base == null ? null : mobs.get(base);
+        return tracked == null ? Optional.empty() : Optional.of(tracked.active);
+    }
+
+    private ActiveMob current(ActiveMob mob) {
+        Tracked tracked = mobs.get(mob.entity().getUniqueId());
+        return tracked == null ? mob : tracked.active;
     }
 
     private CompiledBehaviour instantiate(CustomMob mob, LivingEntity entity, @Nullable Entity extension) {
         return behaviours
                 .of(mob.id())
-                .map(compiled -> compiled.instantiate(new LivingMobContext(entity, extension, items)))
+                .map(compiled -> compiled.instantiate(new LivingMobContext(entity, extension, items, tasks)))
                 .orElse(NONE);
     }
 
@@ -235,12 +282,7 @@ public final class MobCoordinator {
      * @param error  what was thrown
      */
     public void failed(String entry, Entity entity, RuntimeException error) {
-        ActiveMob mob = mobs.get(entity.getEntityId());
-        if (mob == null) {
-            Integer base = baseByExtension.get(entity.getEntityId());
-            mob = base == null ? null : mobs.get(base);
-        }
-        if (mob != null) report(mob, entry, error);
+        mob(entity).or(() -> base(entity)).ifPresent(mob -> report(mob, entry, error));
     }
 
     /**
@@ -266,7 +308,25 @@ public final class MobCoordinator {
     private void report(ActiveMob mob, String entry, RuntimeException error) {
         String failure = "%s: %s".formatted(entry, error);
         if (!reported.add(mob.mob().id() + ":" + failure)) return;
-        failures.computeIfAbsent(mob.mob().id(), key -> new ArrayList<>()).add(failure);
+        failures.computeIfAbsent(mob.mob().id(), key -> new CopyOnWriteArrayList<>())
+                .add(failure);
         logger.warning("Behaviour of mob %s failed in %s".formatted(mob.mob().id(), failure));
+    }
+
+    /**
+     * A living mob and what its loop has seen; everything but {@link #active} is only touched by the mob's own thread.
+     * A tracking replaced by a newer one for the same entity stops its loop on its next tick.
+     */
+    private static final class Tracked {
+        private volatile ActiveMob active;
+        private OptionalLong seenNight;
+        private final int offset;
+        private long age;
+
+        private Tracked(ActiveMob active, OptionalLong seenNight, int offset) {
+            this.active = active;
+            this.seenNight = seenNight;
+            this.offset = offset;
+        }
     }
 }

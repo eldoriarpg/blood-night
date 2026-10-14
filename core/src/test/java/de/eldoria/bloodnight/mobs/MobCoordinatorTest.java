@@ -15,6 +15,7 @@ import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
@@ -41,6 +42,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,6 +77,8 @@ class MobCoordinatorTest {
                 new MobOutfitter(() -> items, ignored -> new MobSettings()),
                 () -> items,
                 definitions::get,
+                world -> OptionalLong.empty(),
+                new Tasks(plugin),
                 Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
@@ -127,7 +131,7 @@ class MobCoordinatorTest {
         Zombie zombie = zombie();
         coordinator.register(zombie, definitions.get("burner"));
 
-        coordinator.tick();
+        server.getScheduler().performOneTick();
         EntityDamageEvent damage = new EntityDamageEvent(
                 zombie,
                 EntityDamageEvent.DamageCause.FALL,
@@ -145,7 +149,7 @@ class MobCoordinatorTest {
         define(Mobs.zombie("burner", fireTicks(100)));
         Zombie plain = zombie();
 
-        coordinator.tick();
+        server.getScheduler().performOneTick();
         EntityDamageEvent damage = new EntityDamageEvent(
                 plain,
                 EntityDamageEvent.DamageCause.FALL,
@@ -165,7 +169,7 @@ class MobCoordinatorTest {
         var before = coordinator.behaviour(zombie).orElseThrow();
 
         define(Mobs.zombie("burner", fireTicks(250)));
-        coordinator.tick();
+        server.getScheduler().performOneTick();
 
         assertEquals(250, zombie.getFireTicks());
         assertFalse(
@@ -182,7 +186,7 @@ class MobCoordinatorTest {
 
         coordinator.remove(removed);
         dead.remove();
-        coordinator.tick();
+        server.getScheduler().performOneTick();
 
         assertTrue(coordinator.active().isEmpty());
     }
@@ -195,9 +199,20 @@ class MobCoordinatorTest {
         coordinator.remove(zombie);
 
         assertTrue(coordinator.attach(zombie).isPresent());
-        coordinator.tick();
+        server.getScheduler().performOneTick();
 
         assertEquals(100, zombie.getFireTicks());
+    }
+
+    @Test
+    void extensionsAreNotTakenOverAsMobs() {
+        define(Mobs.zombie("burner", fireTicks(100)));
+        Zombie base = zombie();
+        Zombie extension = zombie();
+        MobTags.setupTags(base, extension, definitions.get("burner"));
+
+        assertTrue(coordinator.attach(extension).isEmpty());
+        assertTrue(coordinator.attach(base).isPresent());
     }
 
     @Test
@@ -217,8 +232,8 @@ class MobCoordinatorTest {
         coordinator.register(broken, definitions.get("broken"));
         coordinator.register(burner, definitions.get("burner"));
 
-        coordinator.tick();
-        coordinator.tick();
+        server.getScheduler().performOneTick();
+        server.getScheduler().performOneTick();
 
         assertEquals(100, burner.getFireTicks());
     }
@@ -255,8 +270,8 @@ class MobCoordinatorTest {
                 (trigger, entity, error) -> coordinator.failed(trigger.id(), entity, error));
         reporting.register(MockBukkit.createMockPlugin(), List.of("event.damage"));
 
-        coordinator.tick();
-        coordinator.tick();
+        server.getScheduler().performOneTick();
+        server.getScheduler().performOneTick();
         for (int i = 0; i < 2; i++) {
             server.getPluginManager()
                     .callEvent(new EntityDamageEvent(

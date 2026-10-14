@@ -5,9 +5,14 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
+import de.eldoria.bloodnight.api.MobContext;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,13 +25,131 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Helpers generated code calls for nodes that need more than one expression.
+ * <p>
+ * A behaviour runs on the thread of its mob's region. On Folia other regions belong to other threads, so these helpers
+ * only look at places the current thread owns: a query reaching into another region finds nothing, an action there
+ * runs on that region's thread a tick later. On Paper every place is owned and everything happens right away.
  */
 public final class BukkitRuntime {
+    private static final boolean REGIONISED = regionised();
+
     private BukkitRuntime() {}
+
+    /**
+     * @param location the centre of an area
+     * @param radius   its radius in blocks
+     * @return whether the current thread owns the whole area
+     */
+    public static boolean owns(Location location, double radius) {
+        return Bukkit.isOwnedByCurrentRegion(location, (int) Math.ceil(Math.max(radius, 0) / 16));
+    }
+
+    /**
+     * @return the entities in a box around a location; empty when the box reaches into another region
+     */
+    public static Collection<Entity> nearbyEntities(Location location, double x, double y, double z) {
+        if (!owns(location, Math.max(x, z))) return List.of();
+        return location.getWorld().getNearbyEntities(location, x, y, z);
+    }
+
+    /**
+     * @return the entities in a box around an entity, without it; empty when the box reaches into another region
+     */
+    public static List<Entity> nearbyEntities(Entity entity, double x, double y, double z) {
+        if (!owns(entity.getLocation(), Math.max(x, z))) return List.of();
+        return entity.getNearbyEntities(x, y, z);
+    }
+
+    /**
+     * @return the block at a location, or {@code null} when another region owns it
+     */
+    public static @Nullable Block blockAt(World world, Location location) {
+        Location at = location.clone();
+        at.setWorld(world);
+        return Bukkit.isOwnedByCurrentRegion(at) ? world.getBlockAt(at) : null;
+    }
+
+    /**
+     * @return whether the entity sees the other; false when another region owns the other
+     */
+    public static boolean hasLineOfSight(LivingEntity entity, Entity other) {
+        return Bukkit.isOwnedByCurrentRegion(other) && entity.hasLineOfSight(other);
+    }
+
+    /**
+     * Starts moving an entity to a location. The move finishes once the target is loaded; on Folia a move into another
+     * region always finishes later.
+     *
+     * @return true, the move has started
+     */
+    public static boolean teleport(Entity entity, Location location) {
+        entity.teleportAsync(location);
+        return true;
+    }
+
+    /**
+     * Strikes lightning, on the thread owning the location.
+     */
+    public static void strikeLightning(MobContext context, World world, Location location, boolean effectOnly) {
+        context.at(location, () -> {
+            if (effectOnly) world.strikeLightningEffect(location);
+            else world.strikeLightning(location);
+        });
+    }
+
+    /**
+     * Spawns particles, on the thread owning the location.
+     *
+     * @param data what the particle needs, or {@code null} for particles without data
+     */
+    public static void particles(
+            MobContext context,
+            World world,
+            Particle particle,
+            Location location,
+            int count,
+            double offsetX,
+            double offsetY,
+            double offsetZ,
+            @Nullable Object data) {
+        context.at(location, () -> {
+            if (data == null) world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ);
+            else world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, data);
+        });
+    }
+
+    /**
+     * Reads something about a whole world, which only a server without regions can tell.
+     *
+     * @param property what is read, for the failure
+     * @param read     the read
+     * @return what was read
+     * @throws IllegalStateException on Folia, where no thread owns a whole world
+     */
+    public static <T> T wholeWorld(String property, Supplier<T> read) {
+        if (REGIONISED) {
+            throw new IllegalStateException(
+                    "The world's %s are not available on Folia, where every region runs on its own thread"
+                            .formatted(property));
+        }
+        return read.get();
+    }
+
+    private static boolean regionised() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 
     /**
      * Launches a projectile from a shooter straight at a target.
@@ -35,9 +158,11 @@ public final class BukkitRuntime {
      * @param target  what to aim at
      * @param kind    the projectile
      * @param speed   blocks per tick
-     * @return the projectile
+     * @return the projectile, or {@code null} when another region owns the target and nothing was launched
      */
-    public static Projectile launchAt(LivingEntity shooter, Entity target, ProjectileKind kind, double speed) {
+    public static @Nullable Projectile launchAt(
+            LivingEntity shooter, Entity target, ProjectileKind kind, double speed) {
+        if (!Bukkit.isOwnedByCurrentRegion(target)) return null;
         Vector direction = target.getLocation()
                 .toVector()
                 .subtract(shooter.getEyeLocation().toVector());
@@ -46,8 +171,9 @@ public final class BukkitRuntime {
     }
 
     /**
-     * Spawns a lingering cloud applying a potion to everything inside.
+     * Spawns a lingering cloud applying a potion to everything inside, on the thread owning the location.
      *
+     * @param context       the behaviour's mob
      * @param location      centre of the cloud
      * @param potion        the potion applied
      * @param seconds       how long the cloud stays
@@ -56,28 +182,30 @@ public final class BukkitRuntime {
      * @param color         particle colour, or {@code null} for the potion's
      */
     public static void potionCloud(
+            MobContext context,
             Location location,
             PotionType potion,
             int seconds,
             double radius,
             double radiusPerTick,
             @Nullable Color color) {
-        location.getWorld().spawn(location, AreaEffectCloud.class, cloud -> {
+        context.at(location, () -> location.getWorld().spawn(location, AreaEffectCloud.class, cloud -> {
             cloud.setBasePotionType(potion);
             cloud.setDuration(seconds * 20);
             cloud.setRadius((float) radius);
             cloud.setRadiusPerTick((float) radiusPerTick);
             if (color != null) cloud.setColor(color);
-        });
+        }));
     }
 
     /**
      * @param location     where to search from
      * @param radius       search radius in blocks
      * @param survivalOnly whether players in other game modes are ignored
-     * @return the closest player, or {@code null} when none is in range
+     * @return the closest player, or {@code null} when none is in range or the range reaches into another region
      */
     public static @Nullable Player nearestPlayer(Location location, double radius, boolean survivalOnly) {
+        if (!owns(location, radius)) return null;
         return location.getWorld().getNearbyPlayers(location, radius).stream()
                 .filter(player -> !survivalOnly || player.getGameMode() == GameMode.SURVIVAL)
                 .min(Comparator.comparingDouble(player -> player.getLocation().distanceSquared(location)))

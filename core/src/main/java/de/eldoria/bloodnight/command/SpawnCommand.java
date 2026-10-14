@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 
 /**
  * {@code /bloodnight spawn <mob>}: spawns a mob where a player stands, or at the spawn of the first world for the
- * console.
+ * console. The mob is spawned on the thread owning that place.
  */
 @Subcommand("spawn")
 @Permission("bloodnight.command.spawn")
@@ -46,6 +46,10 @@ final class SpawnCommand {
         Location location = sender instanceof Player player
                 ? player.getLocation()
                 : plugin.getServer().getWorlds().getFirst().getSpawnLocation();
+        plugin.tasks().at(location, () -> spawn(sender, mob, definition, location));
+    }
+
+    private void spawn(CommandSender sender, String mob, CustomMob definition, Location location) {
         Entity entity = location.getWorld()
                 .spawnEntity(location, definition.attributes().entityType());
         if (!(entity instanceof LivingEntity living)) {

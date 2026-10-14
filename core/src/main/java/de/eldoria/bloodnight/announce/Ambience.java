@@ -12,17 +12,17 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Plays sounds of a blood night: the begin and end sounds, and ambience to each player at random intervals.
  */
 final class Ambience {
-    private final Map<UUID, Integer> countdown = new HashMap<>();
+    private final Map<UUID, Integer> countdown = new ConcurrentHashMap<>();
 
     /**
      * Plays every sound of a list to an audience.

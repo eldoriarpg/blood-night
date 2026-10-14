@@ -51,6 +51,8 @@ import java.util.stream.Collectors;
  * last check); a result that does not pass changes nothing and keeps the session open. Otherwise every file is
  * backed up, mobs, macros, items and settings are replaced, the configuration is reloaded and every mob recompiled.
  * Items registered in game keep everything but the name, lore and enchantments the editor sets.
+ * <p>
+ * Files and the session are handled on the global region, so a reload never races with itself.
  */
 @Subcommand("editor")
 @Permission("bloodnight.command.editor")
@@ -77,6 +79,10 @@ final class EditorCommand {
 
     @Executes
     void open(CommandSender sender) {
+        plugin.tasks().globalNow(() -> join(sender));
+    }
+
+    private void join(CommandSender sender) {
         Optional<SessionCreated> open = sessions().load();
         if (open.isEmpty()) {
             openNew(sender, Optional.empty());
@@ -102,7 +108,7 @@ final class EditorCommand {
 
     @Executes("new")
     void openFresh(CommandSender sender) {
-        openNew(sender, sessions().load());
+        plugin.tasks().globalNow(() -> openNew(sender, sessions().load()));
     }
 
     private void openNew(CommandSender sender, Optional<SessionCreated> previous) {
@@ -162,12 +168,12 @@ final class EditorCommand {
 
     @Executes("apply")
     void apply(CommandSender sender) {
-        apply(sender, false);
+        plugin.tasks().globalNow(() -> apply(sender, false));
     }
 
     @Executes("apply force")
     void applyForce(CommandSender sender) {
-        apply(sender, true);
+        plugin.tasks().globalNow(() -> apply(sender, true));
     }
 
     private void apply(CommandSender sender, boolean force) {
@@ -192,6 +198,10 @@ final class EditorCommand {
 
     @Executes("cancel")
     void cancel(CommandSender sender) {
+        plugin.tasks().globalNow(() -> close(sender));
+    }
+
+    private void close(CommandSender sender) {
         Optional<SessionCreated> session = sessions().load();
         if (session.isEmpty()) {
             sender.sendMessage("There is no open editor session");
@@ -269,7 +279,7 @@ final class EditorCommand {
     }
 
     private void sync(Runnable task) {
-        plugin.getServer().getScheduler().runTask(plugin, task);
+        plugin.tasks().global(task);
     }
 
     private static String reason(Throwable error) {

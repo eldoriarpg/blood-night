@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,7 +46,8 @@ class DeathActionHandlerTest extends RulesTest {
         });
         server.getPluginManager()
                 .registerEvents(
-                        new DeathActionHandler(plugin, nights, ignored -> settings, RandomGenerator.getDefault()),
+                        new DeathActionHandler(
+                                server, new Tasks(plugin), nights, ignored -> settings, RandomGenerator.getDefault()),
                         plugin);
         player = server.addPlayer();
         player.teleport(world.getSpawnLocation());

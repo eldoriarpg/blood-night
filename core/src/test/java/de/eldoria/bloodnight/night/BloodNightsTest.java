@@ -34,7 +34,6 @@ class BloodNightsTest {
     private static final NightTimes DEFAULT_TIMES = new NightTimes(13_000, 23_000);
     private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-11T12:00:00Z"), ZoneOffset.UTC);
     private final List<String> events = new ArrayList<>();
-    private final List<World> ended = new ArrayList<>();
     private ServerMock server;
     private Plugin plugin;
     private World world;
@@ -50,8 +49,7 @@ class BloodNightsTest {
         world = server.addSimpleWorld("world");
         selection = Selections.of("{\"type\":\"INTERVAL\",\"interval\":{\"interval\":3,\"probability\":100}}");
         selector = new NightSelector(ignored -> selection, ignored -> DEFAULT_TIMES, CLOCK, () -> 20);
-        nights = new BloodNights(
-                selector, ignored -> enabled, server.getPluginManager(), ended::add, Logger.getLogger("test"));
+        nights = new BloodNights(selector, ignored -> enabled, server.getPluginManager(), Logger.getLogger("test"));
         server.getPluginManager()
                 .registerEvents(
                         new Listener() {
@@ -123,7 +121,6 @@ class BloodNightsTest {
         at(3 * 24_000 + 23_500);
 
         assertEquals(List.of("begin 3", "end 3"), events);
-        assertEquals(List.of(world), ended);
         assertTrue(nights.running(world).isEmpty());
     }
 

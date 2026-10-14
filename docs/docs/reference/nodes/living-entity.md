@@ -56,16 +56,16 @@ Goes on with: **Next**
 
 `living_entity.has_line_of_sight`
 
-Checks whether the living entity has block line of sight to another.
+Whether a living entity can see another one, with no block in between
 
 | In | Type | What it is |
 |---|---|---|
-| Living Entity | Living Entity | Represents a living entity, such as a monster or player |
-| Other | Entity | the entity to determine line of sight to |
+| Living Entity | Living Entity | Who looks |
+| Other | Entity | What it looks at |
 
 | Out | Type | What it is |
 |---|---|---|
-| Result | Boolean | true if there is a line of sight, false if not |
+| Result | Boolean | Whether it sees it; on Folia false when the other is in another region |
 
 ## Launch Projectile
 
@@ -81,7 +81,7 @@ Launches a projectile from the shooter straight at a target
 
 | Out | Type | What it is |
 |---|---|---|
-| Projectile | Projectile | The launched projectile |
+| Projectile | Projectile | The launched projectile; on Folia missing when the target is in another region and nothing was launched |
 
 Goes on with: **Next**
 
@@ -190,11 +190,9 @@ Changes the properties of a Living Entity that are given, the others stay as the
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -205,7 +203,6 @@ Changes the properties of a Living Entity that are given, the others stay as the
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -251,7 +248,6 @@ Changes the properties of a Living Entity that are given, the others stay as the
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -322,11 +318,9 @@ Reads the properties of a Living Entity
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -337,7 +331,6 @@ Reads the properties of a Living Entity
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -383,7 +376,6 @@ Reads the properties of a Living Entity
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |

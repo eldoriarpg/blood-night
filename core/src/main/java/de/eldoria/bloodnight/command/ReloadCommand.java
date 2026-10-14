@@ -25,7 +25,7 @@ final class ReloadCommand {
 
     @Executes
     void reload(CommandSender sender) {
-        reload(plugin, sender);
+        plugin.tasks().globalNow(() -> reload(plugin, sender));
     }
 
     /**

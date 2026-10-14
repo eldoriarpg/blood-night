@@ -23,7 +23,8 @@ import java.util.Map;
 /**
  * {@code /bloodnight item register}: keeps the item in the player's main hand, with all its data, under a generated id
  * that mob equipment and drops can name; the same item always gets the same id. {@code /bloodnight item remove <id>}
- * forgets such an item. Both write {@code items.yml} at once; items made in the editor are changed there instead.
+ * forgets such an item. Both write {@code items.yml} at once, on the global region; items made in the editor are
+ * changed there instead.
  */
 @Subcommand("item")
 @Permission("bloodnight.command.item")
@@ -50,6 +51,11 @@ final class ItemCommand {
             sender.sendMessage(Component.text("Hold the item to register in your main hand", NamedTextColor.RED));
             return;
         }
+        ItemStack item = held.clone();
+        plugin.tasks().globalNow(() -> register(sender, item));
+    }
+
+    private void register(CommandSender sender, ItemStack held) {
         ItemRegistry items = copy(plugin.configuration().items());
         String id = items.register(held);
         plugin.configuration().replaceItems(items);
@@ -62,6 +68,10 @@ final class ItemCommand {
 
     @Executes("remove")
     void remove(CommandSender sender, String id) {
+        plugin.tasks().globalNow(() -> unregister(sender, id));
+    }
+
+    private void unregister(CommandSender sender, String id) {
         ItemRegistry items = copy(plugin.configuration().items());
         if (!items.unregister(id)) {
             sender.sendMessage(Component.text("No registered item " + id, NamedTextColor.RED));

@@ -10,8 +10,7 @@ jackson = "3.2.3"
 jackson-bukkit = "2.0.0"
 ocular = "2.3.0"
 eldoutil = "2.0.1"
-paper = "26.3.build.175-stable"
-paper-test = "26.2.build.133-stable"
+paper = "26.2.build.133-stable"
 jetbrains-annotations = "26.1.0"
 junit = "6.1.3"
 mockbukkit = "4.117.0"
@@ -40,7 +39,6 @@ eldoutil-items = { module = "de.eldoria.util:items", version.ref = "eldoutil" }
 eldoutil-entities = { module = "de.eldoria.util:entities", version.ref = "eldoutil" }
 
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
-paper-api-test = { module = "io.papermc.paper:paper-api", version.ref = "paper-test" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

@@ -11,12 +11,11 @@ import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -26,33 +25,28 @@ import java.util.logging.Logger;
  * leaves that night, by sunrise or by a jump in time, it ends with {@link BloodNightEndEvent}. A server started in
  * the middle of a blood night picks it up, since the night's answer does not change. Worlds with a fixed time, like
  * the nether, have no nights; disabled worlds have no blood nights, and one running when its world is disabled ends.
+ * <p>
+ * Everything but {@link #running} runs on the global region, which owns world time and world data; {@link #running} is
+ * read from every thread.
  */
 public final class BloodNights {
     private final NightSelector selector;
     private final Predicate<World> enabled;
     private final PluginManager events;
-    private final Consumer<World> ended;
     private final Logger logger;
-    private final Map<UUID, Long> running = new HashMap<>();
-    private final Map<UUID, Long> decided = new HashMap<>();
+    private final Map<UUID, Long> running = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> decided = new ConcurrentHashMap<>();
 
     /**
      * @param selector decides the nights
      * @param enabled  whether a world has blood nights at all
      * @param events   where the begin and end events are called
-     * @param ended    told about every world whose blood night ended, e.g. to run the mobs' night end
      * @param logger   told when blood nights begin and end
      */
-    public BloodNights(
-            NightSelector selector,
-            Predicate<World> enabled,
-            PluginManager events,
-            Consumer<World> ended,
-            Logger logger) {
+    public BloodNights(NightSelector selector, Predicate<World> enabled, PluginManager events, Logger logger) {
         this.selector = selector;
         this.enabled = enabled;
         this.events = events;
-        this.ended = ended;
         this.logger = logger;
     }
 
@@ -141,6 +135,5 @@ public final class BloodNights {
         if (night == null) return;
         events.callEvent(new BloodNightEndEvent(world, night));
         logger.info("Blood night %d ended in %s".formatted(night, world.getName()));
-        ended.accept(world);
     }
 }

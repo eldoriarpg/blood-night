@@ -6,6 +6,7 @@
 package de.eldoria.graph.reflect;
 
 import com.palantir.javapoet.CodeBlock;
+import de.eldoria.graph.definition.EmitContext;
 import de.eldoria.graph.definition.ExpressionDefinition;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.NodeDescriptor;
@@ -98,12 +99,21 @@ public final class ReflectedType {
         private boolean recordConstructor = true;
         private final List<Creations.Creation> creations = new ArrayList<>();
         private final List<Calls.Call> calls = new ArrayList<>();
+        private CallGuard guard = CallGuard.NONE;
 
         private Builder(Class<?> type, String prefix) {
             this.type = Objects.requireNonNull(type, "type");
             this.prefix = Objects.requireNonNull(prefix, "prefix");
             this.category = prefix.contains(".") ? prefix.substring(0, prefix.indexOf('.')) : prefix;
             this.name = type.getSimpleName();
+        }
+
+        /**
+         * Wraps the calls of the read and mutate nodes; by default they are emitted as they are.
+         */
+        public Builder guard(CallGuard guard) {
+            this.guard = Objects.requireNonNull(guard, "guard");
+            return this;
         }
 
         /**
@@ -321,7 +331,9 @@ public final class ReflectedType {
                     .collect(Collectors.toMap(
                             Properties.Getter::id, property -> property.method().getName()));
             return new ExpressionDefinition(
-                    descriptor.build(), (port, ctx) -> CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port)));
+                    descriptor.build(),
+                    (port, ctx) -> guard.read(
+                            ctx, methods.get(port), CodeBlock.of("$L.$N()", ctx.input(TARGET), methods.get(port))));
         }
 
         /**
@@ -371,21 +383,47 @@ public final class ReflectedType {
             descriptor.execution(NEXT);
             return new StatementDefinition(descriptor.build(), ctx -> {
                 CodeBlock.Builder code = CodeBlock.builder();
-                methods.forEach((input, method) -> {
-                    if (ctx.connected(input))
-                        code.addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input(input));
-                });
+                code.add(guard == CallGuard.NONE ? changes(ctx, methods) : guardedChanges(ctx, methods));
                 reads.forEach((output, method) -> {
                     if (!ctx.isRead(output)) return;
                     code.addStatement(
-                            "final $T $L = $L.$N()",
+                            "final $T $L = $L",
                             ctx.type(output),
                             ctx.bind(output, NEXT),
-                            ctx.input(TARGET),
-                            method);
+                            guard.read(ctx, method, CodeBlock.of("$L.$N()", ctx.input(TARGET), method)));
                 });
                 return code.add(ctx.chain(NEXT)).build();
             });
+        }
+
+        private static CodeBlock changes(EmitContext ctx, Map<String, String> methods) {
+            CodeBlock.Builder code = CodeBlock.builder();
+            methods.forEach((input, method) -> {
+                if (ctx.connected(input)) code.addStatement("$L.$N($L)", ctx.input(TARGET), method, ctx.input(input));
+            });
+            return code.build();
+        }
+
+        /**
+         * The changes with the receiver and every given value first taken into final locals, inside a block of their
+         * own, so the guard may run the changes later or elsewhere.
+         */
+        private CodeBlock guardedChanges(EmitContext ctx, Map<String, String> methods) {
+            List<String> given =
+                    methods.keySet().stream().filter(ctx::connected).toList();
+            if (given.isEmpty()) return CodeBlock.of("");
+            CodeBlock receiver = CodeBlock.of("guarded_target");
+            CodeBlock.Builder code = CodeBlock.builder().beginControlFlow("");
+            code.addStatement("final $T $L = $L", ctx.inputType(TARGET), receiver, ctx.input(TARGET));
+            CodeBlock.Builder changes = CodeBlock.builder();
+            for (String input : given) {
+                String local = "guarded_" + input;
+                code.addStatement("final $T $L = $L", ctx.inputType(input), local, ctx.input(input));
+                changes.addStatement("$L.$N($L)", receiver, methods.get(input), local);
+            }
+            return code.add(guard.write(ctx, receiver, changes.build()))
+                    .endControlFlow()
+                    .build();
         }
 
         private String displayName(String property) {

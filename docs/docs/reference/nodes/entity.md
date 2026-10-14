@@ -11,18 +11,18 @@ sidebar_position: 4
 
 `entity.nearby_entities`
 
-Returns a list of entities within a bounding box centered around this entity
+Entities within a box around an entity, without the entity itself
 
 | In | Type | What it is |
 |---|---|---|
-| Entity | Entity | Represents a base entity in the world Not all methods are guaranteed to work/may have side effects when isInWorld() is false. |
-| X | Number | 1/2 the size of the box along x axis |
-| Y | Number | 1/2 the size of the box along y axis |
-| Z | Number | 1/2 the size of the box along z axis |
+| Entity | Entity | The centre of the search |
+| X | Number | How far to search east and west |
+| Y | Number | How far to search up and down |
+| Z | Number | How far to search north and south |
 
 | Out | Type | What it is |
 |---|---|---|
-| Result | List&lt;Entity&gt; | List List of entities nearby |
+| Result | List&lt;Entity&gt; | The entities in that box; on Folia empty when the box reaches into another region |
 
 ## Equip
 
@@ -112,7 +112,6 @@ Changes the properties of a Creeper that are given, the others stay as they are,
 | Powered (optional) | Boolean | Sets the Powered status of this Creeper |
 | Aggressive (optional) | Boolean | Some mobs will raise their arm(s) when aggressive, see isAggressive() for full list. |
 | Aware (optional) | Boolean | Sets whether this mob is aware of its surroundings. |
-| Despawn In Peaceful Override (optional) | TriState | Sets if the entity should be despawned when the game is set to peaceful difficulty. |
 | Leash Holder (optional) | Entity | Sets the leash on this entity to be held by the supplied entity. |
 | Left Handed (optional) | Boolean | Set if Mob is left-handed |
 | Seed (optional) | Long | Set the seed used when this Loot Table generates loot. |
@@ -172,7 +171,6 @@ Changes the properties of a Creeper that are given, the others stay as they are,
 | Aggressive | Boolean | Some mobs will raise their arm(s) when aggressive: Drowned Piglin Skeleton Zombie ZombieVillager Illusioner Vindicator Panda Pillager PiglinBrute Note: This doesn't always show the actual aggressive state as set by setAggressive(boolean). |
 | Ambient Sound | Sound | Get the Sound this mob makes while ambiently existing. |
 | Aware | Boolean | Gets whether this mob is aware of its surroundings. |
-| Despawn In Peaceful Override | TriState | Gets the current override value for whether this entity should despawn in peaceful difficulty. |
 | Equipment | EntityEquipment | Gets the inventory with the equipment worn by the living entity. |
 | Head Rotation Speed | Integer | Gets the head rotation speed |
 | In Daylight | Boolean | Check if this mob is exposed to daylight |
@@ -229,11 +227,9 @@ Changes the properties of a Creeper that are given, the others stay as they are,
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -244,7 +240,6 @@ Changes the properties of a Creeper that are given, the others stay as they are,
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -290,7 +285,6 @@ Changes the properties of a Creeper that are given, the others stay as they are,
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -331,11 +325,9 @@ Changes the properties of a Entity that are given, the others stay as they are, 
 
 | Out | Type | What it is |
 |---|---|---|
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -346,7 +338,6 @@ Changes the properties of a Entity that are given, the others stay as they are, 
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -392,7 +383,6 @@ Changes the properties of a Entity that are given, the others stay as they are, 
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -413,7 +403,6 @@ Changes the properties of a Mob that are given, the others stay as they are, and
 | Mob | Mob | Represents a Mob. |
 | Aggressive (optional) | Boolean | Some mobs will raise their arm(s) when aggressive, see isAggressive() for full list. |
 | Aware (optional) | Boolean | Sets whether this mob is aware of its surroundings. |
-| Despawn In Peaceful Override (optional) | TriState | Sets if the entity should be despawned when the game is set to peaceful difficulty. |
 | Leash Holder (optional) | Entity | Sets the leash on this entity to be held by the supplied entity. |
 | Left Handed (optional) | Boolean | Set if Mob is left-handed |
 | Seed (optional) | Long | Set the seed used when this Loot Table generates loot. |
@@ -467,7 +456,6 @@ Changes the properties of a Mob that are given, the others stay as they are, and
 | Aggressive | Boolean | Some mobs will raise their arm(s) when aggressive: Drowned Piglin Skeleton Zombie ZombieVillager Illusioner Vindicator Panda Pillager PiglinBrute Note: This doesn't always show the actual aggressive state as set by setAggressive(boolean). |
 | Ambient Sound | Sound | Get the Sound this mob makes while ambiently existing. |
 | Aware | Boolean | Gets whether this mob is aware of its surroundings. |
-| Despawn In Peaceful Override | TriState | Gets the current override value for whether this entity should despawn in peaceful difficulty. |
 | Equipment | EntityEquipment | Gets the inventory with the equipment worn by the living entity. |
 | Head Rotation Speed | Integer | Gets the head rotation speed |
 | In Daylight | Boolean | Check if this mob is exposed to daylight |
@@ -524,11 +512,9 @@ Changes the properties of a Mob that are given, the others stay as they are, and
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -539,7 +525,6 @@ Changes the properties of a Mob that are given, the others stay as they are, and
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -585,7 +570,6 @@ Changes the properties of a Mob that are given, the others stay as they are, and
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -632,7 +616,6 @@ Reads the properties of a Creeper
 | Aggressive | Boolean | Some mobs will raise their arm(s) when aggressive: Drowned Piglin Skeleton Zombie ZombieVillager Illusioner Vindicator Panda Pillager PiglinBrute Note: This doesn't always show the actual aggressive state as set by setAggressive(boolean). |
 | Ambient Sound | Sound | Get the Sound this mob makes while ambiently existing. |
 | Aware | Boolean | Gets whether this mob is aware of its surroundings. |
-| Despawn In Peaceful Override | TriState | Gets the current override value for whether this entity should despawn in peaceful difficulty. |
 | Equipment | EntityEquipment | Gets the inventory with the equipment worn by the living entity. |
 | Head Rotation Speed | Integer | Gets the head rotation speed |
 | In Daylight | Boolean | Check if this mob is exposed to daylight |
@@ -689,11 +672,9 @@ Reads the properties of a Creeper
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -704,7 +685,6 @@ Reads the properties of a Creeper
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -750,7 +730,6 @@ Reads the properties of a Creeper
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -770,11 +749,9 @@ Reads the properties of a Entity
 
 | Out | Type | What it is |
 |---|---|---|
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -785,7 +762,6 @@ Reads the properties of a Entity
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -831,7 +807,6 @@ Reads the properties of a Entity
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -880,7 +855,6 @@ Reads the properties of a Mob
 | Aggressive | Boolean | Some mobs will raise their arm(s) when aggressive: Drowned Piglin Skeleton Zombie ZombieVillager Illusioner Vindicator Panda Pillager PiglinBrute Note: This doesn't always show the actual aggressive state as set by setAggressive(boolean). |
 | Ambient Sound | Sound | Get the Sound this mob makes while ambiently existing. |
 | Aware | Boolean | Gets whether this mob is aware of its surroundings. |
-| Despawn In Peaceful Override | TriState | Gets the current override value for whether this entity should despawn in peaceful difficulty. |
 | Equipment | EntityEquipment | Gets the inventory with the equipment worn by the living entity. |
 | Head Rotation Speed | Integer | Gets the head rotation speed |
 | In Daylight | Boolean | Check if this mob is exposed to daylight |
@@ -937,11 +911,9 @@ Reads the properties of a Mob
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -952,7 +924,6 @@ Reads the properties of a Mob
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -998,7 +969,6 @@ Reads the properties of a Mob
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -1036,15 +1006,15 @@ Goes on with: **Next**
 
 `entity.teleport`
 
-Teleports this entity to the given location.
+Moves an entity to a location; the move finishes once the place is loaded
 
 | In | Type | What it is |
 |---|---|---|
-| Entity | Entity | Represents a base entity in the world Not all methods are guaranteed to work/may have side effects when isInWorld() is false. |
-| Location | Location | New location to teleport this entity to |
+| Entity | Entity | Who moves |
+| Location | Location | Where to |
 
 | Out | Type | What it is |
 |---|---|---|
-| Result | Boolean | true if the teleport was successful |
+| Result | Boolean | True: the move has started |
 
 Goes on with: **Next**
