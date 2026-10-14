@@ -38,9 +38,9 @@ Husks, drowned, zombie villagers and zombified piglins can become these too, whe
 |---|---|
 | `speed_creeper` | Fast, with a short fuse. Its explosion sets fire. |
 | `toxic_creeper` | Leaves a strong poison cloud when it explodes. |
-| `unstable_creeper` | Charged, with a huge explosion. Explodes right away when you hit it. |
+| `unstable_creeper` | Charged, with a huge explosion. When you hit it, a red area grows around it. Run: it explodes a second later. |
 | `nervous_powered_creeper` | Charged, fast and explodes almost at once. |
-| `ender_creeper` | Teleports close to you when you are far away. |
+| `ender_creeper` | Teleports close to you when you are far away. A purple pillar shows where, a second before. |
 | `ghost_creeper` | Rides an invisible vex, so it flies. |
 
 ## Endermen
@@ -63,7 +63,7 @@ Husks, drowned, zombie villagers and zombified piglins can become these too, whe
 | ID | What it does |
 |---|---|
 | `fire_wizard` | Throws a large fireball every 5 seconds. |
-| `thunder_wizard` | Marks where you stand. A moment later, lightning strikes there. |
+| `thunder_wizard` | Marks where you stand with a red area. When the area is full, lightning strikes there. |
 | `wither_wizard` | Throws a wither skull every 5 seconds. |
 
 ## Spider riders

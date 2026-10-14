@@ -8,14 +8,14 @@ sidebar_position: 0
 
 # Nodes
 
-These are all 166 nodes you can use in a mob's graph. Each group has its own page.
+These are all 169 nodes you can use in a mob's graph. Each group has its own page.
 
 | Group | Nodes |
 |---|---|
 | [Blocks](./block.md) | 2 |
 | [Chance and cooldown](./function.md) | 4 |
 | [Debugging](./debug.md) | 2 |
-| [Entities](./entity.md) | 17 |
+| [Entities](./entity.md) | 18 |
 | [Flow](./flow.md) | 12 |
 | [Items](./item.md) | 4 |
 | [Layout](./layout.md) | 2 |
@@ -31,7 +31,7 @@ These are all 166 nodes you can use in a mob's graph. Each group has its own pag
 | [Routines](./routine.md) | 2 |
 | [server](./server.md) | 2 |
 | [The mob](./mob.md) | 9 |
-| [The world](./world.md) | 22 |
+| [The world](./world.md) | 24 |
 | [Timers](./timer.md) | 2 |
 | [Triggers and events](./event.md) | 22 |
 | [Values](./value.md) | 5 |

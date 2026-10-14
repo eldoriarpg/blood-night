@@ -7,8 +7,8 @@
     "en" : "Unstable Creeper"
   },
   "descriptions" : {
-    "de" : "Geladen, mit riesiger Explosion. Explodiert sofort, wenn du ihn triffst.",
-    "en" : "Charged, with a huge explosion. Explodes right away when you hit it."
+    "de" : "Geladen, mit riesiger Explosion. Triffst du ihn, wächst eine rote Fläche um ihn. Lauf: Er explodiert eine Sekunde später.",
+    "en" : "Charged, with a huge explosion. When you hit it, a red area grows around it. Run: it explodes a second later."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,28 +28,28 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_17" : {
+        "branch_24" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "or_11",
+              "node" : "or_18",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "explode_16" ]
+            "true" : [ "light_fuse_23" ]
           }
         },
-        "branch_25" : {
+        "branch_32" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "or_19",
+              "node" : "or_26",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "explode_24" ]
+            "true" : [ "light_fuse_31" ]
           }
         },
         "branch_8" : {
@@ -73,71 +73,95 @@
             "duration" : 250
           }
         },
-        "damage_by_entity_10" : {
+        "damage_by_entity_17" : {
           "type" : "event.damage_by_entity",
           "executions" : {
-            "next" : [ "branch_17" ]
+            "next" : [ "branch_24" ]
           }
         },
-        "damage_by_player_18" : {
+        "damage_by_player_25" : {
           "type" : "event.damage_by_player",
           "executions" : {
-            "next" : [ "branch_25" ]
+            "next" : [ "branch_32" ]
           }
         },
-        "equal_13" : {
+        "define_16" : {
+          "type" : "routine.define",
+          "config" : {
+            "name" : "light_fuse"
+          },
+          "executions" : {
+            "next" : [ "do_once_15" ]
+          }
+        },
+        "delay_14" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.0
+          },
+          "executions" : {
+            "next" : [ "explode_13" ]
+          }
+        },
+        "do_once_15" : {
+          "type" : "flow.do_once",
+          "executions" : {
+            "next" : [ "show_marker_10", "ignite_12", "delay_14" ]
+          }
+        },
+        "equal_20" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "damage_by_entity_10",
+              "node" : "damage_by_entity_17",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_12",
+              "node" : "value_19",
               "port" : "value"
             }
           }
         },
-        "equal_15" : {
+        "equal_22" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "damage_by_entity_10",
+              "node" : "damage_by_entity_17",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_14",
+              "node" : "value_21",
               "port" : "value"
             }
           }
         },
-        "equal_21" : {
+        "equal_28" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "damage_by_player_18",
+              "node" : "damage_by_player_25",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_20",
+              "node" : "value_27",
               "port" : "value"
             }
           }
         },
-        "equal_23" : {
+        "equal_30" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "damage_by_player_18",
+              "node" : "damage_by_player_25",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_22",
+              "node" : "value_29",
               "port" : "value"
             }
           }
         },
-        "explode_16" : {
+        "explode_13" : {
           "type" : "creeper.explode",
           "inputs" : {
             "target" : {
@@ -146,14 +170,20 @@
             }
           }
         },
-        "explode_24" : {
-          "type" : "creeper.explode",
+        "ignite_12" : {
+          "type" : "creeper.ignite",
           "inputs" : {
             "target" : {
               "node" : "self_1",
               "port" : "entity"
             }
           }
+        },
+        "light_fuse_23" : {
+          "type" : "routine.light_fuse"
+        },
+        "light_fuse_31" : {
+          "type" : "routine.light_fuse"
         },
         "mutate_0" : {
           "type" : "creeper.mutate",
@@ -191,28 +221,28 @@
             "max_fuse_ticks" : 50
           }
         },
-        "or_11" : {
+        "or_18" : {
           "type" : "logic.or",
           "inputs" : {
             "first" : {
-              "node" : "equal_13",
+              "node" : "equal_20",
               "port" : "result"
             },
             "second" : {
-              "node" : "equal_15",
+              "node" : "equal_22",
               "port" : "result"
             }
           }
         },
-        "or_19" : {
+        "or_26" : {
           "type" : "logic.or",
           "inputs" : {
             "first" : {
-              "node" : "equal_21",
+              "node" : "equal_28",
               "port" : "result"
             },
             "second" : {
-              "node" : "equal_23",
+              "node" : "equal_30",
               "port" : "result"
             }
           }
@@ -226,8 +256,36 @@
             }
           }
         },
+        "rgb_11" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 40,
+            "green" : 40,
+            "red" : 255
+          }
+        },
         "self_1" : {
           "type" : "mob.self"
+        },
+        "show_marker_10" : {
+          "type" : "world.show_marker",
+          "config" : {
+            "shape" : "AREA"
+          },
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_11",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_5",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "seconds" : 1.0,
+            "size" : 5.0
+          }
         },
         "spawn_4" : {
           "type" : "mob.spawn",
@@ -261,28 +319,28 @@
             "next" : [ "branch_8" ]
           }
         },
-        "value_12" : {
+        "value_19" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",
             "value" : "ENTITY_ATTACK"
           }
         },
-        "value_14" : {
+        "value_21" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",
             "value" : "PROJECTILE"
           }
         },
-        "value_20" : {
+        "value_27" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",
             "value" : "ENTITY_ATTACK"
           }
         },
-        "value_22" : {
+        "value_29" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",

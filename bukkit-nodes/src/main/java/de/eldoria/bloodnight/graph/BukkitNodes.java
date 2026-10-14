@@ -10,6 +10,8 @@ import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
 import de.eldoria.bloodnight.api.MovementPreset;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
+import de.eldoria.bloodnight.graph.runtime.Displays;
+import de.eldoria.bloodnight.graph.runtime.MarkerShape;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.bloodnight.graph.runtime.Reach;
 import de.eldoria.bloodnight.graph.runtime.Trace;
@@ -322,6 +324,96 @@ public final class BukkitNodes {
                             ctx.input("location"),
                             ctx.connected("seconds") ? ctx.input("seconds") : CodeBlock.of("2"),
                             ctx.connected("power") ? ctx.input("power") : CodeBlock.of("4"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition SHOW_MARKER = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_SHOW_MARKER, NodeKind.ACTION)
+                    .category("world")
+                    .name("Show Marker")
+                    .description("Shows a glowing marker that grows over its time and then disappears, e.g. where an"
+                            + " attack will land; every player sees it, without the resource pack")
+                    .config("shape", "Shape", PortType.of(MarkerShape.class), StringNode.valueOf("AREA"))
+                    .input("location", Location.class)
+                    .input("color", Color.class)
+                    .input("size", double.class)
+                    .input("seconds", double.class)
+                    .optionalInput("for", Player.class)
+                    .execution(NEXT)
+                    .describe("location", "Where it shows, on the ground")
+                    .describe("color", "Its colour")
+                    .describe("size", "Radius of an area or cross, height of a pillar, in blocks")
+                    .describe("seconds", "How long it grows and shows")
+                    .describe("for", "The only player who sees it; everyone when not given")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.marker($L, $L, $L, $L, $L, $L, $L)",
+                            Displays.class,
+                            ctx.context(),
+                            ctx.input("location"),
+                            ctx.config("shape"),
+                            ctx.input("color"),
+                            ctx.input("size"),
+                            ctx.input("seconds"),
+                            ctx.connected("for") ? ctx.input("for") : CodeBlock.of("null"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition SHOW_TEXT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_SHOW_TEXT, NodeKind.ACTION)
+                    .category("world")
+                    .name("Show Text")
+                    .description("Shows floating text for a while, facing whoever looks at it and seen through walls")
+                    .input("location", Location.class)
+                    .input("text", String.class)
+                    .input("seconds", double.class)
+                    .optionalInput("size", double.class)
+                    .optionalInput("for", Player.class)
+                    .execution(NEXT)
+                    .describe("location", "Where it floats")
+                    .describe("text", "What it says, MiniMessage like <red>Run!")
+                    .describe("seconds", "How long it shows")
+                    .describe("size", "Its scale, 1 for normal; 1 when not given")
+                    .describe("for", "The only player who sees it; everyone when not given")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.text($L, $L, $L, $L, $L, $L)",
+                            Displays.class,
+                            ctx.context(),
+                            ctx.input("location"),
+                            ctx.input("text"),
+                            ctx.connected("size") ? ctx.input("size") : CodeBlock.of("1.0"),
+                            ctx.input("seconds"),
+                            ctx.connected("for") ? ctx.input("for") : CodeBlock.of("null"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition SHOW_ABOVE = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.ENTITY_SHOW_ABOVE, NodeKind.ACTION)
+                    .category("entity")
+                    .name("Show Above")
+                    .description("Shows text or an item over an entity for a while; it follows the entity")
+                    .input("target", "Entity", PortType.of(Entity.class), false)
+                    .optionalInput("text", String.class)
+                    .optionalInput("item", ItemStack.class)
+                    .input("seconds", double.class)
+                    .execution(NEXT)
+                    .describe("target", "Who it floats over")
+                    .describe("text", "What it says, MiniMessage like <red>!")
+                    .describe("item", "An item to show when there is no text")
+                    .describe("seconds", "How long it shows")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.above($L, $L, $L, $L, $L)",
+                            Displays.class,
+                            ctx.context(),
+                            ctx.input("target"),
+                            ctx.connected("text") ? ctx.input("text") : CodeBlock.of("null"),
+                            ctx.connected("item") ? ctx.input("item") : CodeBlock.of("null"),
+                            ctx.input("seconds"))
                     .add(ctx.chain(NEXT))
                     .build());
 
@@ -737,6 +829,9 @@ public final class BukkitNodes {
                 SPAWN_PARTICLE,
                 STRIKE_LIGHTNING,
                 SPAWN_TNT,
+                SHOW_MARKER,
+                SHOW_TEXT,
+                SHOW_ABOVE,
                 MOVE_TO,
                 STOP_MOVING,
                 HAS_PATH,

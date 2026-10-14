@@ -5,8 +5,8 @@
     "de": "Ender-Creeper"
   },
   "descriptions": {
-    "en": "Teleports close to you when you are far away.",
-    "de": "Teleportiert sich zu dir, wenn du weit weg bist."
+    "en": "Teleports close to you when you are far away. A purple pillar shows where, a second before.",
+    "de": "Teleportiert sich zu dir, wenn du weit weg bist. Eine lila Säule zeigt eine Sekunde vorher, wo."
   },
   "requires": []
 }

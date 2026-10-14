@@ -81,6 +81,23 @@ public final class Tasks {
     }
 
     /**
+     * @return the plugin the tasks run for
+     */
+    public Plugin plugin() {
+        return plugin;
+    }
+
+    /**
+     * Runs work on the entity's thread after a delay; when the entity is gone by then, {@code retired} runs instead.
+     *
+     * @param ticks   the delay, at least one tick
+     * @param retired runs when the entity is gone before the work could run
+     */
+    public void entityLater(Entity entity, long ticks, Runnable work, Runnable retired) {
+        entity.getScheduler().execute(plugin, work, retired, Math.max(ticks, 1));
+    }
+
+    /**
      * Runs work on the entity's thread right away when the current thread owns it, otherwise on its next tick.
      */
     public void entityNow(Entity entity, Runnable work) {

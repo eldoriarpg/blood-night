@@ -25,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -172,13 +173,16 @@ class DefaultMobsRunTest {
     }
 
     @Test
-    void unstableCreeperExplodesWhenAPlayerHitsIt() {
+    void unstableCreeperLightsItsFuseAndWarnsWhenAPlayerHitsIt() {
         Creeper creeper = spawn("unstable_creeper", Creeper.class);
         PlayerMock player = server.addPlayer();
 
         server.getPluginManager().callEvent(hit(player, creeper));
+        server.getScheduler().performTicks(3);
 
-        assertTrue(creeper.isDead());
+        assertTrue(creeper.isIgnited());
+        assertFalse(creeper.isDead());
+        assertFalse(world.getEntitiesByClass(BlockDisplay.class).isEmpty());
     }
 
     @Test

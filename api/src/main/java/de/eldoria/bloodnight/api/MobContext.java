@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.api;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
@@ -65,4 +66,22 @@ public interface MobContext {
      * @param preset the movement
      */
     void movement(MovementPreset preset);
+
+    /**
+     * Runs work on the entity's thread after a delay, e.g. to take away something the behaviour showed.
+     *
+     * @param entity  the entity whose thread runs it
+     * @param ticks   the delay, at least one tick
+     * @param work    what to run
+     * @param retired runs instead when the entity is gone before the work could run
+     */
+    void later(Entity entity, long ticks, Runnable work, Runnable retired);
+
+    /**
+     * Shows an entity that is hidden by default to one player.
+     *
+     * @param entity the hidden entity
+     * @param player who sees it
+     */
+    void reveal(Entity entity, Player player);
 }

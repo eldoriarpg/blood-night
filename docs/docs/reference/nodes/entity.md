@@ -1003,6 +1003,21 @@ Sets the drop chance of the specified slot.
 
 Goes on with: **Next**
 
+## Show Above
+
+`entity.show_above`
+
+Shows text or an item over an entity for a while; it follows the entity
+
+| In | Type | What it is |
+|---|---|---|
+| Entity | Entity | Who it floats over |
+| Text (optional) | Text | What it says, MiniMessage like &lt;red&gt;! |
+| Item (optional) | Item | An item to show when there is no text |
+| Seconds | Number | How long it shows |
+
+Goes on with: **Next**
+
 ## Teleport
 
 `entity.teleport`

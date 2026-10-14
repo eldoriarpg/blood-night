@@ -7,8 +7,8 @@
     "en" : "Thunder Wizard"
   },
   "descriptions" : {
-    "de" : "Markiert, wo du stehst. Kurz danach schlägt dort ein Blitz ein.",
-    "en" : "Marks where you stand. A moment later, lightning strikes there."
+    "de" : "Markiert, wo du stehst, mit einer roten Fläche. Ist sie voll, schlägt dort ein Blitz ein.",
+    "en" : "Marks where you stand with a red area. When the area is full, lightning strikes there."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,23 +28,23 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_13" : {
+        "branch_15" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_12",
+              "node" : "cooldown_14",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "spawn_particle_11" ]
+            "true" : [ "spawn_particle_13" ]
           }
         },
-        "branch_14" : {
+        "branch_16" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "has_line_of_sight_8",
+              "node" : "has_line_of_sight_10",
               "port" : "result"
             }
           },
@@ -52,31 +52,31 @@
             "true" : [ "set_6" ]
           }
         },
-        "branch_16" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_15",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_14" ]
-          }
-        },
         "branch_18" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_17",
+              "node" : "cooldown_17",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_16" ]
+            "true" : [ "branch_16" ]
           }
         },
-        "cooldown_12" : {
+        "branch_20" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_19",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_18" ]
+          }
+        },
+        "cooldown_14" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -85,7 +85,7 @@
             "duration" : 250
           }
         },
-        "cooldown_15" : {
+        "cooldown_17" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -94,11 +94,11 @@
             "duration" : 4000
           }
         },
-        "create_9" : {
+        "create_11" : {
           "type" : "spell.create",
           "inputs" : {
             "color" : {
-              "node" : "rgb_10",
+              "node" : "rgb_12",
               "port" : "result"
             }
           },
@@ -122,7 +122,7 @@
             "type" : "location"
           }
         },
-        "has_line_of_sight_8" : {
+        "has_line_of_sight_10" : {
           "type" : "living_entity.has_line_of_sight",
           "inputs" : {
             "other" : {
@@ -135,7 +135,7 @@
             }
           }
         },
-        "is_null_17" : {
+        "is_null_19" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -144,11 +144,11 @@
             }
           }
         },
-        "mutate_21" : {
+        "mutate_23" : {
           "type" : "cancellable.mutate",
           "inputs" : {
             "target" : {
-              "node" : "projectile_shoot_20",
+              "node" : "projectile_shoot_22",
               "port" : "event"
             }
           },
@@ -156,16 +156,16 @@
             "cancelled" : true
           }
         },
-        "night_end_23" : {
+        "night_end_25" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_22" ]
+            "next" : [ "spawn_particle_24" ]
           }
         },
-        "projectile_shoot_20" : {
+        "projectile_shoot_22" : {
           "type" : "event.projectile_shoot",
           "executions" : {
-            "next" : [ "mutate_21" ]
+            "next" : [ "mutate_23" ]
           }
         },
         "read_0" : {
@@ -186,11 +186,19 @@
             }
           }
         },
-        "rgb_10" : {
+        "rgb_12" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 255,
             "green" : 255,
+            "red" : 255
+          }
+        },
+        "rgb_9" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 40,
+            "green" : 40,
             "red" : 255
           }
         },
@@ -210,14 +218,34 @@
             }
           },
           "executions" : {
-            "next" : [ "strike_lightning_7", "delay_5" ]
+            "next" : [ "strike_lightning_7", "show_marker_8", "delay_5" ]
           }
         },
-        "spawn_particle_11" : {
+        "show_marker_8" : {
+          "type" : "world.show_marker",
+          "config" : {
+            "shape" : "AREA"
+          },
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_9",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "set_6",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "seconds" : 1.5,
+            "size" : 1.5
+          }
+        },
+        "spawn_particle_13" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "data" : {
-              "node" : "create_9",
+              "node" : "create_11",
               "port" : "result"
             },
             "location" : {
@@ -237,7 +265,7 @@
             "particle" : "minecraft:instant_effect"
           }
         },
-        "spawn_particle_22" : {
+        "spawn_particle_24" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -286,10 +314,10 @@
             "effect_only" : true
           }
         },
-        "tick_19" : {
+        "tick_21" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_13", "branch_18" ]
+            "next" : [ "branch_15", "branch_20" ]
           }
         }
       }
