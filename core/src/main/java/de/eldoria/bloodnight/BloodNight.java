@@ -33,6 +33,7 @@ import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.integration.regions.WorldGuardRules;
 import de.eldoria.bloodnight.integration.worlds.WorldNames;
 import de.eldoria.bloodnight.legacy.LegacyFolder;
+import de.eldoria.bloodnight.metrics.BloodNightMetrics;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
@@ -72,6 +73,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.GameRule;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
@@ -130,6 +132,7 @@ public final class BloodNight extends JavaPlugin {
     private @Nullable Object miniPlaceholders;
     private PhantomForce phantoms;
     private MobStore mobStore;
+    private @Nullable Metrics metrics;
     private WorldNames worldNames;
     private RegionRules regions = RegionRules.NONE;
     private WorldRules worldRules;
@@ -371,6 +374,7 @@ public final class BloodNight extends JavaPlugin {
                 getLogger());
         plugins.registerEvents(updates, this);
         tasks.asyncTimer(Duration.ofHours(12), updates::check);
+        metrics = BloodNightMetrics.start(this, configuration);
         tasks.globalTimer(1, stretch::tick);
         tasks.globalTimer(20, () -> bloodNights.check(getServer().getWorlds()));
         recompile();
@@ -454,6 +458,7 @@ public final class BloodNight extends JavaPlugin {
     @Override
     public void onDisable() {
         MobIds.clear();
+        if (metrics != null) metrics.shutdown();
         StoreIds.clear();
         if (tasks != null) tasks.cancelAll();
         if (stretch != null) stretch.clear();

@@ -17,6 +17,7 @@ dependencies {
     api(libs.bundles.jackson.full)
     api(libs.jackson.bukkit.paper)
     api(libs.ocular)
+    implementation(libs.bstats)
     compileOnly(project(":json-schema"))
     testImplementation(project(":json-schema"))
     compileOnly(libs.strokkcommands.annotations)
@@ -144,6 +145,7 @@ tasks {
         relocate("de.eldoria.jacksonbukkit", "$shade.jacksonbukkit")
         relocate("de.eldoria.eldoutilities", "$shade.eldoutilities")
         relocate("com.palantir.javapoet", "$shade.javapoet")
+        relocate("org.bstats", "$shade.bstats")
     }
 
     build {
