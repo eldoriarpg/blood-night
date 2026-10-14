@@ -64,6 +64,9 @@ public final class Haunting implements Listener {
     private static final int RECENTER = 400;
     private static final double PARTICLE_RADIUS = 8;
     private static final double HEARTBEAT_RANGE = 20;
+    private static final double HEARTBEAT_QUIETEST = 0.03;
+    private static final double HEARTBEAT_LOUDEST = 0.45;
+    private static final double CALM_SILENCE = 0.7;
     private static final int MINUTE_STEPS = 20 * 60 / STEP;
     private static final Key HEARTBEAT = Key.key("entity.warden.heartbeat");
     private static final Sound HURT = Sound.sound(Key.key("entity.player.hurt"), Sound.Source.PLAYER, 1f, 1f);
@@ -178,18 +181,30 @@ public final class Haunting implements Listener {
 
     /**
      * Beats when a monster is within {@value #HEARTBEAT_RANGE} blocks: faster and louder the closer the nearest one is,
-     * from every two seconds at the edge to four times a second right next to it.
+     * from every two seconds at the edge to four times a second right next to it (see {@link #heartbeatVolume}). Good
+     * armor keeps the player calmer ({@link ArmorCalm}): the beat comes up to half as often and is quieter.
      */
     private static void heartbeat(Player player, Haunted state) {
         double nearest = nearestEnemy(player);
         if (nearest > HEARTBEAT_RANGE) return;
         double closeness = 1 - nearest / HEARTBEAT_RANGE;
-        long every = Math.max(1, Math.round(8 - 7 * closeness));
+        double calm = ArmorCalm.of(player);
+        long every = Math.max(1, Math.round((8 - 7 * closeness) * (1 + calm)));
         if (state.steps - state.lastBeat < every) return;
         state.lastBeat = state.steps;
-        player.playSound(
-                Sound.sound(HEARTBEAT, Sound.Source.AMBIENT, (float) (0.3 + 0.7 * closeness), 1f),
-                Sound.Emitter.self());
+        float volume = (float) (heartbeatVolume(closeness) * (1 - CALM_SILENCE * calm));
+        player.playSound(Sound.sound(HEARTBEAT, Sound.Source.AMBIENT, volume, 1f), Sound.Emitter.self());
+    }
+
+    /**
+     * Faint at the edge of the range and only loud right next to a monster: the volume follows the square of the
+     * closeness, between {@value #HEARTBEAT_QUIETEST} and {@value #HEARTBEAT_LOUDEST}.
+     *
+     * @param closeness 0 at the edge of the range, 1 right next to the monster
+     */
+    static float heartbeatVolume(double closeness) {
+        double clamped = Math.clamp(closeness, 0, 1);
+        return (float) (HEARTBEAT_QUIETEST + (HEARTBEAT_LOUDEST - HEARTBEAT_QUIETEST) * clamped * clamped);
     }
 
     private static double nearestEnemy(Player player) {
