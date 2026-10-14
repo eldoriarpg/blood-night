@@ -60,10 +60,10 @@ public final class DefaultMobs implements BloodNightNodes {
     public static List<CustomMob> create(GraphPlatform platform) {
         DefaultMobs mobs = new DefaultMobs(platform);
         return List.of(
-                mobs.armoredZombie(),
-                mobs.knightZombie(),
-                mobs.invisibleZombie(),
-                mobs.speedZombie(),
+                subtypesToo(mobs.armoredZombie()),
+                subtypesToo(mobs.knightZombie()),
+                subtypesToo(mobs.invisibleZombie()),
+                subtypesToo(mobs.speedZombie()),
                 mobs.invisibleSkeleton(),
                 mobs.magicSkeleton(),
                 mobs.speedCreeper(),
@@ -80,10 +80,15 @@ public final class DefaultMobs implements BloodNightNodes {
                 mobs.fireWizard(),
                 mobs.thunderWizard(),
                 mobs.witherWizard(),
-                mobs.blazeRider(),
-                mobs.speedSkeletonRider(),
-                mobs.witherSkeletonRider(),
+                subtypesToo(mobs.blazeRider()),
+                subtypesToo(mobs.speedSkeletonRider()),
+                subtypesToo(mobs.witherSkeletonRider()),
                 mobs.toxicSlime(),
+                mobs.stormBreeze(),
+                mobs.sporeBogged(),
+                mobs.volleyPillager(),
+                mobs.tideDrowned(),
+                mobs.swarmSilverfish(),
                 mobs.bloodDragon());
     }
 
@@ -524,6 +529,148 @@ public final class DefaultMobs implements BloodNightNodes {
             String body = graph.living(death, "entity");
             graph.on(EVENT_DEATH, graph.cloud(body, "location", "minecraft:strong_poison", 5, 3, 78, 147, 49));
         });
+    }
+
+    /**
+     * Fires three wind charges at its target every six seconds.
+     */
+    private CustomMob stormBreeze() {
+        return mob(
+                "storm_breeze",
+                "Storm Breeze",
+                EntityType.BREEZE,
+                graph -> graph.on(
+                        MOB_TICK,
+                        graph.particles("minecraft:cloud", 1),
+                        graph.present(
+                                graph.selfRead(),
+                                TARGET,
+                                graph.every(
+                                        6000,
+                                        graph.shootAtTarget(ProjectileKind.WIND_CHARGE, 1.5),
+                                        graph.shootAtTarget(ProjectileKind.WIND_CHARGE, 1.2),
+                                        graph.shootAtTarget(ProjectileKind.WIND_CHARGE, 0.9)))));
+    }
+
+    /**
+     * Arrows that hit poison and confuse the target; leaves a poison cloud where it dies.
+     */
+    private CustomMob sporeBogged() {
+        return mob("spore_bogged", "Spore Bogged", EntityType.BOGGED, graph -> {
+            graph.on(MOB_TICK, graph.particles("minecraft:crimson_spore", 3));
+            String hit = graph.entry(EVENT_PROJECTILE_HIT);
+            String victim = graph.as("living_entity", hit, "hit_entity");
+            graph.on(
+                    EVENT_PROJECTILE_HIT,
+                    graph.when(
+                            victim,
+                            "matches",
+                            graph.effect(victim, RESULT, "minecraft:poison", 6, 1),
+                            graph.effect(victim, RESULT, "minecraft:nausea", 4, 0)));
+            String death = graph.entry(EVENT_DEATH);
+            String body = graph.living(death, "entity");
+            graph.on(EVENT_DEATH, graph.cloud(body, "location", "minecraft:poison", 6, 3, 110, 90, 60));
+        });
+    }
+
+    /**
+     * Fires two extra arrows at its target every four seconds while it can see it.
+     */
+    private CustomMob volleyPillager() {
+        return mob("volley_pillager", "Volley Pillager", EntityType.PILLAGER, graph -> {
+            String sees = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
+                    .input(TARGET, graph.self(), "entity")
+                    .input("other", graph.selfRead(), TARGET)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.every(
+                                    4000,
+                                    graph.when(
+                                            sees,
+                                            RESULT,
+                                            graph.shootAtTarget(ProjectileKind.ARROW, 2.5),
+                                            graph.shootAtTarget(ProjectileKind.ARROW, 2.2)))));
+            smokeAtNightEnd(graph);
+        });
+    }
+
+    /**
+     * Throws a trident at its target every three seconds while the target is in water.
+     */
+    private CustomMob tideDrowned() {
+        return mob("tide_drowned", "Tide Drowned", EntityType.DROWNED, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            graph.on(
+                    MOB_TICK,
+                    graph.particles("minecraft:dripping_water", 2),
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.when(
+                                    target,
+                                    "in_water",
+                                    graph.every(3000, graph.shootAtTarget(ProjectileKind.TRIDENT, 2.0)))));
+        });
+    }
+
+    /**
+     * When a player hurts it, every silverfish within twelve blocks goes for that player.
+     */
+    private CustomMob swarmSilverfish() {
+        return mob("swarm_silverfish", "Swarm Silverfish", EntityType.SILVERFISH, graph -> {
+            graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 1, false));
+            String damaged = graph.entry(EVENT_DAMAGE_BY_PLAYER);
+            String attacker = graph.as("player", damaged, "attacker");
+            String nearby = graph.node(ENTITY_NEARBY_ENTITIES)
+                    .input(TARGET, graph.self(), "entity")
+                    .literal("x", 12.0)
+                    .literal("y", 6.0)
+                    .literal("z", 12.0)
+                    .id();
+            Graphs.NodeBuilder each = graph.node(FLOW_FOR_EACH).input("list", nearby, RESULT);
+            String other =
+                    graph.node(ENTITY_READ).input(TARGET, each.id(), "element").id();
+            String silverfish = graph.value("entity_type", "minecraft:silverfish");
+            String same = graph.node(LOGIC_EQUAL)
+                    .input("first", other, "type")
+                    .input("second", silverfish, VALUE)
+                    .id();
+            String mob = graph.as("mob", each.id(), "element");
+            String hunt = graph.node(MOB_MUTATE)
+                    .input(TARGET, mob, RESULT)
+                    .input("target_value", attacker, RESULT)
+                    .id();
+            each.chain("body", graph.when(same, RESULT, graph.when(mob, "matches", hunt)));
+            graph.on(EVENT_DAMAGE_BY_PLAYER, graph.when(attacker, "matches", graph.every(2000, each.id())));
+        });
+    }
+
+    /**
+     * The same mob, also taken by subtypes of its type when no mob of their own fits, e.g. a zombie mob for husks and
+     * drowned, or a spider mob for cave spiders.
+     */
+    private static CustomMob subtypesToo(CustomMob mob) {
+        Attributes base = mob.attributes();
+        return new CustomMob(
+                mob.id(),
+                mob.equipment(),
+                new Attributes(
+                        base.displayName(),
+                        base.entityType(),
+                        false,
+                        base.healthModifier(),
+                        base.health(),
+                        base.damageModifier(),
+                        base.damage(),
+                        base.changes()),
+                mob.behaviour(),
+                mob.mobDrops(),
+                mob.extension(),
+                mob.spawn());
     }
 
     /**

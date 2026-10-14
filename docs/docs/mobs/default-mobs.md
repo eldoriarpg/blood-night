@@ -8,10 +8,12 @@ sidebar_position: 5
 BloodNight writes these mobs into `mobs.yml` the first time it starts. You can change them, copy them or delete
 them. If you delete `mobs.yml`, BloodNight writes them again on the next start.
 
-The first 24 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
+The first 29 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
 different, see below.
 
 ## Zombies
+
+Husks, drowned, zombie villagers and zombified piglins can become these too, when no mob of their own fits.
 
 | ID | What it does |
 |---|---|
@@ -63,6 +65,8 @@ different, see below.
 
 ## Spider riders
 
+Cave spiders can become these too.
+
 | ID | What it does |
 |---|---|
 | `blaze_rider` | A spider with a blaze on its back. |
@@ -74,6 +78,16 @@ different, see below.
 | ID | What it does |
 |---|---|
 | `toxic_slime` | Leaves a poison cloud when it dies. |
+
+## Newer mobs
+
+| ID | What it does |
+|---|---|
+| `storm_breeze` | Fires three wind charges at you every 6 seconds. |
+| `spore_bogged` | Its arrows poison you and make you dizzy. Leaves a poison cloud when it dies. |
+| `volley_pillager` | Fires two extra arrows every 4 seconds while it sees you. |
+| `tide_drowned` | Throws a trident every 3 seconds while you are in water. |
+| `swarm_silverfish` | Fast. When you hit it, every silverfish nearby comes for you. |
 
 ## The End
 
