@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.web;
 
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
 import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
 import de.eldoria.bloodnight.web.api.editor.RevisionInfo;
@@ -34,7 +35,9 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Duration;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +57,8 @@ class EditorAppTest {
     private static Path ASSETS;
     private static String base;
     private final HttpClient client = HttpClient.newHttpClient();
+
+    private static final String ALL_AREAS = "[\"MOBS\",\"MACROS\",\"ITEMS\",\"WORLDS\",\"SERVER\",\"DROPS\"]";
 
     @BeforeAll
     static void start() throws SQLException, IOException {
@@ -117,17 +122,22 @@ class EditorAppTest {
                 EditorRoutes.path(EditorRoutes.CATALOG, "test-catalog"),
                 CatalogGenerator.write(Catalogs.small()),
                 null);
-        String body = "{\"catalog\":\"test-catalog\",\"participant\":\"%s\",\"payload\":%s}".formatted(name, PAYLOAD);
+        String body = "{\"catalog\":\"test-catalog\",\"participant\":\"%s\",\"areas\":%s,\"payload\":%s}"
+                .formatted(name, ALL_AREAS, PAYLOAD);
         var response = send("POST", EditorRoutes.SESSIONS, body, null);
         assertEquals(201, response.statusCode(), response.body());
         return EditorApp.MAPPER.readValue(response.body(), SessionCreated.class);
     }
 
     private String join(SessionCreated session, String name) throws Exception {
+        return join(session, name, ALL_AREAS);
+    }
+
+    private String join(SessionCreated session, String name, String areas) throws Exception {
         var response = send(
                 "POST",
                 EditorRoutes.path(EditorRoutes.PARTICIPANTS, session.id()),
-                "{\"name\":\"%s\"}".formatted(name),
+                "{\"name\":\"%s\",\"areas\":%s}".formatted(name, areas),
                 session.pullToken());
         assertEquals(201, response.statusCode(), response.body());
         return token(EditorApp.MAPPER
@@ -299,6 +309,26 @@ class EditorAppTest {
                 send("DELETE", EditorRoutes.path(EditorRoutes.LOCKS, session.id()), "{\"section\":\"mobs/hot\"}", steve)
                         .statusCode());
         assertEquals(200, change(session, alex, entityType("hot", "DROWNED")).statusCode());
+    }
+
+    @Test
+    void participantsOnlyChangeTheirAreas() throws Exception {
+        SessionCreated session = open("Steve");
+        String alex = join(session, "Alex", "[\"WORLDS\"]");
+
+        assertEquals(403, change(session, alex, entityType("hot", "HUSK")).statusCode());
+        assertEquals(
+                403,
+                send("POST", EditorRoutes.path(EditorRoutes.LOCKS, session.id()), "{\"section\":\"mobs/hot\"}", alex)
+                        .statusCode());
+        assertEquals(
+                403,
+                send("POST", EditorRoutes.path(EditorRoutes.RESTORE, session.id(), 0), null, alex)
+                        .statusCode());
+        assertEquals(Set.of(EditorArea.WORLDS), view(session, alex).areas());
+        assertEquals(
+                EnumSet.allOf(EditorArea.class),
+                view(session, token(session.editorUrl())).areas());
     }
 
     @Test

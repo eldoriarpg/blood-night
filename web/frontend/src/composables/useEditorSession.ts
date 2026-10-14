@@ -46,6 +46,7 @@ export function useEditorSession() {
         data.value.problems = view.problems
         data.value.state = view.state
         data.value.you = view.you ?? data.value.you
+        data.value.areas = view.areas
     }
 
     async function reload(): Promise<void> {

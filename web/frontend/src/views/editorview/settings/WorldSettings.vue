@@ -35,6 +35,7 @@ const worlds = computed(() => Object.entries(session.payload.value?.settings?.wo
   .sort((a, b) => a.name.localeCompare(b.name)))
 const world = computed(() => worlds.value.find(candidate => candidate.uid === picked.value) ?? worlds.value[0])
 const heldBy = computed(() => world.value ? locks.heldByOther(section.world(world.value.uid)) : null)
+const denied = computed(() => !locks.mayChange(world.value ? section.world(world.value.uid) : ''))
 const tabs = computed(() => WORLD_SECTIONS.map(entry => ({key: entry.key, label: t(`editor.settings.sections.${entry.key}`)})))
 const current = computed(() => WORLD_SECTIONS.find(entry => entry.key === tab.value) ?? WORLD_SECTIONS[0])
 const value = computed(() => world.value ? session.payload.value?.settings?.worlds?.[world.value.uid]?.settings as Record<string, unknown> | undefined : undefined)
@@ -78,6 +79,7 @@ function copy(sections: string[]): void {
         <SecondaryButton icon="copy" @click="copy(WORLD_SECTIONS.map(entry => entry.key))">{{ t('editor.copy.open') }}</SecondaryButton>
       </div>
       <Alert v-if="heldBy" class="mt-3" variant="held">{{ t('editor.settings.heldBy', {name: heldBy}) }}</Alert>
+      <Alert v-else-if="denied" class="mt-3" variant="held">{{ t('editor.permission.readOnly') }}</Alert>
       <TabBar v-model="tab" :tabs="tabs" class="mt-3"/>
       <div class="flex justify-end pt-2">
         <SecondaryButton compact @click="copy([tab])">{{ t('editor.copy.section') }}</SecondaryButton>
@@ -86,7 +88,7 @@ function copy(sections: string[]): void {
           :definition="'WorldSettings'"
           :path="pointer('settings', 'worlds', world.uid, 'settings')"
           :properties="current.properties"
-          :read-only="heldBy !== null"
+          :read-only="heldBy !== null || denied"
           :value="value"
       />
     </main>

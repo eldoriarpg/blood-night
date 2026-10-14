@@ -77,6 +77,20 @@ paper {
             default = BukkitPluginDescription.Permission.Default.OP
             children = subcommands.keys.map { "bloodnight.command.$it" } + "bloodnight.command.night.manage"
         }
+        val areas = mapOf(
+            "mobs" to "the mobs",
+            "macros" to "the macros",
+            "items" to "the registered items",
+            "worlds" to "the settings of the worlds",
+            "server" to "the server-wide settings",
+            "drops" to "the global drops",
+        )
+        areas.forEach { (area, what) ->
+            register("bloodnight.editor.$area") {
+                description = "Change $what in the web editor; without it they are read only"
+                default = BukkitPluginDescription.Permission.Default.OP
+            }
+        }
         register("bloodnight.bypass.commands") {
             description = "Use commands blocked during blood nights"
             default = BukkitPluginDescription.Permission.Default.OP
@@ -93,6 +107,7 @@ paper {
             register("bloodnight.command.$subcommand") {
                 description = "/bloodnight $subcommand, $does"
                 default = BukkitPluginDescription.Permission.Default.OP
+                if (subcommand == "editor") children = areas.keys.map { "bloodnight.editor.$it" }
             }
         }
     }

@@ -47,10 +47,12 @@ const entries = computed(() => session.payload.value ? workspaceEntries(session.
 const entry = computed(() => entries.value.find(candidate => candidate.id === selection.value[props.kind]) ?? entries.value[0])
 const bindings = computed(() => props.kind === 'mobs' && entry.value ? mobBindings(session.payload.value, entry.value.id) : {})
 const heldBy = computed(() => entry.value ? locks.heldByOther(entry.value.section) : null)
+const denied = computed(() => entry.value ? !locks.mayChange(entry.value.section) : false)
+const readOnly = computed(() => heldBy.value !== null || denied.value)
 const changes = useEditorChanges()
 
 watch([() => entry.value?.graph, () => session.catalog.value, bindings], ([graph, catalog]) => {
-  if (!graph || !catalog || !entry.value || heldBy.value !== null) return
+  if (!graph || !catalog || !entry.value || readOnly.value) return
   const fixes = withVariants(entry.value.base, graph, withRoutines(catalog, graph), [], bindings.value)
   if (fixes.length > 0) void changes.apply(fixes)
 }, {immediate: true})
@@ -93,7 +95,7 @@ function pick(id: string): void {
           :in-macro="kind === 'macros'"
           :macros="session.payload.value?.macros ?? []"
           :problem-count="problems.length"
-          :read-only="heldBy !== null"
+          :read-only="readOnly"
           @problems="problemsOpen = !problemsOpen"
           @inspect="node => selectedNode = node"
       />
@@ -102,6 +104,7 @@ function pick(id: string): void {
           <EntrySwitcher :current="entry.id" :entries="entries" :kind="kind" :problems="problemsByEntry" @create="creating = true" @pick="pick"/>
           <SecondaryButton icon="sliders" @click="sheetOpen = !sheetOpen; selectedNode = null">{{ t(`editor.sheet.open.${kind}`) }}</SecondaryButton>
           <InfoBadge v-if="heldBy">{{ t('editor.workspace.readOnly', {name: heldBy}) }}</InfoBadge>
+          <InfoBadge v-else-if="denied">{{ t('editor.permission.readOnly') }}</InfoBadge>
         </div>
       </div>
       <div class="pointer-events-none absolute bottom-20 left-4 top-16 flex">
@@ -110,7 +113,7 @@ function pick(id: string): void {
             :catalog="graphCatalog ?? session.catalog.value"
             :in-macro="kind === 'macros'"
             :macros="kind === 'mobs' ? session.payload.value?.macros ?? [] : []"
-            :read-only="heldBy !== null"
+            :read-only="readOnly"
             class="pointer-events-auto"
             @add="type => canvas?.add(type)"
             @close="paletteOpen = false"
@@ -118,7 +121,7 @@ function pick(id: string): void {
         <div v-else class="pointer-events-auto"><SecondaryButton icon="plus" @click="paletteOpen = true">{{ t('editor.palette.open') }}</SecondaryButton></div>
       </div>
       <div class="pointer-events-none absolute bottom-20 right-4 top-4 flex">
-        <EntrySheet v-if="sheetOpen" :entry="entry" :kind="kind" :read-only="heldBy !== null" class="pointer-events-auto" @close="sheetOpen = false" @deleted="sheetOpen = false"/>
+        <EntrySheet v-if="sheetOpen" :entry="entry" :kind="kind" :read-only="readOnly" class="pointer-events-auto" @close="sheetOpen = false" @deleted="sheetOpen = false"/>
         <NodeInspector
             v-else-if="selectedNode"
             :base="entry.base"
@@ -126,7 +129,7 @@ function pick(id: string): void {
             :catalog="graphCatalog ?? session.catalog.value"
             :graph="entry.graph"
             :node="selectedNode"
-            :read-only="heldBy !== null"
+            :read-only="readOnly"
             class="pointer-events-auto"
             @close="selectedNode = null"
         />

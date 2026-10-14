@@ -5,9 +5,12 @@
  */
 package de.eldoria.bloodnight.web.api.editor;
 
+import java.util.Set;
+
 /**
  * Lets another person edit a session.
  *
- * @param name their name, e.g. the player's name
+ * @param name  their name, e.g. the player's name
+ * @param areas what they may change
  */
-public record AddParticipant(String name) {}
+public record AddParticipant(String name, Set<EditorArea> areas) {}

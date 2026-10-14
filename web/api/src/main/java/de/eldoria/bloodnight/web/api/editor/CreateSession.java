@@ -7,6 +7,8 @@ package de.eldoria.bloodnight.web.api.editor;
 
 import tools.jackson.databind.JsonNode;
 
+import java.util.Set;
+
 /**
  * Opens an editor session with a server's data.
  *
@@ -14,5 +16,6 @@ import tools.jackson.databind.JsonNode;
  *                    has it
  * @param payload     the server's editor payload
  * @param participant name of who opens it, e.g. the player's name; they become the first participant
+ * @param areas       what they may change
  */
-public record CreateSession(String catalog, JsonNode payload, String participant) {}
+public record CreateSession(String catalog, JsonNode payload, String participant, Set<EditorArea> areas) {}

@@ -13,6 +13,7 @@ import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.editor.EditorResult;
 import de.eldoria.bloodnight.editor.EditorSessionFile;
 import de.eldoria.bloodnight.editor.SettingsPayload;
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
 import de.eldoria.graph.payload.CatalogGenerator;
@@ -30,7 +31,9 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -59,6 +62,11 @@ import static de.eldoria.bloodnight.command.Replies.arg;
 @Subcommand("editor")
 @Permission("bloodnight.command.editor")
 final class EditorCommand {
+    /**
+     * The start of the permission for each editor area, e.g. {@code bloodnight.editor.mobs}.
+     */
+    static final String AREA_PERMISSION = "bloodnight.editor.";
+
     private final BloodNight plugin;
     private @Nullable EditorClient client;
 
@@ -90,7 +98,7 @@ final class EditorCommand {
             openNew(sender, Optional.empty());
             return;
         }
-        client().addParticipant(open.get(), participant(sender))
+        client().addParticipant(open.get(), participant(sender), areas(sender))
                 .whenComplete((joined, error) -> sync(() -> {
                     if (error != null) {
                         Replies.send(sender, "editor.failed", arg("error", reason(error)));
@@ -130,7 +138,7 @@ final class EditorCommand {
         }
         String catalog = CatalogGenerator.write(plugin.catalog());
         Replies.send(sender, "editor.opening");
-        client().open(plugin.catalog().version(), catalog, payload, participant(sender))
+        client().open(plugin.catalog().version(), catalog, payload, participant(sender), areas(sender))
                 .whenComplete((session, error) -> sync(() -> {
                     if (error != null) {
                         Replies.send(sender, "editor.failed", arg("error", reason(error)));
@@ -140,6 +148,18 @@ final class EditorCommand {
                     sessions().save(session);
                     Replies.send(sender, "editor.opened", arg("link", link(session.editorUrl())));
                 }));
+    }
+
+    /**
+     * @return the areas the sender may change: those of {@code bloodnight.editor.<area>} they have, everything for the
+     *     console
+     */
+    static Set<EditorArea> areas(CommandSender sender) {
+        Set<EditorArea> areas = EnumSet.noneOf(EditorArea.class);
+        for (EditorArea area : EditorArea.values()) {
+            if (sender.hasPermission(AREA_PERMISSION + area.name().toLowerCase(Locale.ROOT))) areas.add(area);
+        }
+        return areas;
     }
 
     private static String participant(CommandSender sender) {

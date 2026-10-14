@@ -254,6 +254,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         AddParticipant: {
+            areas: components["schemas"]["EditorArea"][];
             name: string;
         };
         Catalog: {
@@ -285,10 +286,13 @@ export interface components {
             type?: components["schemas"]["TypeRef"];
         };
         CreateSession: {
+            areas: components["schemas"]["EditorArea"][];
             catalog: string;
             participant: string;
             payload: unknown;
         };
+        /** @enum {string} */
+        EditorArea: "MOBS" | "MACROS" | "ITEMS" | "WORLDS" | "SERVER" | "DROPS";
         ErrorBody: {
             details?: {
                 [key: string]: string;
@@ -375,6 +379,7 @@ export interface components {
         /** @enum {string} */
         SessionState: "EDITING" | "SUBMITTED";
         SessionView: {
+            areas: components["schemas"]["EditorArea"][];
             catalog: string;
             /** Format: date-time */
             expires: string;
@@ -429,6 +434,7 @@ export type ChangeAccepted = components['schemas']['ChangeAccepted'];
 export type ChangeBatch = components['schemas']['ChangeBatch'];
 export type ConfigInfo = components['schemas']['ConfigInfo'];
 export type CreateSession = components['schemas']['CreateSession'];
+export type EditorArea = components['schemas']['EditorArea'];
 export type ErrorBody = components['schemas']['ErrorBody'];
 export type ExecutionInfo = components['schemas']['ExecutionInfo'];
 export type ItemAsset = components['schemas']['ItemAsset'];
@@ -993,6 +999,15 @@ export interface operations {
         };
     };
 }
+
+export const EditorArea = {
+    DROPS: "DROPS",
+    ITEMS: "ITEMS",
+    MACROS: "MACROS",
+    MOBS: "MOBS",
+    SERVER: "SERVER",
+    WORLDS: "WORLDS",
+} as const;
 
 export const SessionState = {
     EDITING: "EDITING",

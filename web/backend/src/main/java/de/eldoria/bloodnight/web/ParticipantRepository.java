@@ -5,7 +5,12 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
+
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static de.chojo.sadu.queries.api.call.Call.call;
 import static de.chojo.sadu.queries.api.query.Query.query;
@@ -14,9 +19,13 @@ import static de.chojo.sadu.queries.api.query.Query.query;
  * Stores who may edit a session, by the hash of their participant token.
  */
 final class ParticipantRepository {
-    void add(String session, String tokenHash, String name) {
-        query("INSERT INTO editor_participant(session_id, token_hash, name) VALUES (:session, :hash, :name);")
-                .single(call().bind("session", session).bind("hash", tokenHash).bind("name", name))
+    void add(String session, String tokenHash, String name, Set<EditorArea> areas) {
+        query(
+                        "INSERT INTO editor_participant(session_id, token_hash, name, areas) VALUES (:session, :hash, :name, :areas);")
+                .single(call().bind("session", session)
+                        .bind("hash", tokenHash)
+                        .bind("name", name)
+                        .bind("areas", areas.stream().map(Enum::name).sorted().collect(Collectors.joining(","))))
                 .insert();
     }
 
@@ -27,9 +36,18 @@ final class ParticipantRepository {
      */
     Optional<Participant> find(String session, String token) {
         return query(
-                        "SELECT token_hash, name FROM editor_participant WHERE session_id = :session AND token_hash = :hash;")
+                        "SELECT token_hash, name, areas FROM editor_participant WHERE session_id = :session AND token_hash = :hash;")
                 .single(call().bind("session", session).bind("hash", Tokens.hash(token)))
-                .map(row -> new Participant(row.getString("token_hash"), row.getString("name")))
+                .map(row -> new Participant(
+                        row.getString("token_hash"), row.getString("name"), areas(row.getString("areas"))))
                 .first();
+    }
+
+    private static Set<EditorArea> areas(String stored) {
+        Set<EditorArea> areas = EnumSet.noneOf(EditorArea.class);
+        for (String area : stored.split(",")) {
+            if (!area.isBlank()) areas.add(EditorArea.valueOf(area));
+        }
+        return areas;
     }
 }

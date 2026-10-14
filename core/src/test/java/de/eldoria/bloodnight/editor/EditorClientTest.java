@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.editor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.sun.net.httpserver.HttpServer;
 import de.eldoria.bloodnight.configuration.elements.EditorSettings;
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
@@ -26,6 +27,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,6 +83,7 @@ class EditorClientTest {
                                     List.of(),
                                     List.of(),
                                     null,
+                                    Set.of(EditorArea.MOBS),
                                     SESSION.expires()));
                 }
             } else {
@@ -109,8 +112,8 @@ class EditorClientTest {
 
     @Test
     void openingUploadsAMissingCatalogFirst() {
-        SessionCreated session =
-                client.open("v1", "{}", "{\"mobs\":{}}", "Steve").join();
+        SessionCreated session = client.open("v1", "{}", "{\"mobs\":{}}", "Steve", Set.of(EditorArea.MOBS))
+                .join();
         assertEquals(SESSION, session);
         assertEquals(
                 List.of(
@@ -158,9 +161,14 @@ class EditorClientTest {
     void othersJoinWithTheirOwnLink() {
         assertEquals(
                 "https://editor.test/session/id#alex",
-                client.addParticipant(SESSION, "Alex").join().orElseThrow().editorUrl());
+                client.addParticipant(SESSION, "Alex", Set.of(EditorArea.MOBS))
+                        .join()
+                        .orElseThrow()
+                        .editorUrl());
         assertEquals(List.of("POST /api/v1/editor/sessions/id/participants Bearer token"), requests);
         sessionGone = true;
-        assertTrue(client.addParticipant(SESSION, "Alex").join().isEmpty());
+        assertTrue(client.addParticipant(SESSION, "Alex", Set.of(EditorArea.MOBS))
+                .join()
+                .isEmpty());
     }
 }

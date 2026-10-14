@@ -45,7 +45,8 @@ const confirming = ref(false)
 const MINI_MESSAGE_EXAMPLE = '<red>Blood <bold>Blade'
 
 const heldBy = computed(() => locks.heldByOther(section.item(props.entry.id)))
-const readOnly = computed(() => heldBy.value !== null)
+const denied = computed(() => !locks.mayChange(section.item(props.entry.id)))
+const readOnly = computed(() => heldBy.value !== null || denied.value)
 const defined = computed(() => props.entry.item.kind === ItemKind.DEFINED)
 const materialChoices = useItemAssets().choices(false)
 
@@ -88,6 +89,7 @@ function remove(): void {
       <InfoBadge>{{ t(`editor.items.kind.${entry.item.kind}`) }}</InfoBadge>
     </div>
     <Alert v-if="heldBy" class="mt-3" variant="held">{{ t('editor.items.heldBy', {name: heldBy}) }}</Alert>
+    <Alert v-else-if="denied" class="mt-3" variant="held">{{ t('editor.permission.readOnly') }}</Alert>
     <MutedText v-if="!defined" class="mt-3" size="sm" tag="p">{{ t('editor.items.registeredHint') }}</MutedText>
     <div class="flex max-w-2xl flex-col gap-4 pt-4">
       <LabelledField :label="t('editor.items.material')">
