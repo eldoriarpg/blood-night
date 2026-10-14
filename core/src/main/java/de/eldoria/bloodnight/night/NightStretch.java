@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.ToLongBiFunction;
 
 /**
  * Gives blood nights their configured length by stretching (or shrinking) the night while the day cycle keeps
@@ -34,23 +35,30 @@ public final class NightStretch implements Listener {
     private final Server server;
     private final Function<World, NightSettings> settings;
     private final Function<World, NightTimes> times;
+    private final ToLongBiFunction<World, Long> seeds;
     private final Map<UUID, Stretch> active = new HashMap<>();
 
     /**
      * @param server   finds the worlds
      * @param settings a world's night settings
      * @param times    when a world's nights are
+     * @param seeds    the seed of a world's night, see {@link NightSelector#seed(World, long)}
      */
-    public NightStretch(Server server, Function<World, NightSettings> settings, Function<World, NightTimes> times) {
+    public NightStretch(
+            Server server,
+            Function<World, NightSettings> settings,
+            Function<World, NightTimes> times,
+            ToLongBiFunction<World, Long> seeds) {
         this.server = server;
         this.settings = settings;
         this.times = times;
+        this.seeds = seeds;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBegin(BloodNightBeginEvent event) {
         World world = event.getWorld();
-        OptionalLong length = settings.apply(world).length().ticks(event.night());
+        OptionalLong length = settings.apply(world).length().ticks(seeds.applyAsLong(world, event.night()));
         if (length.isEmpty()) return;
         NightTimes nights = times.apply(world);
         long from = world.getFullTime();

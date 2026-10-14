@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.announce;
 import de.eldoria.bloodnight.configuration.elements.world.announcement.BossBarSettings;
 import de.eldoria.bloodnight.night.NightTimes;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ final class NightBars {
     }
 
     /**
-     * Shows the world's bar to exactly its current players, creating it with the world's settings when missing.
+     * Shows the world's bar to exactly its current players, with the world's current settings.
      *
      * @param world    a world with a running blood night
      * @param settings the world's boss bar settings
@@ -45,8 +46,13 @@ final class NightBars {
             remove(world);
             return;
         }
-        BossBar bar = bars.computeIfAbsent(world.getUID(), _ -> create(settings));
-        bar.progress(remaining(times, night, world.getFullTime()));
+        BossBar bar = bars.computeIfAbsent(
+                world.getUID(), _ -> BossBar.bossBar(Component.empty(), 1f, settings.color(), settings.overlay()));
+        bar.name(MiniMessage.miniMessage().deserialize(settings.title()))
+                .color(settings.color())
+                .overlay(settings.overlay())
+                .flags(settings.flags())
+                .progress(remaining(times, night, world.getFullTime()));
         online.get().forEach(player -> {
             if (player.getWorld().equals(world)) player.showBossBar(bar);
             else player.hideBossBar(bar);
@@ -83,15 +89,6 @@ final class NightBars {
     static float remaining(NightTimes times, long night, long fullTime) {
         float share = (float) (times.endOf(night) - fullTime) / times.length();
         return Math.clamp(share, 0f, 1f);
-    }
-
-    private static BossBar create(BossBarSettings settings) {
-        return BossBar.bossBar(
-                MiniMessage.miniMessage().deserialize(settings.title()),
-                1f,
-                settings.color(),
-                settings.overlay(),
-                settings.flags());
     }
 
     private void hideAll(BossBar bar) {

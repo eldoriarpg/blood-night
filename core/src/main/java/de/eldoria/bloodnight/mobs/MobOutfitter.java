@@ -39,7 +39,8 @@ import java.util.function.Supplier;
  * names an item of the {@link ItemRegistry}, or a plain item by its material key such as {@code minecraft:diamond_helmet}.
  * <p>
  * The name is MiniMessage, shown above the mob when its world shows names. Health and damage follow
- * {@link Attributes}; further attribute changes are added as modifiers keyed {@code bloodnight:custom_mob_<n>}, so
+ * {@link Attributes}; an extension takes over the mob's maximum health, so the shared health fits both. Further
+ * attribute changes are added as modifiers keyed {@code bloodnight:custom_mob_<n>}, so
  * applying a mob twice does not stack them. Values beyond what an attribute allows are clamped by the server.
  */
 public final class MobOutfitter {
@@ -69,6 +70,7 @@ public final class MobOutfitter {
         MobSettings mobSettings = settings.apply(entity.getWorld());
         name(entity, mob.attributes(), mobSettings.displayNames());
         health(entity, mob.attributes(), mobSettings.healthMultiplier());
+        if (extension instanceof LivingEntity living) shareMaxHealth(entity, living);
         damage(entity, mob.attributes());
         change(entity, mob.attributes().changes());
         return extension;
@@ -86,6 +88,14 @@ public final class MobOutfitter {
         health.setBaseValue(
                 value(health.getBaseValue(), attributes.healthModifier(), attributes.health(), worldMultiplier));
         entity.setHealth(health.getValue());
+    }
+
+    private static void shareMaxHealth(LivingEntity base, LivingEntity extension) {
+        AttributeInstance from = base.getAttribute(Attribute.MAX_HEALTH);
+        AttributeInstance to = extension.getAttribute(Attribute.MAX_HEALTH);
+        if (from == null || to == null) return;
+        to.setBaseValue(from.getValue());
+        extension.setHealth(Math.min(base.getHealth(), to.getValue()));
     }
 
     private static void damage(LivingEntity entity, Attributes attributes) {

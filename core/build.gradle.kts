@@ -37,6 +37,7 @@ paper {
         "export" to "writes the editor payload and catalog to the debug folder",
         "night" to "shows the night selection and the next blood night of a world",
         "editor" to "opens, applies or closes a web editor session",
+        "item" to "registers the held item or removes a registered item",
     )
     permissions {
         register("bloodnight.admin") {

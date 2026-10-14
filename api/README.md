@@ -24,7 +24,7 @@ Both packages are `@NullMarked` (JSpecify): everything is non-null unless annota
 
 - `de.eldoria.bloodnight.api.CompiledBehaviour`: behaviour of a custom mob. Lifecycle methods (`onSpawn`,
   `onNightEnd`, `onTick`, `onDebug`) and event methods that receive the Bukkit event (`onDamage`,
-  `onDamageByEntity`, `onDamageByPlayer`, `onHit`, `onKill`, `onPlayerKill`, `onEntityKill`, `onDeath`, `onTeleport`,
+  `onDamageByEntity`, `onDamageByPlayer`, `onHit`, `onKill`, `onDeath`, `onTeleport`,
   `onTargetChange`, `onProjectileShoot`, `onProjectileHit`, `onExplosionPrime`, `onExplode`, `onExtensionDamage`,
   `onExtensionDeath`).
 - `de.eldoria.bloodnight.api.MobContext`: what a behaviour knows about its mob: the entity, its extension (the entity

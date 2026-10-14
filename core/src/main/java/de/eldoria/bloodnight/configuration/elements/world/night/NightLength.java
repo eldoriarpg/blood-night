@@ -25,17 +25,16 @@ public class NightLength {
     }
 
     /**
-     * @param night a night's number, which picks the length in {@link LengthMode#RANGE} so it does not change when
-     *              asked again
+     * @param seed the night's seed, which picks the length in {@link LengthMode#RANGE} so it does not change when
+     *             asked again
      * @return the length in ticks, or empty for {@link LengthMode#NORMAL}
      */
-    public OptionalLong ticks(long night) {
+    public OptionalLong ticks(long seed) {
         int min = Math.max(seconds, 1);
         return switch (mode) {
             case NORMAL -> OptionalLong.empty();
             case EXTENDED -> OptionalLong.of(min * 20L);
-            case RANGE ->
-                OptionalLong.of(new SplittableRandom(night).nextInt(min, Math.max(maxSeconds, min) + 1) * 20L);
+            case RANGE -> OptionalLong.of(new SplittableRandom(seed).nextInt(min, Math.max(maxSeconds, min) + 1) * 20L);
         };
     }
 }
