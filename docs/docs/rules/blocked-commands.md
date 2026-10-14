@@ -1,0 +1,25 @@
+---
+title: Blocked commands
+sidebar_position: 2
+---
+
+# Blocked commands
+
+You can stop players from using some commands during a blood night. No running home!
+
+```yaml
+nightSettings:
+  blockedCommands:
+    - home
+    - spawn
+    - tpa
+    - warp hub
+```
+
+- Write the command without `/`.
+- BloodNight also blocks other names of the same command. If `home` is blocked, `/essentials:home` and aliases are
+  blocked too.
+- An entry with more words only blocks that use. `warp hub` blocks `/warp hub`, but `/warp mine` still works.
+- It only counts for players in a world where a blood night runs.
+
+Players with the permission `bloodnight.bypass.commands` can still use every command.

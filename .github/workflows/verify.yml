@@ -123,3 +123,33 @@ jobs:
         with:
           name: e2e-report
           path: web/frontend/e2e/report
+
+  verify-docs:
+    runs-on: ubuntu-latest
+    name: Verify Documentation
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Build the node catalog and the plugin descriptor
+        run: ./gradlew :catalog:generateCatalog :core:generatePaperPluginDescription
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - name: Install
+        working-directory: docs
+        run: npm ci
+      - name: Check the reference pages
+        working-directory: docs
+        run: node scripts/generate.mjs --check
+      - name: Build the site
+        working-directory: docs
+        run: npm run build

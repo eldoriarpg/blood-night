@@ -3,8 +3,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRONTEND="$ROOT/web/frontend"
+DOCS="$ROOT/docs"
 COMPOSE=(docker compose -p bloodnight -f "$ROOT/.docker/compose.yaml")
-COMMAND_GROUPS=(be fe docker)
+COMMAND_GROUPS=(be fe docs docker)
 
 usage() {
     cat <<'HELP'
@@ -45,6 +46,14 @@ Frontend (web/frontend)
   fe-e2e1 <pattern>     The end-to-end stories matching a pattern, in chromium
   fe-e2e-install        Downloads the browsers of the end-to-end stories (nix provides them already)
 
+Documentation (docs, Docusaurus)
+  docs-install          npm install for the documentation site
+  docs-install-clean    npm ci, as CI does
+  docs-dev              Dev server on http://localhost:4001
+  docs-generate         Builds the catalog and plugin descriptor, then rewrites the reference pages
+  docs-check            Fails when the reference pages are stale
+  docs-build            The static site in docs/build; fails on broken links
+
 Generated files
   api-types             Payload schema, API description and the frontend types, after changing a record or a
                         settings class the editor sees
@@ -58,7 +67,7 @@ Docker (.docker/compose.yaml, needs DB_PASSWORD)
   docker-logs [service] Follows the logs
 
 Everything
-  verify                be-build, fe-test and fe-build: what CI checks
+  verify                be-build, fe-test, fe-build, docs-check and docs-build: what CI checks
   doctor                Shows how commands run here and whether Java, Node.js and Docker are fit
 HELP
 }
@@ -124,13 +133,18 @@ doctor() {
     if [ "$ENVIRONMENT" = system ]; then
         needs_java
         needs_node
-        echo "Run ./toolchain.sh fe-install and fe-e2e-install once before the frontend commands."
+        echo "Run ./toolchain.sh fe-install, fe-e2e-install and docs-install once before the frontend and docs commands."
     fi
 }
 
 fe() {
     needs_node
     cd "$FRONTEND"
+}
+
+docs() {
+    needs_node
+    cd "$DOCS"
 }
 
 be() {
@@ -194,6 +208,17 @@ case "$cmd" in
     fe-e2e)           fe; run npx playwright test "$@" ;;
     fe-e2e1)          fe; run npx playwright test --project=chromium -g "${1:?pattern}" ;;
     fe-e2e-install)   fe; run npx playwright install --with-deps chromium firefox ;;
+    docs-install)       docs; run npm install "$@" ;;
+    docs-install-clean) docs; run npm ci "$@" ;;
+    docs-dev)           docs; run npm start -- "$@" ;;
+    docs-generate)
+        be
+        run ./gradlew :catalog:generateCatalog :core:generatePaperPluginDescription -q
+        docs
+        run node scripts/generate.mjs
+        ;;
+    docs-check)         docs; run node scripts/generate.mjs --check ;;
+    docs-build)         docs; run npm run build ;;
     api-types)
         be
         run ./gradlew :core:generatePayloadSchema :web-backend:generateApiSpec -q
@@ -210,6 +235,8 @@ case "$cmd" in
         "$0" be-build
         "$0" fe-test
         "$0" fe-build
+        "$0" docs-check
+        "$0" docs-build
         ;;
     doctor)         doctor ;;
     help|-h|--help) usage ;;
