@@ -52,6 +52,7 @@ import tools.jackson.databind.node.StringNode;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Assembles the node platform of blood-night: standard nodes, Bukkit nodes, nodes reflected from Bukkit types, and
@@ -79,7 +80,17 @@ public final class BloodNightPlatform {
      * @return the platform
      */
     public static GraphPlatform create(List<Path> classpath, Documentation documentation) {
-        return GraphPlatform.builder(CompiledBehaviour.class)
+        return create(classpath, documentation, ignored -> true);
+    }
+
+    /**
+     * @param classpath     jars and directories generated code compiles against
+     * @param documentation descriptions for reflected nodes, e.g. from the API's javadoc
+     * @param plugins       whether a plugin, by name, runs on the server; nodes of missing plugins warn
+     * @return the platform
+     */
+    public static GraphPlatform create(List<Path> classpath, Documentation documentation, Predicate<String> plugins) {
+        GraphPlatform.Builder builder = GraphPlatform.builder(CompiledBehaviour.class)
                 .context(MobContext.class)
                 .clock("onTick")
                 .types(BukkitTypes.mapping())
@@ -87,8 +98,9 @@ public final class BloodNightPlatform {
                 .binding(MobBindings.EXTENSION, MobBindings.extension())
                 .define(nodes(documentation))
                 .rule(BloodNightNodes.WORLD_SPAWN_PARTICLE, ParticleData.RULE)
-                .classpath(classpath)
-                .build();
+                .classpath(classpath);
+        PluginNodes.NEEDS.forEach((node, plugin) -> builder.rule(node, PluginNodes.needs(plugin, plugins)));
+        return builder.build();
     }
 
     /**
@@ -106,6 +118,7 @@ public final class BloodNightPlatform {
         ReflectionRules rules = BukkitRules.rules(documentation);
         List<NodeDefinition> nodes = new ArrayList<>(StandardNodes.all());
         nodes.addAll(BukkitNodes.all());
+        nodes.addAll(PluginNodes.all());
         nodes.add(ReflectedType.mutate());
         nodes.addAll(StandardNodes.typed(BukkitTypes.mapping()));
         nodes.addAll(ReflectedType.of(Entity.class, "entity")

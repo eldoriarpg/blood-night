@@ -6,6 +6,7 @@
 package de.eldoria.graph.platform;
 
 import de.eldoria.graph.definition.PortType;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
 import java.util.Optional;
@@ -45,14 +46,19 @@ public interface NodeRule {
     }
 
     /**
-     * Collects the problems a rule finds.
+     * Collects the problems a rule finds. Errors stop the graph from compiling, warnings are only shown.
      */
-    @FunctionalInterface
     interface Report {
         /**
          * @param port    the input the problem is about
          * @param message what is wrong and how to fix it
          */
         void error(String port, String message);
+
+        /**
+         * @param port    the input the problem is about, {@code null} for the whole node
+         * @param message what is not as it should be
+         */
+        void warning(@Nullable String port, String message);
     }
 }

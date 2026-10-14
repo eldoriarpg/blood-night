@@ -1,7 +1,7 @@
 ---
 title: server
 description: "server: every node of this group, with its inputs and outputs."
-sidebar_position: 17
+sidebar_position: 18
 ---
 
 {/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}

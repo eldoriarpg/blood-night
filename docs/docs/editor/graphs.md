@@ -69,6 +69,19 @@ The `fearful_phantom` does exactly this. Open it to compare.
 
 All nodes are listed in the [node reference](../reference/nodes/index.md).
 
+## Nodes for other plugins
+
+Some nodes work with other plugins:
+
+| Node | Needs | What it does |
+|---|---|---|
+| Fill In Placeholders | PlaceholderAPI | Fills placeholders like `%player_name%` into a text |
+| Give Money, Take Money, Balance | Vault and an economy plugin | Pays a player, takes money or reads how much they have |
+| Cast Mythic Skill | MythicMobs | Lets the mob cast a MythicMobs skill |
+
+You can use these nodes on any server. If the plugin is missing, the node does nothing. The mob still works, and
+`/bn problems` and the editor show which plugin is missing.
+
 :::warning[Commands run as the console]
 Run Command can do anything the console can. Only give `bloodnight.command.editor` to people you trust.
 :::
