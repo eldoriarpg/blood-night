@@ -30,7 +30,7 @@ All commands run from the repository root through `./toolchain.sh` (`./toolchain
 ```
 
 The dev server needs a backend to talk to. Either start the database and backend in Docker
-(`DB_PASSWORD=<password> ./toolchain.sh docker-backend`), or the whole stack including a built frontend on 4000
+(`./toolchain.sh docker-backend`), or the whole stack including a built frontend on 4000
 (`docker-up`). `docker-db` with `be-backend` runs the backend from source instead.
 
 ## Source layout
@@ -168,6 +168,6 @@ itself.
 `./toolchain.sh fe-build` runs `scripts/build.mjs`: all linters, the type checks, then `nuxi build` into `.output/`.
 `fe-preview` serves that build on port 4000.
 
-`.docker/web-frontend.Dockerfile` builds the image from the repository root: it installs with `npm ci`, runs
+`.docker/frontend.Dockerfile` builds the image from the repository root: it installs with `npm ci`, runs
 `nuxi build`, and runs `node server/index.mjs` on port 4000 in a `node:24-alpine` image. Set `NUXT_BACKEND_URL` to
-the backend's address; `.docker/compose.yaml` points it at the `web` service.
+the backend's address; the compose files in `.docker` point it at the `backend` service.

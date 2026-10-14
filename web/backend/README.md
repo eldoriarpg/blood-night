@@ -96,21 +96,24 @@ Revisions and participants are deleted with their session.
 
 ## Running
 
-With Docker (`.docker/compose.yaml`, the image is built by `.docker/web.Dockerfile`):
+With Docker for local testing (`.docker/compose.dev.yaml`, a fixed database password; the image is built by
+`.docker/backend.Dockerfile` (`.docker/backend.dev.Dockerfile` for local testing)):
 
 ```sh
-DB_PASSWORD=<password> ./toolchain.sh docker-backend   # database and web backend on :8080
-DB_PASSWORD=<password> ./toolchain.sh docker-up        # also the frontend on :4000
+./toolchain.sh docker-backend   # database and web backend on :8080
+./toolchain.sh docker-up        # also the frontend on :4000 and the resource pack on :8765
 ```
+
+For hosting, `.docker/compose.prod.yaml` runs the published images; the site offers the same file for self-hosting.
 
 Compose sets `DB_HOST` to its database and passes `DB_PASSWORD`, `EDITOR_URL` and `ALLOWED_ORIGINS` through to the
 service; `PORT` there only chooses the published host port. The database stays inside Docker there; `docker-db`
-starts it alone and publishes it on `127.0.0.1` at `DB_PORT` (default `5432`), so the backend can run from source
+starts it alone and publishes it on `127.0.0.1` at `DB_PORT` (default `5462`), so the backend can run from source
 against it:
 
 ```sh
-DB_PASSWORD=<password> ./toolchain.sh docker-db    # only the database
-DB_PASSWORD=<password> ./toolchain.sh be-backend   # ./gradlew :web-backend:run with the DB_* variables of the shell
+./toolchain.sh docker-db    # only the database
+./toolchain.sh be-backend   # ./gradlew :web-backend:run with the DB_* variables of the shell
                                                    # and ASSET_CACHE defaulting to web/backend/build/asset-cache
 ```
 

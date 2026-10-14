@@ -56,7 +56,7 @@ direnv allow                    # once, with Nix
 ./toolchain.sh help             # every command
 ./toolchain.sh verify           # what CI checks: Java build and tests, frontend tests, lint, build
 ./toolchain.sh be-server        # Paper test server with the plugin in core/run/
-DB_PASSWORD=<password> ./toolchain.sh docker-up   # database, backend on :8080, frontend on :4000
+./toolchain.sh docker-up   # database, backend on :8080, frontend on :4000
 ./toolchain.sh fe-dev           # frontend dev server on :4000 against the backend on :8080
 ```
 

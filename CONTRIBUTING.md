@@ -24,7 +24,7 @@ newer to start Gradle (Gradle downloads JDK 25 for the build itself), Node.js 24
 
 - `./toolchain.sh verify`: what CI checks, Java and frontend.
 - `./toolchain.sh be-server`: Paper test server with the plugin in `core/run/`.
-- `DB_PASSWORD=<password> ./toolchain.sh docker-up`: database, web backend on port 8080 and frontend on port 4000.
+- `./toolchain.sh docker-up`: database, web backend on port 8080 and frontend on port 4000.
 - `./toolchain.sh fe-dev`: frontend dev server on port 4000, against the backend on port 8080.
 - `./toolchain.sh api-types`: regenerates the payload schema, the API description and the frontend types after a
   change to a record or settings class the editor sees; tests and linters fail while they are stale.
