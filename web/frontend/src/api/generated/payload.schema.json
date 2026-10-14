@@ -604,9 +604,21 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "biomes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes", "mythicTypes" ]
+      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes", "mythicTypes", "attributes", "biomes" ]
     },
     "EditorItem" : {
       "type" : "object",

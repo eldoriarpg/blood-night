@@ -149,7 +149,7 @@ const payload = {
     items: {
         guard_helmet: {kind: 'REGISTERED', material: 'minecraft:iron_helmet', lore: ['<gray>Worn by the night watch'], enchantments: {'minecraft:protection': 2}},
     },
-    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], enchantments: ['minecraft:protection', 'minecraft:sharpness'], mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE']},
+    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], enchantments: ['minecraft:protection', 'minecraft:sharpness'], mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['minecraft:desert']},
     problems: {},
     macroProblems: {},
     configProblems: {},

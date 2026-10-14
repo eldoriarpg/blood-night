@@ -14,6 +14,7 @@ import FieldList from '~/views/editorview/form/FieldList.vue'
 import FieldMap from '~/views/editorview/form/FieldMap.vue'
 import FieldChoices from '~/views/editorview/form/FieldChoices.vue'
 import FieldTexts from '~/views/editorview/form/FieldTexts.vue'
+import FieldSuggestedTexts from '~/views/editorview/form/FieldSuggestedTexts.vue'
 import FieldJson from '~/views/editorview/form/FieldJson.vue'
 import SchemaForm from '~/views/editorview/form/SchemaForm.vue'
 import {fieldLabel} from '~/views/editorview/form/fieldLabel'
@@ -22,12 +23,14 @@ import type {Field} from '~/util/settings/schemaFields'
 import {isItemField} from '~/util/session/itemEntries'
 import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
 import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
+import {attributeLabels, suggestionsFor} from '~/util/settings/serverSuggestions'
 
 /**
  * One field of a settings form, drawn by its kind; a change is saved as soon as it is made, or when a typed value
  * is left. Fields naming an item pick one
  * of the payload's items or the server's materials with icons and names. A MythicMobs type is picked from the
- * server's MythicMobs mobs when it has any. Choices show their names in the editor's
+ * server's MythicMobs mobs when it has any, an attribute from the server's attributes. Lists of worlds and biomes
+ * suggest the server's while typing. Choices show their names in the editor's
  * language and store their keys; long lists of choices are searched rather than scrolled.
  */
 const props = defineProps<{
@@ -71,6 +74,12 @@ const mythicOptions = computed(() => choiceValue.value && !mythicTypes.value.inc
   ? [choiceValue.value, ...mythicTypes.value]
   : mythicTypes.value)
 
+const attributeOptions = computed(() => {
+  const attributes = props.field.key === 'attribute' ? session.payload.value?.choices?.attributes ?? [] : []
+  return choiceValue.value && attributes.length > 0 && !attributes.includes(choiceValue.value) ? [choiceValue.value, ...attributes] : attributes
+})
+const suggestions = computed(() => props.field.kind === 'texts' ? suggestionsFor(props.field.key, session.payload.value) : null)
+
 watch(current, value => {
   draft.value = typeof value === 'number' || typeof value === 'string' ? value : undefined
 }, {immediate: true})
@@ -96,6 +105,9 @@ function save(value: unknown): void {
     <LabelledField v-else-if="mythicField" :label="label">
       <ChoicePicker :label="label" :model-value="choiceValue || undefined" :options="mythicOptions" :read-only="readOnly" clearable @update:model-value="save($event ?? '')"/>
     </LabelledField>
+    <LabelledField v-else-if="attributeOptions.length > 0" :label="label">
+      <ChoicePicker :label="label" :labels="attributeLabels(attributeOptions)" :model-value="choiceValue ?? undefined" :options="attributeOptions" :read-only="readOnly" @update:model-value="save"/>
+    </LabelledField>
     <LabelledField v-else-if="field.kind === 'text'" v-slot="{id}" :label="label">
       <TextInput :id="id" v-model="textDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
@@ -103,6 +115,7 @@ function save(value: unknown): void {
       <ChoicePicker :label="label" :labels="optionLabels" :model-value="choiceValue ?? undefined" :options="options" :read-only="readOnly" @update:model-value="save"/>
     </LabelledField>
     <FieldChoices v-else-if="field.kind === 'choices'" :label="label" :labels="optionLabels" :options="options" :read-only="readOnly" :value="textsValue" @save="save"/>
+    <FieldSuggestedTexts v-else-if="suggestions" :label="label" :read-only="readOnly" :suggestions="suggestions" :value="textsValue" @save="save"/>
     <FieldTexts v-else-if="field.kind === 'texts'" :label="label" :read-only="readOnly" :value="textsValue" @save="save"/>
     <div v-else-if="field.kind === 'group'" class="flex flex-col gap-1">
       <SubHeader>{{ label }}</SubHeader>

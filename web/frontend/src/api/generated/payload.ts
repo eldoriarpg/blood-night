@@ -1012,6 +1012,8 @@ export interface EditorChoices {
   };
   mobTypes: string[];
   mythicTypes: string[];
+  attributes: string[];
+  biomes: string[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
