@@ -37,7 +37,8 @@ class PlaceholdersTest {
         server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         nether = server.addSimpleWorld("world_nether");
-        placeholders = new Placeholders(new Service(), server::getWorld, () -> 20, () -> reveal);
+        placeholders = new Placeholders(
+                new Service(), server::getWorld, () -> 20, () -> reveal, target -> "The " + target.getName());
     }
 
     @AfterEach
@@ -71,6 +72,7 @@ class PlaceholdersTest {
         assertEquals("300", value("seconds_left", world));
         assertEquals("25.0", value("percent_left", world));
         assertEquals("0", value("seconds_left", nether));
+        assertEquals("The world_nether", value("world_name_world_nether", world));
         assertNull(placeholders.value(Placeholders.parse("active"), null));
     }
 

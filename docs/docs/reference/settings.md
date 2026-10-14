@@ -71,6 +71,7 @@ Settings for one world. Every world has its own file.
 | Key | Type | Default |
 |---|---|---|
 | `enabled` | true or false | `true` |
+| `displayName` | text | (empty) |
 | `nightSelection.type` | `RANDOM`, `MOON_PHASE`, `REAL_MOON_PHASE`, `INTERVAL`, `PHASE`, `CURVE` | `RANDOM` |
 | `nightSelection.random.probability` | whole number | `60` |
 | `nightSelection.moonPhase.probabilities` | map | `{"FULL_MOON":0,"WANING_GIBBOUS":10,"LAST_QUARTER":20,"WANING_CRESCENT":40,"NEW_MOON":100,"WAXING_CRESCENT":40,"FIRST_QUARTER":20,"WAXING_GIBBOUS":10}` |
@@ -176,6 +177,7 @@ The whole file with its defaults:
 
 ```yaml
 enabled: true
+displayName: ""
 nightSelection:
   curve:
     max: 80

@@ -14,6 +14,7 @@ import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.Effects;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.translation.Argument;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -51,6 +52,7 @@ public final class Announcer implements Listener {
     private final Function<World, WorldSettings> settings;
     private final Function<World, NightTimes> times;
     private final Tasks tasks;
+    private final Function<World, Component> names;
     private final NightBars bars = new NightBars();
     private final Ambience ambience = new Ambience();
     private final Set<UUID> dragonFights = ConcurrentHashMap.newKeySet();
@@ -62,6 +64,7 @@ public final class Announcer implements Listener {
      * @param settings      the settings of a world
      * @param times         the night times of a world
      * @param tasks         runs work on the players' threads
+     * @param names         the name players see for a world
      */
     public Announcer(
             Server server,
@@ -69,13 +72,15 @@ public final class Announcer implements Listener {
             Supplier<Announcements> announcements,
             Function<World, WorldSettings> settings,
             Function<World, NightTimes> times,
-            Tasks tasks) {
+            Tasks tasks,
+            Function<World, Component> names) {
         this.server = server;
         this.nights = nights;
         this.announcements = announcements;
         this.settings = settings;
         this.times = times;
         this.tasks = tasks;
+        this.names = names;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -208,7 +213,7 @@ public final class Announcer implements Listener {
                     case WORLD -> world.getPlayers();
                     case NONE -> List.of();
                 };
-        var message = Messages.message(key, Argument.string("world", world.getName()));
+        var message = Messages.message(key, Argument.component("world", names.apply(world)));
         for (Player player : audience) {
             tasks.entityNow(player, () -> Delivery.send(player, config.method(), config.prefix(), message));
         }
@@ -220,7 +225,7 @@ public final class Announcer implements Listener {
                 player,
                 config.personalMethod(),
                 config.prefix(),
-                Messages.message(key, Argument.string("world", player.getWorld().getName())));
+                Messages.message(key, Argument.component("world", names.apply(player.getWorld()))));
     }
 
     private static void applyEffect(Player player, NightEffect effect) {

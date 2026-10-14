@@ -21,6 +21,7 @@ import de.eldoria.bloodnight.configuration.elements.world.death.DeathActionSetti
  */
 public class WorldSettings {
     private boolean enabled = true;
+    private String displayName = "";
     private NightSelection nightSelection = new NightSelection();
     private NightSettings nightSettings = new NightSettings();
     private MobSettings mobSettings = new MobSettings();
@@ -36,6 +37,13 @@ public class WorldSettings {
      */
     public boolean enabled() {
         return enabled;
+    }
+
+    /**
+     * @return the world's name for players, MiniMessage; empty uses the alias of a world plugin or the world's name
+     */
+    public String displayName() {
+        return displayName;
     }
 
     public NightSelection nightSelection() {
