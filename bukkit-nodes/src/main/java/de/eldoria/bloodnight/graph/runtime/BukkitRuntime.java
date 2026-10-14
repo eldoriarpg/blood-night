@@ -6,6 +6,8 @@
 package de.eldoria.bloodnight.graph.runtime;
 
 import de.eldoria.bloodnight.api.MobContext;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -102,6 +104,46 @@ public final class BukkitRuntime {
             if (effectOnly) world.strikeLightningEffect(location);
             else world.strikeLightning(location);
         });
+    }
+
+    /**
+     * Runs a command as the console, on the global region. {@code {player}} is the player's name, {@code {world}},
+     * {@code {x}}, {@code {y}} and {@code {z}} where the mob stands.
+     *
+     * @param player the player the command is about, or {@code null}
+     */
+    public static void runCommand(MobContext context, String command, @Nullable Player player) {
+        String filled = fill(context, command, player);
+        context.global(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), filled));
+    }
+
+    /**
+     * Runs a command as a player, on the thread owning the player, with the same placeholders as
+     * {@link #runCommand}.
+     */
+    public static void playerCommand(MobContext context, Player player, String command) {
+        String filled = fill(context, command, player);
+        context.at(player.getLocation(), () -> player.performCommand(filled));
+    }
+
+    /**
+     * Sends a MiniMessage text to the players in the mob's world or on the whole server.
+     */
+    public static void broadcast(MobContext context, String text, Reach reach) {
+        Component message = MiniMessage.miniMessage().deserialize(text);
+        World world = context.entity().getWorld();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (reach == Reach.SERVER || player.getWorld().equals(world)) player.sendMessage(message);
+        }
+    }
+
+    private static String fill(MobContext context, String command, @Nullable Player player) {
+        Location location = context.entity().getLocation();
+        String filled = command.replace("{world}", location.getWorld().getName())
+                .replace("{x}", Integer.toString(location.getBlockX()))
+                .replace("{y}", Integer.toString(location.getBlockY()))
+                .replace("{z}", Integer.toString(location.getBlockZ()));
+        return player == null ? filled : filled.replace("{player}", player.getName());
     }
 
     /**
