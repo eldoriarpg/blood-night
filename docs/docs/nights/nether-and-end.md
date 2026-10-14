@@ -13,6 +13,15 @@ what you type. This page shows the files, so you know what the editor writes for
 The Nether and the End have no day and no night. So they get blood nights in their own way: by the clock, and in the
 End also during a dragon fight.
 
+They also have their own names:
+
+| World | Name |
+|---|---|
+| The Nether | **Blood Tide** |
+| The End | **Blood Eclipse** |
+
+Players read these names in the messages and on the boss bar, in their own language.
+
 ## By the clock
 
 Every hour, a new chance comes. If it hits, a blood night starts and lasts ten minutes.
@@ -44,8 +53,8 @@ the particles and the heartbeat from the [atmosphere](./atmosphere.md) settings.
 
 ## The dragon fight
 
-When the ender dragon appears in the End, a blood night begins. It lasts until the dragon dies, no matter what the
-clock says.
+When the ender dragon appears in the End, a Blood Eclipse begins. Players read "The Blood Dragon awakens". It lasts
+until the dragon dies, no matter what the clock says.
 
 The dragon also becomes a **Blood Dragon**:
 

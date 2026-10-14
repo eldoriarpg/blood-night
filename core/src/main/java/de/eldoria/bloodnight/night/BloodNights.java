@@ -130,6 +130,13 @@ public final class BloodNights {
     }
 
     /**
+     * @return whether the world's blood night is held, e.g. by a dragon fight
+     */
+    public boolean held(World world) {
+        return held.contains(world.getUID());
+    }
+
+    /**
      * Lets a held blood night go: it ends now, unless the world's own nights have a blood night running at this time.
      *
      * @param world a world

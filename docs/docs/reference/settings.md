@@ -94,7 +94,7 @@ Settings for one world. Every world has its own file.
 | `mobSettings.damageModifier` | number | `2` |
 | `mobSettings.healthMultiplier` | number | `2` |
 | `announcement.bossBar.enabled` | true or false | `true` |
-| `announcement.bossBar.title` | text | `<red><bold><lang:bloodnight.bossbar.title>` |
+| `announcement.bossBar.title` | text | `<red><bold><name>` |
 | `announcement.bossBar.color` | `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, `WHITE` | `RED` |
 | `announcement.bossBar.overlay` | `PROGRESS`, `NOTCHED_6`, `NOTCHED_10`, `NOTCHED_12`, `NOTCHED_20` | `PROGRESS` |
 | `announcement.bossBar.flags` | list of `DARKEN_SCREEN`, `PLAY_BOSS_MUSIC`, `CREATE_WORLD_FOG` | `["DARKEN_SCREEN","CREATE_WORLD_FOG"]` |
@@ -216,7 +216,7 @@ announcement:
       - DARKEN_SCREEN
       - CREATE_WORLD_FOG
     overlay: PROGRESS
-    title: <red><bold><lang:bloodnight.bossbar.title>
+    title: <red><bold><name>
   effect:
     effect: minecraft:darkness
     enabled: true
