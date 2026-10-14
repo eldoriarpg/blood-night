@@ -25,6 +25,7 @@ dependencies {
 paper {
     name = "BloodNight"
     main = "de.eldoria.bloodnight.BloodNight"
+    bootstrapper = "de.eldoria.bloodnight.BloodNightBootstrap"
     apiVersion = "26.2"
     foliaSupported = true
     description = "Special mobs during blood nights, their behaviour built from node graphs"

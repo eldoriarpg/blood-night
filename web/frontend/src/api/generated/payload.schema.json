@@ -3,6 +3,19 @@
   "title" : "EditorPayload",
   "$ref" : "#/$defs/EditorPayload",
   "$defs" : {
+    "AmbientParticle" : {
+      "type" : "object",
+      "properties" : {
+        "particle" : {
+          "type" : "string",
+          "default" : "minecraft:ash"
+        },
+        "perSecond" : {
+          "type" : "integer",
+          "default" : 10
+        }
+      }
+    },
     "AnnouncementSettings" : {
       "type" : "object",
       "properties" : {
@@ -62,6 +75,58 @@
         "fallbackLocale" : {
           "type" : "string",
           "default" : "en_US"
+        }
+      }
+    },
+    "AtmosphereSettings" : {
+      "type" : "object",
+      "properties" : {
+        "sky" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "vignette" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "darknessPulses" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "rain" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "heartbeat" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "screenEffect" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "particles" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/AmbientParticle"
+          },
+          "default" : [ {
+            "particle" : "minecraft:ash",
+            "perSecond" : 12
+          }, {
+            "particle" : "minecraft:crimson_spore",
+            "perSecond" : 4
+          } ]
+        },
+        "scares" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Scares"
+          } ],
+          "default" : {
+            "chancePerMinute" : 10,
+            "enabled" : false,
+            "kinds" : [ "FLINCH", "SCREAM", "GUARDIAN" ]
+          }
         }
       }
     },
@@ -208,6 +273,17 @@
           "default" : {
             "timeoutSeconds" : 30,
             "url" : "https://bloodnight.eldoria.de"
+          }
+        },
+        "resourcePack" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ResourcePackSettings"
+          } ],
+          "default" : {
+            "offer" : true,
+            "prompt" : "<red>BloodNight would like to show its blood nights with a few extra effects.",
+            "required" : false,
+            "url" : "https://bloodnight.docs.eldoria.de/pack/bloodnight.zip"
           }
         }
       }
@@ -1237,6 +1313,52 @@
       "type" : "string",
       "enum" : [ "SERVER", "WORLD", "NONE" ]
     },
+    "ResourcePackSettings" : {
+      "type" : "object",
+      "properties" : {
+        "offer" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "url" : {
+          "type" : "string",
+          "default" : "https://bloodnight.docs.eldoria.de/pack/bloodnight.zip"
+        },
+        "required" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "prompt" : {
+          "type" : "string",
+          "default" : "<red>BloodNight would like to show its blood nights with a few extra effects."
+        }
+      }
+    },
+    "Scare" : {
+      "type" : "string",
+      "enum" : [ "FLINCH", "SCREAM", "GUARDIAN" ]
+    },
+    "Scares" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "chancePerMinute" : {
+          "type" : "integer",
+          "default" : 10
+        },
+        "kinds" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Scare"
+          },
+          "uniqueItems" : true,
+          "default" : [ "FLINCH", "SCREAM", "GUARDIAN" ]
+        }
+      }
+    },
     "SettingsPayload" : {
       "type" : "object",
       "properties" : {
@@ -1668,6 +1790,31 @@
               "seconds" : 5
             },
             "joinWarning" : true
+          }
+        },
+        "atmosphere" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/AtmosphereSettings"
+          } ],
+          "default" : {
+            "darknessPulses" : true,
+            "heartbeat" : true,
+            "particles" : [ {
+              "particle" : "minecraft:ash",
+              "perSecond" : 12
+            }, {
+              "particle" : "minecraft:crimson_spore",
+              "perSecond" : 4
+            } ],
+            "rain" : true,
+            "scares" : {
+              "chancePerMinute" : 10,
+              "enabled" : false,
+              "kinds" : [ "FLINCH", "SCREAM", "GUARDIAN" ]
+            },
+            "screenEffect" : true,
+            "sky" : true,
+            "vignette" : true
           }
         },
         "soundSettings" : {

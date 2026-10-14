@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "docusaurus start --port 4001",
-    "build": "docusaurus build",
+    "start": "node scripts/pack.mjs && docusaurus start --port 4001",
+    "build": "node scripts/pack.mjs && docusaurus build",
     "serve": "docusaurus serve --port 4001",
     "clear": "docusaurus clear",
     "generate": "node scripts/generate.mjs",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "pack": "node scripts/pack.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.2",
@@ -26,6 +27,7 @@
     "@docusaurus/tsconfig": "3.10.2",
     "@docusaurus/types": "3.10.2",
     "@types/react": "^19.0.0",
+    "fflate": "^0.8.3",
     "typescript": "~6.0.2",
     "yaml": "^2.8.0"
   },

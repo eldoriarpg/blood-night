@@ -40,6 +40,7 @@ final class ReloadCommand {
         plugin.configuration().items();
         plugin.configuration().macros();
         plugin.messages().fallback(plugin.configuration().main().announcements().fallbackLocale());
+        plugin.bloodPack().refresh();
         plugin.configuration()
                 .problems()
                 .keySet()

@@ -7,6 +7,9 @@ package de.eldoria.bloodnight;
 
 import de.eldoria.bloodnight.announce.Announcer;
 import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.atmosphere.BloodPack;
+import de.eldoria.bloodnight.atmosphere.BloodSky;
+import de.eldoria.bloodnight.atmosphere.Haunting;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
@@ -80,6 +83,9 @@ public final class BloodNight extends JavaPlugin {
     private Tasks tasks;
     private NightStretch stretch;
     private Announcer announcer;
+    private BloodSky bloodSky;
+    private Haunting haunting;
+    private BloodPack bloodPack;
     private PhantomForce phantoms;
     private final Messages messages = new Messages();
     private NightSelector selector;
@@ -203,6 +209,21 @@ public final class BloodNight extends JavaPlugin {
                 this);
         plugins.registerEvents(
                 new DeathActionHandler(getServer(), tasks, bloodNights, configuration::worldConfig, RANDOM), this);
+        bloodSky = new BloodSky(
+                bloodNights, world -> configuration.worldConfig(world).atmosphere(), BloodSky.silently(getServer()));
+        plugins.registerEvents(bloodSky, this);
+        haunting = new Haunting(
+                getServer(),
+                bloodNights,
+                world -> configuration.worldConfig(world).atmosphere(),
+                tasks,
+                getServer()::createWorldBorder);
+        plugins.registerEvents(haunting, this);
+        bloodPack = new BloodPack(() -> configuration.main().resourcePack(), tasks, getLogger());
+        plugins.registerEvents(bloodPack, this);
+        bloodPack.refresh();
+        tasks.global(() -> bloodSky.restore(getServer().getWorlds()));
+        tasks.globalTimer(Haunting.STEP, haunting::tick);
         tasks.globalTimer(20, announcer::tick);
         tasks.globalTimer(1, stretch::tick);
         tasks.globalTimer(20, () -> bloodNights.check(getServer().getWorlds()));
@@ -237,6 +258,8 @@ public final class BloodNight extends JavaPlugin {
         if (stretch != null) stretch.clear();
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
         if (announcer != null) announcer.clear();
+        if (haunting != null) haunting.clear();
+        if (bloodSky != null) bloodSky.clear(getServer().getWorlds());
         if (phantoms != null) phantoms.restoreAll(getServer().getOnlinePlayers());
         messages.unregister();
         if (dispatcher != null) dispatcher.unregister();
@@ -279,6 +302,13 @@ public final class BloodNight extends JavaPlugin {
      */
     public Tasks tasks() {
         return tasks;
+    }
+
+    /**
+     * @return offers the resource pack to joining players
+     */
+    public BloodPack bloodPack() {
+        return bloodPack;
     }
 
     /**
