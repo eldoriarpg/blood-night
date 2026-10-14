@@ -54,6 +54,7 @@ paper {
         "settings" to "shows or changes one setting without the web editor",
         "store" to "lists, installs and updates mobs from the store",
         "pack" to "writes the resource pack out to merge it into another pack",
+        "convert" to "takes over the settings of the old BloodNight",
     )
     serverDependencies {
         listOf("PlaceholderAPI", "MiniPlaceholders", "WorldGuard").forEach { name ->

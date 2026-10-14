@@ -32,6 +32,7 @@ import de.eldoria.bloodnight.integration.placeholders.Placeholders;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.integration.regions.WorldGuardRules;
 import de.eldoria.bloodnight.integration.worlds.WorldNames;
+import de.eldoria.bloodnight.legacy.LegacyFolder;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
@@ -154,6 +155,7 @@ public final class BloodNight extends JavaPlugin {
     @Override
     public void onEnable() {
         tasks = new Tasks(this);
+        moveLegacyAside();
         configuration = new Configuration(this);
         var platform = BloodNightPlatform.create(
                 CompileClasspath.discover(getClassLoader()),
@@ -539,6 +541,20 @@ public final class BloodNight extends JavaPlugin {
             }
         } catch (IOException | UncheckedIOException e) {
             getLogger().log(Level.WARNING, "The resource pack could not be merged into the pack plugins", e);
+        }
+    }
+
+    /**
+     * Moves the old BloodNight's files out of the shared folder before the configuration reads it.
+     */
+    private void moveLegacyAside() {
+        try {
+            LegacyFolder.moveAside(getDataFolder().toPath()).ifPresent(folder -> getLogger()
+                    .warning(
+                            "Found settings of the old BloodNight and moved them to %s. Run /bn convert to take them over"
+                                    .formatted(getDataFolder().toPath().relativize(folder))));
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "The old BloodNight's settings could not be moved aside", e);
         }
     }
 

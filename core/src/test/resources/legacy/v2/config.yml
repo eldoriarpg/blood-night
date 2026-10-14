@@ -1,0 +1,18 @@
+debug: INFO
+version: 2
+generalSettings:
+  ==: bloodNightGeneralSettings
+  language: en_US
+  prefix: <red>[BN]
+  broadcastLevel: SERVER
+  broadcastMethod: SUBTITLE
+  messageMethod: SUBTITLE
+  mobTick: 5
+  joinWorldWarning: true
+  blindness: true
+  updateReminder: true
+  autoUpdater: false
+  beeFix: false
+  spawnerDropSuppression: true
+  ignoreSpawnerMobs: false
+  blockedCommands: []
