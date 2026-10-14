@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Tide Drowned",
+    "de": "Gezeiten-Ertrunkener"
+  },
+  "descriptions": {
+    "en": "Throws a trident every 3 seconds while you are in water.",
+    "de": "Wirft alle 3 Sekunden einen Dreizack, solange du im Wasser bist."
+  },
+  "requires": []
+}

@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Magic Skeleton",
+    "de": "Magisches Skelett"
+  },
+  "descriptions": {
+    "en": "Its arrows give you a random bad effect.",
+    "de": "Seine Pfeile geben dir einen zufälligen schlechten Effekt."
+  },
+  "requires": []
+}

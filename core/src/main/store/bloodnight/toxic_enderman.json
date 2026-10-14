@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Toxic Enderman",
+    "de": "Giftiger Enderman"
+  },
+  "descriptions": {
+    "en": "Leaves a poison cloud where it teleports from.",
+    "de": "Hinterlässt eine Giftwolke, wo er sich wegteleportiert."
+  },
+  "requires": []
+}

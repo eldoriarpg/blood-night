@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Volley Pillager",
+    "de": "Salven-Plünderer"
+  },
+  "descriptions": {
+    "en": "Fires two extra arrows every 4 seconds while it sees you.",
+    "de": "Schießt alle 4 Sekunden zwei zusätzliche Pfeile, solange er dich sieht."
+  },
+  "requires": []
+}

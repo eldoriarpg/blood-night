@@ -1,0 +1,176 @@
+{
+  "format" : 1,
+  "id" : "speed_creeper",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Flinker Creeper",
+    "en" : "Speed Creeper"
+  },
+  "descriptions" : {
+    "de" : "Schnell, mit kurzer Zündschnur. Seine Explosion setzt Feuer.",
+    "en" : "Fast, with a short fuse. Its explosion sets fire."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "speed_creeper",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.speed_creeper:'Speed Creeper'>",
+      "entityType" : "CREEPER",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_3" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 4,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : true
+          }
+        },
+        "branch_5" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_4",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_3" ]
+          }
+        },
+        "cooldown_4" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "explosion_prime_7" : {
+          "type" : "event.explosion_prime",
+          "executions" : {
+            "next" : [ "mutate_8" ]
+          }
+        },
+        "ignite_9" : {
+          "type" : "creeper.ignite",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "mutate_0" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "max_fuse_ticks" : 10
+          }
+        },
+        "mutate_10" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "max_fuse_ticks" : 0
+          }
+        },
+        "mutate_8" : {
+          "type" : "event_data.explosion_prime.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "explosion_prime_7",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "fire" : true
+          }
+        },
+        "night_end_11" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "mutate_10", "ignite_9" ]
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_2" : {
+          "type" : "mob.spawn",
+          "executions" : {
+            "next" : [ "mutate_0" ]
+          }
+        },
+        "tick_6" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_5" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

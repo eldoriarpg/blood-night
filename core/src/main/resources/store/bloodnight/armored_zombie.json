@@ -1,0 +1,74 @@
+{
+  "format" : 1,
+  "id" : "armored_zombie",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Gepanzerter Zombie",
+    "en" : "Armored Zombie"
+  },
+  "descriptions" : {
+    "de" : "Trägt eine volle Diamantrüstung.",
+    "en" : "Wears full diamond armour."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "armored_zombie",
+    "equipment" : {
+      "head" : "minecraft:diamond_helmet",
+      "chest" : "minecraft:diamond_chestplate",
+      "legs" : "minecraft:diamond_leggings",
+      "feet" : "minecraft:diamond_boots",
+      "mainHand" : null,
+      "offHand" : null
+    },
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.armored_zombie:'Armored Zombie'>",
+      "entityType" : "ZOMBIE",
+      "exactType" : false,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : { }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

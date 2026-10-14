@@ -1,0 +1,192 @@
+{
+  "format" : 1,
+  "id" : "fearful_phantom",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Furchterregendes Phantom",
+    "en" : "Fearful Phantom"
+  },
+  "descriptions" : {
+    "de" : "Leuchtet. Seine Treffer verlangsamen dich.",
+    "en" : "Glows. Its hits slow you down."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "fearful_phantom",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.fearful_phantom:'Fearful Phantom'>",
+      "entityType" : "PHANTOM",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_0" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:glowing",
+            "seconds" : 60.0,
+            "visible" : true
+          }
+        },
+        "apply_effect_7" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 2,
+            "effect" : "minecraft:slowness",
+            "seconds" : 7.0
+          }
+        },
+        "branch_3" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_2",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_0" ]
+          }
+        },
+        "branch_8" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_6",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_7" ]
+          }
+        },
+        "cast_6" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_5",
+              "port" : "entity"
+            }
+          }
+        },
+        "cooldown_2" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "hit_5" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_8" ]
+          }
+        },
+        "night_end_11" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_10" ]
+          }
+        },
+        "read_9" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_10" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_9",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_9",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "tick_4" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_3" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

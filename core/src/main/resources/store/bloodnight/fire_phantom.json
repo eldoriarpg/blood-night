@@ -1,0 +1,147 @@
+{
+  "format" : 1,
+  "id" : "fire_phantom",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Feuerphantom",
+    "en" : "Fire Phantom"
+  },
+  "descriptions" : {
+    "de" : "Trägt eine Lohe.",
+    "en" : "Carries a blaze."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "fire_phantom",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.fire_phantom:'Fire Phantom'>",
+      "entityType" : "PHANTOM",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_4" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_3",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_1" ]
+          }
+        },
+        "branch_7" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_6",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "remove_5" ]
+          }
+        },
+        "extension_2" : {
+          "type" : "mob.extension"
+        },
+        "is_null_3" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "is_null_6" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "mutate_1" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "target_change_0",
+              "port" : "target"
+            }
+          }
+        },
+        "night_end_8" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "branch_7" ]
+          }
+        },
+        "remove_5" : {
+          "type" : "entity.remove",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "target_change_0" : {
+          "type" : "event.target_change",
+          "executions" : {
+            "next" : [ "branch_4" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "CARRIER",
+      "entityType" : "BLAZE",
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Speed Creeper",
+    "de": "Flinker Creeper"
+  },
+  "descriptions": {
+    "en": "Fast, with a short fuse. Its explosion sets fire.",
+    "de": "Schnell, mit kurzer Zündschnur. Seine Explosion setzt Feuer."
+  },
+  "requires": []
+}

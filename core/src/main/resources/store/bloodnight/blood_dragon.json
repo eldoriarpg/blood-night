@@ -1,0 +1,332 @@
+{
+  "format" : 1,
+  "id" : "blood_dragon",
+  "pack" : "end",
+  "names" : {
+    "de" : "Blutdrache",
+    "en" : "Blood Dragon"
+  },
+  "descriptions" : {
+    "de" : "Der Enderdrache eines Drachenkampfs während einer Blutfinsternis. Erscheint nie zufällig.",
+    "en" : "The ender dragon of a dragon fight during a Blood Eclipse. Never spawns by chance."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "blood_dragon",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<dark_red><lang_or:bloodnight.mob.blood_dragon:'Blood Dragon'>",
+      "entityType" : "ENDER_DRAGON",
+      "exactType" : true,
+      "healthModifier" : "VALUE",
+      "health" : 400.0,
+      "damageModifier" : "MULTIPLY",
+      "damage" : 1.5,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_22" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_21",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:wither",
+            "seconds" : 5.0
+          }
+        },
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_9",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_8" ]
+          }
+        },
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_11",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "launch_projectile_3" ]
+          }
+        },
+        "branch_14" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_13",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_12" ]
+          }
+        },
+        "branch_16" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_15",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "strike_lightning_5" ]
+          }
+        },
+        "branch_18" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_17",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_16" ]
+          }
+        },
+        "branch_23" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_21",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_22" ]
+          }
+        },
+        "cast_21" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_20",
+              "port" : "entity"
+            }
+          }
+        },
+        "cooldown_13" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 6000
+          }
+        },
+        "cooldown_17" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 10000
+          }
+        },
+        "cooldown_9" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "create_6" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_7",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 4.0
+          }
+        },
+        "hit_20" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_23" ]
+          }
+        },
+        "is_null_11" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_15" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "launch_projectile_3" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "DRAGON_FIREBALL"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_2",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          },
+          "literals" : {
+            "speed" : 2.0
+          }
+        },
+        "nearest_player_0" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 128.0
+          }
+        },
+        "read_1" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_4" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "rgb_7" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 0,
+            "red" : 160
+          }
+        },
+        "self_2" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_8" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_6",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_1",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_1",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "strike_lightning_5" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "read_4",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "read_1",
+              "port" : "world"
+            }
+          }
+        },
+        "tick_19" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_10", "branch_14", "branch_18" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 0,
+      "nightOnly" : false,
+      "nightEnd" : "KEEP",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

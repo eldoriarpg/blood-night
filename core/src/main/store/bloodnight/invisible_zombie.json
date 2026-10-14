@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Invisible Zombie",
+    "de": "Unsichtbarer Zombie"
+  },
+  "descriptions": {
+    "en": "Invisible. When you hit it, it shows up for 10 seconds.",
+    "de": "Unsichtbar. Wenn du es triffst, wird es für 10 Sekunden sichtbar."
+  },
+  "requires": []
+}

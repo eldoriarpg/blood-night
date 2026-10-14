@@ -1,0 +1,209 @@
+{
+  "format" : 1,
+  "id" : "tide_drowned",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Gezeiten-Ertrunkener",
+    "en" : "Tide Drowned"
+  },
+  "descriptions" : {
+    "de" : "Wirft alle 3 Sekunden einen Dreizack, solange du im Wasser bist.",
+    "en" : "Throws a trident every 3 seconds while you are in water."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "tide_drowned",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.tide_drowned:'Tide Drowned'>",
+      "entityType" : "DROWNED",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_11" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_10",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_9" ]
+          }
+        },
+        "branch_5" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_4",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_3" ]
+          }
+        },
+        "branch_8" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "launch_projectile_6" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_2",
+              "port" : "in_water"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_8" ]
+          }
+        },
+        "cooldown_4" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "cooldown_7" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 3000
+          }
+        },
+        "is_null_10" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "launch_projectile_6" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "TRIDENT"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 2.0
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_3" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 2,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dripping_water"
+          }
+        },
+        "tick_12" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_5", "branch_11" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

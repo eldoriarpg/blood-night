@@ -1,0 +1,268 @@
+{
+  "format" : 1,
+  "id" : "swarm_silverfish",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Schwarm-Silberfischchen",
+    "en" : "Swarm Silverfish"
+  },
+  "descriptions" : {
+    "de" : "Schnell. Wenn du es triffst, kommen alle Silberfischchen in der Nähe zu dir.",
+    "en" : "Fast. When you hit it, every silverfish nearby comes for you."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "swarm_silverfish",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.swarm_silverfish:'Swarm Silverfish'>",
+      "entityType" : "SILVERFISH",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_0" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "branch_14" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_12",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_13" ]
+          }
+        },
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_11",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_14" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "for_each_8" ]
+          }
+        },
+        "branch_18" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_6",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_17" ]
+          }
+        },
+        "branch_3" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_2",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_0" ]
+          }
+        },
+        "cast_12" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "mob"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_8",
+              "port" : "element"
+            }
+          }
+        },
+        "cast_6" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "damage_by_player_5",
+              "port" : "attacker"
+            }
+          }
+        },
+        "cooldown_16" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 2000
+          }
+        },
+        "cooldown_2" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "damage_by_player_5" : {
+          "type" : "event.damage_by_player",
+          "executions" : {
+            "next" : [ "branch_18" ]
+          }
+        },
+        "equal_11" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "read_9",
+              "port" : "type"
+            },
+            "second" : {
+              "node" : "value_10",
+              "port" : "value"
+            }
+          }
+        },
+        "for_each_8" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_15" ]
+          }
+        },
+        "mutate_13" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_12",
+              "port" : "result"
+            },
+            "target_value" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          }
+        },
+        "nearby_entities_7" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 12.0,
+            "y" : 6.0,
+            "z" : 12.0
+          }
+        },
+        "read_9" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "for_each_8",
+              "port" : "element"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "tick_4" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_3" ]
+          }
+        },
+        "value_10" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:silverfish"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

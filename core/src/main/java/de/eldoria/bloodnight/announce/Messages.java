@@ -55,6 +55,16 @@ public final class Messages {
     }
 
     /**
+     * Adds texts that do not come from the bundles, e.g. the names of store mobs.
+     *
+     * @param language a language, e.g. {@code en}
+     * @param texts    MiniMessage texts by key
+     */
+    public void add(String language, Map<String, String> texts) {
+        store.registerAll(parse(language), texts);
+    }
+
+    /**
      * @param fallback the language for players whose language has no text, e.g. {@code en_US}
      */
     public void fallback(String fallback) {

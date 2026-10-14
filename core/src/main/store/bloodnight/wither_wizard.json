@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Wither Wizard",
+    "de": "Withermagier"
+  },
+  "descriptions": {
+    "en": "Throws a wither skull every 5 seconds.",
+    "de": "Wirft alle 5 Sekunden einen Wither-Schädel."
+  },
+  "requires": []
+}

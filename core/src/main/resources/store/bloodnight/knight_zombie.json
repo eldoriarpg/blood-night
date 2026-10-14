@@ -1,0 +1,284 @@
+{
+  "format" : 1,
+  "id" : "knight_zombie",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Ritterzombie",
+    "en" : "Knight Zombie"
+  },
+  "descriptions" : {
+    "de" : "Trägt Kettenrüstung und eine Goldaxt. Wirft dich manchmal hoch und verlangsamt dich, blockt manchmal deinen Schlag.",
+    "en" : "Wears chainmail and a golden axe. Sometimes knocks you up and slows you down, sometimes blocks your hit."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "knight_zombie",
+    "equipment" : {
+      "head" : "minecraft:chainmail_helmet",
+      "chest" : "minecraft:chainmail_chestplate",
+      "legs" : "minecraft:chainmail_leggings",
+      "feet" : "minecraft:chainmail_boots",
+      "mainHand" : "minecraft:golden_axe",
+      "offHand" : null
+    },
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.knight_zombie:'Knight Zombie'>",
+      "entityType" : "ZOMBIE",
+      "exactType" : false,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_5" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 2,
+            "effect" : "minecraft:slowness",
+            "seconds" : 1.0
+          }
+        },
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_1",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_9" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "chance_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_13", "play_sound_14" ]
+          }
+        },
+        "branch_18" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_12",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_17" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "chance_8",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_4", "mutate_3", "apply_effect_5", "play_sound_6" ]
+          }
+        },
+        "cast_1" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_12" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "damage_by_player_11",
+              "port" : "attacker"
+            }
+          }
+        },
+        "chance_16" : {
+          "type" : "function.chance",
+          "literals" : {
+            "percent" : 12.0
+          }
+        },
+        "chance_8" : {
+          "type" : "function.chance",
+          "literals" : {
+            "percent" : 15.0
+          }
+        },
+        "create_2" : {
+          "type" : "vector.create",
+          "literals" : {
+            "x" : 0.0,
+            "y" : 1.0,
+            "z" : 0.0
+          }
+        },
+        "damage_by_player_11" : {
+          "type" : "event.damage_by_player",
+          "executions" : {
+            "next" : [ "branch_18" ]
+          }
+        },
+        "hit_0" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_10" ]
+          }
+        },
+        "mutate_13" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "damage_by_player_11",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "mutate_3" : {
+          "type" : "entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            },
+            "velocity" : {
+              "node" : "create_2",
+              "port" : "result"
+            }
+          }
+        },
+        "mutate_4" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "hit_0",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "play_sound_14" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_15",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_12",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 1.0,
+            "sound" : "minecraft:item.shield.block",
+            "volume" : 15.0
+          }
+        },
+        "play_sound_6" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_7",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 3.0,
+            "sound" : "minecraft:block.bubble_column.bubble_pop",
+            "volume" : 15.0
+          }
+        },
+        "read_15" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_12",
+              "port" : "result"
+            }
+          }
+        },
+        "read_7" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

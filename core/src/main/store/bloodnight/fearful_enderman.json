@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Fearful Enderman",
+    "de": "Furchterregender Enderman"
+  },
+  "descriptions": {
+    "en": "Comes for the nearest player. Its hits blind you.",
+    "de": "Kommt zum nächsten Spieler. Seine Schläge blenden dich."
+  },
+  "requires": []
+}

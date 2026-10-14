@@ -1,0 +1,202 @@
+{
+  "format" : 1,
+  "id" : "toxic_creeper",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Giftiger Creeper",
+    "en" : "Toxic Creeper"
+  },
+  "descriptions" : {
+    "de" : "Hinterlässt eine starke Giftwolke, wenn er explodiert.",
+    "en" : "Leaves a strong poison cloud when it explodes."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "toxic_creeper",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.toxic_creeper:'Toxic Creeper'>",
+      "entityType" : "CREEPER",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_8" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_5" ]
+          }
+        },
+        "cooldown_7" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "create_3" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_4",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 2.0
+          }
+        },
+        "explode_10" : {
+          "type" : "event.explode",
+          "executions" : {
+            "next" : [ "spawn_potion_cloud_11" ]
+          }
+        },
+        "mutate_0" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "max_fuse_ticks" : 20
+          }
+        },
+        "read_6" : {
+          "type" : "creeper.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "rgb_12" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 128,
+            "red" : 0
+          }
+        },
+        "rgb_4" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 128,
+            "red" : 0
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_2" : {
+          "type" : "mob.spawn",
+          "executions" : {
+            "next" : [ "mutate_0" ]
+          }
+        },
+        "spawn_particle_5" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_3",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_6",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_6",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 5,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_potion_cloud_11" : {
+          "type" : "world.spawn_potion_cloud",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_12",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "explode_10",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "potion" : "minecraft:strong_poison",
+            "radius" : 3.0,
+            "radius_per_tick" : 0.01,
+            "seconds" : 10
+          }
+        },
+        "tick_9" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_8" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

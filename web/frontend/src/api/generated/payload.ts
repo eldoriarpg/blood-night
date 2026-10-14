@@ -361,6 +361,7 @@ export interface CustomMob {
   mobDrops: MobDrops;
   extension: Extension;
   spawn: SpawnRules;
+  origin?: MobOrigin;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -495,6 +496,15 @@ export interface SpawnConditions {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MobOrigin".
+ */
+export interface MobOrigin {
+  store: string;
+  entry: string;
+  hash: string;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Macro".
  */
 export interface Macro {
@@ -557,6 +567,7 @@ export interface ConfigFile {
   resourcePack?: ResourcePackSettings;
   placeholders?: PlaceholderSettings;
   updates?: UpdateSettings;
+  store?: StoreSettings;
   foreignMobs?: ForeignMobSettings;
 }
 /**
@@ -601,6 +612,13 @@ export interface PlaceholderSettings {
  */
 export interface UpdateSettings {
   notice?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "StoreSettings".
+ */
+export interface StoreSettings {
+  autoUpdate?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Ghost Creeper",
+    "de": "Geister-Creeper"
+  },
+  "descriptions": {
+    "en": "Rides an invisible vex, so it flies.",
+    "de": "Reitet einen unsichtbaren Plagegeist und fliegt so."
+  },
+  "requires": []
+}

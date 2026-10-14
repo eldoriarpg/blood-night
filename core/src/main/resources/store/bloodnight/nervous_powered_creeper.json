@@ -1,0 +1,223 @@
+{
+  "format" : 1,
+  "id" : "nervous_powered_creeper",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Nervöser geladener Creeper",
+    "en" : "Nervous Powered Creeper"
+  },
+  "descriptions" : {
+    "de" : "Geladen, schnell und explodiert fast sofort.",
+    "en" : "Charged, fast and explodes almost at once."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "nervous_powered_creeper",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.nervous_powered_creeper:'Nervous Powered Creeper'>",
+      "entityType" : "CREEPER",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_8" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 2,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_9",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_8" ]
+          }
+        },
+        "cooldown_9" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "create_3" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_4",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 4.0
+          }
+        },
+        "ignite_12" : {
+          "type" : "creeper.ignite",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "mutate_0" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "powered" : true
+          }
+        },
+        "mutate_13" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "max_fuse_ticks" : 0
+          }
+        },
+        "mutate_2" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "max_fuse_ticks" : 1
+          }
+        },
+        "night_end_14" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "mutate_13", "ignite_12" ]
+          }
+        },
+        "read_6" : {
+          "type" : "creeper.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "rgb_4" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 0,
+            "red" : 255
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_7" : {
+          "type" : "mob.spawn",
+          "executions" : {
+            "next" : [ "mutate_0", "mutate_2", "spawn_particle_5" ]
+          }
+        },
+        "spawn_particle_5" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_3",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_6",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_6",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 10,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "tick_11" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_10" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

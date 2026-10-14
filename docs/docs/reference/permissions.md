@@ -12,7 +12,7 @@ Only operators have these permissions at first. Give them to other players with 
 
 | Permission | What it allows | Includes |
 |---|---|---|
-| `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.night.manage` |
+| `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.store`, `bloodnight.command.night.manage` |
 | `bloodnight.bypass.commands` | Use commands blocked during blood nights |  |
 | `bloodnight.command.debug` | /bloodnight debug, fires the debug trigger of mobs |  |
 | `bloodnight.command.editor` | /bloodnight editor, opens, applies or closes a web editor session |  |
@@ -25,4 +25,5 @@ Only operators have these permissions at first. Give them to other players with 
 | `bloodnight.command.settings` | /bloodnight settings, shows or changes one setting without the web editor |  |
 | `bloodnight.command.source` | /bloodnight source, writes the generated code of a mob to the debug folder |  |
 | `bloodnight.command.spawn` | /bloodnight spawn, spawns a custom mob |  |
+| `bloodnight.command.store` | /bloodnight store, lists, installs and updates mobs from the store |  |
 | `bloodnight.updates` | Hear about new BloodNight versions on join |  |

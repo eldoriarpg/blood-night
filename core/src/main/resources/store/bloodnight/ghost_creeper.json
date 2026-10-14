@@ -1,0 +1,384 @@
+{
+  "format" : 1,
+  "id" : "ghost_creeper",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Geister-Creeper",
+    "en" : "Ghost Creeper"
+  },
+  "descriptions" : {
+    "de" : "Reitet einen unsichtbaren Plagegeist und fliegt so.",
+    "en" : "Rides an invisible vex, so it flies."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "ghost_creeper",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.ghost_creeper:'Ghost Creeper'>",
+      "entityType" : "CREEPER",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_10" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 4,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "branch_13" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_12",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_10" ]
+          }
+        },
+        "branch_19" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_17",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_18" ]
+          }
+        },
+        "branch_24" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_22",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_23" ]
+          }
+        },
+        "branch_27" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_26",
+              "port" : "dead"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_25" ]
+          }
+        },
+        "branch_31" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_30",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "remove_29" ]
+          }
+        },
+        "branch_8" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_1", "equip_4", "equip_6" ]
+          }
+        },
+        "cooldown_12" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "create_item_stack_3" : {
+          "type" : "item_type.create_item_stack",
+          "literals" : {
+            "target" : "minecraft:air"
+          }
+        },
+        "create_item_stack_5" : {
+          "type" : "item_type.create_item_stack",
+          "literals" : {
+            "target" : "minecraft:air"
+          }
+        },
+        "damage_15" : {
+          "type" : "event.damage",
+          "executions" : {
+            "next" : [ "branch_19" ]
+          }
+        },
+        "damage_25" : {
+          "type" : "living_entity.damage",
+          "inputs" : {
+            "amount" : {
+              "node" : "read_26",
+              "port" : "health"
+            },
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          }
+        },
+        "equal_17" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_15",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_16",
+              "port" : "value"
+            }
+          }
+        },
+        "equal_22" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "extension_damage_20",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_21",
+              "port" : "value"
+            }
+          }
+        },
+        "equip_4" : {
+          "type" : "equipment.equip",
+          "inputs" : {
+            "item" : {
+              "node" : "create_item_stack_3",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "equipment"
+            }
+          },
+          "literals" : {
+            "slot" : "HAND"
+          }
+        },
+        "equip_6" : {
+          "type" : "equipment.equip",
+          "inputs" : {
+            "item" : {
+              "node" : "create_item_stack_5",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "equipment"
+            }
+          },
+          "literals" : {
+            "slot" : "OFF_HAND"
+          }
+        },
+        "explode_32" : {
+          "type" : "event.explode",
+          "executions" : {
+            "next" : [ "branch_31" ]
+          }
+        },
+        "extension_0" : {
+          "type" : "mob.extension"
+        },
+        "extension_damage_20" : {
+          "type" : "event.extension_damage",
+          "executions" : {
+            "next" : [ "branch_24" ]
+          }
+        },
+        "extension_death_28" : {
+          "type" : "event.extension_death",
+          "executions" : {
+            "next" : [ "branch_27" ]
+          }
+        },
+        "is_null_30" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "is_null_7" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "mutate_1" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "invisible" : true
+          }
+        },
+        "mutate_18" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "damage_15",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "mutate_23" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_damage_20",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "read_2" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_26" : {
+          "type" : "creeper.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          }
+        },
+        "remove_29" : {
+          "type" : "entity.remove",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_11" : {
+          "type" : "mob.self"
+        },
+        "spawn_9" : {
+          "type" : "mob.spawn",
+          "executions" : {
+            "next" : [ "branch_8" ]
+          }
+        },
+        "tick_14" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_13" ]
+          }
+        },
+        "value_16" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "SUFFOCATION"
+          }
+        },
+        "value_21" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "SUFFOCATION"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "RIDER",
+      "entityType" : "VEX",
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

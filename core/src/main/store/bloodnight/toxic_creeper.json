@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Toxic Creeper",
+    "de": "Giftiger Creeper"
+  },
+  "descriptions": {
+    "en": "Leaves a strong poison cloud when it explodes.",
+    "de": "Hinterlässt eine starke Giftwolke, wenn er explodiert."
+  },
+  "requires": []
+}

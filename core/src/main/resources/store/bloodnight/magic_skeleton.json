@@ -1,0 +1,326 @@
+{
+  "format" : 1,
+  "id" : "magic_skeleton",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Magisches Skelett",
+    "en" : "Magic Skeleton"
+  },
+  "descriptions" : {
+    "de" : "Seine Pfeile geben dir einen zufälligen schlechten Effekt.",
+    "en" : "Its arrows give you a random bad effect."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "magic_skeleton",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.magic_skeleton:'Magic Skeleton'>",
+      "entityType" : "SKELETON",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_0" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:night_vision",
+            "seconds" : 60.0,
+            "visible" : true
+          }
+        },
+        "apply_effect_10" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 2,
+            "effect" : "minecraft:slowness",
+            "seconds" : 6.0
+          }
+        },
+        "apply_effect_11" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:instant_damage",
+            "seconds" : 2.0
+          }
+        },
+        "apply_effect_12" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:levitation",
+            "seconds" : 5.0
+          }
+        },
+        "apply_effect_13" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:nausea",
+            "seconds" : 5.0
+          }
+        },
+        "apply_effect_14" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:weakness",
+            "seconds" : 5.0
+          }
+        },
+        "apply_effect_15" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:poison",
+            "seconds" : 6.0
+          }
+        },
+        "apply_effect_16" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 2,
+            "effect" : "minecraft:poison",
+            "seconds" : 4.0
+          }
+        },
+        "apply_effect_9" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:slowness",
+            "seconds" : 8.0
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_6",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "switch_8" ]
+          }
+        },
+        "branch_3" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_2",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_0" ]
+          }
+        },
+        "cast_6" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "projectile_hit_5",
+              "port" : "hit_entity"
+            }
+          }
+        },
+        "cooldown_2" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "night_end_20" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_19" ]
+          }
+        },
+        "projectile_hit_5" : {
+          "type" : "event.projectile_hit",
+          "executions" : {
+            "next" : [ "branch_17" ]
+          }
+        },
+        "random_integer_7" : {
+          "type" : "function.random_integer",
+          "literals" : {
+            "lower" : 0,
+            "upper" : 7
+          }
+        },
+        "read_18" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_19" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_18",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_18",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "switch_8" : {
+          "type" : "flow.switch",
+          "config" : {
+            "case_0" : 0,
+            "case_1" : 1,
+            "case_2" : 2,
+            "case_3" : 3,
+            "case_4" : 4,
+            "case_5" : 5,
+            "case_6" : 6,
+            "case_7" : 7
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "random_integer_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "case_0" : [ "apply_effect_9" ],
+            "case_1" : [ "apply_effect_10" ],
+            "case_2" : [ "apply_effect_11" ],
+            "case_3" : [ "apply_effect_12" ],
+            "case_4" : [ "apply_effect_13" ],
+            "case_5" : [ "apply_effect_14" ],
+            "case_6" : [ "apply_effect_15" ],
+            "case_7" : [ "apply_effect_16" ]
+          }
+        },
+        "tick_4" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_3" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

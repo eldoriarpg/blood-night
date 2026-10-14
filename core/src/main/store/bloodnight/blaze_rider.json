@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Blaze Rider",
+    "de": "Lohenreiter"
+  },
+  "descriptions": {
+    "en": "A spider with a blaze on its back.",
+    "de": "Eine Spinne mit einer Lohe auf dem Rücken."
+  },
+  "requires": []
+}

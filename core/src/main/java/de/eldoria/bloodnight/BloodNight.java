@@ -16,6 +16,7 @@ import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.command.BloodNightCommandBrigadier;
 import de.eldoria.bloodnight.command.MobIds;
+import de.eldoria.bloodnight.command.StoreIds;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
@@ -31,7 +32,6 @@ import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.integration.regions.WorldGuardRules;
 import de.eldoria.bloodnight.integration.worlds.WorldNames;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
@@ -56,6 +56,10 @@ import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
 import de.eldoria.bloodnight.rules.WorldRules;
 import de.eldoria.bloodnight.service.PluginService;
+import de.eldoria.bloodnight.store.BuiltInStore;
+import de.eldoria.bloodnight.store.MobStore;
+import de.eldoria.bloodnight.store.StoreEntry;
+import de.eldoria.bloodnight.store.StoreNotice;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.updates.LynaSource;
 import de.eldoria.bloodnight.updates.UpdateNotice;
@@ -64,6 +68,7 @@ import de.eldoria.graph.reflect.Documentation;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.GameRule;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
@@ -77,6 +82,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
@@ -117,6 +125,7 @@ public final class BloodNight extends JavaPlugin {
     private PluginService service;
     private @Nullable Object miniPlaceholders;
     private PhantomForce phantoms;
+    private MobStore mobStore;
     private WorldNames worldNames;
     private RegionRules regions = RegionRules.NONE;
     private WorldRules worldRules;
@@ -148,7 +157,8 @@ public final class BloodNight extends JavaPlugin {
                 CompileClasspath.discover(getClassLoader()),
                 Documentation.NONE,
                 name -> getServer().getPluginManager().getPlugin(name) != null);
-        configuration.seedMobs(() -> DefaultMobs.create(platform));
+        mobStore = new MobStore(BuiltInStore.load());
+        autoUpdate();
         long start = System.nanoTime();
         catalog = RuntimeCatalog.create(platform);
         getLogger()
@@ -271,6 +281,17 @@ public final class BloodNight extends JavaPlugin {
                         tasks),
                 this);
         messages.register(configuration.main().announcements().fallbackLocale());
+        registerMobNames();
+        StoreNotice storeNotice =
+                new StoreNotice(mobStore, () -> configuration.mobs().all());
+        plugins.registerEvents(storeNotice, this);
+        List<String> waiting = storeNotice.waiting();
+        if (!waiting.isEmpty()) {
+            getLogger()
+                    .info("Mobs you changed have updates in the store: %s. Take them with /bloodnight store update"
+                            .formatted(String.join(", ", waiting)));
+        }
+        StoreIds.use(mobStore.store());
         announcer = new Announcer(
                 getServer(),
                 bloodNights,
@@ -425,6 +446,7 @@ public final class BloodNight extends JavaPlugin {
     @Override
     public void onDisable() {
         MobIds.clear();
+        StoreIds.clear();
         if (tasks != null) tasks.cancelAll();
         if (stretch != null) stretch.clear();
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
@@ -487,6 +509,36 @@ public final class BloodNight extends JavaPlugin {
     /**
      * @return offers the resource pack to joining players
      */
+    public MobStore store() {
+        return mobStore;
+    }
+
+    /**
+     * Gives store mobs nobody changed the store's newer versions, before they are built.
+     */
+    private void autoUpdate() {
+        if (!configuration.main().store().autoUpdate()) return;
+        MobStore.Change change = mobStore.autoUpdate(configuration.mobs().all());
+        if (change.done().isEmpty()) return;
+        configuration.replaceMobs(change.mobs());
+        getLogger().info("Updated from the store: " + String.join(", ", change.done()));
+    }
+
+    /**
+     * Lets the server name store mobs in each player's language, from their packages.
+     */
+    private void registerMobNames() {
+        Map<String, Map<String, String>> byLanguage = new TreeMap<>();
+        for (StoreEntry entry : mobStore.store().entries()) {
+            entry.mobPackage().names().forEach((language, name) -> byLanguage
+                    .computeIfAbsent(language, ignored -> new TreeMap<>())
+                    .put(
+                            "bloodnight.mob." + entry.id(),
+                            MiniMessage.miniMessage().escapeTags(name)));
+        }
+        byLanguage.forEach(messages::add);
+    }
+
     public BloodPack bloodPack() {
         return bloodPack;
     }

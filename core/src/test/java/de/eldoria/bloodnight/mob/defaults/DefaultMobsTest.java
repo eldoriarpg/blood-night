@@ -11,6 +11,8 @@ import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.store.BuiltInStore;
+import de.eldoria.bloodnight.store.StoreEntry;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,14 +20,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockbukkit.mockbukkit.MockBukkit;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -52,22 +53,16 @@ class DefaultMobsTest {
     }
 
     @Test
-    void everyMobHasItsNameInEveryShippedLanguage() throws IOException {
-        for (String language : List.of("en", "de")) {
-            Properties texts = new Properties();
-            try (var stream =
-                    getClass().getClassLoader().getResourceAsStream("messages/%s.properties".formatted(language))) {
-                texts.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
-            }
-            for (String file : List.of("en_us", "de_de")) {
-                String pack =
-                        Files.readString(Path.of("../resourcepack/assets/bloodnight/lang/%s.json".formatted(file)));
-                for (CustomMob mob : mobs) {
-                    String key = "bloodnight.mob." + mob.id();
-                    assertTrue(texts.containsKey(key), language + ": " + key);
-                    assertTrue(pack.contains('"' + key + '"'), file + ": " + key);
-                    assertTrue(mob.attributes().displayName().contains("<lang_or:" + key + ":"), key);
-                }
+    void everyMobHasAStorePackageAndAName() throws IOException {
+        Map<String, StoreEntry> store =
+                BuiltInStore.load().entries().stream().collect(Collectors.toMap(StoreEntry::id, Function.identity()));
+        for (String file : List.of("en_us", "de_de")) {
+            String pack = Files.readString(Path.of("../resourcepack/assets/bloodnight/lang/%s.json".formatted(file)));
+            for (CustomMob mob : mobs) {
+                String key = "bloodnight.mob." + mob.id();
+                assertTrue(store.containsKey(mob.id()), mob.id());
+                assertTrue(pack.contains('"' + key + '"'), file + ": " + key);
+                assertTrue(store.get(mob.id()).mob().attributes().displayName().contains("<lang_or:" + key + ":"), key);
             }
         }
     }

@@ -245,21 +245,6 @@ public class Configuration {
         return cached(MOBS, () -> userData(MOBS, MobRegistry::new));
     }
 
-    /**
-     * Writes mobs to {@code mobs.yml} when the file does not exist yet, so the first start ships a set of mobs. An
-     * existing file is never touched, even when it is empty.
-     *
-     * @param defaults the mobs to write, only asked for when they are needed
-     */
-    public synchronized void seedMobs(Supplier<? extends Collection<CustomMob>> defaults) {
-        if (configurations.exists(MOBS)) return;
-        cache.clear();
-        MobRegistry registry = new MobRegistry();
-        defaults.get().forEach(registry::add);
-        configurations.replace(MOBS, registry);
-        configurations.save(MOBS);
-    }
-
     public ItemRegistry items() {
         return cached(ITEMS, () -> userData(ITEMS, ItemRegistry::new));
     }

@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Toxic Slime",
+    "de": "Giftiger Schleim"
+  },
+  "descriptions": {
+    "en": "Leaves a poison cloud when it dies.",
+    "de": "Hinterlässt eine Giftwolke, wenn er stirbt."
+  },
+  "requires": []
+}

@@ -1,0 +1,226 @@
+{
+  "format" : 1,
+  "id" : "storm_breeze",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Sturmböe",
+    "en" : "Storm Breeze"
+  },
+  "descriptions" : {
+    "de" : "Schießt alle 6 Sekunden drei Windkugeln auf dich.",
+    "en" : "Fires three wind charges at you every 6 seconds."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "storm_breeze",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.storm_breeze:'Storm Breeze'>",
+      "entityType" : "BREEZE",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_11" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_10",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_9" ]
+          }
+        },
+        "branch_4" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_3",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_2" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_8",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "launch_projectile_5", "launch_projectile_6", "launch_projectile_7" ]
+          }
+        },
+        "cooldown_3" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "cooldown_8" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 6000
+          }
+        },
+        "is_null_10" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "launch_projectile_5" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "WIND_CHARGE"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 1.5
+          }
+        },
+        "launch_projectile_6" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "WIND_CHARGE"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 1.2
+          }
+        },
+        "launch_projectile_7" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "WIND_CHARGE"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 0.9
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_2" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 1,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:cloud"
+          }
+        },
+        "tick_12" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_4", "branch_11" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

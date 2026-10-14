@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Storm Breeze",
+    "de": "Sturmböe"
+  },
+  "descriptions": {
+    "en": "Fires three wind charges at you every 6 seconds.",
+    "de": "Schießt alle 6 Sekunden drei Windkugeln auf dich."
+  },
+  "requires": []
+}

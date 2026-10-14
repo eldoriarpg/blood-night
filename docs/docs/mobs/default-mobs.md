@@ -5,8 +5,8 @@ sidebar_position: 5
 
 # The ready-made mobs
 
-BloodNight writes these mobs into `mobs.yml` the first time it starts. You can change them, copy them or delete
-them. If you delete `mobs.yml`, BloodNight writes them again on the next start.
+These mobs come with BloodNight in its [mob store](store.md). Install the ones you want. You can change them,
+copy them or delete them.
 
 Their names show in each player's language, English or German so far. Players without the
 [resource pack](../nights/atmosphere.md#the-resource-pack) may see the English names.

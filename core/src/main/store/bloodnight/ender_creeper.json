@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Ender Creeper",
+    "de": "Ender-Creeper"
+  },
+  "descriptions": {
+    "en": "Teleports close to you when you are far away.",
+    "de": "Teleportiert sich zu dir, wenn du weit weg bist."
+  },
+  "requires": []
+}

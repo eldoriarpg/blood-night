@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Knight Zombie",
+    "de": "Ritterzombie"
+  },
+  "descriptions": {
+    "en": "Wears chainmail and a golden axe. Sometimes knocks you up and slows you down, sometimes blocks your hit.",
+    "de": "Trägt Kettenrüstung und eine Goldaxt. Wirft dich manchmal hoch und verlangsamt dich, blockt manchmal deinen Schlag."
+  },
+  "requires": []
+}
