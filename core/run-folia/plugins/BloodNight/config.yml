@@ -1,9 +1,0 @@
-announcements:
-  fallbackLocale: "en_US"
-  method: "SUBTITLE"
-  personalMethod: "ACTION_BAR"
-  prefix: "<dark_red>[<red>BN</red>]</dark_red> "
-  reach: "SERVER"
-editor:
-  timeoutSeconds: 30
-  url: "https://bloodnight.eldoria.de"
