@@ -66,6 +66,9 @@ final class BloodNightCommand {
     @Subcommand
     final PackCommand pack;
 
+    @Subcommand
+    final ConvertCommand convert;
+
     BloodNightCommand(BloodNight plugin) {
         this.plugin = plugin;
         reload = new ReloadCommand(plugin);
@@ -80,6 +83,7 @@ final class BloodNightCommand {
         settings = new SettingsCommand(plugin);
         store = new StoreCommand(plugin);
         pack = new PackCommand(plugin);
+        convert = new ConvertCommand(plugin);
     }
 
     /**
@@ -109,6 +113,7 @@ final class BloodNightCommand {
         subcommands.put("item", "item <register | remove <id>>");
         subcommands.put("settings", "settings <server | world> <path> [value]");
         subcommands.put("pack", "pack export");
+        subcommands.put("convert", "convert [apply]");
         subcommands.put("reload", "reload");
         subcommands.put("problems", "problems [mob]");
         subcommands.put("source", "source <mob>");

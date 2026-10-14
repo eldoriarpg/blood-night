@@ -1,0 +1,501 @@
+debug: INFO
+version: 1
+generalSettings:
+  ==: bloodNightGeneralSettings
+  language: en_US
+  prefix: <red>[BN]
+  broadcastLevel: SERVER
+  broadcastMethod: SUBTITLE
+  messageMethod: SUBTITLE
+  mobTick: 5
+  joinWorldWarning: true
+  blindness: true
+  updateReminder: true
+  autoUpdater: false
+  beeFix: false
+  spawnerDropSuppression: true
+  ignoreSpawnerMobs: false
+  blockedCommands: []
+worldSettings:
+  - ==: bloodNightWorldSettings
+    world: world
+    enabled: false
+    creeperBlockDamage: false
+    alwaysManageCreepers: true
+    bossBar:
+      ==: bloodNightBossBarSettings
+      enabled: true
+      title: <red><bold>Blood Night
+      color: RED
+      effects:
+      - CREATE_WORLD_FOG
+      - DARKEN_SCREEN
+    nightSelection:
+      ==: bloodNightNightSelection
+      probability: 60
+      nightSelectionType: RANDOM
+      phases:
+      - 0:0
+      - '1:10'
+      - '2:20'
+      - '3:40'
+      - 4:100
+      - '5:40'
+      - '6:20'
+      - '7:10'
+      phasesCustom:
+      - 0:50
+      - '1:50'
+      - '2:50'
+      currPhase: 0
+      period: 10
+      currCurvePos: 0
+      minCurveVal: 20
+      maxCurveVal: 80
+      interval: 5
+      intervalProbability: 100
+      curInterval: 0
+    nightSettings:
+      ==: bloodNightNightSettings
+      skippable: false
+      nightBegin: 14000
+      nightEnd: 23000
+      startCommands: []
+      endCommands: []
+      nightDurationMode: NORMAL
+      nightDuration: 600
+      maxNightDuration: 600
+    mobSettings:
+      ==: bloodNightMobSettings
+      vanillaMobSettings:
+        ==: bloodNightVanillaMobSettings
+        damageMultiplier: 2.0
+        healthMultiplier: 2.0
+        dropMultiplier: 2.0
+        vanillaDropMode: VANILLA
+        extraDrops: 1
+      displayMobNames: true
+      damageMultiplier: 2.0
+      healthMultiplier: 2.0
+      experienceMultiplier: 4.0
+      forcePhantoms: true
+      spawnPercentage: 50
+      drops: []
+      naturalDrops: true
+      dropAmount: 3
+      mobTypes:
+        ==: bloodNightMobTypes
+        Zombie:
+        - ==: bloodNightMobSetting
+          mobName: InvisibleZombie
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: ArmoredZombie
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: KnightZombie
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: SpeedZombie
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Enderman:
+        - ==: bloodNightMobSetting
+          mobName: FearfulEnderman
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: ToxicEnderman
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Creeper:
+        - ==: bloodNightMobSetting
+          mobName: EnderCreeper
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: SpeedCreeper
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: ToxicCreeper
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: GhostCreeper
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: UnstableCreeper
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: NervousPoweredCreeper
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Phantom:
+        - ==: bloodNightMobSetting
+          mobName: FearfulPhantom
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: FirePhantom
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: PhantomSoul
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Spider:
+        - ==: bloodNightMobSetting
+          mobName: BlazeRider
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: SpeedSkeletonRider
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: WitherSkeletonRider
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Skeleton:
+        - ==: bloodNightMobSetting
+          mobName: MagicSkeleton
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: InvisibleSkeleton
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Slime:
+        - ==: bloodNightMobSetting
+          mobName: ToxicSlime
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        Witch:
+        - ==: bloodNightMobSetting
+          mobName: ThunderWizard
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: FireWizard
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+        - ==: bloodNightMobSetting
+          mobName: WitherWizard
+          displayName: ''
+          active: true
+          dropAmount: -1
+          overrideDefaultDrops: false
+          drops: []
+          healthModifier: DEFAULT
+          health: 2.0
+          damageModifier: DEFAULT
+          damage: 2.0
+    soundSettings:
+      ==: bloodNightSoundSetting
+      minInterval: 10
+      maxInterval: 40
+      channel: AMBIENT
+      startSounds:
+      - ==: bloodNightSoundEntry
+        sound: ENTITY_LIGHTNING_BOLT_THUNDER
+        pitch:
+        - 0.8
+        - 1.0
+        volume:
+        - 1.0
+      endSounds:
+      - ==: bloodNightSoundEntry
+        sound: ENTITY_LIGHTNING_BOLT_THUNDER
+        pitch:
+        - 0.8
+        - 1.0
+        volume:
+        - 1.0
+      randomSounds:
+      - ==: bloodNightSoundEntry
+        sound: AMBIENT_BASALT_DELTAS_ADDITIONS
+        pitch:
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+        - 1.2
+        - 1.4
+        - 1.6
+        volume:
+        - 0.2
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+      - ==: bloodNightSoundEntry
+        sound: AMBIENT_CRIMSON_FOREST_ADDITIONS
+        pitch:
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+        - 1.2
+        - 1.4
+        - 1.6
+        volume:
+        - 0.2
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+      - ==: bloodNightSoundEntry
+        sound: AMBIENT_NETHER_WASTES_ADDITIONS
+        pitch:
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+        - 1.2
+        - 1.4
+        - 1.6
+        volume:
+        - 0.2
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+      - ==: bloodNightSoundEntry
+        sound: AMBIENT_SOUL_SAND_VALLEY_ADDITIONS
+        pitch:
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+        - 1.2
+        - 1.4
+        - 1.6
+        volume:
+        - 0.2
+        - 0.4
+        - 0.6
+        - 0.8
+        - 1.0
+    deathActionSettings:
+      ==: bloodNightDeathActionSettings
+      mobDeathActions:
+        ==: bloodNightMobDeathActions
+        lightningSettings:
+          ==: bloodNightLightningSettings
+          doLightning: true
+          lightning: 100
+          doThunder: true
+          thunder: 100
+        shockwaveSettings:
+          ==: bloodNightShockwaveSettings
+          shockwaveProbability: 10
+          shockwavePower: 10
+          shockwaveRange: 10
+          shockwaveEffects:
+          - ==: de.eldoria.eldoutilities.serialization.wrapper.MapEntry
+            key: CONFUSION
+            object:
+              ==: bloodNightPotionEffectSettings
+              effectType: CONFUSION
+              duration: 5
+          minDuration: 0.1
+      playerDeathActions:
+        ==: bloodNightPlayerDeathActions
+        lightningSettings:
+          ==: bloodNightLightningSettings
+          doLightning: true
+          lightning: 100
+          doThunder: true
+          thunder: 100
+        shockwaveSettings:
+          ==: bloodNightShockwaveSettings
+          shockwaveProbability: 10
+          shockwavePower: 10
+          shockwaveRange: 10
+          shockwaveEffects:
+          - ==: de.eldoria.eldoutilities.serialization.wrapper.MapEntry
+            key: CONFUSION
+            object:
+              ==: bloodNightPotionEffectSettings
+              effectType: CONFUSION
+              duration: 5
+          minDuration: 0.1
+        deathCommands: []
+        respawnCommands: []
+        loseInvProbability: 0
+        loseExpProbability: 0
+        respawnEffects:
+        - ==: de.eldoria.eldoutilities.serialization.wrapper.MapEntry
+          key: CONFUSION
+          object:
+            ==: bloodNightPotionEffectSettings
+            effectType: CONFUSION
+            duration: 5
+  
