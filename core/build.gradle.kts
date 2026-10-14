@@ -53,6 +53,7 @@ paper {
         "item" to "registers the held item or removes a registered item",
         "settings" to "shows or changes one setting without the web editor",
         "store" to "lists, installs and updates mobs from the store",
+        "pack" to "writes the resource pack out to merge it into another pack",
     )
     serverDependencies {
         listOf("PlaceholderAPI", "MiniPlaceholders", "WorldGuard").forEach { name ->
@@ -60,6 +61,13 @@ paper {
                 required = false
                 joinClasspath = true
                 load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            }
+        }
+        listOf("Nexo", "Oraxen", "ItemsAdder").forEach { name ->
+            register(name) {
+                required = false
+                joinClasspath = false
+                load = PaperPluginDescription.RelativeLoadOrder.AFTER
             }
         }
     }
@@ -94,6 +102,9 @@ tasks {
     processResources {
         dependsOn(":catalog:generateCatalog")
         from(project(":catalog").layout.buildDirectory.file("catalog/catalog.json"))
+        from(rootProject.layout.projectDirectory.dir("resourcepack")) {
+            into("resourcepack")
+        }
     }
 
     register<JavaExec>("generateStore") {

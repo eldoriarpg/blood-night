@@ -595,6 +595,7 @@ export interface EditorSettings {
  */
 export interface ResourcePackSettings {
   offer?: boolean;
+  mergeIntoPackPlugins?: boolean;
   url?: string;
   required?: boolean;
   prompt?: string;
