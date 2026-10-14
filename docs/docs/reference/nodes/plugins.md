@@ -63,6 +63,20 @@ Gives a player money through Vault. Needs Vault and an economy plugin
 
 Goes on with: **Next**
 
+## Spawn Mythic Mob
+
+`mythic.spawn`
+
+Spawns a MythicMobs mob by its name. Needs MythicMobs
+
+| In | Type | What it is |
+|---|---|---|
+| Type | Text | The mob's name in MythicMobs |
+| Location | Location | Where it spawns |
+| Level (optional) | Integer | Its level; 1 when not given |
+
+Goes on with: **Next**
+
 ## Take Money
 
 `economy.withdraw`

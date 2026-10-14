@@ -8,11 +8,13 @@ package de.eldoria.bloodnight.mobs;
 import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
+import de.eldoria.bloodnight.graph.runtime.Integrations;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.plugin.PluginManager;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -99,8 +102,28 @@ public class MobSpawner implements Listener {
                     Objects.requireNonNullElse(entity.getEntitySpawnReason(), CreatureSpawnEvent.SpawnReason.DEFAULT));
             events.callEvent(spawn);
             if (spawn.isCancelled()) return;
-            night.ifPresent(number -> MobTags.markNight(entity, number));
-            coordinator.register(entity, mob);
+            LivingEntity taking = mob.attributes().mythic() ? mythic(entity, mob) : entity;
+            if (taking == null) return;
+            night.ifPresent(number -> MobTags.markNight(taking, number));
+            coordinator.register(taking, mob);
         });
+    }
+
+    /**
+     * Spawns the mob's MythicMobs mob where the entity stands and removes the entity.
+     *
+     * @return the MythicMobs mob, or {@code null} when it could not spawn and the entity stays as it is
+     */
+    private static @Nullable LivingEntity mythic(LivingEntity entity, CustomMob mob) {
+        Entity spawned = Integrations.spawnMythicMob(
+                mob.attributes().mythicType(),
+                entity.getLocation(),
+                mob.attributes().mythicLevel());
+        if (!(spawned instanceof LivingEntity living)) {
+            if (spawned != null) spawned.remove();
+            return null;
+        }
+        entity.remove();
+        return living;
     }
 }

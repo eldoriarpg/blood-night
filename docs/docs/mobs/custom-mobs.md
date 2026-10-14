@@ -59,6 +59,24 @@ mobs:
 
 The closest fit wins. A husk takes a husk mob when there is one. Only when there is none, it takes a zombie mob.
 
+## MythicMobs mobs
+
+With [MythicMobs](https://mythiccraft.io/index.php?pages/official-mythicmobs/) installed, a special mob can be a
+MythicMobs mob. Set `mythicType` to the MythicMobs name and `mythicLevel` to its level:
+
+```yaml
+attributes:
+  entityType: ZOMBIE
+  mythicType: SkeletalKnight
+  mythicLevel: 3
+```
+
+When this mob is picked for a spawning zombie, the zombie goes away and the MythicMobs mob spawns in its place.
+MythicMobs decides its health, damage, equipment and how it fights. BloodNight still decides when it spawns, its
+drops, and what happens when the night ends. The web editor lists your MythicMobs mobs to pick from.
+
+Without MythicMobs, or with a name MythicMobs does not know, the zombie stays a normal zombie.
+
 ## Name
 
 `displayName` is shown above the mob's head. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html),

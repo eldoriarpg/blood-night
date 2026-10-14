@@ -46,12 +46,14 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SplittableRandom;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -216,6 +218,69 @@ class MobSpawnerTest {
         assertEquals(health.getBaseValue(), health.getValue());
         AttributeInstance speed = mob.getAttribute(Attribute.MOVEMENT_SPEED);
         assertEquals(speed.getBaseValue(), speed.getValue());
+    }
+
+    @Test
+    void mythicMobsNeedMythicMobs() {
+        CustomMob strong = mobs.get("strong");
+        Attributes base = strong.attributes();
+        mobs.add(new CustomMob(
+                "knight",
+                strong.equipment(),
+                new Attributes(
+                        base.displayName(),
+                        base.entityType(),
+                        base.exactType(),
+                        base.healthModifier(),
+                        base.health(),
+                        base.damageModifier(),
+                        base.damage(),
+                        base.changes(),
+                        "SkeletalKnight",
+                        3),
+                strong.behaviour(),
+                strong.mobDrops(),
+                strong.extension(),
+                new SpawnRules(1_000_000, true, NightEnd.REMOVE, Set.of(), SpawnConditions.any())));
+        at(13_000);
+        LivingEntity zombie = zombie();
+        for (int i = 0; i < 100; i++) spawner.handleSpawnedMob(zombie);
+
+        assertTrue(zombie.isValid());
+        assertNotEquals(Optional.of("knight"), MobTags.getCustomMobId(zombie));
+    }
+
+    @Test
+    void mythicMobsOnlyGetTagged() {
+        CustomMob strong = mobs.get("strong");
+        Attributes base = strong.attributes();
+        CustomMob knight = new CustomMob(
+                "knight",
+                strong.equipment(),
+                new Attributes(
+                        base.displayName(),
+                        base.entityType(),
+                        base.exactType(),
+                        base.healthModifier(),
+                        base.health(),
+                        base.damageModifier(),
+                        base.damage(),
+                        base.changes(),
+                        "SkeletalKnight",
+                        3),
+                strong.behaviour(),
+                strong.mobDrops(),
+                strong.extension(),
+                strong.spawn());
+        LivingEntity zombie = zombie();
+        double health = zombie.getAttribute(Attribute.MAX_HEALTH).getValue();
+
+        coordinator.register(zombie, knight);
+
+        assertEquals("knight", MobTags.getCustomMobId(zombie).orElseThrow());
+        assertNull(zombie.customName());
+        assertEquals(health, zombie.getAttribute(Attribute.MAX_HEALTH).getValue());
+        assertFalse(new ForeignMobs(() -> foreign, () -> null).isForeign(zombie));
     }
 
     @Test

@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.graph.runtime;
 
 import de.eldoria.bloodnight.api.MobContext;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,11 +16,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * What the nodes of other plugins call: PlaceholderAPI, Vault's economy and MythicMobs. Each plugin is reached through
  * reflection on its own class loader, so none of them is needed to build or run. Without the plugin a node does
- * nothing: texts stay as they are, balances are 0, nothing is paid and no skill is cast.
+ * nothing: texts stay as they are, balances are 0, nothing is paid, spawned or cast.
  */
 public final class Integrations {
     private Integrations() {}
@@ -68,9 +71,7 @@ public final class Integrations {
      */
     public static boolean castSkill(Entity caster, String skill) {
         try {
-            Class<?> bukkit = pluginClass("MythicMobs", "io.lumine.mythic.bukkit.MythicBukkit");
-            if (bukkit == null) return false;
-            Object helper = call(bukkit.getMethod("inst").invoke(null), "getAPIHelper");
+            Object helper = mythicHelper();
             if (helper == null) return false;
             Object cast = helper.getClass()
                     .getMethod("castSkill", Entity.class, String.class)
@@ -79,6 +80,52 @@ public final class Integrations {
         } catch (ReflectiveOperationException | LinkageError e) {
             return false;
         }
+    }
+
+    /**
+     * Spawns a MythicMobs mob, on the thread owning the location.
+     */
+    public static void spawnMythicMob(MobContext context, String type, Location location, int level) {
+        context.at(location, () -> spawnMythicMob(type, location, level));
+    }
+
+    /**
+     * Spawns a MythicMobs mob on the current thread, which must own the location.
+     *
+     * @return the spawned entity, or {@code null} without MythicMobs or for an unknown type
+     */
+    public static @Nullable Entity spawnMythicMob(String type, Location location, int level) {
+        try {
+            Object helper = mythicHelper();
+            if (helper == null) return null;
+            Object spawned = helper.getClass()
+                    .getMethod("spawnMythicMob", String.class, Location.class, int.class)
+                    .invoke(helper, type, location, level);
+            return spawned instanceof Entity entity ? entity : null;
+        } catch (ReflectiveOperationException | LinkageError e) {
+            return null;
+        }
+    }
+
+    /**
+     * @return the names of every MythicMobs mob, sorted; empty without MythicMobs
+     */
+    public static List<String> mythicMobTypes() {
+        try {
+            Class<?> bukkit = pluginClass("MythicMobs", "io.lumine.mythic.bukkit.MythicBukkit");
+            if (bukkit == null) return List.of();
+            Object manager = call(bukkit.getMethod("inst").invoke(null), "getMobManager");
+            Object names = call(manager, "getMobNames");
+            if (!(names instanceof Collection<?> collection)) return List.of();
+            return collection.stream().map(String::valueOf).sorted().toList();
+        } catch (ReflectiveOperationException | LinkageError e) {
+            return List.of();
+        }
+    }
+
+    private static @Nullable Object mythicHelper() throws ReflectiveOperationException {
+        Class<?> bukkit = pluginClass("MythicMobs", "io.lumine.mythic.bukkit.MythicBukkit");
+        return bukkit == null ? null : call(bukkit.getMethod("inst").invoke(null), "getAPIHelper");
     }
 
     private static @Nullable Object economy(String method, Player player, Object... more) {

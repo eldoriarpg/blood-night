@@ -449,6 +449,8 @@ export default {
             monsterSpawnLimit: 'Monster-Spawnlimit (-1 unverändert)',
             monsterTicksPerSpawn: 'Ticks zwischen Monster-Spawns (-1 unverändert)',
             moonPhase: 'Mondphase',
+            mythicLevel: 'MythicMobs-Stufe',
+            mythicType: 'Stattdessen MythicMobs-Mob',
             name: 'Name',
             nightEnd: 'Am Ende der Nacht',
             nightOnly: 'Nur in Blutnächten',
