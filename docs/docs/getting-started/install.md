@@ -12,10 +12,10 @@ type. This page shows the files, so you know what the editor writes for you.
 
 ## What you need
 
-- A [Paper](https://papermc.io) server, version 26.3 or newer.
+- A [Paper](https://papermc.io) or [Folia](https://papermc.io/software/folia) server, version 26.2 or newer.
 - Java 25.
 
-BloodNight does not run on Spigot or Folia.
+The same jar runs on Paper and on Folia. BloodNight does not run on Spigot.
 
 ## Steps
 

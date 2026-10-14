@@ -17,6 +17,7 @@ import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
 import org.bukkit.World;
@@ -49,7 +50,6 @@ class MobSpawnerTest {
     private MobCoordinator coordinator;
     private BloodNights nights;
     private MobSpawner spawner;
-    private NightDespawner despawner;
 
     @BeforeEach
     void setUp() {
@@ -74,10 +74,13 @@ class MobSpawnerTest {
                 strong.spawn());
         mobs.add(strong);
         ItemRegistry items = new ItemRegistry();
+        Tasks tasks = new Tasks(MockBukkit.createMockPlugin());
         coordinator = new MobCoordinator(
                 new MobOutfitter(() -> items, ignored -> settings.mobSettings()),
                 () -> items,
                 mobs::get,
+                world -> nights.running(world),
+                tasks,
                 Logger.getLogger("test"));
         NightSelection every = JsonMapper.builder()
                 .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY))
@@ -89,16 +92,8 @@ class MobSpawnerTest {
                 new NightSelector(ignored -> every, ignored -> TIMES, Clock.systemUTC(), () -> 20),
                 ignored -> true,
                 server.getPluginManager(),
-                ignored -> {},
                 Logger.getLogger("test"));
-        spawner = new MobSpawner(
-                mobs::all,
-                ignored -> settings,
-                coordinator,
-                nights,
-                MockBukkit.createMockPlugin(),
-                new SplittableRandom(1));
-        despawner = new NightDespawner(coordinator, nights);
+        spawner = new MobSpawner(mobs::all, ignored -> settings, coordinator, nights, tasks, new SplittableRandom(1));
     }
 
     @AfterEach
@@ -156,12 +151,10 @@ class MobSpawnerTest {
     void mobsGoWhenTheirNightEnds() {
         at(13_000);
         LivingEntity mob = spawned();
-        despawner.sweep();
-        despawner.tick();
+        server.getScheduler().performTicks(40);
         assertTrue(mob.isValid());
         at(24_000);
-        despawner.sweep();
-        despawner.tick();
+        server.getScheduler().performTicks(20);
         assertFalse(mob.isValid());
     }
 }

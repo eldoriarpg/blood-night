@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.rules;
 import de.eldoria.bloodnight.configuration.elements.world.death.ShockwaveSettings;
 import de.eldoria.bloodnight.configuration.elements.world.death.TimedEffect;
 import de.eldoria.bloodnight.util.Effects;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
@@ -22,6 +23,9 @@ import java.util.random.RandomGenerator;
 /**
  * Pushes entities away from a point and gives living ones the shockwave's effects; both fall off with the distance and
  * end at the shockwave's range.
+ * <p>
+ * Entities are only looked up when the current thread owns the whole area; on Folia a shockwave at a region's edge
+ * shows its particles but pushes nobody.
  */
 final class Shockwave {
     private static final double LIFT = 0.1;
@@ -43,6 +47,7 @@ final class Shockwave {
                             direction.getZ(),
                             range / 100);
         }
+        if (!Bukkit.isOwnedByCurrentRegion(center, (int) Math.ceil(range / 16))) return;
         for (Entity entity : center.getWorld().getNearbyEntities(center, range, range, range)) {
             Vector offset = entity.getLocation().toVector().subtract(center.toVector());
             double share = share(offset, range);

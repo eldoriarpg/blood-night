@@ -33,7 +33,8 @@ public record Trace(
         @Nullable Block block,
         double distance) {
     /**
-     * Follows a line from a location, ignoring fluids and passable blocks such as grass.
+     * Follows a line from a location, ignoring fluids and passable blocks such as grass. A line that could reach into
+     * another region (on Folia) meets nothing.
      *
      * @param start     where the line starts
      * @param direction where it goes; a zero vector hits nothing
@@ -45,6 +46,7 @@ public record Trace(
     public static Trace of(Location start, Vector direction, double distance, @Nullable Entity ignore, TraceHits hits) {
         World world = start.getWorld();
         if (world == null || direction.lengthSquared() == 0 || distance <= 0) return miss(distance);
+        if (!BukkitRuntime.owns(start, distance)) return miss(distance);
         Predicate<Entity> filter = entity -> !entity.equals(ignore);
         Vector normal = direction.clone().normalize();
         RayTraceResult result =

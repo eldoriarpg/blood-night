@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.rules;
 import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
 import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Statistic;
 import org.bukkit.World;
@@ -26,7 +27,8 @@ import java.util.function.Predicate;
 /**
  * Makes phantoms come for every player in a world with a running blood night by marking them as not having slept for
  * days. The player's own time since rest is kept in their data container and given back when the blood night ends or
- * they leave the world; a player who was still marked when the server stopped gets it back on their next join.
+ * they leave the world; a player who was still marked when the server stopped gets it back on their next join. Each
+ * player is changed on their own thread.
  */
 public final class PhantomForce implements Listener {
     /**
@@ -37,25 +39,28 @@ public final class PhantomForce implements Listener {
     static final NamespacedKey RESTED = new NamespacedKey("bloodnight", "time_since_rest");
     private final BloodNights nights;
     private final Predicate<World> force;
+    private final Tasks tasks;
 
     /**
      * @param nights the running blood nights
      * @param force  whether a world forces phantoms
+     * @param tasks  runs the change on each player's thread
      */
-    public PhantomForce(BloodNights nights, Predicate<World> force) {
+    public PhantomForce(BloodNights nights, Predicate<World> force, Tasks tasks) {
         this.nights = nights;
         this.force = force;
+        this.tasks = tasks;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBegin(BloodNightBeginEvent event) {
         if (!force.test(event.getWorld())) return;
-        event.getWorld().getPlayers().forEach(PhantomForce::mark);
+        event.getWorld().getPlayers().forEach(player -> tasks.entityNow(player, () -> mark(player)));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEnd(BloodNightEndEvent event) {
-        event.getWorld().getPlayers().forEach(PhantomForce::restore);
+        event.getWorld().getPlayers().forEach(player -> tasks.entityNow(player, () -> restore(player)));
     }
 
     @EventHandler
@@ -76,10 +81,11 @@ public final class PhantomForce implements Listener {
     }
 
     /**
-     * Gives every marked player their own time since rest back, e.g. when the plugin disables.
+     * Gives every marked player their own time since rest back, e.g. when the plugin disables. A player whose thread
+     * no longer runs gets it back on their next join.
      */
     public void restoreAll(Collection<? extends Player> players) {
-        players.forEach(PhantomForce::restore);
+        players.forEach(player -> tasks.entityNow(player, () -> restore(player)));
     }
 
     private void entered(Player player) {

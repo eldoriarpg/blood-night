@@ -16,6 +16,8 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
+import de.eldoria.bloodnight.tasks.Tasks;
+import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -45,8 +47,10 @@ import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -58,6 +62,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("removal")
 class DefaultMobsRunTest {
+    private final Map<World, Long> running = new HashMap<>();
     private static GraphPlatform platform;
     private static Map<String, CustomMob> mobs;
     private final List<Throwable> errors = new ArrayList<>();
@@ -86,6 +91,8 @@ class DefaultMobsRunTest {
                 new MobOutfitter(() -> items, ignored -> new MobSettings()),
                 () -> items,
                 mobs::get,
+                world -> running.containsKey(world) ? OptionalLong.of(running.get(world)) : OptionalLong.empty(),
+                new Tasks(plugin),
                 Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));
@@ -121,7 +128,7 @@ class DefaultMobsRunTest {
     @Test
     void speedZombieKeepsItsSpeed() {
         Zombie zombie = spawn("speed_zombie", Zombie.class);
-        coordinator.tick();
+        server.getScheduler().performOneTick();
 
         PotionEffect speed = zombie.getPotionEffect(PotionEffectType.SPEED);
         assertNotNull(speed);
@@ -132,11 +139,11 @@ class DefaultMobsRunTest {
     void invisibleZombieShowsItselfWhenHit() {
         Zombie zombie = spawn("invisible_zombie", Zombie.class);
         zombie.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0));
-        coordinator.tick();
+        server.getScheduler().performOneTick();
         PlayerMock player = server.addPlayer();
 
         server.getPluginManager().callEvent(hit(player, zombie));
-        coordinator.tick();
+        server.getScheduler().performOneTick();
 
         assertFalse(zombie.hasPotionEffect(PotionEffectType.INVISIBILITY));
     }
@@ -179,10 +186,31 @@ class DefaultMobsRunTest {
         Creeper elsewhere = other.spawn(new Location(other, 0, 64, 0), Creeper.class);
         coordinator.register(elsewhere, mobs.get("speed_creeper"));
 
-        assertEquals(1, coordinator.endNight(world));
+        running.put(world, 1L);
+        running.put(other, 1L);
+        server.getScheduler().performOneTick();
+        running.remove(world);
+        server.getScheduler().performOneTick();
 
         assertTrue(creeper.isIgnited());
         assertFalse(elsewhere.isIgnited());
+    }
+
+    @Test
+    void ridersGoWithTheirExtensionWhenTheNightEnds() {
+        running.put(world, 1L);
+        Spider spider = world.spawn(new Location(world, 0, 64, 0), Spider.class);
+        MobTags.markNight(spider, 1);
+        coordinator.register(spider, mobs.get("blaze_rider"));
+        Entity blaze = coordinator.mob(spider).orElseThrow().extension();
+        server.getScheduler().performOneTick();
+
+        running.remove(world);
+        server.getScheduler().performTicks(21);
+
+        assertFalse(spider.isValid());
+        assertNotNull(blaze);
+        assertFalse(blaze.isValid());
     }
 
     @Test

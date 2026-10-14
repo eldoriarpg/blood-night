@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.configuration.elements.world.death.LightningSetting
 import de.eldoria.bloodnight.configuration.elements.world.death.PlayerDeathActions;
 import de.eldoria.bloodnight.configuration.elements.world.death.TimedEffect;
 import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.Effects;
 import de.eldoria.bloodnight.util.MobTags;
 import net.kyori.adventure.key.Key;
@@ -27,7 +28,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -44,21 +44,26 @@ public final class DeathActionHandler implements Listener {
     private static final Sound THUNDER =
             Sound.sound(Key.key("entity.lightning_bolt.thunder"), Sound.Source.WEATHER, 1, 1);
     private final Server server;
-    private final Plugin plugin;
+    private final Tasks tasks;
     private final BloodNights nights;
     private final Function<World, WorldSettings> settings;
     private final RandomGenerator random;
 
     /**
-     * @param plugin   schedules commands and respawn actions for the next tick
+     * @param server   runs the commands
+     * @param tasks    runs commands on the global region and respawn actions on the player's thread, next tick
      * @param nights   the running blood nights
      * @param settings the settings of a world
-     * @param random   decides the chances
+     * @param random   decides the chances; used from several threads
      */
     public DeathActionHandler(
-            Plugin plugin, BloodNights nights, Function<World, WorldSettings> settings, RandomGenerator random) {
-        this.server = plugin.getServer();
-        this.plugin = plugin;
+            Server server,
+            Tasks tasks,
+            BloodNights nights,
+            Function<World, WorldSettings> settings,
+            RandomGenerator random) {
+        this.server = server;
+        this.tasks = tasks;
         this.nights = nights;
         this.settings = settings;
         this.random = random;
@@ -84,13 +89,14 @@ public final class DeathActionHandler implements Listener {
         perform(player.getLocation(), actions);
         if (chance(actions.loseInventoryChance())) event.getDrops().clear();
         if (chance(actions.loseExperienceChance())) event.setDroppedExp(0);
-        server.getScheduler().runTask(plugin, () -> run(actions.deathCommands(), player, world));
+        String name = player.getName();
+        tasks.global(() -> run(actions.deathCommands(), name, world));
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        server.getScheduler().runTask(plugin, () -> respawned(player));
+        tasks.entity(player, () -> respawned(player));
     }
 
     private void respawned(Player player) {
@@ -102,7 +108,8 @@ public final class DeathActionHandler implements Listener {
             if (type != null)
                 player.addPotionEffect(new PotionEffect(type, (int) Math.round(effect.seconds() * 20), 1));
         }
-        run(actions.respawnCommands(), player, world);
+        String name = player.getName();
+        tasks.global(() -> run(actions.respawnCommands(), name, world));
     }
 
     private void perform(Location location, DeathActions actions) {
@@ -114,15 +121,17 @@ public final class DeathActionHandler implements Listener {
         if (lightning.lightning() && chance(lightning.lightningChance())) {
             location.getWorld().strikeLightningEffect(location.clone().add(0, 10, 0));
         } else if (lightning.thunder() && chance(lightning.thunderChance())) {
-            location.getWorld().getPlayers().forEach(player -> player.playSound(THUNDER));
+            location.getWorld()
+                    .getPlayers()
+                    .forEach(player -> tasks.entityNow(player, () -> player.playSound(THUNDER)));
         }
     }
 
-    private void run(List<String> commands, Player player, World world) {
+    private void run(List<String> commands, String player, World world) {
         for (String command : commands) {
             server.dispatchCommand(
                     server.getConsoleSender(),
-                    command.replace("{player}", player.getName()).replace("{world}", world.getName()));
+                    command.replace("{player}", player).replace("{world}", world.getName()));
         }
     }
 

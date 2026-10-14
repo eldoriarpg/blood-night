@@ -11,16 +11,16 @@ sidebar_position: 18
 
 `world.block_at`
 
-Gets the Block at the given Location
+The block at a location
 
 | In | Type | What it is |
 |---|---|---|
-| World | World | Represents a world, which may contain entities, chunks and blocks |
-| Location | Location | Location of the block |
+| World | World | The world to look in |
+| Location | Location | Where the block is |
 
 | Out | Type | What it is |
 |---|---|---|
-| Result | Block | Block at the given location |
+| Result | Block | The block; on Folia missing when the location is in another region |
 
 ## Create Block Data
 
@@ -128,7 +128,7 @@ Entities within a box around a location; x, y and z are half the box size
 
 | Out | Type | What it is |
 |---|---|---|
-| Result | Collection&lt;Entity&gt; | The entities in that box |
+| Result | Collection&lt;Entity&gt; | The entities in that box; on Folia empty when the box reaches into another region |
 
 ## Line Trace
 
@@ -244,7 +244,7 @@ The closest player within a radius, missing when there is none
 
 | Out | Type | What it is |
 |---|---|---|
-| Player | Player | The closest player; missing when none is in range |
+| Player | Player | The closest player; missing when none is in range, and on Folia when the range reaches into another region |
 
 ## Particle Delay
 

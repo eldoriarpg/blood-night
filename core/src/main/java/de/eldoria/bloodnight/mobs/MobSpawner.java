@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -16,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +38,7 @@ public class MobSpawner implements Listener {
     private final Function<World, WorldSettings> settings;
     private final MobCoordinator coordinator;
     private final BloodNights nights;
-    private final Plugin plugin;
+    private final Tasks tasks;
     private final RandomGenerator random;
 
     /**
@@ -46,28 +46,28 @@ public class MobSpawner implements Listener {
      * @param settings      the settings of a world
      * @param coordinator   registers the custom mobs
      * @param nights        the running blood nights
-     * @param plugin        schedules the takeover
-     * @param random        rolls the spawn chance and the pick
+     * @param tasks         runs the takeover on the entity's thread
+     * @param random        rolls the spawn chance and the pick; used from several threads
      */
     public MobSpawner(
             Supplier<? extends Collection<CustomMob>> mobs,
             Function<World, WorldSettings> settings,
             MobCoordinator coordinator,
             BloodNights nights,
-            Plugin plugin,
+            Tasks tasks,
             RandomGenerator random) {
         this.mobs = mobs;
         this.settings = settings;
         this.coordinator = coordinator;
         this.nights = nights;
-        this.plugin = plugin;
+        this.tasks = tasks;
         this.random = random;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpawn(EntitySpawnEvent event) {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
-        plugin.getServer().getScheduler().runTask(plugin, () -> handleSpawnedMob(entity));
+        tasks.entity(entity, () -> handleSpawnedMob(entity));
     }
 
     void handleSpawnedMob(LivingEntity entity) {

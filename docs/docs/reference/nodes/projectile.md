@@ -41,11 +41,9 @@ Changes the properties of a Projectile that are given, the others stay as they a
 | Out | Type | What it is |
 |---|---|---|
 | Owner Unique Id | UUID | Gets the owner's UUID |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -56,7 +54,6 @@ Changes the properties of a Projectile that are given, the others stay as they a
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -102,7 +99,6 @@ Changes the properties of a Projectile that are given, the others stay as they a
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -125,11 +121,9 @@ Reads the properties of a Projectile
 | Out | Type | What it is |
 |---|---|---|
 | Owner Unique Id | UUID | Gets the owner's UUID |
-| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
-| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -140,7 +134,6 @@ Reads the properties of a Projectile
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
-| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -186,7 +179,6 @@ Reads the properties of a Projectile
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
-| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |

@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Statistic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class PhantomForceTest extends RulesTest {
 
     @BeforeEach
     void setUp() {
-        server.getPluginManager().registerEvents(new PhantomForce(nights, ignored -> true), plugin);
+        server.getPluginManager().registerEvents(new PhantomForce(nights, ignored -> true, new Tasks(plugin)), plugin);
         player = server.addPlayer();
         player.teleport(world.getSpawnLocation());
         player.setStatistic(Statistic.TIME_SINCE_REST, 1_000);

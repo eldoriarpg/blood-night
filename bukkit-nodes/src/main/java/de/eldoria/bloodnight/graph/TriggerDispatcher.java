@@ -34,6 +34,7 @@ public final class TriggerDispatcher {
     private final Function<Entity, Optional<CompiledBehaviour>> behaviours;
     private final Function<Entity, Optional<CompiledBehaviour>> extensions;
     private final Failures errors;
+    private volatile @Nullable Plugin plugin;
 
     /**
      * A dispatcher for mobs without extensions: extension triggers never fire.
@@ -67,6 +68,7 @@ public final class TriggerDispatcher {
      */
     public void register(Plugin plugin, Collection<String> used) {
         unregister();
+        this.plugin = plugin;
         Map<Group, List<Trigger<?>>> groups = Triggers.EVENTS.stream()
                 .filter(trigger -> used.contains(trigger.id()))
                 .collect(Collectors.groupingBy(Group::of, LinkedHashMap::new, Collectors.toList()));
@@ -93,10 +95,16 @@ public final class TriggerDispatcher {
             trigger.dispatch(
                     event,
                     trigger.extension() ? extensions : behaviours,
+                    this::elsewhere,
                     (entity, e) -> errors.failed(trigger, entity, e));
         } catch (RuntimeException e) {
             errors.failed(trigger, null, e);
         }
+    }
+
+    private void elsewhere(Entity entity, Runnable work) {
+        Plugin owner = plugin;
+        if (owner != null) entity.getScheduler().execute(owner, work, null, 1);
     }
 
     /**

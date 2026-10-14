@@ -11,31 +11,38 @@ import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphCompiler;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
+import io.papermc.paper.entity.TeleportFlag;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Zombie;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.ZombieMock;
 import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.LongNode;
 import tools.jackson.databind.node.StringNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BukkitNodesTest {
+    private ServerMock server;
     private World world;
     private Zombie zombie;
 
     @BeforeEach
     void setUp() {
-        ServerMock server = MockBukkit.mock();
+        server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
         zombie = world.spawn(new Location(world, 1, 64, 3), Zombie.class);
     }
@@ -167,5 +174,69 @@ class BukkitNodesTest {
                 .build();
 
         assertEquals(List.of("ZOMBIE"), tick(graph));
+    }
+
+    @Test
+    void worldChangesAndTeleportsRunOnTheirThreads() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "time"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
+                .node(
+                        "time",
+                        NodeInstance.of("world.mutate")
+                                .input("target", "self_get", "world")
+                                .literal("full_time", LongNode.valueOf(18_000))
+                                .chain("next", "away"))
+                .node(
+                        "target",
+                        NodeInstance.of("location.create")
+                                .input("world", "self_get", "world")
+                                .input("x", "ten", "value")
+                                .input("y", "ten", "value")
+                                .input("z", "ten", "value"))
+                .node("ten", number(10))
+                .node(
+                        "away",
+                        NodeInstance.of("entity.teleport")
+                                .input("target", "self", "entity")
+                                .input("location", "target", "result")
+                                .chain("next", "print"))
+                .node("print", print("away", "result"))
+                .build();
+
+        zombie = teleportingZombie();
+        assertEquals(List.of("true"), tick(graph));
+        assertEquals(18_000, world.getFullTime());
+        assertEquals(10, zombie.getLocation().getX());
+    }
+
+    @Test
+    void wholeWorldReadsWorkWithoutRegions() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "print"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
+                .node("world", NodeInstance.of("world.read").input("target", "self_get", "world"))
+                .node("print", print("world", "entity_count"))
+                .build();
+
+        assertEquals(List.of("1"), tick(graph));
+    }
+
+    /**
+     * A zombie whose asynchronous teleport finishes at once; MockBukkit does not implement {@code teleportAsync}.
+     */
+    private Zombie teleportingZombie() {
+        ZombieMock teleporting = new ZombieMock(server, UUID.randomUUID()) {
+            @Override
+            public CompletableFuture<Boolean> teleportAsync(
+                    Location location, PlayerTeleportEvent.TeleportCause cause, TeleportFlag... flags) {
+                return CompletableFuture.completedFuture(teleport(location, cause, flags));
+            }
+        };
+        teleporting.setLocation(new Location(world, 1, 64, 3));
+        server.registerEntity(teleporting);
+        return teleporting;
     }
 }

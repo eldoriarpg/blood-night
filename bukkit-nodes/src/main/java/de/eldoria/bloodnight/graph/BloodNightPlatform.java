@@ -111,22 +111,12 @@ public final class BloodNightPlatform {
         nodes.addAll(ReflectedType.of(Entity.class, "entity")
                 .action("remove", "remove")
                 .title("remove", "Remove Entity")
-                .action("teleport", "teleport", Param.of("location", Location.class))
-                .title("nearby_entities", "Entities Near Entity")
-                .query(
-                        "nearby_entities",
-                        "getNearbyEntities",
-                        Param.of("x", double.class),
-                        Param.of("y", double.class),
-                        Param.of("z", double.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(LivingEntity.class, "living_entity")
                 .name("Living Entity")
                 .action("remove_potion_effect", "removePotionEffect", Param.of("type", PotionEffectType.class))
                 .query("attribute", "getAttribute", Param.of("attribute", Attribute.class))
                 .title("attribute", "Attribute Of Entity")
-                .query("has_line_of_sight", "hasLineOfSight", Param.of("other", Entity.class))
-                .title("has_line_of_sight", "Has Line Of Sight")
                 .build(rules));
         nodes.addAll(ReflectedType.of(Player.class, "player")
                 .action(
@@ -224,11 +214,11 @@ public final class BloodNightPlatform {
                 .constructor(
                         "create", Param.of("x", double.class), Param.of("y", double.class), Param.of("z", double.class))
                 .build(rules));
-        nodes.addAll(ReflectedType.of(World.class, "world")
-                .query("block_at", "getBlockAt", Param.of("location", Location.class))
-                .build(rules));
+        nodes.addAll(
+                ReflectedType.of(World.class, "world").guard(FoliaGuards.WORLD).build(rules));
         nodes.addAll(ReflectedType.of(ItemStack.class, "item").name("Item").build(rules));
-        nodes.addAll(ReflectedType.of(Block.class, "block").build(rules));
+        nodes.addAll(
+                ReflectedType.of(Block.class, "block").guard(FoliaGuards.BLOCK).build(rules));
         nodes.addAll(ReflectedType.of(Cancellable.class, "cancellable")
                 .name("Event")
                 .category("event")

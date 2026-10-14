@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.util.MobTags;
+import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
@@ -21,8 +22,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * This class handles damage events for custom mobs with extensions.
- * It listens for entity damage events and performs necessary actions based on the type of damage and the entity involved.
+ * Keeps a custom mob and its extension one creature: damage to the extension goes to the mob, the extension's health
+ * follows the mob's, and the extension dies with the mob.
+ * <p>
+ * Mob and extension ride each other, so they are in the same region. Should one of them be owned by another thread
+ * anyway, it is left alone for that event.
  */
 public class DamageHandler implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -45,6 +49,7 @@ public class DamageHandler implements Listener {
         if (baseId.isEmpty()) return;
         if (!(entity instanceof LivingEntity extension)) return;
         if (!(entity.getServer().getEntity(baseId.get()) instanceof LivingEntity base) || base.isDead()) return;
+        if (!Bukkit.isOwnedByCurrentRegion(base)) return;
 
         if (event instanceof EntityDamageByEntityEvent byEntity) {
             base.damage(event.getDamage(), byEntity.getDamager());
@@ -66,6 +71,7 @@ public class DamageHandler implements Listener {
 
         if (extensionId.isEmpty()) return;
         if (!(entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension)) return;
+        if (!Bukkit.isOwnedByCurrentRegion(extension)) return;
 
         syncHealth(extension, base.getHealth() - event.getFinalDamage());
         extension.playHurtAnimation(0);
@@ -91,7 +97,8 @@ public class DamageHandler implements Listener {
         if (!MobTags.isCustomMob(entity)) return;
         Optional<UUID> extensionId = MobTags.getExtension(entity);
         if (extensionId.isEmpty()) return;
-        if (entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension) {
+        if (entity.getServer().getEntity(extensionId.get()) instanceof LivingEntity extension
+                && Bukkit.isOwnedByCurrentRegion(extension)) {
             extension.damage(extension.getHealth());
         }
     }

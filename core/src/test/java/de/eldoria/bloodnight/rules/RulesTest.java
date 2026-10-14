@@ -41,7 +41,6 @@ abstract class RulesTest {
                 new NightSelector(ignored -> every, ignored -> TIMES, Clock.systemUTC(), () -> 20),
                 ignored -> true,
                 server.getPluginManager(),
-                ignored -> {},
                 Logger.getLogger("test"));
     }
 

@@ -112,3 +112,4 @@ gradle-app.setting
 
 .direnv/
 /test-results/
+/core/run-folia/

@@ -148,11 +148,13 @@ public final class BukkitNodes {
                     .describe("x", "How far to search east and west")
                     .describe("y", "How far to search up and down")
                     .describe("z", "How far to search north and south")
-                    .describe("result", "The entities in that box")
+                    .describe(
+                            "result",
+                            "The entities in that box; on Folia empty when the box reaches into another region")
                     .build(),
             (port, ctx) -> CodeBlock.of(
-                    "$L.getWorld().getNearbyEntities($L, $L, $L, $L)",
-                    ctx.input("location"),
+                    "$T.nearbyEntities($L, $L, $L, $L)",
+                    BukkitRuntime.class,
                     ctx.input("location"),
                     ctx.input("x"),
                     ctx.input("y"),
@@ -258,9 +260,17 @@ public final class BukkitNodes {
                     .build(),
             ctx -> CodeBlock.builder()
                     .addStatement(
-                            "$L.spawnParticle($L)",
+                            "$T.particles($L, $L, $L, $L, $L, $L, $L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
                             ctx.input("target"),
-                            arguments(ctx, "particle", "location", "count", "offset_x", "offset_y", "offset_z", "data"))
+                            ctx.input("particle"),
+                            ctx.input("location"),
+                            ctx.input("count"),
+                            ctx.input("offset_x"),
+                            ctx.input("offset_y"),
+                            ctx.input("offset_z"),
+                            ctx.connected("data") ? ctx.input("data") : CodeBlock.of("null"))
                     .add(ctx.chain(NEXT))
                     .build());
 
@@ -277,7 +287,16 @@ public final class BukkitNodes {
                     .describe("location", "Where it strikes")
                     .describe("effect_only", "Only the look and sound, no damage and no fire; false when not given")
                     .build(),
-            ctx -> CodeBlock.builder().add(strike(ctx)).add(ctx.chain(NEXT)).build());
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.strikeLightning($L, $L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("target"),
+                            ctx.input("location"),
+                            ctx.connected("effect_only") ? ctx.input("effect_only") : CodeBlock.of("false"))
+                    .add(ctx.chain(NEXT))
+                    .build());
 
     public static final StatementDefinition LINE_TRACE = new StatementDefinition(
             NodeDescriptor.builder(BloodNightNodes.WORLD_LINE_TRACE, NodeKind.ACTION)
@@ -347,7 +366,10 @@ public final class BukkitNodes {
                     .describe("shooter", "Who launches it")
                     .describe("target", "What it flies at")
                     .describe("speed", "How fast it flies")
-                    .describe("projectile", "The launched projectile")
+                    .describe(
+                            "projectile",
+                            "The launched projectile; on Folia missing when the target is in another region and nothing"
+                                    + " was launched")
                     .build(),
             ctx -> {
                 CodeBlock projectile = ctx.bind("projectile", NEXT);
@@ -385,8 +407,9 @@ public final class BukkitNodes {
                     .build(),
             ctx -> CodeBlock.builder()
                     .addStatement(
-                            "$T.potionCloud($L, $L, $L, $L, $L, $L)",
+                            "$T.potionCloud($L, $L, $L, $L, $L, $L, $L)",
                             BukkitRuntime.class,
+                            ctx.context(),
                             ctx.input("location"),
                             ctx.input("potion"),
                             ctx.input("seconds"),
@@ -406,7 +429,10 @@ public final class BukkitNodes {
                     .describe("location", "Where to search from")
                     .describe("radius", "How far to search")
                     .describe("survival_only", "Whether only players in survival or adventure count")
-                    .describe("player", "The closest player; missing when none is in range")
+                    .describe(
+                            "player",
+                            "The closest player; missing when none is in range, and on Folia when the range reaches"
+                                    + " into another region")
                     .build(),
             (port, ctx) -> CodeBlock.of(
                     "$T.nearestPlayer($L, $L, $L)",
@@ -462,8 +488,91 @@ public final class BukkitNodes {
     /**
      * @return every hand-written Bukkit node
      */
+    public static final StatementDefinition TELEPORT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.ENTITY_TELEPORT, NodeKind.ACTION)
+                    .category("entity")
+                    .name("Teleport")
+                    .description("Moves an entity to a location; the move finishes once the place is loaded")
+                    .input("target", "Entity", PortType.of(Entity.class), false)
+                    .input("location", Location.class)
+                    .output(RESULT, boolean.class)
+                    .execution(NEXT)
+                    .describe("target", "Who moves")
+                    .describe("location", "Where to")
+                    .describe("result", "True: the move has started")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "final boolean $L = $T.teleport($L, $L)",
+                            ctx.bind(RESULT, NEXT),
+                            BukkitRuntime.class,
+                            ctx.input("target"),
+                            ctx.input("location"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final ExpressionDefinition ENTITY_NEARBY_ENTITIES = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.ENTITY_NEARBY_ENTITIES, NodeKind.PURE)
+                    .category("entity")
+                    .name("Entities Near Entity")
+                    .description("Entities within a box around an entity, without the entity itself")
+                    .input("target", "Entity", PortType.of(Entity.class), false)
+                    .input("x", double.class)
+                    .input("y", double.class)
+                    .input("z", double.class)
+                    .output(RESULT, PortType.parameterized(List.class, PortType.of(Entity.class)))
+                    .describe("target", "The centre of the search")
+                    .describe("x", "How far to search east and west")
+                    .describe("y", "How far to search up and down")
+                    .describe("z", "How far to search north and south")
+                    .describe(
+                            "result",
+                            "The entities in that box; on Folia empty when the box reaches into another region")
+                    .build(),
+            (port, ctx) -> CodeBlock.of(
+                    "$T.nearbyEntities($L, $L, $L, $L)",
+                    BukkitRuntime.class,
+                    ctx.input("target"),
+                    ctx.input("x"),
+                    ctx.input("y"),
+                    ctx.input("z")));
+
+    public static final ExpressionDefinition HAS_LINE_OF_SIGHT = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.LIVING_ENTITY_HAS_LINE_OF_SIGHT, NodeKind.PURE)
+                    .category("living_entity")
+                    .name("Has Line Of Sight")
+                    .description("Whether a living entity can see another one, with no block in between")
+                    .input("target", "Living Entity", PortType.of(LivingEntity.class), false)
+                    .input("other", Entity.class)
+                    .output(RESULT, boolean.class)
+                    .describe("target", "Who looks")
+                    .describe("other", "What it looks at")
+                    .describe("result", "Whether it sees it; on Folia false when the other is in another region")
+                    .build(),
+            (port, ctx) -> CodeBlock.of(
+                    "$T.hasLineOfSight($L, $L)", BukkitRuntime.class, ctx.input("target"), ctx.input("other")));
+
+    public static final ExpressionDefinition BLOCK_AT = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_BLOCK_AT, NodeKind.PURE)
+                    .category("world")
+                    .name("Block At")
+                    .description("The block at a location")
+                    .input("target", "World", PortType.of(World.class), false)
+                    .input("location", Location.class)
+                    .output(RESULT, Block.class)
+                    .describe("target", "The world to look in")
+                    .describe("location", "Where the block is")
+                    .describe("result", "The block; on Folia missing when the location is in another region")
+                    .build(),
+            (port, ctx) -> CodeBlock.of(
+                    "$T.blockAt($L, $L)", BukkitRuntime.class, ctx.input("target"), ctx.input("location")));
+
     public static List<NodeDefinition> all() {
         return List.of(
+                TELEPORT,
+                ENTITY_NEARBY_ENTITIES,
+                HAS_LINE_OF_SIGHT,
+                BLOCK_AT,
                 CREATE_LOCATION,
                 APPLY_EFFECT,
                 DAMAGE,
@@ -504,19 +613,5 @@ public final class BukkitNodes {
      */
     private static CodeBlock arguments(EmitContext ctx, String... ports) {
         return Arrays.stream(ports).filter(ctx::connected).map(ctx::input).collect(CodeBlock.joining(", "));
-    }
-
-    private static CodeBlock strike(StatementContext ctx) {
-        if (!ctx.connected("effect_only"))
-            return CodeBlock.builder()
-                    .addStatement("$L.strikeLightning($L)", ctx.input("target"), ctx.input("location"))
-                    .build();
-        return CodeBlock.builder()
-                .beginControlFlow("if ($L)", ctx.input("effect_only"))
-                .addStatement("$L.strikeLightningEffect($L)", ctx.input("target"), ctx.input("location"))
-                .nextControlFlow("else")
-                .addStatement("$L.strikeLightning($L)", ctx.input("target"), ctx.input("location"))
-                .endControlFlow()
-                .build();
     }
 }

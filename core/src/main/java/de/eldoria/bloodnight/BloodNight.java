@@ -25,7 +25,6 @@ import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
-import de.eldoria.bloodnight.mobs.NightDespawner;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightCommands;
@@ -38,10 +37,10 @@ import de.eldoria.bloodnight.rules.CreeperGuard;
 import de.eldoria.bloodnight.rules.DeathActionHandler;
 import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
+import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,6 +48,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.random.RandomGenerator;
 
@@ -57,7 +57,8 @@ import java.util.random.RandomGenerator;
  * compiled behaviours to spawned mobs, events and the tick loop.
  * <p>
  * Worlds load before plugins are enabled, so custom mobs already in loaded chunks are taken over on enable; they get
- * their behaviour once compilation finished.
+ * their behaviour once compilation finished. Mobs in chunks that are already loaded are taken over on enable; on
+ * Folia no chunk is loaded when plugins enable, and every mob arrives through {@link MobLifecycle}.
  * <p>
  * {@code /bloodnight reload} reads the configuration again and recompiles; living mobs switch to the new behaviours
  * once compilation finished. {@code source} writes a mob's generated source to {@code debug/}, {@code problems} lists
@@ -65,17 +66,19 @@ import java.util.random.RandomGenerator;
  * and {@code debug} help testing.
  */
 public final class BloodNight extends JavaPlugin {
+    /**
+     * Random numbers for listeners and tasks, which run on several threads on Folia: each thread draws from its own
+     * generator.
+     */
+    private static final RandomGenerator RANDOM =
+            () -> ThreadLocalRandom.current().nextLong();
+
     private Configuration configuration;
     private BehaviourService behaviourService;
     private MobCoordinator coordinator;
     private TriggerDispatcher dispatcher;
-    private BukkitTask tickTask;
-    private BukkitTask nightTask;
-    private BukkitTask stretchTask;
-    private BukkitTask despawnTask;
-    private NightDespawner despawner;
+    private Tasks tasks;
     private NightStretch stretch;
-    private BukkitTask announceTask;
     private Announcer announcer;
     private PhantomForce phantoms;
     private final Messages messages = new Messages();
@@ -86,6 +89,7 @@ public final class BloodNight extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        tasks = new Tasks(this);
         configuration = new Configuration(this);
         var platform = BloodNightPlatform.create(CompileClasspath.discover(getClassLoader()));
         configuration.seedMobs(() -> DefaultMobs.create(platform));
@@ -100,12 +104,24 @@ public final class BloodNight extends JavaPlugin {
                 new BytecodeCache(getDataFolder().toPath().resolve("cache")),
                 buildFingerprint(),
                 getLogger());
+        selector = new NightSelector(
+                world -> configuration.worldConfig(world).nightSelection(),
+                world -> NightTimes.of(configuration.worldConfig(world).nightSettings()),
+                Clock.systemUTC(),
+                () -> getServer().getServerTickManager().getTickRate());
+        bloodNights = new BloodNights(
+                selector,
+                world -> configuration.worldConfig(world).enabled(),
+                getServer().getPluginManager(),
+                getLogger());
         coordinator = new MobCoordinator(
                 new MobOutfitter(
                         () -> configuration.items(),
                         world -> configuration.worldConfig(world).mobSettings()),
                 () -> configuration.items(),
                 id -> configuration.mobs().get(id),
+                bloodNights::running,
+                tasks,
                 getLogger());
         dispatcher = new TriggerDispatcher(
                 coordinator::behaviour, coordinator::extensionBehaviour, (trigger, entity, error) -> {
@@ -126,36 +142,24 @@ public final class BloodNight extends JavaPlugin {
                         world -> configuration.worldConfig(world).worldDrops(),
                         () -> configuration.globalDrops(),
                         id -> configuration.items().item(id),
-                        RandomGenerator.getDefault()),
+                        RANDOM),
                 this);
-        getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));
-        tickTask = getServer().getScheduler().runTaskTimer(this, coordinator::tick, 1, 1);
+        if (!Tasks.regionised()) {
+            getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));
+        }
         MobIds.use(() -> configuration.mobs().all().stream().map(CustomMob::id).toList());
         getLifecycleManager()
                 .registerEventHandler(LifecycleEvents.COMMANDS.newHandler(
                         event -> BloodNightCommandBrigadier.register(event.registrar(), this)));
-        selector = new NightSelector(
-                world -> configuration.worldConfig(world).nightSelection(),
-                world -> NightTimes.of(configuration.worldConfig(world).nightSettings()),
-                Clock.systemUTC(),
-                () -> getServer().getServerTickManager().getTickRate());
-        bloodNights = new BloodNights(
-                selector,
-                world -> configuration.worldConfig(world).enabled(),
-                getServer().getPluginManager(),
-                coordinator::endNight,
-                getLogger());
         plugins.registerEvents(
                 new MobSpawner(
                         () -> configuration.mobs().all(),
                         configuration::worldConfig,
                         coordinator,
                         bloodNights,
-                        this,
-                        RandomGenerator.getDefault()),
+                        tasks,
+                        RANDOM),
                 this);
-        despawner = new NightDespawner(coordinator, bloodNights);
-        despawnTask = getServer().getScheduler().runTaskTimer(this, despawner::tick, 1, 1);
         stretch = new NightStretch(
                 getServer(),
                 world -> configuration.worldConfig(world).nightSettings(),
@@ -178,11 +182,13 @@ public final class BloodNight extends JavaPlugin {
                 bloodNights,
                 () -> configuration.main().announcements(),
                 configuration::worldConfig,
-                selector::times);
+                selector::times,
+                tasks);
         plugins.registerEvents(announcer, this);
         phantoms = new PhantomForce(
                 bloodNights,
-                world -> configuration.worldConfig(world).mobSettings().forcePhantoms());
+                world -> configuration.worldConfig(world).mobSettings().forcePhantoms(),
+                tasks);
         plugins.registerEvents(phantoms, this);
         plugins.registerEvents(new CreeperGuard(bloodNights, configuration::worldConfig), this);
         plugins.registerEvents(
@@ -196,20 +202,10 @@ public final class BloodNight extends JavaPlugin {
                         .blockedCommands()),
                 this);
         plugins.registerEvents(
-                new DeathActionHandler(this, bloodNights, configuration::worldConfig, RandomGenerator.getDefault()),
-                this);
-        announceTask = getServer().getScheduler().runTaskTimer(this, announcer::tick, 20, 20);
-        stretchTask = getServer().getScheduler().runTaskTimer(this, stretch::tick, 1, 1);
-        nightTask = getServer()
-                .getScheduler()
-                .runTaskTimer(
-                        this,
-                        () -> {
-                            bloodNights.check(getServer().getWorlds());
-                            despawner.sweep();
-                        },
-                        20,
-                        20);
+                new DeathActionHandler(getServer(), tasks, bloodNights, configuration::worldConfig, RANDOM), this);
+        tasks.globalTimer(20, announcer::tick);
+        tasks.globalTimer(1, stretch::tick);
+        tasks.globalTimer(20, () -> bloodNights.check(getServer().getWorlds()));
         recompile();
     }
 
@@ -237,12 +233,8 @@ public final class BloodNight extends JavaPlugin {
     @Override
     public void onDisable() {
         MobIds.clear();
-        if (tickTask != null) tickTask.cancel();
-        if (nightTask != null) nightTask.cancel();
-        if (stretchTask != null) stretchTask.cancel();
-        if (despawnTask != null) despawnTask.cancel();
+        if (tasks != null) tasks.cancelAll();
         if (stretch != null) stretch.clear();
-        if (announceTask != null) announceTask.cancel();
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
         if (announcer != null) announcer.clear();
         if (phantoms != null) phantoms.restoreAll(getServer().getOnlinePlayers());
@@ -272,7 +264,7 @@ public final class BloodNight extends JavaPlugin {
                         applied.completeExceptionally(error);
                         return;
                     }
-                    getServer().getScheduler().runTask(this, () -> {
+                    tasks.global(() -> {
                         behaviours = result;
                         coordinator.rebind(result);
                         dispatcher.register(this, result.usedTriggers());
@@ -280,6 +272,13 @@ public final class BloodNight extends JavaPlugin {
                     });
                 });
         return applied;
+    }
+
+    /**
+     * @return runs work on the thread owning what it touches
+     */
+    public Tasks tasks() {
+        return tasks;
     }
 
     /**

@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.tasks.Tasks;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -59,14 +60,12 @@ class AnnouncerTest {
                 "{\"type\":\"INTERVAL\",\"interval\":{\"interval\":1,\"probability\":100}}", NightSelection.class);
         NightSelector selector = new NightSelector(ignored -> always, ignored -> TIMES, Clock.systemUTC(), () -> 20);
         nights = new BloodNights(
-                selector,
-                candidate -> candidate.equals(world),
-                server.getPluginManager(),
-                ignored -> {},
-                Logger.getLogger("test"));
+                selector, candidate -> candidate.equals(world), server.getPluginManager(), Logger.getLogger("test"));
         reach("SERVER");
-        announcer = new Announcer(server, nights, () -> announcements, ignored -> settings, ignored -> TIMES);
-        server.getPluginManager().registerEvents(announcer, MockBukkit.createMockPlugin());
+        var plugin = MockBukkit.createMockPlugin();
+        announcer = new Announcer(
+                server, nights, () -> announcements, ignored -> settings, ignored -> TIMES, new Tasks(plugin));
+        server.getPluginManager().registerEvents(announcer, plugin);
     }
 
     @AfterEach

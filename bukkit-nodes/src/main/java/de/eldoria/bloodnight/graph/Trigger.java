@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
@@ -78,15 +79,21 @@ public record Trigger<E extends Event>(
 
     /**
      * Runs the trigger for an event, if it applies.
+     * <p>
+     * The behaviour runs right away when the current thread owns the mob. A mob in another region (on Folia, e.g. the
+     * skeleton whose arrow hit far away) is handed to its own thread: the behaviour still runs, but after the event,
+     * so cancelling or changing it has no effect there.
      *
      * @param raw        an event of the listened handler list; may be of a sibling class
      * @param behaviours the behaviour of a custom mob entity
+     * @param elsewhere  runs work on the thread of an entity the current thread does not own
      * @param failed     receives the entity and the exception when the behaviour throws
-     * @return whether a behaviour was called
+     * @return whether a behaviour was called or handed on
      */
     public boolean dispatch(
             Event raw,
             Function<Entity, Optional<CompiledBehaviour>> behaviours,
+            BiConsumer<Entity, Runnable> elsewhere,
             BiConsumer<Entity, RuntimeException> failed) {
         if (!event.isInstance(raw)) return false;
         E typed = event.cast(raw);
@@ -95,11 +102,15 @@ public record Trigger<E extends Event>(
         if (entity == null) return false;
         Optional<CompiledBehaviour> behaviour = behaviours.apply(entity);
         behaviour.ifPresent(target -> {
-            try {
-                invoke.accept(target, typed);
-            } catch (RuntimeException e) {
-                failed.accept(entity, e);
-            }
+            Runnable run = () -> {
+                try {
+                    invoke.accept(target, typed);
+                } catch (RuntimeException e) {
+                    failed.accept(entity, e);
+                }
+            };
+            if (Bukkit.isOwnedByCurrentRegion(entity)) run.run();
+            else elsewhere.accept(entity, run);
         });
         return behaviour.isPresent();
     }

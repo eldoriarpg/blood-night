@@ -67,6 +67,25 @@ The `fearful_phantom` does exactly this. Open it to compare.
 
 All nodes are listed in the [node reference](../reference/nodes/index.md).
 
+## On Folia
+
+Folia splits the world into regions. Each region runs on its own. A mob's graph runs in the mob's region, and it
+can only look at things in that region. Most graphs never notice this, because mobs act on things close to them.
+
+What changes on Folia:
+
+| Node | What happens far away |
+|---|---|
+| Entities Near Location, Entities Near Entity, Nearest Player, Line Trace, Block At | Finds nothing |
+| Has Line Of Sight | Gives false |
+| Launch Projectile | Launches nothing |
+| Strike Lightning, Spawn Particle, Spawn Potion Cloud, Mutate Block | Happen a tick later |
+| Mutate World (time, weather, difficulty, ...) | Happens a tick later |
+| Read World: entities, players and counts | Always fails on Folia and shows a problem |
+| Mutate, Apply Effect, Damage on an entity in another region | Fails and shows a problem |
+
+On Paper all of these work right away, as always.
+
 ## Problems
 
 If a graph has a mistake, the editor shows it in the **Problems** panel, next to the node it belongs to. A mob with

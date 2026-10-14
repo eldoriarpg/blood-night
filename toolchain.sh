@@ -27,6 +27,7 @@ Backend (Gradle)
   be-snapshot           Rewrites the catalog snapshot test after an intended change to nodes; review its diff
   be-jar                Builds the plugin jar (core/build/libs)
   be-server             Starts the Paper test server with the plugin (core/run)
+  be-folia              Starts a Folia test server with the plugin (core/run-folia)
   be-backend            Runs the web backend from source (needs a database, see docker-db); item assets are cached
                         in web/backend/build/asset-cache unless ASSET_CACHE says otherwise
 
@@ -194,6 +195,7 @@ case "$cmd" in
     be-snapshot)     be; run ./gradlew :graph-editor-payload:test -Dsnapshot.update=true ;;
     be-jar)          be; run ./gradlew :core:shadowJar ;;
     be-server)       be; run ./gradlew :core:runServer ;;
+    be-folia)        be; run ./gradlew :core:runFolia ;;
     be-backend)      be; ASSET_CACHE="${ASSET_CACHE:-$ROOT/web/backend/build/asset-cache}" run ./gradlew :web-backend:run ;;
     fe-install)       fe; run npm install "$@" ;;
     fe-install-clean) fe; run npm ci "$@" ;;
