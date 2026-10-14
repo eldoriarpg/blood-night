@@ -6,6 +6,8 @@
 package de.eldoria.bloodnight.rules;
 
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.util.MobTags;
@@ -29,13 +31,17 @@ public final class MobDamage implements Listener {
     private final BloodNights nights;
     private final Function<World, MobSettings> settings;
     private final ForeignMobs foreign;
+    private final RegionRules regions;
 
     /**
      * @param nights   the running blood nights
      * @param settings the mob settings of a world
      * @param foreign  tells mobs of other plugins, which keep their own damage and health
+     * @param regions  where regions switch the blood night rules off
      */
-    public MobDamage(BloodNights nights, Function<World, MobSettings> settings, ForeignMobs foreign) {
+    public MobDamage(
+            BloodNights nights, Function<World, MobSettings> settings, ForeignMobs foreign, RegionRules regions) {
+        this.regions = regions;
         this.nights = nights;
         this.settings = settings;
         this.foreign = foreign;
@@ -47,6 +53,7 @@ public final class MobDamage implements Listener {
         if (nights.running(world).isEmpty()) return;
         Entity attacker = event.getDamageSource().getCausingEntity();
         Entity victim = event.getEntity();
+        if (!regions.allows(victim.getLocation(), RegionFlag.RULES)) return;
         MobSettings mobSettings = settings.apply(world);
         if (victim instanceof Player && attacker instanceof Enemy && foreign.ruled(attacker)) {
             event.setDamage(event.getDamage() * mobSettings.damageModifier());

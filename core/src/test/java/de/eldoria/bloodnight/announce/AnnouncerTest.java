@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.configuration.elements.Announcements;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
@@ -70,7 +71,8 @@ class AnnouncerTest {
                 ignored -> settings,
                 ignored -> TIMES,
                 new Tasks(plugin),
-                target -> Component.text(target.getName()));
+                target -> Component.text(target.getName()),
+                RegionRules.NONE);
         server.getPluginManager().registerEvents(announcer, plugin);
     }
 

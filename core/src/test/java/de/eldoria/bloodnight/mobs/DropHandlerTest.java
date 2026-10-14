@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.world.VanillaDrops;
 import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Drop;
@@ -66,7 +67,8 @@ class DropHandlerTest {
                 items::item,
                 world -> bloodNight,
                 new ForeignMobs(ForeignMobSettings::new, () -> null),
-                RandomGenerator.of("L64X128MixRandom"));
+                RandomGenerator.of("L64X128MixRandom"),
+                RegionRules.NONE);
     }
 
     @AfterEach

@@ -8,6 +8,8 @@ package de.eldoria.bloodnight.mobs;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.world.VanillaDrops;
 import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Drop;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
@@ -46,6 +48,7 @@ public final class DropHandler implements Listener {
     private final Predicate<World> bloodNight;
     private final ForeignMobs foreign;
     private final RandomGenerator random;
+    private final RegionRules regions;
 
     /**
      * @param mobs       the custom mob of an id, if defined
@@ -55,6 +58,7 @@ public final class DropHandler implements Listener {
      * @param bloodNight whether a blood night runs in a world
      * @param foreign    tells mobs of other plugins, whose drops stay as they are
      * @param random     the source of chance
+     * @param regions    where regions switch the extra loot of ordinary enemies off
      */
     public DropHandler(
             Function<String, @Nullable CustomMob> mobs,
@@ -63,7 +67,9 @@ public final class DropHandler implements Listener {
             Function<String, @Nullable ItemStack> items,
             Predicate<World> bloodNight,
             ForeignMobs foreign,
-            RandomGenerator random) {
+            RandomGenerator random,
+            RegionRules regions) {
+        this.regions = regions;
         this.mobs = mobs;
         this.worlds = worlds;
         this.global = global;
@@ -115,7 +121,8 @@ public final class DropHandler implements Listener {
         return entity instanceof Enemy
                 && !MobTags.isExtension(entity)
                 && foreign.ruled(entity)
-                && bloodNight.test(entity.getWorld());
+                && bloodNight.test(entity.getWorld())
+                && regions.allows(entity.getLocation(), RegionFlag.RULES);
     }
 
     private void addRolled(EntityDeathEvent event, DropRules rules) {

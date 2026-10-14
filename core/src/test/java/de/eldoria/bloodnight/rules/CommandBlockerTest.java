@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandBlockerTest extends RulesTest {
+    private boolean denied;
     private static final List<String> BLOCKED = List.of("warp", "gamemode creative");
     private CommandBlocker blocker;
 
@@ -29,7 +30,7 @@ class CommandBlockerTest extends RulesTest {
                 return true;
             }
         });
-        blocker = new CommandBlocker(nights, server.getCommandMap(), ignored -> BLOCKED);
+        blocker = new CommandBlocker(nights, server.getCommandMap(), ignored -> BLOCKED, (location, flag) -> !denied);
         server.getPluginManager().registerEvents(blocker, plugin);
     }
 
@@ -64,6 +65,15 @@ class CommandBlockerTest extends RulesTest {
         bloodNight();
         assertTrue(cancelled(player, "/warp"));
         player.addAttachment(plugin, CommandBlocker.BYPASS, true);
+        assertFalse(cancelled(player, "/warp"));
+    }
+
+    @Test
+    void regionsCanLetBlockedCommandsThrough() {
+        PlayerMock player = server.addPlayer();
+        player.teleport(world.getSpawnLocation());
+        bloodNight();
+        denied = true;
         assertFalse(cancelled(player, "/warp"));
     }
 }

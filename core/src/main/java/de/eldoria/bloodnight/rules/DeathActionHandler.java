@@ -11,6 +11,8 @@ import de.eldoria.bloodnight.configuration.elements.world.death.LightningSetting
 import de.eldoria.bloodnight.configuration.elements.world.death.PlayerDeathActions;
 import de.eldoria.bloodnight.configuration.elements.world.death.TimedEffect;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
@@ -52,6 +54,7 @@ public final class DeathActionHandler implements Listener {
     private final RandomGenerator random;
     private final CommandText text;
     private final ForeignMobs foreign;
+    private final RegionRules regions;
 
     /**
      * @param server   runs the commands
@@ -61,6 +64,7 @@ public final class DeathActionHandler implements Listener {
      * @param text     fills in other plugins' placeholders
      * @param foreign  tells mobs of other plugins, which cause no death actions
      * @param random   decides the chances; used from several threads
+     * @param regions  where regions switch the death actions off
      */
     public DeathActionHandler(
             Server server,
@@ -69,7 +73,9 @@ public final class DeathActionHandler implements Listener {
             Function<World, WorldSettings> settings,
             CommandText text,
             ForeignMobs foreign,
-            RandomGenerator random) {
+            RandomGenerator random,
+            RegionRules regions) {
+        this.regions = regions;
         this.server = server;
         this.text = text;
         this.foreign = foreign;
@@ -83,6 +89,7 @@ public final class DeathActionHandler implements Listener {
     public void onEnemyDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         if (!(entity instanceof Enemy) || MobTags.isExtension(entity) || !foreign.ruled(entity)) return;
+        if (!regions.allows(entity.getLocation(), RegionFlag.RULES)) return;
         World world = entity.getWorld();
         if (nights.running(world).isEmpty()) return;
         WorldSettings worldSettings = settings.apply(world);
@@ -94,7 +101,7 @@ public final class DeathActionHandler implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
         World world = player.getWorld();
-        if (nights.running(world).isEmpty()) return;
+        if (nights.running(world).isEmpty() || !regions.allows(player.getLocation(), RegionFlag.RULES)) return;
         PlayerDeathActions actions = settings.apply(world).deathActions().player();
         perform(player.getLocation(), actions);
         if (chance(actions.loseInventoryChance())) event.getDrops().clear();

@@ -10,6 +10,8 @@ import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
 import de.eldoria.bloodnight.configuration.elements.Announcements;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.announcement.NightEffect;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
@@ -56,6 +58,7 @@ public final class Announcer implements Listener {
     private final NightBars bars = new NightBars();
     private final Ambience ambience = new Ambience();
     private final Set<UUID> dragonFights = ConcurrentHashMap.newKeySet();
+    private final RegionRules regions;
 
     /**
      * @param server        the server
@@ -65,6 +68,7 @@ public final class Announcer implements Listener {
      * @param times         the night times of a world
      * @param tasks         runs work on the players' threads
      * @param names         the name players see for a world
+     * @param regions       where regions keep effects and the boss bar away
      */
     public Announcer(
             Server server,
@@ -73,7 +77,9 @@ public final class Announcer implements Listener {
             Function<World, WorldSettings> settings,
             Function<World, NightTimes> times,
             Tasks tasks,
-            Function<World, Component> names) {
+            Function<World, Component> names,
+            RegionRules regions) {
+        this.regions = regions;
         this.server = server;
         this.nights = nights;
         this.announcements = announcements;
@@ -96,6 +102,7 @@ public final class Announcer implements Listener {
                         player,
                         worldSettings.soundSettings(),
                         worldSettings.soundSettings().begin());
+                if (!affected(player)) return;
                 applyEffect(player, worldSettings.announcement().effect());
                 bars.update(
                         player,
@@ -120,7 +127,8 @@ public final class Announcer implements Listener {
                         player,
                         worldSettings.soundSettings(),
                         worldSettings.soundSettings().end());
-                applyEffect(player, worldSettings.announcement().effect());
+                if (affected(player))
+                    applyEffect(player, worldSettings.announcement().effect());
             });
         }
     }
@@ -175,7 +183,7 @@ public final class Announcer implements Listener {
     private void tick(Player player) {
         World world = player.getWorld();
         var night = nights.running(world);
-        if (night.isEmpty()) {
+        if (night.isEmpty() || !affected(player)) {
             bars.hide(player);
             return;
         }
@@ -196,6 +204,7 @@ public final class Announcer implements Listener {
         WorldSettings worldSettings = settings.apply(world);
         if (worldSettings.announcement().joinWarning())
             tell(player, NightKind.of(world).key("joined"));
+        if (!affected(player)) return;
         applyEffect(player, worldSettings.announcement().effect());
         bars.update(
                 player,
@@ -226,6 +235,10 @@ public final class Announcer implements Listener {
                 config.personalMethod(),
                 config.prefix(),
                 Messages.message(key, Argument.component("world", names.apply(player.getWorld()))));
+    }
+
+    private boolean affected(Player player) {
+        return regions.allows(player.getLocation(), RegionFlag.EFFECTS);
     }
 
     private static void applyEffect(Player player, NightEffect effect) {

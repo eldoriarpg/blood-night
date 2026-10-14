@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.AttributeChange;
@@ -119,7 +120,8 @@ class MobSpawnerTest {
                 tasks,
                 server.getPluginManager(),
                 new ForeignMobs(() -> foreign, () -> null),
-                new SplittableRandom(1));
+                new SplittableRandom(1),
+                RegionRules.NONE);
     }
 
     @AfterEach

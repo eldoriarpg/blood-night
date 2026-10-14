@@ -6,6 +6,8 @@
 package de.eldoria.bloodnight.rules;
 
 import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -33,13 +35,17 @@ public final class CommandBlocker implements Listener {
     private final BloodNights nights;
     private final CommandMap commands;
     private final Function<World, List<String>> blocked;
+    private final RegionRules regions;
 
     /**
      * @param nights   the running blood nights
      * @param commands the server's commands
      * @param blocked  a world's blocked commands
+     * @param regions  where regions let blocked commands through
      */
-    public CommandBlocker(BloodNights nights, CommandMap commands, Function<World, List<String>> blocked) {
+    public CommandBlocker(
+            BloodNights nights, CommandMap commands, Function<World, List<String>> blocked, RegionRules regions) {
+        this.regions = regions;
         this.nights = nights;
         this.commands = commands;
         this.blocked = blocked;
@@ -50,6 +56,7 @@ public final class CommandBlocker implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         if (nights.running(world).isEmpty() || player.hasPermission(BYPASS)) return;
+        if (!regions.allows(player.getLocation(), RegionFlag.BLOCKED_COMMANDS)) return;
         if (!isBlocked(event.getMessage(), blocked.apply(world))) return;
         event.setCancelled(true);
         player.sendMessage(Messages.message(Messages.COMMAND_BLOCKED));

@@ -21,6 +21,7 @@ import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MobDamageTest extends RulesTest {
+    private boolean denied;
     private PlayerMock player;
     private Entity zombie;
     private Entity cow;
@@ -33,7 +34,8 @@ class MobDamageTest extends RulesTest {
                         new MobDamage(
                                 nights,
                                 ignored -> settings.mobSettings(),
-                                new ForeignMobs(ForeignMobSettings::new, () -> null)),
+                                new ForeignMobs(ForeignMobSettings::new, () -> null),
+                                (location, flag) -> !denied),
                         plugin);
         player = server.addPlayer();
         player.teleport(world.getSpawnLocation());
@@ -63,6 +65,14 @@ class MobDamageTest extends RulesTest {
     void npcsKeepTheirDamage() {
         zombie.setMetadata("NPC", new FixedMetadataValue(plugin, true));
         bloodNight();
+        assertEquals(4, hit(zombie, player));
+        assertEquals(4, hit(player, zombie));
+    }
+
+    @Test
+    void regionsCanSwitchTheRulesOff() {
+        bloodNight();
+        denied = true;
         assertEquals(4, hit(zombie, player));
         assertEquals(4, hit(player, zombie));
     }
