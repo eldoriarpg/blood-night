@@ -1,5 +1,5 @@
-import net.minecrell.pluginyml.paper.PaperPluginDescription
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     id("bloodnight.paper")
@@ -22,6 +22,11 @@ dependencies {
     compileOnly(libs.strokkcommands.annotations)
     compileOnly(libs.placeholderapi)
     compileOnly(libs.miniplaceholders)
+    compileOnly(libs.worldguard) {
+        exclude(group = "org.bukkit")
+        exclude(group = "org.spigotmc")
+        exclude(group = "io.papermc.paper")
+    }
     testImplementation(libs.placeholderapi)
     testImplementation(libs.miniplaceholders)
     annotationProcessor(libs.strokkcommands.processor)
@@ -48,7 +53,7 @@ paper {
         "item" to "registers the held item or removes a registered item",
     )
     serverDependencies {
-        listOf("PlaceholderAPI", "MiniPlaceholders").forEach { name ->
+        listOf("PlaceholderAPI", "MiniPlaceholders", "WorldGuard").forEach { name ->
             register(name) {
                 required = false
                 joinClasspath = true
@@ -106,24 +111,24 @@ tasks {
     build {
         dependsOn(shadowJar)
     }
-}
 
-tasks.runServer {
-    minecraftVersion("26.3")
-    jvmArgs("-Dcom.mojang.eula.agree=true")
+    runServer {
+        minecraftVersion("26.3")
+        jvmArgs("-Dcom.mojang.eula.agree=true")
+    }
+
+    register<JavaExec>("generatePayloadSchema") {
+        group = "build"
+        description = "Writes web/frontend/src/api/generated/payload.schema.json from the editor payload's classes"
+        dependsOn("compileTestJava")
+        mainClass = "de.eldoria.bloodnight.editor.PayloadSchemaCli"
+        classpath = sourceSets.test.get().runtimeClasspath
+        workingDir = rootDir
+    }
 }
 
 runPaper.folia.registerTask {
     minecraftVersion("26.2")
     runDirectory = layout.projectDirectory.dir("run-folia")
     jvmArgs("-Dcom.mojang.eula.agree=true")
-}
-
-tasks.register<JavaExec>("generatePayloadSchema") {
-    group = "build"
-    description = "Writes web/frontend/src/api/generated/payload.schema.json from the editor payload's classes"
-    dependsOn("compileTestJava")
-    mainClass = "de.eldoria.bloodnight.editor.PayloadSchemaCli"
-    classpath = sourceSets.test.get().runtimeClasspath
-    workingDir = rootDir
 }

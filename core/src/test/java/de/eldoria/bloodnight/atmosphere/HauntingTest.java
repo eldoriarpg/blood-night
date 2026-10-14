@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Location;
 import org.bukkit.WeatherType;
@@ -30,7 +31,8 @@ class HauntingTest extends AtmosphereTest {
 
     @BeforeEach
     void setUp() {
-        haunting = new Haunting(server, nights, ignored -> atmosphere, new Tasks(plugin), HauntingTest::border);
+        haunting = new Haunting(
+                server, nights, ignored -> atmosphere, new Tasks(plugin), HauntingTest::border, RegionRules.NONE);
         server.getPluginManager().registerEvents(haunting, plugin);
         player = new BorderedPlayer(server);
         server.addPlayer(player);

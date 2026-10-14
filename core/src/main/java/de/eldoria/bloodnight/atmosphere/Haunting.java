@@ -8,6 +8,8 @@ package de.eldoria.bloodnight.atmosphere;
 import de.eldoria.bloodnight.configuration.elements.world.AtmosphereSettings;
 import de.eldoria.bloodnight.configuration.elements.world.atmosphere.AmbientParticle;
 import de.eldoria.bloodnight.configuration.elements.world.atmosphere.Scare;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import io.papermc.paper.registry.RegistryAccess;
@@ -73,6 +75,7 @@ public final class Haunting implements Listener {
     private final Tasks tasks;
     private final Supplier<WorldBorder> borders;
     private final Map<UUID, Haunted> haunted = new ConcurrentHashMap<>();
+    private final RegionRules regions;
 
     /**
      * @param server   the server
@@ -80,13 +83,16 @@ public final class Haunting implements Listener {
      * @param settings the atmosphere settings of a world
      * @param tasks    runs each player on their thread
      * @param borders  creates a world border no world has, e.g. {@link Server#createWorldBorder()}
+     * @param regions  where regions keep the atmosphere away
      */
     public Haunting(
             Server server,
             BloodNights nights,
             Function<World, AtmosphereSettings> settings,
             Tasks tasks,
-            Supplier<WorldBorder> borders) {
+            Supplier<WorldBorder> borders,
+            RegionRules regions) {
+        this.regions = regions;
         this.server = server;
         this.nights = nights;
         this.settings = settings;
@@ -120,7 +126,7 @@ public final class Haunting implements Listener {
             leave(player);
             state = null;
         }
-        if (nights.running(world).isEmpty()) {
+        if (nights.running(world).isEmpty() || !regions.allows(player.getLocation(), RegionFlag.EFFECTS)) {
             if (state != null) leave(player);
             return;
         }

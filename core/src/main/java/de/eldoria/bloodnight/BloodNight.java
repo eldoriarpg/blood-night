@@ -27,6 +27,8 @@ import de.eldoria.bloodnight.integration.placeholders.MiniExpansion;
 import de.eldoria.bloodnight.integration.placeholders.PapiCommandText;
 import de.eldoria.bloodnight.integration.placeholders.PapiExpansion;
 import de.eldoria.bloodnight.integration.placeholders.Placeholders;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
+import de.eldoria.bloodnight.integration.regions.WorldGuardRules;
 import de.eldoria.bloodnight.integration.worlds.WorldNames;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
@@ -116,12 +118,27 @@ public final class BloodNight extends JavaPlugin {
     private @Nullable Object miniPlaceholders;
     private PhantomForce phantoms;
     private WorldNames worldNames;
+    private RegionRules regions = RegionRules.NONE;
     private WorldRules worldRules;
     private final Messages messages = new Messages();
     private NightSelector selector;
     private BloodNights bloodNights;
     private Behaviours behaviours = Behaviours.empty();
     private Catalog catalog;
+
+    /**
+     * Registers the WorldGuard flags while plugins load, as WorldGuard requires.
+     */
+    @Override
+    public void onLoad() {
+        if (getServer().getPluginManager().getPlugin("WorldGuard") == null) return;
+        try {
+            regions = WorldGuardRules.register(getLogger());
+            getLogger().info("WorldGuard flags registered");
+        } catch (LinkageError | RuntimeException e) {
+            getLogger().warning("WorldGuard flags could not be registered: " + e);
+        }
+    }
 
     @Override
     public void onEnable() {
@@ -201,7 +218,8 @@ public final class BloodNight extends JavaPlugin {
                         id -> configuration.items().item(id),
                         world -> bloodNights.running(world).isPresent(),
                         foreign,
-                        RANDOM),
+                        RANDOM,
+                        regions),
                 this);
         plugins.registerEvents(
                 new PickupGuard(
@@ -224,7 +242,8 @@ public final class BloodNight extends JavaPlugin {
                         tasks,
                         plugins,
                         foreign,
-                        RANDOM),
+                        RANDOM,
+                        regions),
                 this);
         stretch = new NightStretch(
                 getServer(),
@@ -259,7 +278,8 @@ public final class BloodNight extends JavaPlugin {
                 configuration::worldConfig,
                 selector::times,
                 tasks,
-                worldNames::name);
+                worldNames::name,
+                regions);
         plugins.registerEvents(announcer, this);
         phantoms = new PhantomForce(
                 bloodNights,
@@ -276,17 +296,26 @@ public final class BloodNight extends JavaPlugin {
         plugins.registerEvents(worldRules, this);
         plugins.registerEvents(
                 new MobDamage(
-                        bloodNights, world -> configuration.worldConfig(world).mobSettings(), foreign),
+                        bloodNights, world -> configuration.worldConfig(world).mobSettings(), foreign, regions),
                 this);
         plugins.registerEvents(
-                new CommandBlocker(bloodNights, getServer().getCommandMap(), world -> configuration
-                        .worldConfig(world)
-                        .nightSettings()
-                        .blockedCommands()),
+                new CommandBlocker(
+                        bloodNights,
+                        getServer().getCommandMap(),
+                        world ->
+                                configuration.worldConfig(world).nightSettings().blockedCommands(),
+                        regions),
                 this);
         plugins.registerEvents(
                 new DeathActionHandler(
-                        getServer(), tasks, bloodNights, configuration::worldConfig, commandText, foreign, RANDOM),
+                        getServer(),
+                        tasks,
+                        bloodNights,
+                        configuration::worldConfig,
+                        commandText,
+                        foreign,
+                        RANDOM,
+                        regions),
                 this);
         bloodSky = new BloodSky(
                 bloodNights, world -> configuration.worldConfig(world).atmosphere(), BloodSky.silently(getServer()));
@@ -296,7 +325,8 @@ public final class BloodNight extends JavaPlugin {
                 bloodNights,
                 world -> configuration.worldConfig(world).atmosphere(),
                 tasks,
-                getServer()::createWorldBorder);
+                getServer()::createWorldBorder,
+                regions);
         plugins.registerEvents(haunting, this);
         bloodPack = new BloodPack(() -> configuration.main().resourcePack(), tasks, getLogger());
         plugins.registerEvents(bloodPack, this);

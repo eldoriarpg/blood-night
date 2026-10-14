@@ -9,6 +9,8 @@ import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
 import de.eldoria.bloodnight.graph.runtime.Integrations;
+import de.eldoria.bloodnight.integration.regions.RegionFlag;
+import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
@@ -49,6 +51,7 @@ public class MobSpawner implements Listener {
     private final PluginManager events;
     private final ForeignMobs foreign;
     private final RandomGenerator random;
+    private final RegionRules regions;
 
     /**
      * @param mobs          every custom mob
@@ -59,6 +62,7 @@ public class MobSpawner implements Listener {
      * @param events        where {@link CustomMobSpawnEvent} is called, so other plugins can keep an entity as it is
      * @param foreign       tells mobs of other plugins, which stay as they are
      * @param random        rolls the spawn chance and the pick; used from several threads
+     * @param regions       where regions keep mobs ordinary
      */
     public MobSpawner(
             Supplier<? extends Collection<CustomMob>> mobs,
@@ -68,7 +72,9 @@ public class MobSpawner implements Listener {
             Tasks tasks,
             PluginManager events,
             ForeignMobs foreign,
-            RandomGenerator random) {
+            RandomGenerator random,
+            RegionRules regions) {
+        this.regions = regions;
         this.mobs = mobs;
         this.settings = settings;
         this.coordinator = coordinator;
@@ -87,7 +93,7 @@ public class MobSpawner implements Listener {
 
     void handleSpawnedMob(LivingEntity entity) {
         if (!entity.isValid() || MobTags.isCustomMob(entity) || MobTags.isExtension(entity)) return;
-        if (!foreign.mayWrap(entity)) return;
+        if (!foreign.mayWrap(entity) || !regions.allows(entity.getLocation(), RegionFlag.CUSTOM_MOBS)) return;
         WorldSettings worldSettings = settings.apply(entity.getWorld());
         MobSpawning spawning = worldSettings.mobSettings().spawning();
         if (!worldSettings.enabled() || spawning.ignoredReasons().contains(entity.getEntitySpawnReason())) return;
