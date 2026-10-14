@@ -9,11 +9,11 @@ import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
-import de.eldoria.bloodnight.mob.meta.Despawn;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
@@ -880,7 +880,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 dragon.behaviour(),
                 dragon.mobDrops(),
                 dragon.extension(),
-                new SpawnRules(0, false, Despawn.NEVER, Set.of(), SpawnConditions.any()));
+                new SpawnRules(0, false, NightEnd.KEEP, Set.of(), SpawnConditions.any()));
     }
 
     private CustomMob mob(String id, String name, EntityType type, Consumer<MobGraph> behaviour) {

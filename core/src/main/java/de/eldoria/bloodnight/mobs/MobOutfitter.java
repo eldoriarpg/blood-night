@@ -39,11 +39,14 @@ import java.util.function.Supplier;
  * names an item of the {@link ItemRegistry}, or a plain item by its material key such as {@code minecraft:diamond_helmet}.
  * <p>
  * The name is MiniMessage, shown above the mob when its world shows names. Health and damage follow
- * {@link Attributes}; an extension takes over the mob's maximum health, so the shared health fits both. Further
- * attribute changes are added as modifiers keyed {@code bloodnight:custom_mob_<n>}, so
- * applying a mob twice does not stack them. Values beyond what an attribute allows are clamped by the server.
+ * {@link Attributes}; an extension takes over the mob's maximum health, so the shared health fits both. Every
+ * attribute change is a modifier keyed {@code bloodnight:custom_mob_<n>}, {@code _health} or {@code _damage}, so
+ * applying a mob twice does not stack them, the entity's own base values stay, and {@link #revert} undoes them all. Values beyond what an attribute allows are clamped by the server.
  */
 public final class MobOutfitter {
+    private static final String MODIFIER = "custom_mob_";
+    private static final NamespacedKey HEALTH = new NamespacedKey("bloodnight", MODIFIER + "health");
+    private static final NamespacedKey DAMAGE = new NamespacedKey("bloodnight", MODIFIER + "damage");
     private final Supplier<ItemRegistry> items;
     private final Function<World, MobSettings> settings;
 
@@ -82,12 +85,47 @@ public final class MobOutfitter {
         entity.setCustomNameVisible(visible);
     }
 
+    /**
+     * Turns a custom mob back into an ordinary one: its tags, name and attribute modifiers go, its health shrinks to
+     * fit, its equipment stays.
+     */
+    public static void revert(LivingEntity entity) {
+        MobTags.clear(entity);
+        entity.customName(null);
+        entity.setCustomNameVisible(false);
+        var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.ATTRIBUTE);
+        for (Attribute attribute : registry) {
+            AttributeInstance instance = entity.getAttribute(attribute);
+            if (instance == null) continue;
+            for (AttributeModifier modifier : List.copyOf(instance.getModifiers())) {
+                if (isOwn(modifier.getKey())) instance.removeModifier(modifier);
+            }
+        }
+        AttributeInstance health = entity.getAttribute(Attribute.MAX_HEALTH);
+        if (health != null) entity.setHealth(Math.min(entity.getHealth(), health.getValue()));
+    }
+
+    private static boolean isOwn(NamespacedKey key) {
+        return key.getNamespace().equals("bloodnight") && key.getKey().startsWith(MODIFIER);
+    }
+
     private static void health(LivingEntity entity, Attributes attributes, double worldMultiplier) {
         AttributeInstance health = entity.getAttribute(Attribute.MAX_HEALTH);
         if (health == null) return;
-        health.setBaseValue(
-                value(health.getBaseValue(), attributes.healthModifier(), attributes.health(), worldMultiplier));
+        double target = value(health.getBaseValue(), attributes.healthModifier(), attributes.health(), worldMultiplier);
+        offset(health, HEALTH, target - health.getBaseValue());
         entity.setHealth(health.getValue());
+    }
+
+    /**
+     * Sets the modifier of a key to add a fixed amount, replacing the one set before.
+     */
+    private static void offset(AttributeInstance instance, NamespacedKey key, double amount) {
+        instance.removeModifier(key);
+        if (amount != 0) {
+            instance.addModifier(
+                    new AttributeModifier(key, amount, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY));
+        }
     }
 
     private static void shareMaxHealth(LivingEntity base, LivingEntity extension) {
@@ -101,7 +139,8 @@ public final class MobOutfitter {
     private static void damage(LivingEntity entity, Attributes attributes) {
         AttributeInstance damage = entity.getAttribute(Attribute.ATTACK_DAMAGE);
         if (damage == null) return;
-        damage.setBaseValue(value(damage.getBaseValue(), attributes.damageModifier(), attributes.damage(), 1));
+        double target = value(damage.getBaseValue(), attributes.damageModifier(), attributes.damage(), 1);
+        offset(damage, DAMAGE, target - damage.getBaseValue());
     }
 
     /**
@@ -129,7 +168,7 @@ public final class MobOutfitter {
             Attribute attribute = key == null ? null : registry.get(key);
             AttributeInstance instance = attribute == null ? null : entity.getAttribute(attribute);
             if (instance == null) continue;
-            NamespacedKey modifierKey = new NamespacedKey("bloodnight", "custom_mob_" + i);
+            NamespacedKey modifierKey = new NamespacedKey("bloodnight", MODIFIER + i);
             instance.removeModifier(modifierKey);
             instance.addModifier(
                     new AttributeModifier(modifierKey, change.amount(), change.operation(), EquipmentSlotGroup.ANY));

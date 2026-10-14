@@ -9,7 +9,7 @@ import de.eldoria.bloodnight.api.CompiledBehaviour;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.Despawn;
+import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
@@ -36,8 +36,8 @@ import java.util.logging.Logger;
  * <p>
  * Each mob gets its own instance of its compiled behaviour, so state like cooldowns is per mob. Every mob has a task on
  * its entity's scheduler that runs its tick entry each tick. The same task notices when the blood night of the mob's
- * world ends: it runs the night end entry once, and a mob that despawns at night end and spawned in that night goes
- * within the following second (spread over the second, so a night end with many mobs does not stall a tick). On Folia
+ * world ends: it runs the night end entry once, and a mob that spawned in that night is removed or turned back into
+ * an ordinary mob, as its {@link NightEnd} says, within the following second (spread over the second, so a night end with many mobs does not stall a tick). On Folia
  * each mob therefore only ever runs on the thread of its region; on Paper all of it runs on the main thread. A mob in a
  * chunk that is loaded but does not tick runs nothing, and goes once it ticks again.
  * <p>
@@ -228,7 +228,11 @@ public final class MobCoordinator {
         }
         tracked.seenNight = running;
         if (tracked.age++ % SPREAD == tracked.offset && expired(mob, running)) {
-            despawn(mob);
+            if (mob.mob().spawn().nightEnd() == NightEnd.REVERT) {
+                revert(mob);
+            } else {
+                despawn(mob);
+            }
             return false;
         }
         guard(mob, "mob.tick", () -> mob.behaviour().onTick());
@@ -236,7 +240,7 @@ public final class MobCoordinator {
     }
 
     private static boolean expired(ActiveMob mob, OptionalLong running) {
-        if (mob.mob().spawn().despawn() != Despawn.NIGHT_END) return false;
+        if (mob.mob().spawn().nightEnd() == NightEnd.KEEP) return false;
         OptionalLong night = MobTags.getNight(mob.entity());
         if (night.isEmpty()) return false;
         return running.isEmpty() || running.getAsLong() != night.getAsLong();
@@ -246,6 +250,13 @@ public final class MobCoordinator {
         Entity extension = mob.extension();
         if (extension != null) tasks.entityNow(extension, extension::remove);
         mob.entity().remove();
+        forget(mob.entity().getUniqueId());
+    }
+
+    private void revert(ActiveMob mob) {
+        Entity extension = mob.extension();
+        if (extension != null) tasks.entityNow(extension, extension::remove);
+        MobOutfitter.revert(mob.entity());
         forget(mob.entity().getUniqueId());
     }
 

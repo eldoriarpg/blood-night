@@ -39,7 +39,7 @@ class SpawnRulesTest {
         SpawnRules rules = read("{}");
         assertEquals(SpawnRules.DEFAULT_WEIGHT, rules.weight());
         assertTrue(rules.nightOnly());
-        assertEquals(Despawn.NIGHT_END, rules.despawn());
+        assertEquals(NightEnd.REMOVE, rules.nightEnd());
         assertTrue(rules.allows(night()));
     }
 
@@ -51,7 +51,7 @@ class SpawnRulesTest {
 
     @Test
     void reasonsLimitTheSpawns() {
-        SpawnRules rules = new SpawnRules(1, true, Despawn.NEVER, Set.of(SpawnReason.SPAWNER), SpawnConditions.any());
+        SpawnRules rules = new SpawnRules(1, true, NightEnd.KEEP, Set.of(SpawnReason.SPAWNER), SpawnConditions.any());
         assertFalse(rules.allows(night()));
     }
 

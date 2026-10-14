@@ -243,7 +243,6 @@ export default {
                 SONIC_BOOM: 'Sonic boom',
                 CUSTOM: 'Plugin',
             },
-            Despawn: {NIGHT_END: 'When the night ends', NEVER: 'Never'},
             DifficultyChange: {UNCHANGED: 'Unchanged', PEACEFUL: 'Peaceful', EASY: 'Easy', NORMAL: 'Normal', HARD: 'Hard'},
             EquipmentSlot: {
                 HAND: 'Main hand',
@@ -263,6 +262,7 @@ export default {
             },
             LengthMode: {NORMAL: 'Normal', EXTENDED: 'Extended', RANGE: 'Within a range'},
             Method: {CHAT: 'Chat', TITLE: 'Title', SUBTITLE: 'Subtitle', ACTION_BAR: 'Action bar'},
+            NightEnd: {REMOVE: 'Remove', KEEP: 'Keep as it is', REVERT: 'Turn into an ordinary mob'},
             NightSelectionType: {
                 RANDOM: 'Random',
                 MOON_PHASE: 'Moon phase',
@@ -381,7 +381,6 @@ export default {
             deathActions: 'Death actions',
             deathCommands: 'Commands on death',
             description: 'Description',
-            despawn: 'Despawn',
             difficulty: 'Difficulty',
             displayName: 'Display name',
             displayNames: 'Show mob names',
@@ -446,6 +445,7 @@ export default {
             monsterTicksPerSpawn: 'Ticks between monster spawns (-1 unchanged)',
             moonPhase: 'Moon phase',
             name: 'Name',
+            nightEnd: 'When the night ends',
             nightOnly: 'Only during blood nights',
             nightRules: 'World rules during blood nights',
             nightSelection: 'Night selection',
