@@ -1,0 +1,435 @@
+{
+  "format" : 1,
+  "id" : "grabber_enderman",
+  "pack" : "end",
+  "names" : {
+    "de" : "Greifer-Enderman",
+    "en" : "Grabber Enderman"
+  },
+  "descriptions" : {
+    "de" : "Packt alle 10 Sekunden Mobs in seiner Nähe und setzt sie vor dir ab.",
+    "en" : "Every 10 seconds it grabs mobs around it and puts them down in front of you."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "grabber_enderman",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.grabber_enderman:'Grabber Enderman'>",
+      "entityType" : "ENDERMAN",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "add_7" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "multiply_6",
+              "port" : "result"
+            }
+          }
+        },
+        "add_9" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "multiply_8",
+              "port" : "result"
+            }
+          }
+        },
+        "branch_18" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "chance_17",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "teleport_16" ]
+          }
+        },
+        "branch_19" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_15",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_18" ]
+          }
+        },
+        "branch_20" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_12",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_19" ]
+          }
+        },
+        "branch_25" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_24",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_22" ]
+          }
+        },
+        "branch_26" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_23",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_25" ]
+          }
+        },
+        "branch_29" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_28",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "for_each_11", "spawn_particle_27" ]
+          }
+        },
+        "branch_31" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_30",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_29" ]
+          }
+        },
+        "cast_12" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "mob"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_11",
+              "port" : "element"
+            }
+          }
+        },
+        "chance_17" : {
+          "type" : "function.chance",
+          "literals" : {
+            "percent" : 35.0
+          }
+        },
+        "cooldown_28" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 10000
+          }
+        },
+        "create_5" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_2",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_7",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_2",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_9",
+              "port" : "result"
+            }
+          }
+        },
+        "equal_15" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "read_13",
+              "port" : "type"
+            },
+            "second" : {
+              "node" : "value_14",
+              "port" : "value"
+            }
+          }
+        },
+        "for_each_11" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_10",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_20" ]
+          }
+        },
+        "is_null_23" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_24" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_21",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_30" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "multiply_6" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_4",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "multiply_8" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_4",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "mutate_22" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "nearest_player_21",
+              "port" : "player"
+            }
+          }
+        },
+        "nearby_entities_10" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 16.0,
+            "y" : 8.0,
+            "z" : 16.0
+          }
+        },
+        "nearest_player_21" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 16.0
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_13" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_12",
+              "port" : "result"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "read_3" : {
+          "type" : "location.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_2",
+              "port" : "location"
+            }
+          }
+        },
+        "read_4" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_3",
+              "port" : "direction"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_27" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "create_5",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:portal"
+          }
+        },
+        "teleport_16" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_5",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "cast_12",
+              "port" : "result"
+            }
+          }
+        },
+        "tick_32" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_26", "branch_31" ]
+          }
+        },
+        "value_14" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:ender_dragon"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ "#minecraft:is_end" ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

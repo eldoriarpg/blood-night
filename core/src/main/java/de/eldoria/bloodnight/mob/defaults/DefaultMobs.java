@@ -16,6 +16,7 @@ import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
+import de.eldoria.bloodnight.mob.meta.Surface;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.compiler.Graphs;
 import de.eldoria.graph.model.Graph;
@@ -115,6 +116,9 @@ public final class DefaultMobs implements BloodNightNodes {
                 mobs.tideDrowned(),
                 mobs.swarmSilverfish(),
                 subtypesToo(mobs.assassinSpider()),
+                inTheEnd(mobs.launcherEnderman()),
+                inTheEnd(mobs.grabberEnderman()),
+                inTheEnd(mobs.fuseEnderman()),
                 mobs.bloodDragon());
     }
 
@@ -733,6 +737,187 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("first", gap, RESULT)
                 .literal("second", (double) LEAP_TICKS)
                 .id();
+    }
+
+    /**
+     * Grabs a player it hits. Unless they sneak within a second, it carries them up to twenty blocks into the air
+     * somewhere within thirty blocks and lets go, then returns to where it stood. At most every eight seconds.
+     */
+    private CustomMob launcherEnderman() {
+        return mob("launcher_enderman", EntityType.ENDERMAN, graph -> {
+            String hit = graph.entry(EVENT_HIT);
+            String victim = graph.as("player", hit, "entity");
+            String remember = graph.node(VARIABLE_SET)
+                    .config("name", "origin")
+                    .config("type", "location")
+                    .input(VALUE, graph.selfRead(), "location")
+                    .id();
+            String held = graph.as("player", graph.selfRead(), TARGET);
+            String sneaking =
+                    graph.node(PLAYER_READ).input(TARGET, held, RESULT).id();
+            String player = graph.node(ENTITY_READ).input(TARGET, held, RESULT).id();
+            String sky = graph.node(LOCATION_CREATE)
+                    .input("world", player, "world")
+                    .input("x", offset(graph, player, "x", -30, 30), RESULT)
+                    .input("y", offset(graph, player, "y", 8, 20), RESULT)
+                    .input("z", offset(graph, player, "z", -30, 30), RESULT)
+                    .id();
+            String origin = graph.node(VARIABLE_GET)
+                    .config("name", "origin")
+                    .config("type", "location")
+                    .id();
+            String back = graph.node(FLOW_DELAY)
+                    .literal("duration", 0.5)
+                    .chain("next", teleport(graph, graph.self(), "entity", origin, VALUE))
+                    .id();
+            String launch = graph.when(
+                    held,
+                    "matches",
+                    graph.unless(
+                            sneaking,
+                            "sneaking",
+                            teleport(graph, held, RESULT, sky, RESULT),
+                            teleport(graph, graph.self(), "entity", sky, RESULT),
+                            graph.particlesAt("minecraft:portal", 40, sky, RESULT),
+                            back));
+            String wait = graph.node(FLOW_DELAY)
+                    .literal("duration", 1.0)
+                    .chain("next", launch)
+                    .id();
+            graph.on(
+                    EVENT_HIT,
+                    graph.when(
+                            victim,
+                            "matches",
+                            graph.every(
+                                    8000,
+                                    remember,
+                                    graph.effect(victim, RESULT, "minecraft:slowness", 1, 4),
+                                    graph.sound(victim, RESULT, "minecraft:entity.enderman.scream", 1, 0.7),
+                                    wait)));
+            graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.particles("minecraft:reverse_portal", 3));
+        });
+    }
+
+    /**
+     * Every ten seconds, picks some of the mobs within sixteen blocks and puts them down in front of its target.
+     */
+    private CustomMob grabberEnderman() {
+        return mob("grabber_enderman", EntityType.ENDERMAN, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            String facing =
+                    graph.node(LOCATION_READ).input(TARGET, target, "location").id();
+            String direction =
+                    graph.node(VECTOR_READ).input(TARGET, facing, "direction").id();
+            String front = graph.node(LOCATION_CREATE)
+                    .input("world", target, "world")
+                    .input("x", ahead(graph, target, direction, "x"), RESULT)
+                    .input("y", target, "y")
+                    .input("z", ahead(graph, target, direction, "z"), RESULT)
+                    .id();
+            String nearby = graph.node(ENTITY_NEARBY_ENTITIES)
+                    .input(TARGET, graph.self(), "entity")
+                    .literal("x", 16.0)
+                    .literal("y", 8.0)
+                    .literal("z", 16.0)
+                    .id();
+            Graphs.NodeBuilder each = graph.node(FLOW_FOR_EACH).input("list", nearby, RESULT);
+            String mob = graph.as("mob", each.id(), "element");
+            String other = graph.node(ENTITY_READ).input(TARGET, mob, RESULT).id();
+            String dragon = graph.value("entity_type", "minecraft:ender_dragon");
+            String isDragon = graph.node(LOGIC_EQUAL)
+                    .input("first", other, "type")
+                    .input("second", dragon, VALUE)
+                    .id();
+            each.chain(
+                    "body",
+                    graph.when(
+                            mob,
+                            "matches",
+                            graph.unless(
+                                    isDragon, RESULT, graph.chance(35, teleport(graph, mob, RESULT, front, RESULT)))));
+            graph.on(
+                    MOB_TICK,
+                    graph.targetNearestPlayer(),
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.every(10000, each.id(), graph.particlesAt("minecraft:portal", 30, front, RESULT))));
+        });
+    }
+
+    /**
+     * Every six seconds, lays lit TNT next to its target that hurts but breaks no blocks.
+     */
+    private CustomMob fuseEnderman() {
+        return mob("fuse_enderman", EntityType.ENDERMAN, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            String tnt = graph.node(WORLD_SPAWN_TNT)
+                    .input("location", nearby(graph, target, 0), RESULT)
+                    .literal("seconds", 2.0)
+                    .literal("power", 3.0)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.targetNearestPlayer(),
+                    graph.dust(200, 40, 0, 1, 3),
+                    graph.present(graph.selfRead(), TARGET, graph.every(6000, tnt)));
+        });
+    }
+
+    private static String teleport(MobGraph graph, String entity, String entityPort, String location, String port) {
+        return graph.node(ENTITY_TELEPORT)
+                .input(TARGET, entity, entityPort)
+                .input("location", location, port)
+                .id();
+    }
+
+    /**
+     * A coordinate of an entity plus a random amount between two bounds.
+     */
+    private static String offset(MobGraph graph, String entity, String axis, double lower, double upper) {
+        String random = graph.node(FUNCTION_RANDOM_NUMBER)
+                .literal("lower", lower)
+                .literal("upper", upper)
+                .id();
+        return graph.node(MATH_ADD)
+                .input("first", entity, axis)
+                .input("second", random, RESULT)
+                .id();
+    }
+
+    /**
+     * A coordinate three blocks ahead of where an entity looks.
+     */
+    private static String ahead(MobGraph graph, String entity, String direction, String axis) {
+        String step = graph.node(MATH_MULTIPLY)
+                .input("first", direction, axis)
+                .literal("second", 3.0)
+                .id();
+        return graph.node(MATH_ADD)
+                .input("first", entity, axis)
+                .input("second", step, RESULT)
+                .id();
+    }
+
+    /**
+     * The same mob, spawning only in End biomes.
+     */
+    private static CustomMob inTheEnd(CustomMob mob) {
+        SpawnRules rules = mob.spawn();
+        return new CustomMob(
+                mob.id(),
+                mob.equipment(),
+                mob.attributes(),
+                mob.behaviour(),
+                mob.mobDrops(),
+                mob.extension(),
+                new SpawnRules(
+                        rules.weight(),
+                        rules.nightOnly(),
+                        rules.nightEnd(),
+                        rules.reasons(),
+                        new SpawnConditions(List.of(), List.of("#minecraft:is_end"), null, null, null, Surface.ANY)));
     }
 
     /**

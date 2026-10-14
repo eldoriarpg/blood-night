@@ -1,0 +1,12 @@
+{
+  "pack": "end",
+  "names": {
+    "en": "Grabber Enderman",
+    "de": "Greifer-Enderman"
+  },
+  "descriptions": {
+    "en": "Every 10 seconds it grabs mobs around it and puts them down in front of you.",
+    "de": "Packt alle 10 Sekunden Mobs in seiner Nähe und setzt sie vor dir ab."
+  },
+  "requires": []
+}

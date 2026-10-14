@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -20,9 +21,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
@@ -104,6 +107,28 @@ public final class BukkitRuntime {
             if (effectOnly) world.strikeLightningEffect(location);
             else world.strikeLightning(location);
         });
+    }
+
+    /**
+     * Marks TNT whose explosion breaks no blocks; the plugin clears the block list of explosions of entities with it.
+     */
+    public static final NamespacedKey HARMLESS = new NamespacedKey("bloodnight", "harmless_explosion");
+
+    /**
+     * Spawns lit TNT, on the thread owning the location. Its explosion hurts but breaks no blocks, and counts as the
+     * mob's.
+     *
+     * @param seconds how long the fuse burns
+     * @param power   how strong the explosion is, 4 for normal TNT
+     */
+    public static void spawnTnt(MobContext context, Location location, double seconds, double power) {
+        LivingEntity mob = context.entity();
+        context.at(location, () -> location.getWorld().spawn(location, TNTPrimed.class, tnt -> {
+            tnt.setFuseTicks((int) Math.round(Math.max(seconds, 0) * 20));
+            tnt.setYield((float) Math.max(power, 0));
+            tnt.setSource(mob);
+            tnt.getPersistentDataContainer().set(HARMLESS, PersistentDataType.BOOLEAN, true);
+        }));
     }
 
     /**

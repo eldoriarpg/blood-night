@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.ClassName;
 import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphCompiler;
 import de.eldoria.graph.model.Graph;
@@ -18,8 +19,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BukkitNodesTest {
     private ServerMock server;
@@ -123,6 +127,27 @@ class BukkitNodesTest {
         tick(graph);
 
         assertEquals(List.of("CONSOLE: world 1 64 3", "Steve: Steve"), ran);
+    }
+
+    @Test
+    void litTntBurnsAndBreaksNothing() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "tnt"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
+                .node(
+                        "tnt",
+                        NodeInstance.of("world.spawn_tnt")
+                                .input("location", "self_get", "location")
+                                .literal("seconds", DoubleNode.valueOf(1.5)))
+                .build();
+
+        tick(graph);
+
+        TNTPrimed tnt = world.getEntitiesByClass(TNTPrimed.class).iterator().next();
+        assertEquals(30, tnt.getFuseTicks());
+        assertEquals(zombie, tnt.getSource());
+        assertTrue(tnt.getPersistentDataContainer().has(BukkitRuntime.HARMLESS, PersistentDataType.BOOLEAN));
     }
 
     @Test
