@@ -24,9 +24,9 @@ public class MobSpawning {
     private int spawnPercentage = 50;
     /**
      * Mobs spawned for these reasons, e.g. {@code SPAWNER} or {@code TRIAL_SPAWNER}, never become special mobs and
-     * cause no death actions.
+     * cause no death actions. {@code CUSTOM} by default: mobs other plugins spawn stay as they are.
      */
-    private Set<SpawnReason> ignoredReasons = EnumSet.noneOf(SpawnReason.class);
+    private Set<SpawnReason> ignoredReasons = EnumSet.of(SpawnReason.CUSTOM);
 
     private Map<String, Integer> mobs = new HashMap<>();
 

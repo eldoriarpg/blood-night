@@ -5,12 +5,15 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
+import de.eldoria.bloodnight.mobs.ForeignMobs;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
@@ -25,7 +28,13 @@ class MobDamageTest extends RulesTest {
     @BeforeEach
     void setUp() {
         settings = Settings.world("{\"mobSettings\":{\"damageModifier\":3,\"healthMultiplier\":4}}");
-        server.getPluginManager().registerEvents(new MobDamage(nights, ignored -> settings.mobSettings()), plugin);
+        server.getPluginManager()
+                .registerEvents(
+                        new MobDamage(
+                                nights,
+                                ignored -> settings.mobSettings(),
+                                new ForeignMobs(ForeignMobSettings::new, () -> null)),
+                        plugin);
         player = server.addPlayer();
         player.teleport(world.getSpawnLocation());
         zombie = world.spawnEntity(world.getSpawnLocation(), EntityType.ZOMBIE);
@@ -48,6 +57,14 @@ class MobDamageTest extends RulesTest {
         bloodNight();
         assertEquals(12, hit(zombie, player));
         assertEquals(4, hit(zombie, cow));
+    }
+
+    @Test
+    void npcsKeepTheirDamage() {
+        zombie.setMetadata("NPC", new FixedMetadataValue(plugin, true));
+        bloodNight();
+        assertEquals(4, hit(zombie, player));
+        assertEquals(4, hit(player, zombie));
     }
 
     @Test

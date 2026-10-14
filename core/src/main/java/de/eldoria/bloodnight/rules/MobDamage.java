@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.rules;
 
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
+import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
@@ -27,14 +28,17 @@ import java.util.function.Function;
 public final class MobDamage implements Listener {
     private final BloodNights nights;
     private final Function<World, MobSettings> settings;
+    private final ForeignMobs foreign;
 
     /**
      * @param nights   the running blood nights
      * @param settings the mob settings of a world
+     * @param foreign  tells mobs of other plugins, which keep their own damage and health
      */
-    public MobDamage(BloodNights nights, Function<World, MobSettings> settings) {
+    public MobDamage(BloodNights nights, Function<World, MobSettings> settings, ForeignMobs foreign) {
         this.nights = nights;
         this.settings = settings;
+        this.foreign = foreign;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -44,9 +48,12 @@ public final class MobDamage implements Listener {
         Entity attacker = event.getDamageSource().getCausingEntity();
         Entity victim = event.getEntity();
         MobSettings mobSettings = settings.apply(world);
-        if (victim instanceof Player && attacker instanceof Enemy) {
+        if (victim instanceof Player && attacker instanceof Enemy && foreign.ruled(attacker)) {
             event.setDamage(event.getDamage() * mobSettings.damageModifier());
-        } else if (attacker instanceof Player && victim instanceof Enemy && isOrdinary(victim)) {
+        } else if (attacker instanceof Player
+                && victim instanceof Enemy
+                && isOrdinary(victim)
+                && foreign.ruled(victim)) {
             event.setDamage(event.getDamage() / mobSettings.healthMultiplier());
         }
     }

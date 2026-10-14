@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.configuration.elements.Announcements;
 import de.eldoria.bloodnight.configuration.elements.EditorSettings;
+import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.PlaceholderSettings;
 import de.eldoria.bloodnight.configuration.elements.ResourcePackSettings;
 
@@ -18,6 +19,7 @@ public class ConfigFile {
     private EditorSettings editor = new EditorSettings();
     private ResourcePackSettings resourcePack = new ResourcePackSettings();
     private PlaceholderSettings placeholders = new PlaceholderSettings();
+    private ForeignMobSettings foreignMobs = new ForeignMobSettings();
 
     /**
      * @return how blood nights are announced
@@ -45,5 +47,12 @@ public class ConfigFile {
      */
     public PlaceholderSettings placeholders() {
         return placeholders;
+    }
+
+    /**
+     * @return how mobs of other plugins are treated
+     */
+    public ForeignMobSettings foreignMobs() {
+        return foreignMobs;
     }
 }

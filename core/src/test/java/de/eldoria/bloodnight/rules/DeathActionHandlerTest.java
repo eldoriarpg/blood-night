@@ -5,7 +5,9 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
+import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -53,6 +55,7 @@ class DeathActionHandlerTest extends RulesTest {
                                 nights,
                                 ignored -> settings,
                                 CommandText.NONE,
+                                new ForeignMobs(ForeignMobSettings::new, () -> null),
                                 RandomGenerator.getDefault()),
                         plugin);
         player = server.addPlayer();

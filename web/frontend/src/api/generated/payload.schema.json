@@ -293,6 +293,16 @@
           "default" : {
             "revealNext" : false
           }
+        },
+        "foreignMobs" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ForeignMobSettings"
+          } ],
+          "default" : {
+            "markerKeys" : [ ],
+            "rules" : false,
+            "wrap" : false
+          }
         }
       }
     },
@@ -705,6 +715,26 @@
       "type" : "string",
       "enum" : [ "DARKEN_SCREEN", "PLAY_BOSS_MUSIC", "CREATE_WORLD_FOG" ]
     },
+    "ForeignMobSettings" : {
+      "type" : "object",
+      "properties" : {
+        "wrap" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "rules" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "markerKeys" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "default" : [ ]
+        }
+      }
+    },
     "GlobalDrops" : {
       "type" : "object",
       "properties" : {
@@ -888,7 +918,7 @@
             "$ref" : "#/$defs/MobSpawning"
           } ],
           "default" : {
-            "ignoredReasons" : [ ],
+            "ignoredReasons" : [ "CUSTOM" ],
             "mobs" : { },
             "spawnPercentage" : 50
           }
@@ -933,7 +963,7 @@
             "$ref" : "#/$defs/SpawnReason"
           },
           "uniqueItems" : true,
-          "default" : [ ]
+          "default" : [ "CUSTOM" ]
         },
         "mobs" : {
           "type" : "object",
@@ -1827,7 +1857,7 @@
             "forcePhantoms" : true,
             "healthMultiplier" : 2.0,
             "spawning" : {
-              "ignoredReasons" : [ ],
+              "ignoredReasons" : [ "CUSTOM" ],
               "mobs" : { },
               "spawnPercentage" : 50
             }

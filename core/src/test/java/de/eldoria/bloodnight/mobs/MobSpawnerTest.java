@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.mobs;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
+import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.items.ItemRegistry;
@@ -21,6 +22,7 @@ import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier.Operation;
@@ -28,6 +30,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,11 +58,13 @@ class MobSpawnerTest {
     private MobCoordinator coordinator;
     private BloodNights nights;
     private MobSpawner spawner;
+    private ForeignMobSettings foreign = new ForeignMobSettings();
 
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
+        settings.mobSettings().spawning().ignoredReasons().clear();
         CustomMob strong = Mobs.zombie("strong", Graph.builder().build());
         strong = new CustomMob(
                 strong.id(),
@@ -103,6 +110,7 @@ class MobSpawnerTest {
                 nights,
                 tasks,
                 server.getPluginManager(),
+                new ForeignMobs(() -> foreign, () -> null),
                 new SplittableRandom(1));
     }
 
@@ -166,6 +174,47 @@ class MobSpawnerTest {
         at(24_000);
         server.getScheduler().performTicks(20);
         assertFalse(mob.isValid());
+    }
+
+    @Test
+    void mobsOtherPluginsSpawnStayAsTheyAre() {
+        settings.mobSettings().spawning().ignoredReasons().add(CreatureSpawnEvent.SpawnReason.CUSTOM);
+        at(13_000);
+        LivingEntity spawned = zombie();
+        assertEquals(CreatureSpawnEvent.SpawnReason.CUSTOM, spawned.getEntitySpawnReason());
+        for (int i = 0; i < 100; i++) spawner.handleSpawnedMob(spawned);
+        assertFalse(MobTags.isCustomMob(spawned));
+    }
+
+    @Test
+    void npcsStayAsTheyAre() {
+        at(13_000);
+        LivingEntity npc = zombie();
+        npc.setMetadata("NPC", new FixedMetadataValue(MockBukkit.createMockPlugin(), true));
+        for (int i = 0; i < 100; i++) spawner.handleSpawnedMob(npc);
+        assertFalse(MobTags.isCustomMob(npc));
+    }
+
+    @Test
+    void markedMobsStayAsTheyAreUnlessAllowed() {
+        foreign = foreignSettings("{\"markerKeys\":[\"levelledmobs:level\"]}");
+        at(13_000);
+        LivingEntity levelled = zombie();
+        levelled.getPersistentDataContainer()
+                .set(NamespacedKey.fromString("levelledmobs:level"), PersistentDataType.INTEGER, 5);
+        for (int i = 0; i < 100; i++) spawner.handleSpawnedMob(levelled);
+        assertFalse(MobTags.isCustomMob(levelled));
+
+        foreign = foreignSettings("{\"wrap\":true,\"markerKeys\":[\"levelledmobs:level\"]}");
+        for (int i = 0; i < 100 && !MobTags.isCustomMob(levelled); i++) spawner.handleSpawnedMob(levelled);
+        assertTrue(MobTags.isCustomMob(levelled));
+    }
+
+    private static ForeignMobSettings foreignSettings(String json) {
+        return JsonMapper.builder()
+                .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY))
+                .build()
+                .readValue(json, ForeignMobSettings.class);
     }
 
     @Test

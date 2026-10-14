@@ -35,6 +35,9 @@ Settings for the whole server.
 | `resourcePack.required` | true or false | `false` |
 | `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
 | `placeholders.revealNext` | true or false | `false` |
+| `foreignMobs.wrap` | true or false | `false` |
+| `foreignMobs.rules` | true or false | `false` |
+| `foreignMobs.markerKeys` | list of text | `[]` |
 
 The whole file with its defaults:
 
@@ -55,6 +58,10 @@ resourcePack:
   url: https://bloodnight.docs.eldoria.de/pack/bloodnight.zip
 placeholders:
   revealNext: false
+foreignMobs:
+  markerKeys: []
+  rules: false
+  wrap: false
 ```
 
 ## worlds/&lt;world id&gt;.yml
@@ -88,7 +95,7 @@ Settings for one world. Every world has its own file.
 | `nightSettings.timed.dragonFight` | true or false | `true` |
 | `nightSettings.timed.dragon` | text | `blood_dragon` |
 | `mobSettings.spawning.spawnPercentage` | whole number | `50` |
-| `mobSettings.spawning.ignoredReasons` | list of `NATURAL`, `JOCKEY`, `CHUNK_GEN`, `SPAWNER`, `TRIAL_SPAWNER`, `EGG`, `SPAWNER_EGG`, `LIGHTNING`, `BUILD_SNOWMAN`, `BUILD_IRONGOLEM`, `BUILD_COPPERGOLEM`, `BUILD_WITHER`, `VILLAGE_DEFENSE`, `VILLAGE_INVASION`, `BREEDING`, `SLIME_SPLIT`, `REINFORCEMENTS`, `NETHER_PORTAL`, `DISPENSE_EGG`, `INFECTION`, `CURED`, `OCELOT_BABY`, `SILVERFISH_BLOCK`, `MOUNT`, `TRAP`, `ENDER_PEARL`, `SHOULDER_ENTITY`, `DROWNED`, `SHEARED`, `EXPLOSION`, `RAID`, `PATROL`, `BEEHIVE`, `PIGLIN_ZOMBIFIED`, `SPELL`, `FROZEN`, `METAMORPHOSIS`, `DUPLICATION`, `COMMAND`, `ENCHANTMENT`, `OMINOUS_ITEM_SPAWNER`, `BUCKET`, `POTION_EFFECT`, `REANIMATE`, `REHYDRATION`, `CUSTOM`, `DEFAULT` | `[]` |
+| `mobSettings.spawning.ignoredReasons` | list of `NATURAL`, `JOCKEY`, `CHUNK_GEN`, `SPAWNER`, `TRIAL_SPAWNER`, `EGG`, `SPAWNER_EGG`, `LIGHTNING`, `BUILD_SNOWMAN`, `BUILD_IRONGOLEM`, `BUILD_COPPERGOLEM`, `BUILD_WITHER`, `VILLAGE_DEFENSE`, `VILLAGE_INVASION`, `BREEDING`, `SLIME_SPLIT`, `REINFORCEMENTS`, `NETHER_PORTAL`, `DISPENSE_EGG`, `INFECTION`, `CURED`, `OCELOT_BABY`, `SILVERFISH_BLOCK`, `MOUNT`, `TRAP`, `ENDER_PEARL`, `SHOULDER_ENTITY`, `DROWNED`, `SHEARED`, `EXPLOSION`, `RAID`, `PATROL`, `BEEHIVE`, `PIGLIN_ZOMBIFIED`, `SPELL`, `FROZEN`, `METAMORPHOSIS`, `DUPLICATION`, `COMMAND`, `ENCHANTMENT`, `OMINOUS_ITEM_SPAWNER`, `BUCKET`, `POTION_EFFECT`, `REANIMATE`, `REHYDRATION`, `CUSTOM`, `DEFAULT` | `["CUSTOM"]` |
 | `mobSettings.spawning.mobs` | map | `{}` |
 | `mobSettings.creepers.blockDamage` | true or false | `false` |
 | `mobSettings.creepers.always` | true or false | `false` |
@@ -208,7 +215,8 @@ mobSettings:
   forcePhantoms: true
   healthMultiplier: 2
   spawning:
-    ignoredReasons: []
+    ignoredReasons:
+      - CUSTOM
     mobs: {}
     spawnPercentage: 50
 announcement:

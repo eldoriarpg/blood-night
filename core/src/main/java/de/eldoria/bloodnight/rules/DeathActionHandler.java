@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.configuration.elements.world.death.LightningSetting
 import de.eldoria.bloodnight.configuration.elements.world.death.PlayerDeathActions;
 import de.eldoria.bloodnight.configuration.elements.world.death.TimedEffect;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
+import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.Effects;
@@ -50,6 +51,7 @@ public final class DeathActionHandler implements Listener {
     private final Function<World, WorldSettings> settings;
     private final RandomGenerator random;
     private final CommandText text;
+    private final ForeignMobs foreign;
 
     /**
      * @param server   runs the commands
@@ -57,6 +59,7 @@ public final class DeathActionHandler implements Listener {
      * @param nights   the running blood nights
      * @param settings the settings of a world
      * @param text     fills in other plugins' placeholders
+     * @param foreign  tells mobs of other plugins, which cause no death actions
      * @param random   decides the chances; used from several threads
      */
     public DeathActionHandler(
@@ -65,9 +68,11 @@ public final class DeathActionHandler implements Listener {
             BloodNights nights,
             Function<World, WorldSettings> settings,
             CommandText text,
+            ForeignMobs foreign,
             RandomGenerator random) {
         this.server = server;
         this.text = text;
+        this.foreign = foreign;
         this.tasks = tasks;
         this.nights = nights;
         this.settings = settings;
@@ -77,7 +82,7 @@ public final class DeathActionHandler implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnemyDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
-        if (!(entity instanceof Enemy) || MobTags.isExtension(entity)) return;
+        if (!(entity instanceof Enemy) || MobTags.isExtension(entity) || !foreign.ruled(entity)) return;
         World world = entity.getWorld();
         if (nights.running(world).isEmpty()) return;
         WorldSettings worldSettings = settings.apply(world);

@@ -33,7 +33,7 @@ import java.util.random.RandomGenerator;
  * Turns spawning entities into custom mobs.
  * <p>
  * One tick after an entity spawned (so other plugins can change it first), it is taken over when its world is
- * enabled, it is no custom mob or extension yet, its spawn reason is not ignored by the world, some custom mob fits
+ * enabled, it is no custom mob or extension yet, no other plugin owns it, its spawn reason is not ignored by the world, some custom mob fits
  * the spawn by type, spawn rules and weight, and the world's spawn chance hits. The mob is picked by weight. Mobs
  * spawned during a blood night are marked with its number, so they can go when it ends.
  */
@@ -44,6 +44,7 @@ public class MobSpawner implements Listener {
     private final BloodNights nights;
     private final Tasks tasks;
     private final PluginManager events;
+    private final ForeignMobs foreign;
     private final RandomGenerator random;
 
     /**
@@ -53,6 +54,7 @@ public class MobSpawner implements Listener {
      * @param nights        the running blood nights
      * @param tasks         runs the takeover on the entity's thread
      * @param events        where {@link CustomMobSpawnEvent} is called, so other plugins can keep an entity as it is
+     * @param foreign       tells mobs of other plugins, which stay as they are
      * @param random        rolls the spawn chance and the pick; used from several threads
      */
     public MobSpawner(
@@ -62,6 +64,7 @@ public class MobSpawner implements Listener {
             BloodNights nights,
             Tasks tasks,
             PluginManager events,
+            ForeignMobs foreign,
             RandomGenerator random) {
         this.mobs = mobs;
         this.settings = settings;
@@ -69,6 +72,7 @@ public class MobSpawner implements Listener {
         this.nights = nights;
         this.tasks = tasks;
         this.events = events;
+        this.foreign = foreign;
         this.random = random;
     }
 
@@ -80,6 +84,7 @@ public class MobSpawner implements Listener {
 
     void handleSpawnedMob(LivingEntity entity) {
         if (!entity.isValid() || MobTags.isCustomMob(entity) || MobTags.isExtension(entity)) return;
+        if (!foreign.mayWrap(entity)) return;
         WorldSettings worldSettings = settings.apply(entity.getWorld());
         MobSpawning spawning = worldSettings.mobSettings().spawning();
         if (!worldSettings.enabled() || spawning.ignoredReasons().contains(entity.getEntitySpawnReason())) return;
