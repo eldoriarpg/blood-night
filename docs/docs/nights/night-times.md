@@ -5,6 +5,11 @@ sidebar_position: 2
 
 # Night times and length
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
+type. This page shows the files, so you know what the editor writes for you.
+:::
+
 All of these live in `nightSettings` in the world file.
 
 ```yaml

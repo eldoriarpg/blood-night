@@ -5,6 +5,11 @@ sidebar_position: 1
 
 # Harder monsters
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
+type. This page shows the files, so you know what the editor writes for you.
+:::
+
 During a blood night, all monsters get tougher, not only the special ones. These settings are in `mobSettings` in
 the world file.
 

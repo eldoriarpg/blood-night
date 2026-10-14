@@ -7,6 +7,11 @@ sidebar_position: 1
 
 # Settings
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks
+what you type. This page shows the files, so you know what the editor writes for you.
+:::
+
 Here you find every setting with its default value. The guide pages explain what they do.
 
 Missing keys are added with their default when the plugin loads the file.

@@ -5,6 +5,11 @@ sidebar_position: 3
 
 # Messages, boss bar and sounds
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
+type. This page shows the files, so you know what the editor writes for you.
+:::
+
 A blood night should feel scary. These settings tell players that one is coming.
 
 ## Messages

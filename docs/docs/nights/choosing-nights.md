@@ -5,6 +5,11 @@ sidebar_position: 1
 
 # Choosing blood nights
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
+type. This page shows the files, so you know what the editor writes for you.
+:::
+
 Not every night is a blood night. Each world decides by itself, with the `nightSelection` settings in its world file.
 
 ```yaml

@@ -5,6 +5,11 @@ sidebar_position: 1
 
 # Special mobs
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
+type. This page shows the files, so you know what the editor writes for you.
+:::
+
 A special mob starts as a normal mob. When it spawns during a blood night, BloodNight may turn it into a special
 mob. It keeps its body, but gets a new name, new stats, new equipment and a new **behaviour**.
 

@@ -5,6 +5,11 @@ sidebar_position: 1
 
 # Install BloodNight
 
+:::tip Use the web editor
+The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
+type. This page shows the files, so you know what the editor writes for you.
+:::
+
 ## What you need
 
 - A [Paper](https://papermc.io) server, version 26.3 or newer.
