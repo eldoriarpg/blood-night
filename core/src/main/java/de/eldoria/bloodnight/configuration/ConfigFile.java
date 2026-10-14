@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.configuration.elements.EditorSettings;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.PlaceholderSettings;
 import de.eldoria.bloodnight.configuration.elements.ResourcePackSettings;
+import de.eldoria.bloodnight.configuration.elements.SetupSettings;
 import de.eldoria.bloodnight.configuration.elements.StoreSettings;
 import de.eldoria.bloodnight.configuration.elements.UpdateSettings;
 
@@ -24,6 +25,7 @@ public class ConfigFile {
     private UpdateSettings updates = new UpdateSettings();
     private StoreSettings store = new StoreSettings();
     private ForeignMobSettings foreignMobs = new ForeignMobSettings();
+    private SetupSettings setup = new SetupSettings();
 
     /**
      * @return how blood nights are announced
@@ -72,5 +74,12 @@ public class ConfigFile {
      */
     public ForeignMobSettings foreignMobs() {
         return foreignMobs;
+    }
+
+    /**
+     * @return whether the first-run setup was finished
+     */
+    public SetupSettings setup() {
+        return setup;
     }
 }

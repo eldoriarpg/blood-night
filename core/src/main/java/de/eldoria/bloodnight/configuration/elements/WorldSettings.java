@@ -20,7 +20,7 @@ import de.eldoria.bloodnight.configuration.elements.world.death.DeathActionSetti
  * final fields.
  */
 public class WorldSettings {
-    private boolean enabled = true;
+    private boolean enabled = false;
     private String displayName = "";
     private NightSelection nightSelection = new NightSelection();
     private NightSettings nightSettings = new NightSettings();
@@ -33,7 +33,7 @@ public class WorldSettings {
     private NightRuleSettings nightRules = new NightRuleSettings();
 
     /**
-     * @return whether the world has blood nights at all
+     * @return whether the world has blood nights at all; off until the setup or an admin turns it on
      */
     public boolean enabled() {
         return enabled;

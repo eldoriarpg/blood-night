@@ -29,7 +29,7 @@ abstract class RulesTest {
     Plugin plugin;
     World world;
     BloodNights nights;
-    WorldSettings settings = new WorldSettings();
+    WorldSettings settings = Settings.enabled();
 
     @BeforeEach
     void setUpServer() {

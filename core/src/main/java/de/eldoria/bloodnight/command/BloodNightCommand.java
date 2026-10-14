@@ -69,6 +69,9 @@ final class BloodNightCommand {
     @Subcommand
     final ConvertCommand convert;
 
+    @Subcommand
+    final SetupCommand setup;
+
     BloodNightCommand(BloodNight plugin) {
         this.plugin = plugin;
         reload = new ReloadCommand(plugin);
@@ -84,6 +87,7 @@ final class BloodNightCommand {
         store = new StoreCommand(plugin);
         pack = new PackCommand(plugin);
         convert = new ConvertCommand(plugin);
+        setup = new SetupCommand(editor);
     }
 
     /**
@@ -106,6 +110,7 @@ final class BloodNightCommand {
 
     private static Map<String, String> subcommands() {
         Map<String, String> subcommands = new LinkedHashMap<>();
+        subcommands.put("setup", "setup");
         subcommands.put("night", "night [force | cancel] [world]");
         subcommands.put("editor", "editor [new | apply [force] | cancel]");
         subcommands.put("store", "store [list <pack> | install <pack | mob> | update [pack | mob]]");

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EditorPayloadTest {
@@ -66,7 +67,9 @@ class EditorPayloadTest {
                         List.of("CREEPER"),
                         List.of("SkeletalKnight")),
                 Map.of("mobs.yml", "abc"),
-                EditorStore.empty());
+                EditorStore.empty(),
+                false,
+                null);
 
         JsonNode json = GraphJson.mapper().readTree(payload.asJson());
 
@@ -91,6 +94,14 @@ class EditorPayloadTest {
                         .path("value")
                         .asInt());
         assertEquals("broken", json.path("configProblems").path("items.yml").asString());
+        assertFalse(json.path("setup").asBoolean());
+
+        EditorLegacy legacy = new EditorLegacy(new ConfigFile(), Map.of(), Map.of(), Map.of(), List.of("no hats"));
+        JsonNode setup = GraphJson.mapper().readTree(payload.forSetup(legacy).asJson());
+        assertTrue(setup.path("setup").asBoolean());
+        assertEquals("no hats", setup.path("legacy").path("notes").path(0).asString());
+        assertFalse(
+                setup.path("settings").path("main").path("setup").path("done").asBoolean(true));
     }
 
     @Test

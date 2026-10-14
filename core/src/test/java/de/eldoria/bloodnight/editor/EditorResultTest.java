@@ -62,7 +62,9 @@ class EditorResultTest {
                         List.of("CREEPER"),
                         List.of("SkeletalKnight")),
                 Map.of("mobs.yml", "abc"),
-                EditorStore.empty());
+                EditorStore.empty(),
+                false,
+                null);
 
         EditorResult result = EditorResult.of(EditorPayload.MAPPER.readTree(payload.asJson()));
 

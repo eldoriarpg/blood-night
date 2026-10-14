@@ -346,6 +346,14 @@
             "rules" : false,
             "wrap" : false
           }
+        },
+        "setup" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/SetupSettings"
+          } ],
+          "default" : {
+            "done" : false
+          }
         }
       }
     },
@@ -627,6 +635,39 @@
       },
       "required" : [ "kind", "material", "lore", "enchantments" ]
     },
+    "EditorLegacy" : {
+      "type" : "object",
+      "properties" : {
+        "main" : {
+          "$ref" : "#/$defs/ConfigFile"
+        },
+        "worlds" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/WorldPayload"
+          }
+        },
+        "mobs" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/CustomMob"
+          }
+        },
+        "items" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/EditorItem"
+          }
+        },
+        "notes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "required" : [ "main", "worlds", "mobs", "items", "notes" ]
+    },
     "EditorPayload" : {
       "type" : "object",
       "properties" : {
@@ -689,9 +730,15 @@
         },
         "store" : {
           "$ref" : "#/$defs/EditorStore"
+        },
+        "setup" : {
+          "type" : "boolean"
+        },
+        "legacy" : {
+          "$ref" : "#/$defs/EditorLegacy"
         }
       },
-      "required" : [ "catalog", "mobs", "macros", "items", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store" ]
+      "required" : [ "catalog", "mobs", "macros", "items", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
     },
     "EditorSettings" : {
       "type" : "object",
@@ -1620,6 +1667,15 @@
       },
       "required" : [ "main", "globalDrops", "worlds" ]
     },
+    "SetupSettings" : {
+      "type" : "object",
+      "properties" : {
+        "done" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
     "Severity" : {
       "type" : "string",
       "enum" : [ "ERROR", "WARNING" ]
@@ -2054,7 +2110,7 @@
       "properties" : {
         "enabled" : {
           "type" : "boolean",
-          "default" : true
+          "default" : false
         },
         "displayName" : {
           "type" : "string",

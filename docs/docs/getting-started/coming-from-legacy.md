@@ -8,7 +8,12 @@ sidebar_position: 4
 If your server ran the old BloodNight (version 0.12 or older), you can take its settings over. The old plugin does
 not need to be installed for this. Only its files are read.
 
-## Steps
+## The easy way
+
+Run `/bn setup`. When the old files are in `plugins/BloodNight/legacy`, the first question of the setup is whether
+to take them over. It shows what it cannot take over. The next questions start from your old settings.
+
+## Steps with commands
 
 1. Remove the old BloodNight jar and put the new one into `plugins`. Leave the folder `plugins/BloodNight` as it is.
 2. Start the server. BloodNight finds the old files and moves them to `plugins/BloodNight/legacy`. The console says

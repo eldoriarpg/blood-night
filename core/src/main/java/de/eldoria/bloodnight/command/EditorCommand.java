@@ -9,10 +9,12 @@ import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.editor.EditorChecks;
 import de.eldoria.bloodnight.editor.EditorClient;
 import de.eldoria.bloodnight.editor.EditorItems;
+import de.eldoria.bloodnight.editor.EditorLegacy;
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.editor.EditorResult;
 import de.eldoria.bloodnight.editor.EditorSessionFile;
 import de.eldoria.bloodnight.editor.SettingsPayload;
+import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
@@ -30,6 +32,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
@@ -124,15 +127,29 @@ final class EditorCommand {
     }
 
     private void openNew(CommandSender sender, Optional<SessionCreated> previous) {
+        open(sender, previous, false);
+    }
+
+    /**
+     * Replaces any open session with one the editor starts with the setup wizard, the old BloodNight's files converted
+     * when the server has them.
+     *
+     * @param sender who runs the setup
+     */
+    void openSetup(CommandSender sender) {
+        plugin.tasks().globalNow(() -> open(sender, sessions().load(), true));
+    }
+
+    private void open(CommandSender sender, Optional<SessionCreated> previous, boolean setup) {
         String payload;
         try {
-            payload = EditorPayload.of(
-                            plugin.configuration(),
-                            plugin.behaviours(),
-                            plugin.catalog().version(),
-                            plugin.getServer().getWorlds(),
-                            plugin.store())
-                    .asJson();
+            EditorPayload opened = EditorPayload.of(
+                    plugin.configuration(),
+                    plugin.behaviours(),
+                    plugin.catalog().version(),
+                    plugin.getServer().getWorlds(),
+                    plugin.store());
+            payload = (setup ? opened.forSetup(legacy(sender)) : opened).asJson();
         } catch (IOException e) {
             Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
             return;
@@ -147,8 +164,20 @@ final class EditorCommand {
                     }
                     previous.ifPresent(old -> client().close(old));
                     sessions().save(session);
-                    Replies.send(sender, "editor.opened", arg("link", link(session.editorUrl())));
+                    Replies.send(
+                            sender, setup ? "setup.opened" : "editor.opened", arg("link", link(session.editorUrl())));
                 }));
+    }
+
+    private @Nullable EditorLegacy legacy(CommandSender sender) {
+        if (!Files.isDirectory(ConvertCommand.legacyFolder(plugin))) return null;
+        try {
+            return EditorLegacy.of(
+                    ConvertCommand.convert(plugin), plugin.getServer().getWorlds());
+        } catch (IOException | RuntimeException e) {
+            Replies.send(sender, "convert.failed", arg("error", String.valueOf(e.getMessage())));
+            return null;
+        }
     }
 
     /**
@@ -240,8 +269,8 @@ final class EditorCommand {
             Replies.send(sender, "editor.session_unreadable", arg("error", String.valueOf(e.getMessage())));
             return false;
         }
-        List<String> problems =
-                EditorChecks.problems(result, plugin.configuration().items()::knows);
+        ItemRegistry items = itemsBefore(result, view.payload().path("setup").asBoolean(false));
+        List<String> problems = EditorChecks.problems(result, items::knows);
         if (!problems.isEmpty()) {
             Replies.send(sender, "editor.not_applied");
             problems.forEach(problem -> Replies.send(sender, "editor.item", arg("item", problem)));
@@ -259,8 +288,7 @@ final class EditorCommand {
         }
         plugin.configuration().replaceMobs(result.mobs().values());
         plugin.configuration().replaceMacros(result.macros());
-        plugin.configuration()
-                .replaceItems(EditorItems.apply(plugin.configuration().items(), result.items()));
+        plugin.configuration().replaceItems(EditorItems.apply(items, result.items()));
         SettingsPayload settings = result.settings();
         if (settings != null) {
             plugin.configuration().replaceMain(settings.main());
@@ -285,6 +313,23 @@ final class EditorCommand {
                 arg("backup", backup));
         ReloadCommand.reload(plugin, sender);
         return true;
+    }
+
+    /**
+     * The items the result is applied onto: the server's, and for a setup session the registered items of the old
+     * BloodNight the result kept, which the editor cannot carry.
+     */
+    private ItemRegistry itemsBefore(EditorResult result, boolean setup) {
+        ItemRegistry current = plugin.configuration().items();
+        if (!setup || !Files.isDirectory(ConvertCommand.legacyFolder(plugin))) return current;
+        try {
+            return EditorItems.adopt(
+                    current,
+                    ConvertCommand.convert(plugin).items(),
+                    result.items().keySet());
+        } catch (IOException | RuntimeException e) {
+            return current;
+        }
     }
 
     private boolean unchanged(CommandSender sender, EditorResult result) {

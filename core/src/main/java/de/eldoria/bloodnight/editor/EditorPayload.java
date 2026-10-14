@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.editor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.configuration.Configuration;
+import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
 import de.eldoria.bloodnight.store.MobStore;
@@ -15,6 +16,7 @@ import de.eldoria.graph.compiler.GraphProblem;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import org.bukkit.World;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
@@ -45,6 +47,9 @@ import java.util.TreeMap;
  * @param hashes         SHA-256 of each file the session may replace, as it was when the session opened; checked
  *                       when the result comes back
  * @param store          the mobs the store offers and how the installed ones stood to it, read only
+ * @param setup          whether the session was opened by {@code /bloodnight setup}, so the editor starts with the
+ *                       setup wizard
+ * @param legacy         the old BloodNight's files converted, for the setup wizard to offer; read only
  */
 public record EditorPayload(
         String catalog,
@@ -57,7 +62,9 @@ public record EditorPayload(
         SettingsPayload settings,
         EditorChoices choices,
         Map<String, String> hashes,
-        EditorStore store) {
+        EditorStore store,
+        boolean setup,
+        @Nullable EditorLegacy legacy) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
             .addModule(new EditorSerialization())
@@ -92,20 +99,43 @@ public record EditorPayload(
                 catalog,
                 mobs,
                 configuration.macros().macros(),
-                items(configuration),
+                items(configuration.items()),
                 behaviours.problems(),
                 behaviours.macroProblems(),
                 configuration.problems(),
                 settings,
                 EditorChoices.ofServer(),
                 configuration.fileHashes(worlds),
-                EditorStore.of(store, configuration.mobs().all()));
+                EditorStore.of(store, configuration.mobs().all()),
+                false,
+                null);
     }
 
-    private static Map<String, EditorItem> items(Configuration configuration) {
+    /**
+     * @param legacy the old BloodNight's files converted, if the server has them
+     * @return this payload for a session the editor opens with the setup wizard
+     */
+    public EditorPayload forSetup(@Nullable EditorLegacy legacy) {
+        return new EditorPayload(
+                catalog,
+                mobs,
+                macros,
+                items,
+                problems,
+                macroProblems,
+                configProblems,
+                settings,
+                choices,
+                hashes,
+                store,
+                true,
+                legacy);
+    }
+
+    static Map<String, EditorItem> items(ItemRegistry registry) {
         Map<String, EditorItem> items = new TreeMap<>();
-        configuration.items().registrations().forEach((id, item) -> items.put(id, EditorItem.registered(item)));
-        configuration.items().definitions().forEach((id, definition) -> items.put(id, EditorItem.defined(definition)));
+        registry.registrations().forEach((id, item) -> items.put(id, EditorItem.registered(item)));
+        registry.definitions().forEach((id, definition) -> items.put(id, EditorItem.defined(definition)));
         return items;
     }
 

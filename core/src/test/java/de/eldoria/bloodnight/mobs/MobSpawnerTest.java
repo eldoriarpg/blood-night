@@ -24,6 +24,7 @@ import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.rules.Settings;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
@@ -67,7 +68,7 @@ class MobSpawnerTest {
     private ServerMock server;
     private World world;
     private final MobRegistry mobs = new MobRegistry();
-    private final WorldSettings settings = new WorldSettings();
+    private final WorldSettings settings = Settings.enabled();
     private MobCoordinator coordinator;
     private BloodNights nights;
     private MobSpawner spawner;

@@ -354,6 +354,8 @@ export interface EditorPayload {
     [k: string]: string;
   };
   store: EditorStore;
+  setup: boolean;
+  legacy?: EditorLegacy;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -575,6 +577,7 @@ export interface ConfigFile {
   updates?: UpdateSettings;
   store?: StoreSettings;
   foreignMobs?: ForeignMobSettings;
+  setup?: SetupSettings;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -635,6 +638,13 @@ export interface ForeignMobSettings {
   wrap?: boolean;
   rules?: boolean;
   markerKeys?: string[];
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "SetupSettings".
+ */
+export interface SetupSettings {
+  done?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1046,6 +1056,23 @@ export interface Offer {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "EditorLegacy".
+ */
+export interface EditorLegacy {
+  main: ConfigFile;
+  worlds: {
+    [k: string]: WorldPayload;
+  };
+  mobs: {
+    [k: string]: CustomMob;
+  };
+  items: {
+    [k: string]: EditorItem;
+  };
+  notes: string[];
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Catalog".
  */
 export interface Catalog {
@@ -1165,6 +1192,8 @@ export interface EditorPayload1 {
     [k: string]: string;
   };
   store: EditorStore;
+  setup: boolean;
+  legacy?: EditorLegacy;
 }
 
 export const Color = {

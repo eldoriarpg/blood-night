@@ -17,6 +17,7 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,5 +66,22 @@ class EditorItemsTest {
                 Material.DIAMOND_HELMET,
                 applied.item("minecraft:diamond_helmet").getType());
         assertNull(applied.item("unknown"));
+    }
+
+    @Test
+    void oldRegistrationsAreAdoptedOnlyWhereWantedAndFree() {
+        ItemRegistry current = new ItemRegistry(Map.of("kept", ItemStack.of(Material.STICK)), null);
+        ItemRegistry old = new ItemRegistry(
+                Map.of(
+                        "kept", ItemStack.of(Material.DIAMOND),
+                        "wanted", ItemStack.of(Material.BONE),
+                        "dropped", ItemStack.of(Material.APPLE)),
+                null);
+
+        ItemRegistry adopted = EditorItems.adopt(current, old, Set.of("kept", "wanted"));
+
+        assertEquals(Material.STICK, adopted.item("kept").getType());
+        assertEquals(Material.BONE, adopted.item("wanted").getType());
+        assertNull(adopted.registrations().get("dropped"));
     }
 }

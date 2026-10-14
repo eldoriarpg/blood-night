@@ -9,6 +9,7 @@ import type {Page, WebSocketRoute} from '@playwright/test'
 export interface EditorStage {
     link: string
     changes: unknown[][]
+    submits: number
     stream(): WebSocketRoute
 }
 
@@ -153,12 +154,12 @@ const payload = {
     macroProblems: {},
     configProblems: {},
     settings: {
-        main: {announcements: {prefix: '[BN] '}},
+        main: {announcements: {prefix: '[BN] '}, resourcePack: {offer: true}, setup: {done: false}},
         globalDrops: {},
         worlds: {
-            w1: {name: 'world', settings: {enabled: true, nightSettings: {begin: 13000, end: 23000}}},
-            w2: {name: 'world_nether', settings: {enabled: true, nightSettings: {begin: 12000, end: 22000}}},
-            w3: {name: 'world_the_end', settings: {enabled: false, nightSettings: {begin: 13000, end: 23000}}},
+            w1: {name: 'world', settings: {enabled: true, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
+            w2: {name: 'world_nether', settings: {enabled: true, nightSettings: {begin: 12000, end: 22000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
+            w3: {name: 'world_the_end', settings: {enabled: false, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
         },
     },
     hashes: {},
@@ -192,15 +193,25 @@ function withoutPositions(): typeof payload {
  * @param page the page
  * @param holders sections other participants hold, by section
  * @param unplaced whether the mob's nodes come without saved positions, as fresh default mobs do
+ * @param setup whether the session was opened by the setup command
  * @returns the stage
  */
-export async function stageEditor(page: Page, holders: Record<string, string> = {}, unplaced = false): Promise<EditorStage> {
+export async function stageEditor(page: Page, holders: Record<string, string> = {}, unplaced = false, setup = false): Promise<EditorStage> {
     const changes: unknown[][] = []
     let socket: WebSocketRoute | null = null
     let revision = 0
     const locks = Object.entries(holders).map(([section, holder]) => ({section, holder}))
+    const stage: EditorStage = {
+        link: `/session/${SESSION}#token`,
+        changes,
+        submits: 0,
+        stream: () => {
+            if (!socket) throw new Error('No stream yet')
+            return socket
+        },
+    }
     await page.route(`**/api/v1/editor/sessions/${SESSION}`, route => route.fulfill({json: {
-        id: SESSION, state: 'EDITING', revision, catalog: 'e2e', payload: unplaced ? withoutPositions() : payload, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'DROPS'], expires: '2026-10-20T00:00:00Z',
+        id: SESSION, state: 'EDITING', revision, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'DROPS'], expires: '2026-10-20T00:00:00Z',
     }}))
     await page.route('**/api/v1/editor/catalogs/e2e', route => route.fulfill({json: catalog}))
     await page.route(`**/api/v1/editor/sessions/${SESSION}/locks`, route => route.fulfill({status: 204}))
@@ -219,16 +230,13 @@ export async function stageEditor(page: Page, holders: Record<string, string> = 
         await route.fulfill({json: {revision, problems: []}})
         socket?.send(JSON.stringify({type: 'CHANGE', revision, author: 'Steve', operations}))
     })
+    await page.route(`**/api/v1/editor/sessions/${SESSION}/submit`, async route => {
+        stage.submits++
+        await route.fulfill({status: 204})
+    })
     await page.routeWebSocket(/\/stream\?token=/, ws => {
         socket = ws
         ws.send(JSON.stringify({type: 'HELLO', revision, participants: ['Steve', ...Object.values(holders)], locks}))
     })
-    return {
-        link: `/session/${SESSION}#token`,
-        changes,
-        stream: () => {
-            if (!socket) throw new Error('No stream yet')
-            return socket
-        },
-    }
+    return stage
 }

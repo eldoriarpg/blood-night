@@ -597,3 +597,27 @@ test('a mob is installed from the store', async ({page}) => {
     })])
     await expect(page.getByText('Installed')).toBeVisible()
 })
+
+/** The setup wizard turns on a world, installs the classic mobs, marks the setup as done and the session as done. */
+test('the setup wizard sends everything as one change', async ({page}) => {
+    const stage = await stageEditor(page, {}, false, true)
+    await page.goto(stage.link)
+
+    await expect(page.getByText('Which worlds get blood nights?')).toBeVisible()
+    await page.getByRole('switch', {name: 'world_the_end'}).click()
+    for (let step = 0; step < 4; step++) await page.getByRole('button', {name: 'Next'}).click()
+    await expect(page.getByRole('checkbox')).toBeChecked()
+    await page.getByRole('button', {name: 'Next'}).click()
+    await expect(page.getByText('1 mobs are installed.')).toBeVisible()
+    await page.getByRole('button', {name: 'Finish'}).click()
+
+    await expect(page.getByText('Almost done')).toBeVisible()
+    expect(stage.submits).toBe(1)
+    const operations = stage.changes[0] as {path: string, value: unknown}[]
+    expect(operations).toContainEqual({op: 'add', path: '/settings/worlds/w3/settings/enabled', value: true})
+    expect(operations).toContainEqual(expect.objectContaining({op: 'add', path: '/mobs/night_hound'}))
+    expect(operations.at(-1)).toEqual({op: 'add', path: '/settings/main/setup', value: {done: true}})
+
+    await page.getByRole('button', {name: 'Open the full editor'}).click()
+    await expect(page.getByRole('button', {name: 'speed_creeper'})).toBeVisible()
+})

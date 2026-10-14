@@ -10,10 +10,12 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.util.Map;
+
 /**
  * World settings for tests, read from JSON the way the configuration reads them: through fields.
  */
-final class Settings {
+public final class Settings {
     private static final JsonMapper MAPPER = JsonMapper.builder()
             .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                     .withGetterVisibility(JsonAutoDetect.Visibility.NONE))
@@ -21,8 +23,20 @@ final class Settings {
 
     private Settings() {}
 
-    static WorldSettings world(String json) {
-        return MAPPER.readValue(json, WorldSettings.class);
+    /**
+     * @param json the settings that differ from the defaults
+     * @return the settings of a world with blood nights turned on
+     */
+    public static WorldSettings world(String json) {
+        WorldSettings settings = MAPPER.readValue(json, WorldSettings.class);
+        return MAPPER.updateValue(settings, Map.of("enabled", true));
+    }
+
+    /**
+     * @return the default settings of a world with blood nights turned on
+     */
+    public static WorldSettings enabled() {
+        return world("{}");
     }
 
     static NightSelection everyNight() {

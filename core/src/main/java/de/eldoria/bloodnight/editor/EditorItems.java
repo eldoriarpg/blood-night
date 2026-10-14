@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -42,5 +43,19 @@ public final class EditorItems {
                 definitions.put(id, item.definition());
         });
         return new ItemRegistry(registrations, definitions);
+    }
+
+    /**
+     * @param current the registry now
+     * @param adopted another registry, e.g. the old BloodNight's converted
+     * @param wanted  the ids to take from it
+     * @return the registry now plus the wanted registrations of the other one it does not have yet
+     */
+    public static ItemRegistry adopt(ItemRegistry current, ItemRegistry adopted, Set<String> wanted) {
+        Map<String, ItemStack> registrations = new HashMap<>(current.registrations());
+        adopted.registrations().forEach((id, stack) -> {
+            if (wanted.contains(id)) registrations.putIfAbsent(id, stack.clone());
+        });
+        return new ItemRegistry(registrations, current.definitions());
     }
 }

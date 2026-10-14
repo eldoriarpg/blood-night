@@ -60,6 +60,7 @@ import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
 import de.eldoria.bloodnight.rules.WorldRules;
 import de.eldoria.bloodnight.service.PluginService;
+import de.eldoria.bloodnight.setup.SetupNotice;
 import de.eldoria.bloodnight.store.BuiltInStore;
 import de.eldoria.bloodnight.store.MobStore;
 import de.eldoria.bloodnight.store.StoreEntry;
@@ -298,6 +299,11 @@ public final class BloodNight extends JavaPlugin {
             getLogger()
                     .info("Mobs you changed have updates in the store: %s. Take them with /bloodnight store update"
                             .formatted(String.join(", ", waiting)));
+        }
+        plugins.registerEvents(
+                new SetupNotice(() -> configuration.main().setup().done()), this);
+        if (!configuration.main().setup().done()) {
+            getLogger().info("BloodNight is not set up yet, so no world has blood nights. Run /bloodnight setup");
         }
         StoreIds.use(mobStore.store());
         announcer = new Announcer(

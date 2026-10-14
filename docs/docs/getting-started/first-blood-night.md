@@ -5,7 +5,8 @@ sidebar_position: 2
 
 # Your first blood night
 
-You don't have to wait for a lucky night. You can start one yourself.
+You don't have to wait for a lucky night. You can start one yourself. Your world needs blood nights turned on
+first. The [setup](install.md#set-it-up) does that.
 
 1. Join your server as an operator.
 2. Run `/bloodnight night force`.
