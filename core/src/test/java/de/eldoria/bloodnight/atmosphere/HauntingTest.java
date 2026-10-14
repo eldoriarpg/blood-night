@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Location;
 import org.bukkit.WeatherType;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.Zombie;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,10 @@ import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import java.lang.reflect.Proxy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HauntingTest extends AtmosphereTest {
     private Haunting haunting;
@@ -45,6 +48,17 @@ class HauntingTest extends AtmosphereTest {
         haunting.tick();
         assertNull(player.getWorldBorder());
         assertNull(player.getPlayerWeather());
+    }
+
+    @Test
+    void theHeartbeatOnlyComesWithMonstersNear() {
+        bloodNight();
+        for (int i = 0; i < 20; i++) haunting.tick();
+        assertTrue(player.getHeardSounds().isEmpty());
+
+        world.spawn(player.getLocation().add(3, 0, 0), Zombie.class);
+        for (int i = 0; i < 20; i++) haunting.tick();
+        assertFalse(player.getHeardSounds().isEmpty());
     }
 
     /**

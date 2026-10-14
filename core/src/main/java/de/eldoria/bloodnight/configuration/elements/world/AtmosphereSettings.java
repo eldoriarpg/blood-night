@@ -58,7 +58,7 @@ public class AtmosphereSettings {
     }
 
     /**
-     * @return whether players hear a heartbeat
+     * @return whether players hear a heartbeat while monsters are near
      */
     public boolean heartbeat() {
         return heartbeat;

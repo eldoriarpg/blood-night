@@ -49,7 +49,7 @@ announcement:
     title: "<red><bold><name>"
     color: RED
     overlay: PROGRESS
-    flags: [CREATE_WORLD_FOG, DARKEN_SCREEN]
+    flags: [CREATE_WORLD_FOG]
 ```
 
 - `title` uses MiniMessage. `<name>` is the night's name in the player's language: Blood Night, Blood Tide in the

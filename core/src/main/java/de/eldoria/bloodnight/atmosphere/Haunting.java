@@ -21,6 +21,8 @@ import org.bukkit.Server;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.Enemy;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,7 +42,8 @@ import java.util.function.Supplier;
 
 /**
  * What a blood night does to each player in its world, on their own client, as the world's atmosphere settings say: a
- * red screen edge, short darkness pulses, rain, particles around the camera, a heartbeat, the resource pack's screen
+ * red screen edge, short darkness pulses, rain, particles around the camera, a heartbeat while monsters are near, the
+ * resource pack's screen
  * effect and, when switched on, scares. Everything ends with the night, when the player leaves the world or quits.
  * <p>
  * The red edge is a world border only this player sees, far around them, with a warning distance that reaches them:
@@ -58,10 +61,9 @@ public final class Haunting implements Listener {
     private static final int WARNING = 1600;
     private static final int RECENTER = 400;
     private static final double PARTICLE_RADIUS = 8;
-    private static final int HEARTBEAT_STEPS = 5;
+    private static final double HEARTBEAT_RANGE = 20;
     private static final int MINUTE_STEPS = 20 * 60 / STEP;
-    private static final Sound HEARTBEAT =
-            Sound.sound(Key.key("entity.warden.heartbeat"), Sound.Source.AMBIENT, 0.6f, 1f);
+    private static final Key HEARTBEAT = Key.key("entity.warden.heartbeat");
     private static final Sound HURT = Sound.sound(Key.key("entity.player.hurt"), Sound.Source.PLAYER, 1f, 1f);
     private static final List<Key> SCREAMS =
             List.of(Key.key("entity.ghast.scream"), Key.key("entity.enderman.scream"), Key.key("entity.fox.screech"));
@@ -156,16 +158,43 @@ public final class Haunting implements Listener {
         if (state.border != null && distance(player, state.border) > RECENTER) centre(player, state);
         particles(player, atmosphere.particles());
         if (atmosphere.darknessPulses() && step >= state.nextPulse) {
-            player.sendPotionEffectChange(player, new PotionEffect(PotionEffectType.DARKNESS, 80, 0, false, false));
+            player.sendPotionEffectChange(player, new PotionEffect(PotionEffectType.DARKNESS, 40, 0, false, false));
             state.nextPulse = step + pulseDelay();
         }
-        if (atmosphere.heartbeat() && step % HEARTBEAT_STEPS == 0) player.playSound(HEARTBEAT, Sound.Emitter.self());
+        if (atmosphere.heartbeat()) heartbeat(player, state);
         if (atmosphere.scares().enabled()
                 && step % MINUTE_STEPS == MINUTE_STEPS - 1
                 && ThreadLocalRandom.current().nextInt(100)
                         < atmosphere.scares().chancePerMinute()) {
             scare(player, atmosphere.scares().kinds().stream().toList());
         }
+    }
+
+    /**
+     * Beats when a monster is within {@value #HEARTBEAT_RANGE} blocks: faster and louder the closer the nearest one is,
+     * from every two seconds at the edge to four times a second right next to it.
+     */
+    private static void heartbeat(Player player, Haunted state) {
+        double nearest = nearestEnemy(player);
+        if (nearest > HEARTBEAT_RANGE) return;
+        double closeness = 1 - nearest / HEARTBEAT_RANGE;
+        long every = Math.max(1, Math.round(8 - 7 * closeness));
+        if (state.steps - state.lastBeat < every) return;
+        state.lastBeat = state.steps;
+        player.playSound(
+                Sound.sound(HEARTBEAT, Sound.Source.AMBIENT, (float) (0.3 + 0.7 * closeness), 1f),
+                Sound.Emitter.self());
+    }
+
+    private static double nearestEnemy(Player player) {
+        Location at = player.getLocation();
+        double nearest = Double.MAX_VALUE;
+        for (Entity entity : player.getNearbyEntities(HEARTBEAT_RANGE, HEARTBEAT_RANGE / 2, HEARTBEAT_RANGE)) {
+            if (entity instanceof Enemy && !entity.isDead()) {
+                nearest = Math.min(nearest, entity.getLocation().distance(at));
+            }
+        }
+        return nearest;
     }
 
     private void particles(Player player, List<AmbientParticle> particles) {
@@ -218,7 +247,7 @@ public final class Haunting implements Listener {
     }
 
     private static long pulseDelay() {
-        return ThreadLocalRandom.current().nextLong(20 * 20 / STEP, 45 * 20 / STEP);
+        return ThreadLocalRandom.current().nextLong(45 * 20 / STEP, 90 * 20 / STEP);
     }
 
     private static @Nullable Particle particle(String key) {
@@ -239,6 +268,7 @@ public final class Haunting implements Listener {
         private @Nullable WorldBorder border;
         private long steps;
         private long nextPulse;
+        private long lastBeat = Long.MIN_VALUE / 2;
 
         private Haunted(UUID world) {
             this.world = world;
