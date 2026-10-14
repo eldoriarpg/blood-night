@@ -24,7 +24,7 @@ const sources = {
   descriptor: join(root, 'core', 'build', 'generated', 'plugin-yml', 'Paper', 'paper-plugin.yml'),
 }
 
-const generatedNote = '<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->'
+const generatedNote = '{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}'
 
 const categoryNames = {
   event: 'Triggers and events',
@@ -54,10 +54,26 @@ const categoryNames = {
 
 /**
  * @param {string} text any text from the catalog or schema
+ * @returns {string} the text safe as MDX prose: no tags, no expressions
+ */
+function prose(text) {
+  return (text ?? '').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('{', '\\{').replaceAll('}', '\\}')
+}
+
+/**
+ * @param {string} text any text from the catalog or schema
  * @returns {string} the text safe for one cell of a Markdown table
  */
 function cell(text) {
-  return (text ?? '').replaceAll('|', '\\|').replaceAll('\n', ' ').trim()
+  return prose(text).replaceAll('|', '\\|').replaceAll('\n', ' ').trim()
+}
+
+/**
+ * @param {string} text text shown as inline code in a table cell, where MDX takes it literally
+ * @returns {string} the text safe for that cell
+ */
+function codeCell(text) {
+  return text.replaceAll('|', '\\|').replaceAll('\n', ' ').trim()
 }
 
 /**
@@ -141,7 +157,7 @@ function nodePages(catalog) {
     ]
     for (const node of nodes) {
       lines.push(`## ${node.name}`, '', `\`${node.id}\``, '')
-      if (node.description) lines.push(node.description, '')
+      if (node.description) lines.push(prose(node.description), '')
       if (node.inputs?.length) {
         lines.push('| In | Type | What it is |', '|---|---|---|')
         for (const pin of node.inputs) {
@@ -195,7 +211,7 @@ function settingsPage(schema) {
     '',
     '# Settings',
     '',
-    ':::tip Use the web editor',
+    ':::tip[Use the web editor]',
     'The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks',
     'what you type. This page shows the files, so you know what the editor writes for you.',
     ':::',
@@ -256,8 +272,8 @@ function typeOf(defs, definition) {
  */
 function shown(value) {
   if (value === undefined) return ''
-  if (typeof value === 'string') return value === '' ? '(empty)' : `\`${cell(value)}\``
-  return `\`${cell(JSON.stringify(value))}\``
+  if (typeof value === 'string') return value === '' ? '(empty)' : `\`${codeCell(value)}\``
+  return `\`${codeCell(JSON.stringify(value))}\``
 }
 
 /**

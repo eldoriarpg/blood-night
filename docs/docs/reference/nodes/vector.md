@@ -3,7 +3,7 @@ title: Vectors
 sidebar_position: 23
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Vectors
 

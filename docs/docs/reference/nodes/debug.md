@@ -3,7 +3,7 @@ title: Debugging
 sidebar_position: 3
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Debugging
 

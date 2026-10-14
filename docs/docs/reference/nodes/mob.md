@@ -3,7 +3,7 @@ title: The mob
 sidebar_position: 17
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # The mob
 

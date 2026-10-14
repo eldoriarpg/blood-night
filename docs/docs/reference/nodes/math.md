@@ -3,7 +3,7 @@ title: Math
 sidebar_position: 12
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Math
 

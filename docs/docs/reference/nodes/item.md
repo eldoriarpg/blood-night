@@ -3,7 +3,7 @@ title: Items
 sidebar_position: 6
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Items
 
@@ -36,7 +36,7 @@ Changes the properties of a Item that are given, the others stay as they are, an
 |---|---|---|
 | Amount | Integer | Gets the amount of items in this stack |
 | Empty | Boolean | Returns whether this item stack is empty and contains no item. |
-| Item Flags | Set<ItemFlag> | Get current set itemFlags. |
+| Item Flags | Set&lt;ItemFlag&gt; | Get current set itemFlags. |
 | Max Stack Size | Integer | Get the maximum stack size for this item. |
 | Type | Material | Gets the type of this item |
 
@@ -56,7 +56,7 @@ Reads the properties of a Item
 |---|---|---|
 | Amount | Integer | Gets the amount of items in this stack |
 | Empty | Boolean | Returns whether this item stack is empty and contains no item. |
-| Item Flags | Set<ItemFlag> | Get current set itemFlags. |
+| Item Flags | Set&lt;ItemFlag&gt; | Get current set itemFlags. |
 | Max Stack Size | Integer | Get the maximum stack size for this item. |
 | Type | Material | Gets the type of this item |
 

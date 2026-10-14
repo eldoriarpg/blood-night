@@ -3,7 +3,7 @@ title: Chance and cooldown
 sidebar_position: 2
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Chance and cooldown
 

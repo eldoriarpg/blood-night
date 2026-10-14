@@ -3,7 +3,7 @@ title: The world
 sidebar_position: 18
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # The world
 
@@ -128,7 +128,7 @@ Entities within a box around a location; x, y and z are half the box size
 
 | Out | Type | What it is |
 |---|---|---|
-| Result | Collection<Entity> | The entities in that box |
+| Result | Collection&lt;Entity&gt; | The entities in that box |
 
 ## Line Trace
 
@@ -192,16 +192,16 @@ Changes the properties of a World that are given, the others stay as they are, a
 | Coordinate Scale | Number | Gets the coordinate scaling of this world. |
 | Day Time | Boolean | Check if it is currently daytime in this world |
 | Difficulty | Difficulty | Gets the Difficulty of the world. |
-| Entities | List<Entity> | Get a list of all entities in this World |
+| Entities | List&lt;Entity&gt; | Get a list of all entities in this World |
 | Entity Count | Integer | The amount of entities in this world |
 | Environment | Environment | Gets the World.Environment type of this world |
 | Fixed Time | Boolean | Checks if this world has a fixed time |
 | Full Time | Long | Gets the full in-game time on this world, or 0 if this world does not have a world clock. |
 | Game Time | Long | Gets the full in-game time on this world since the world generation |
 | Hardcore | Boolean | Gets whether the world is hardcore or not. |
-| Infiniburn | Collection<Material> | Gets the collection of materials that burn infinitely in this world. |
-| Listening Plugin Channels | Set<Text> | Gets a set containing all the Plugin Channels that this client is listening on. |
-| Living Entities | List<Living Entity> | Get a list of all living entities in this World |
+| Infiniburn | Collection&lt;Material&gt; | Gets the collection of materials that burn infinitely in this world. |
+| Listening Plugin Channels | Set&lt;Text&gt; | Gets a set containing all the Plugin Channels that this client is listening on. |
+| Living Entities | List&lt;Living Entity&gt; | Get a list of all living entities in this World |
 | Logical Height | Integer | Gets the maximum height to which chorus fruits and nether portals can bring players within this dimension. |
 | Max Height | Integer | Gets the maximum height of this world. |
 | Min Height | Integer | Gets the minimum height of this world. |
@@ -209,7 +209,7 @@ Changes the properties of a World that are given, the others stay as they are, a
 | Name | Text | Gets the legacy Bukkit name of this world. |
 | Piglin Safe | Boolean | Gets if this world allow to piglins to survive without shaking and transforming to zombified piglins. |
 | Player Count | Integer | The amount of players in this world |
-| Players | List<Player> | Get a list of all players in this World |
+| Players | List&lt;Player&gt; | Get a list of all players in this World |
 | Respawn Anchor Works | Boolean | Gets if this world allows players to charge and use respawn anchors. |
 | Sea Level | Integer | Gets the sea level for this world. |
 | Seed | Long | Gets the Seed for this world. |
@@ -357,16 +357,16 @@ Reads the properties of a World
 | Coordinate Scale | Number | Gets the coordinate scaling of this world. |
 | Day Time | Boolean | Check if it is currently daytime in this world |
 | Difficulty | Difficulty | Gets the Difficulty of the world. |
-| Entities | List<Entity> | Get a list of all entities in this World |
+| Entities | List&lt;Entity&gt; | Get a list of all entities in this World |
 | Entity Count | Integer | The amount of entities in this world |
 | Environment | Environment | Gets the World.Environment type of this world |
 | Fixed Time | Boolean | Checks if this world has a fixed time |
 | Full Time | Long | Gets the full in-game time on this world, or 0 if this world does not have a world clock. |
 | Game Time | Long | Gets the full in-game time on this world since the world generation |
 | Hardcore | Boolean | Gets whether the world is hardcore or not. |
-| Infiniburn | Collection<Material> | Gets the collection of materials that burn infinitely in this world. |
-| Listening Plugin Channels | Set<Text> | Gets a set containing all the Plugin Channels that this client is listening on. |
-| Living Entities | List<Living Entity> | Get a list of all living entities in this World |
+| Infiniburn | Collection&lt;Material&gt; | Gets the collection of materials that burn infinitely in this world. |
+| Listening Plugin Channels | Set&lt;Text&gt; | Gets a set containing all the Plugin Channels that this client is listening on. |
+| Living Entities | List&lt;Living Entity&gt; | Get a list of all living entities in this World |
 | Logical Height | Integer | Gets the maximum height to which chorus fruits and nether portals can bring players within this dimension. |
 | Max Height | Integer | Gets the maximum height of this world. |
 | Min Height | Integer | Gets the minimum height of this world. |
@@ -374,7 +374,7 @@ Reads the properties of a World
 | Name | Text | Gets the legacy Bukkit name of this world. |
 | Piglin Safe | Boolean | Gets if this world allow to piglins to survive without shaking and transforming to zombified piglins. |
 | Player Count | Integer | The amount of players in this world |
-| Players | List<Player> | Get a list of all players in this World |
+| Players | List&lt;Player&gt; | Get a list of all players in this World |
 | Respawn Anchor Works | Boolean | Gets if this world allows players to charge and use respawn anchors. |
 | Sea Level | Integer | Gets the sea level for this world. |
 | Seed | Long | Gets the Seed for this world. |

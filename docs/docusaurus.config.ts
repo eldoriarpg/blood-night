@@ -22,7 +22,7 @@ const config: Config = {
   trailingSlash: false,
   onBrokenLinks: 'throw',
   markdown: {
-    format: 'detect',
+    format: 'mdx',
     hooks: {
       onBrokenMarkdownLinks: 'throw',
     },

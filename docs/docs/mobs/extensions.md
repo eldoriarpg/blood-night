@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Riders and mounts
 
-:::tip Use the web editor
+:::tip[Use the web editor]
 The easiest way to change these settings is the [web editor](../editor/sessions.md). It shows every option and checks what you
 type. This page shows the files, so you know what the editor writes for you.
 :::

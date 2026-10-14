@@ -3,7 +3,7 @@ title: Projectiles
 sidebar_position: 15
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Projectiles
 
@@ -48,7 +48,7 @@ Changes the properties of a Projectile that are given, the others stay as they a
 | Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
-| Entity Spawn Reason | SpawnReason | {@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned} |
+| Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
 | Facing | BlockFace | Get the closest cardinal BlockFace direction an entity is currently facing. |
 | Fall Distance | Float | Returns the distance this entity has fallen |
 | Fire Ticks | Integer | Returns the entity's current fire ticks (ticks before the entity stops being on fire). |
@@ -73,17 +73,17 @@ Changes the properties of a Projectile that are given, the others stay as they a
 | On Ground | Boolean | Returns true if the entity is supported by a block. |
 | Op | Boolean | Checks if this object is a server operator |
 | Origin | Location | Gets the location where this entity originates from. |
-| Passengers | List<Entity> | Gets a list of passengers of this vehicle. |
+| Passengers | List&lt;Entity&gt; | Gets a list of passengers of this vehicle. |
 | Persistent | Boolean | Returns true if the entity gets persisted. |
 | Pick Item Stack | Item | Gets the ItemStack that a player would select / create (in creative mode) when using the pick block action on this entity. |
 | Piston Move Reaction | PistonMoveReaction | Returns the reaction of the entity when moved by a piston. |
 | Pitch | Float | Gets this entity's pitch |
 | Portal Cooldown | Integer | Gets the period of time (in ticks) before this entity can use a portal. |
 | Pose | Pose | Gets the entity's current pose. |
-| Removal Reason | RemovalReason | {@return the reason this entity was removed} |
+| Removal Reason | RemovalReason | \{@return the reason this entity was removed\} |
 | Remove Event Cause | Cause | Gets the cause used for this entity's remove event. |
 | Scoreboard Entry Name | Text | Gets the string name of the entity used to track it in Scoreboards. |
-| Scoreboard Tags | Set<Text> | Returns a set of tags for this entity. |
+| Scoreboard Tags | Set&lt;Text&gt; | Returns a set of tags for this entity. |
 | Silent | Boolean | Gets whether the entity is silent or not. |
 | Sneaking | Boolean | Returns if the entity is in sneak mode |
 | Sound Category | SoundCategory | Get the SoundCategory this entity will use when playing its sounds. |
@@ -93,7 +93,7 @@ Changes the properties of a Projectile that are given, the others stay as they a
 | Swim Splash Sound | Sound | Get the Sound this entity makes when splashing in water. |
 | Ticking | Boolean | Check if entity is inside a ticking chunk |
 | Ticks Lived | Integer | Gets the amount of ticks this entity has lived for. |
-| Tracked By | Set<Player> | Get all players that are currently tracking this entity. |
+| Tracked By | Set&lt;Player&gt; | Get all players that are currently tracking this entity. |
 | Type | Entity Type | Get the type of the entity. |
 | Under Water | Boolean | Check if entity is underwater |
 | Unique Id | UUID | Returns a unique and persistent id for this entity |
@@ -132,7 +132,7 @@ Reads the properties of a Projectile
 | Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
-| Entity Spawn Reason | SpawnReason | {@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned} |
+| Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
 | Facing | BlockFace | Get the closest cardinal BlockFace direction an entity is currently facing. |
 | Fall Distance | Float | Returns the distance this entity has fallen |
 | Fire Ticks | Integer | Returns the entity's current fire ticks (ticks before the entity stops being on fire). |
@@ -157,17 +157,17 @@ Reads the properties of a Projectile
 | On Ground | Boolean | Returns true if the entity is supported by a block. |
 | Op | Boolean | Checks if this object is a server operator |
 | Origin | Location | Gets the location where this entity originates from. |
-| Passengers | List<Entity> | Gets a list of passengers of this vehicle. |
+| Passengers | List&lt;Entity&gt; | Gets a list of passengers of this vehicle. |
 | Persistent | Boolean | Returns true if the entity gets persisted. |
 | Pick Item Stack | Item | Gets the ItemStack that a player would select / create (in creative mode) when using the pick block action on this entity. |
 | Piston Move Reaction | PistonMoveReaction | Returns the reaction of the entity when moved by a piston. |
 | Pitch | Float | Gets this entity's pitch |
 | Portal Cooldown | Integer | Gets the period of time (in ticks) before this entity can use a portal. |
 | Pose | Pose | Gets the entity's current pose. |
-| Removal Reason | RemovalReason | {@return the reason this entity was removed} |
+| Removal Reason | RemovalReason | \{@return the reason this entity was removed\} |
 | Remove Event Cause | Cause | Gets the cause used for this entity's remove event. |
 | Scoreboard Entry Name | Text | Gets the string name of the entity used to track it in Scoreboards. |
-| Scoreboard Tags | Set<Text> | Returns a set of tags for this entity. |
+| Scoreboard Tags | Set&lt;Text&gt; | Returns a set of tags for this entity. |
 | Silent | Boolean | Gets whether the entity is silent or not. |
 | Sneaking | Boolean | Returns if the entity is in sneak mode |
 | Sound Category | SoundCategory | Get the SoundCategory this entity will use when playing its sounds. |
@@ -177,7 +177,7 @@ Reads the properties of a Projectile
 | Swim Splash Sound | Sound | Get the Sound this entity makes when splashing in water. |
 | Ticking | Boolean | Check if entity is inside a ticking chunk |
 | Ticks Lived | Integer | Gets the amount of ticks this entity has lived for. |
-| Tracked By | Set<Player> | Get all players that are currently tracking this entity. |
+| Tracked By | Set&lt;Player&gt; | Get all players that are currently tracking this entity. |
 | Type | Entity Type | Get the type of the entity. |
 | Under Water | Boolean | Check if entity is underwater |
 | Unique Id | UUID | Returns a unique and persistent id for this entity |

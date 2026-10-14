@@ -3,7 +3,7 @@ title: Triggers and events
 sidebar_position: 20
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Triggers and events
 
@@ -82,7 +82,7 @@ The mob died
 | Death Sound Pitch | Float | Get the pitch that the death sound will play with. |
 | Death Sound Volume | Float | Get the volume that the death sound will play at. |
 | Dropped Exp | Integer | Gets how much EXP should be dropped from this death. |
-| Drops | List<Item> | Gets all the items which will drop when the entity dies |
+| Drops | List&lt;Item&gt; | Gets all the items which will drop when the entity dies |
 | Entity | Living Entity | Returns the Entity involved in this event |
 | Entity Type | Entity Type | Gets the EntityType of the Entity involved in this event. |
 | Revive Health | Number | Get the amount of health that the entity should revive with after cancelling the event. |
@@ -159,7 +159,7 @@ The entity riding or carrying the mob died
 | Death Sound Pitch | Float | Get the pitch that the death sound will play with. |
 | Death Sound Volume | Float | Get the volume that the death sound will play at. |
 | Dropped Exp | Integer | Gets how much EXP should be dropped from this death. |
-| Drops | List<Item> | Gets all the items which will drop when the entity dies |
+| Drops | List&lt;Item&gt; | Gets all the items which will drop when the entity dies |
 | Entity | Living Entity | Returns the Entity involved in this event |
 | Entity Type | Entity Type | Gets the EntityType of the Entity involved in this event. |
 | Revive Health | Number | Get the amount of health that the entity should revive with after cancelling the event. |
@@ -202,7 +202,7 @@ The mob killed an entity or player; Victim narrows it to players or other entiti
 | Death Sound Pitch | Float | Get the pitch that the death sound will play with. |
 | Death Sound Volume | Float | Get the volume that the death sound will play at. |
 | Dropped Exp | Integer | Gets how much EXP should be dropped from this death. |
-| Drops | List<Item> | Gets all the items which will drop when the entity dies |
+| Drops | List&lt;Item&gt; | Gets all the items which will drop when the entity dies |
 | Entity | Living Entity | Returns the Entity involved in this event |
 | Entity Type | Entity Type | Gets the EntityType of the Entity involved in this event. |
 | Revive Health | Number | Get the amount of health that the entity should revive with after cancelling the event. |

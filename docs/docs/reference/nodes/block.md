@@ -3,7 +3,7 @@ title: Blocks
 sidebar_position: 1
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Blocks
 
@@ -31,7 +31,7 @@ Changes the properties of a Block that are given, the others stay as they are, a
 | Burnable | Boolean | Check if this block is burnable Determined by Minecraft, typically a block that fire can destroy (Wool, Wood) |
 | Collidable | Boolean | Checks if this block is collidable. |
 | Computed Biome | Biome | Gets the computed biome at the location of this Block. |
-| Drops | Collection<Item> | Returns a list of items which could drop by destroying this block. |
+| Drops | Collection&lt;Item&gt; | Returns a list of items which could drop by destroying this block. |
 | Empty | Boolean | Checks if this block is empty. |
 | Humidity | Number | Gets the humidity of the biome of this block |
 | Light From Blocks | byte | Get the amount of light at this block from nearby blocks. |
@@ -74,7 +74,7 @@ Reads the properties of a Block
 | Burnable | Boolean | Check if this block is burnable Determined by Minecraft, typically a block that fire can destroy (Wool, Wood) |
 | Collidable | Boolean | Checks if this block is collidable. |
 | Computed Biome | Biome | Gets the computed biome at the location of this Block. |
-| Drops | Collection<Item> | Returns a list of items which could drop by destroying this block. |
+| Drops | Collection&lt;Item&gt; | Returns a list of items which could drop by destroying this block. |
 | Empty | Boolean | Checks if this block is empty. |
 | Humidity | Number | Gets the humidity of the biome of this block |
 | Light From Blocks | byte | Get the amount of light at this block from nearby blocks. |

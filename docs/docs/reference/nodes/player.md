@@ -3,7 +3,7 @@ title: Players
 sidebar_position: 14
 ---
 
-<!-- Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. -->
+{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}
 
 # Players
 
@@ -19,7 +19,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Affects Spawning (optional) | Boolean | Set whether the player can affect mob spawning |
 | Allow Flight (optional) | Boolean | Sets if the Player is allowed to fly via jump key double-tap like in creative mode. |
 | Compass Target (optional) | Location | Set the target of the player's compass. |
-| Custom Chat Completions (optional) | Collection<Text> | Set the list of chat completion suggestions shown to the player while typing a message. |
+| Custom Chat Completions (optional) | Collection&lt;Text&gt; | Set the list of chat completion suggestions shown to the player while typing a message. |
 | Death Screen Score (optional) | Integer | Set the score that shows in the death screen of the player. |
 | Enchantment Seed (optional) | Integer | Sets the player's enchantment seed. |
 | Exhaustion (optional) | Float | Sets the players current exhaustion level |
@@ -41,7 +41,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Player List Order (optional) | Integer | Sets the relative order that the player is shown on the in-game player list. |
 | Player Weather (optional) | WeatherType | Sets the type of weather the player will see. |
 | Respawn Location (optional) | Location | Sets the Location where the player will respawn. |
-| Saturated Regen Rate (optional) | Integer | Set the regeneration rate (1 health per x ticks) of the HumanEntity when they have saturation and their food level is >= 20. |
+| Saturated Regen Rate (optional) | Integer | Set the regeneration rate (1 health per x ticks) of the HumanEntity when they have saturation and their food level is &gt;= 20. |
 | Saturation (optional) | Float | Sets the players current saturation level |
 | Send View Distance (optional) | Integer | Sets the sending view distance for this player. |
 | Simulation Distance (optional) | Integer | Sets the simulation distance for this player |
@@ -51,7 +51,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Sprinting (optional) | Boolean | Sets whether the player is sprinting or not. |
 | Starvation Rate (optional) | Integer | Set the starvation rate (1 health per x ticks) of the HumanEntity. |
 | Total Experience (optional) | Integer | Sets the players current experience points. |
-| Unsaturated Regen Rate (optional) | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is >= 18. |
+| Unsaturated Regen Rate (optional) | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is &gt;= 18. |
 | View Distance (optional) | Integer | Sets the view distance for this player |
 | Walk Speed (optional) | Float | Sets the speed at which a client will walk. |
 | Warden Time Since Last Warning (optional) | Integer | Sets time since last Warden warning in ticks. |
@@ -120,7 +120,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Death Screen Score | Integer | Get the score that shows in the death screen of the player. |
 | Deeply Sleeping | Boolean | If the player has slept enough to count towards passing the night. |
 | Enchantment Seed | Integer | Gets the player's current enchantment seed. |
-| Ender Pearls | Collection<EnderPearl> | Gets the ender pearls currently associated with this entity. |
+| Ender Pearls | Collection&lt;EnderPearl&gt; | Gets the ender pearls currently associated with this entity. |
 | Equipment | EntityEquipment | Gets the inventory with the equipment worn by the living entity. |
 | Exhaustion | Float | Gets the players current exhaustion level. |
 | Exp | Float | Gets the players current experience points towards the next level. |
@@ -140,10 +140,10 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Last Login | Long | Gets the last date and time that this player logged into the server. |
 | Last Seen | Long | Gets the last date and time that this player was seen on the server. |
 | Level | Integer | Gets the players current experience level |
-| Listening Plugin Channels | Set<Text> | Gets a set containing all the Plugin Channels that this client is listening on. |
+| Listening Plugin Channels | Set&lt;Text&gt; | Gets a set containing all the Plugin Channels that this client is listening on. |
 | Location | Location | Gets the player's current location. |
 | Main Hand | MainHand | Gets the player's selected main hand |
-| Name | Text | {@inheritDoc} |
+| Name | Text | \{@inheritDoc\} |
 | Online | Boolean | Checks if this player is currently online It should be noted that this will return true if any instance of this player is online! |
 | Ping | Integer | Gets the player's estimated ping in milliseconds. |
 | Player | Player | Gets a Player object that this represents, if there is one If the player is online, this will return that player. |
@@ -156,10 +156,10 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Protocol Version | Integer | Returns the protocol version of the client. |
 | Resource Pack Status | Status | Gets the most recent resource pack status from the player. |
 | Respawn Location | Location | Gets the Location where the player will spawn at, null if they don't have a valid respawn point. |
-| Saturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have saturation and their food level is >= 20. |
+| Saturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have saturation and their food level is &gt;= 20. |
 | Saturation | Float | Gets the players current saturation level. |
 | Send View Distance | Integer | Gets the sending view distance for this player. |
-| Sent Chunk Keys | Set<Long> | Gets the set of chunk keys for all chunks that have been sent to the player. |
+| Sent Chunk Keys | Set&lt;Long&gt; | Gets the set of chunk keys for all chunks that have been sent to the player. |
 | Simulation Distance | Integer | Gets the simulation distance for this player |
 | Sleep Ticks | Integer | Get the sleep ticks of the player. |
 | Sleeping Ignored | Boolean | Returns whether the player is sleeping ignored. |
@@ -170,7 +170,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Total Experience | Integer | Gets the players total experience points. |
 | Transferred | Boolean | Gets if this connection has been transferred from another server. |
 | Unique Id | UUID | Returns the UUID of this player |
-| Unsaturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is >= 18. |
+| Unsaturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is &gt;= 18. |
 | View Distance | Integer | Gets the view distance for this player |
 | Walk Speed | Float | Gets the current allowed speed that a client can walk. |
 | Warden Time Since Last Warning | Integer | Returns time since last Warden warning in ticks. |
@@ -182,7 +182,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Active Item Hand | EquipmentSlot | Get the hand using the active item. |
 | Active Item Remaining Time | Integer | Gets the remaining number of ticks for getActiveItem()'s usage. |
 | Active Item Used Time | Integer | Get how long the getActiveItem() has been in use for. |
-| Active Potion Effects | Collection<Potion Effect> | Returns all currently active PotionEffects on the living entity. |
+| Active Potion Effects | Collection&lt;Potion Effect&gt; | Returns all currently active PotionEffects on the living entity. |
 | Arrow Cooldown | Integer | Gets the time in ticks until the next arrow leaves the entity's body. |
 | Arrows In Body | Integer | Gets the amount of arrows in an entity's body. |
 | Bee Stinger Cooldown | Integer | Gets the time in ticks until the next bee stinger leaves the entity's body. |
@@ -191,7 +191,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Can Pickup Items | Boolean | Gets if the living entity can pick up items. |
 | Climbing | Boolean | Gets if the entity is climbing. |
 | Collidable | Boolean | Gets if this entity is subject to collisions with other entities. |
-| Collidable Exemptions | Set<UUID> | Gets a mutable set of UUIDs of the entities which are exempt from the entity's collidable rule and which's collision with this entity will behave the opposite of it. |
+| Collidable Exemptions | Set&lt;UUID&gt; | Gets a mutable set of UUIDs of the entities which are exempt from the entity's collidable rule and which's collision with this entity will behave the opposite of it. |
 | Death Sound | Sound | Get the Sound this entity will make on death. |
 | Eye Height | Number | Gets the height of the living entity's eyes above its Location. |
 | Eye Location | Location | Get a Location detailing the current eye position of the living entity. |
@@ -232,7 +232,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
-| Entity Spawn Reason | SpawnReason | {@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned} |
+| Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
 | Facing | BlockFace | Get the closest cardinal BlockFace direction an entity is currently facing. |
 | Fall Distance | Float | Returns the distance this entity has fallen |
 | Fire Ticks | Integer | Returns the entity's current fire ticks (ticks before the entity stops being on fire). |
@@ -254,17 +254,17 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Max Freeze Ticks | Integer | Returns the entity's maximum freeze ticks (amount of ticks before it will be fully frozen) |
 | Op | Boolean | Checks if this object is a server operator |
 | Origin | Location | Gets the location where this entity originates from. |
-| Passengers | List<Entity> | Gets a list of passengers of this vehicle. |
+| Passengers | List&lt;Entity&gt; | Gets a list of passengers of this vehicle. |
 | Persistent | Boolean | Returns true if the entity gets persisted. |
 | Pick Item Stack | Item | Gets the ItemStack that a player would select / create (in creative mode) when using the pick block action on this entity. |
 | Piston Move Reaction | PistonMoveReaction | Returns the reaction of the entity when moved by a piston. |
 | Pitch | Float | Gets this entity's pitch |
 | Portal Cooldown | Integer | Gets the period of time (in ticks) before this entity can use a portal. |
 | Pose | Pose | Gets the entity's current pose. |
-| Removal Reason | RemovalReason | {@return the reason this entity was removed} |
+| Removal Reason | RemovalReason | \{@return the reason this entity was removed\} |
 | Remove Event Cause | Cause | Gets the cause used for this entity's remove event. |
 | Scoreboard Entry Name | Text | Gets the string name of the entity used to track it in Scoreboards. |
-| Scoreboard Tags | Set<Text> | Returns a set of tags for this entity. |
+| Scoreboard Tags | Set&lt;Text&gt; | Returns a set of tags for this entity. |
 | Silent | Boolean | Gets whether the entity is silent or not. |
 | Sound Category | SoundCategory | Get the SoundCategory this entity will use when playing its sounds. |
 | Spawn Category | SpawnCategory | Get the category of spawn to which this entity belongs. |
@@ -273,7 +273,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Swim Splash Sound | Sound | Get the Sound this entity makes when splashing in water. |
 | Ticking | Boolean | Check if entity is inside a ticking chunk |
 | Ticks Lived | Integer | Gets the amount of ticks this entity has lived for. |
-| Tracked By | Set<Player> | Get all players that are currently tracking this entity. |
+| Tracked By | Set&lt;Player&gt; | Get all players that are currently tracking this entity. |
 | Type | Entity Type | Get the type of the entity. |
 | Under Water | Boolean | Check if entity is underwater |
 | Valid | Boolean | Returns false if the entity has died, been despawned for some other reason, or has not been added to the world. |
@@ -335,7 +335,7 @@ Reads the properties of a Player
 | Death Screen Score | Integer | Get the score that shows in the death screen of the player. |
 | Deeply Sleeping | Boolean | If the player has slept enough to count towards passing the night. |
 | Enchantment Seed | Integer | Gets the player's current enchantment seed. |
-| Ender Pearls | Collection<EnderPearl> | Gets the ender pearls currently associated with this entity. |
+| Ender Pearls | Collection&lt;EnderPearl&gt; | Gets the ender pearls currently associated with this entity. |
 | Equipment | EntityEquipment | Gets the inventory with the equipment worn by the living entity. |
 | Exhaustion | Float | Gets the players current exhaustion level. |
 | Exp | Float | Gets the players current experience points towards the next level. |
@@ -355,10 +355,10 @@ Reads the properties of a Player
 | Last Login | Long | Gets the last date and time that this player logged into the server. |
 | Last Seen | Long | Gets the last date and time that this player was seen on the server. |
 | Level | Integer | Gets the players current experience level |
-| Listening Plugin Channels | Set<Text> | Gets a set containing all the Plugin Channels that this client is listening on. |
+| Listening Plugin Channels | Set&lt;Text&gt; | Gets a set containing all the Plugin Channels that this client is listening on. |
 | Location | Location | Gets the player's current location. |
 | Main Hand | MainHand | Gets the player's selected main hand |
-| Name | Text | {@inheritDoc} |
+| Name | Text | \{@inheritDoc\} |
 | Online | Boolean | Checks if this player is currently online It should be noted that this will return true if any instance of this player is online! |
 | Ping | Integer | Gets the player's estimated ping in milliseconds. |
 | Player | Player | Gets a Player object that this represents, if there is one If the player is online, this will return that player. |
@@ -371,10 +371,10 @@ Reads the properties of a Player
 | Protocol Version | Integer | Returns the protocol version of the client. |
 | Resource Pack Status | Status | Gets the most recent resource pack status from the player. |
 | Respawn Location | Location | Gets the Location where the player will spawn at, null if they don't have a valid respawn point. |
-| Saturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have saturation and their food level is >= 20. |
+| Saturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have saturation and their food level is &gt;= 20. |
 | Saturation | Float | Gets the players current saturation level. |
 | Send View Distance | Integer | Gets the sending view distance for this player. |
-| Sent Chunk Keys | Set<Long> | Gets the set of chunk keys for all chunks that have been sent to the player. |
+| Sent Chunk Keys | Set&lt;Long&gt; | Gets the set of chunk keys for all chunks that have been sent to the player. |
 | Simulation Distance | Integer | Gets the simulation distance for this player |
 | Sleep Ticks | Integer | Get the sleep ticks of the player. |
 | Sleeping Ignored | Boolean | Returns whether the player is sleeping ignored. |
@@ -385,7 +385,7 @@ Reads the properties of a Player
 | Total Experience | Integer | Gets the players total experience points. |
 | Transferred | Boolean | Gets if this connection has been transferred from another server. |
 | Unique Id | UUID | Returns the UUID of this player |
-| Unsaturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is >= 18. |
+| Unsaturated Regen Rate | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is &gt;= 18. |
 | View Distance | Integer | Gets the view distance for this player |
 | Walk Speed | Float | Gets the current allowed speed that a client can walk. |
 | Warden Time Since Last Warning | Integer | Returns time since last Warden warning in ticks. |
@@ -397,7 +397,7 @@ Reads the properties of a Player
 | Active Item Hand | EquipmentSlot | Get the hand using the active item. |
 | Active Item Remaining Time | Integer | Gets the remaining number of ticks for getActiveItem()'s usage. |
 | Active Item Used Time | Integer | Get how long the getActiveItem() has been in use for. |
-| Active Potion Effects | Collection<Potion Effect> | Returns all currently active PotionEffects on the living entity. |
+| Active Potion Effects | Collection&lt;Potion Effect&gt; | Returns all currently active PotionEffects on the living entity. |
 | Arrow Cooldown | Integer | Gets the time in ticks until the next arrow leaves the entity's body. |
 | Arrows In Body | Integer | Gets the amount of arrows in an entity's body. |
 | Bee Stinger Cooldown | Integer | Gets the time in ticks until the next bee stinger leaves the entity's body. |
@@ -406,7 +406,7 @@ Reads the properties of a Player
 | Can Pickup Items | Boolean | Gets if the living entity can pick up items. |
 | Climbing | Boolean | Gets if the entity is climbing. |
 | Collidable | Boolean | Gets if this entity is subject to collisions with other entities. |
-| Collidable Exemptions | Set<UUID> | Gets a mutable set of UUIDs of the entities which are exempt from the entity's collidable rule and which's collision with this entity will behave the opposite of it. |
+| Collidable Exemptions | Set&lt;UUID&gt; | Gets a mutable set of UUIDs of the entities which are exempt from the entity's collidable rule and which's collision with this entity will behave the opposite of it. |
 | Death Sound | Sound | Get the Sound this entity will make on death. |
 | Eye Height | Number | Gets the height of the living entity's eyes above its Location. |
 | Eye Location | Location | Get a Location detailing the current eye position of the living entity. |
@@ -447,7 +447,7 @@ Reads the properties of a Player
 | Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
-| Entity Spawn Reason | SpawnReason | {@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned} |
+| Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
 | Facing | BlockFace | Get the closest cardinal BlockFace direction an entity is currently facing. |
 | Fall Distance | Float | Returns the distance this entity has fallen |
 | Fire Ticks | Integer | Returns the entity's current fire ticks (ticks before the entity stops being on fire). |
@@ -469,17 +469,17 @@ Reads the properties of a Player
 | Max Freeze Ticks | Integer | Returns the entity's maximum freeze ticks (amount of ticks before it will be fully frozen) |
 | Op | Boolean | Checks if this object is a server operator |
 | Origin | Location | Gets the location where this entity originates from. |
-| Passengers | List<Entity> | Gets a list of passengers of this vehicle. |
+| Passengers | List&lt;Entity&gt; | Gets a list of passengers of this vehicle. |
 | Persistent | Boolean | Returns true if the entity gets persisted. |
 | Pick Item Stack | Item | Gets the ItemStack that a player would select / create (in creative mode) when using the pick block action on this entity. |
 | Piston Move Reaction | PistonMoveReaction | Returns the reaction of the entity when moved by a piston. |
 | Pitch | Float | Gets this entity's pitch |
 | Portal Cooldown | Integer | Gets the period of time (in ticks) before this entity can use a portal. |
 | Pose | Pose | Gets the entity's current pose. |
-| Removal Reason | RemovalReason | {@return the reason this entity was removed} |
+| Removal Reason | RemovalReason | \{@return the reason this entity was removed\} |
 | Remove Event Cause | Cause | Gets the cause used for this entity's remove event. |
 | Scoreboard Entry Name | Text | Gets the string name of the entity used to track it in Scoreboards. |
-| Scoreboard Tags | Set<Text> | Returns a set of tags for this entity. |
+| Scoreboard Tags | Set&lt;Text&gt; | Returns a set of tags for this entity. |
 | Silent | Boolean | Gets whether the entity is silent or not. |
 | Sound Category | SoundCategory | Get the SoundCategory this entity will use when playing its sounds. |
 | Spawn Category | SpawnCategory | Get the category of spawn to which this entity belongs. |
@@ -488,7 +488,7 @@ Reads the properties of a Player
 | Swim Splash Sound | Sound | Get the Sound this entity makes when splashing in water. |
 | Ticking | Boolean | Check if entity is inside a ticking chunk |
 | Ticks Lived | Integer | Gets the amount of ticks this entity has lived for. |
-| Tracked By | Set<Player> | Get all players that are currently tracking this entity. |
+| Tracked By | Set&lt;Player&gt; | Get all players that are currently tracking this entity. |
 | Type | Entity Type | Get the type of the entity. |
 | Under Water | Boolean | Check if entity is underwater |
 | Valid | Boolean | Returns false if the entity has died, been despawned for some other reason, or has not been added to the world. |
