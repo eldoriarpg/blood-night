@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      retries: 10
+
+  web:
+    image: ghcr.io/eldoriarpg/blood-night-web:${BLOODNIGHT_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      EDITOR_URL: ${EDITOR_ADDRESS:?set EDITOR_ADDRESS in .env}/session/{id}#{token}
+    volumes:
+      - assets:/var/cache/bloodnight/assets
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: ghcr.io/eldoriarpg/blood-night-frontend:${BLOODNIGHT_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      NUXT_BACKEND_URL: http://web:8080
+    ports:
+      - "${PORT:-4000}:4000"
+    depends_on:
+      - web
+
+volumes:
+  postgres:
+  assets:

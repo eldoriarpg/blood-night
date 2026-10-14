@@ -50,6 +50,7 @@
       - any-glob-to-any-file:
           - "README.md"
           - "CONTRIBUTING.md"
+          - "docs/**"
 "ci":
   - changed-files:
       - any-glob-to-any-file:

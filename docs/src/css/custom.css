@@ -1,0 +1,36 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+:root {
+  --ifm-color-primary: #c8243a;
+  --ifm-color-primary-dark: #b42034;
+  --ifm-color-primary-darker: #aa1f31;
+  --ifm-color-primary-darkest: #8c1928;
+  --ifm-color-primary-light: #da2c43;
+  --ifm-color-primary-lighter: #dc3a50;
+  --ifm-color-primary-lightest: #e26273;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, monospace;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #ff6b77;
+  --ifm-color-primary-dark: #ff4b59;
+  --ifm-color-primary-darker: #ff3b4a;
+  --ifm-color-primary-darkest: #ff0b1e;
+  --ifm-color-primary-light: #ff8b95;
+  --ifm-color-primary-lighter: #ff9ba4;
+  --ifm-color-primary-lightest: #ffcbd0;
+  --ifm-background-color: #0e0909;
+  --ifm-background-surface-color: #161011;
+  --ifm-navbar-background-color: #161011;
+  --ifm-footer-background-color: #161011;
+  --ifm-font-color-base: #f2e6e4;
+  --ifm-color-emphasis-300: #3a2527;
+  --ifm-toc-border-color: #2a1c1d;
+  --ifm-hr-background-color: #2a1c1d;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
