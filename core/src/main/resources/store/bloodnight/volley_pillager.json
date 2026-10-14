@@ -28,7 +28,19 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_5" : {
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_9",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_8" ]
+          }
+        },
+        "branch_6" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -37,34 +49,22 @@
             }
           },
           "executions" : {
-            "true" : [ "launch_projectile_3", "launch_projectile_4" ]
+            "true" : [ "launch_projectile_4", "launch_projectile_5" ]
           }
         },
-        "branch_7" : {
+        "branch_8" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_6",
+              "node" : "cooldown_7",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_5" ]
+            "true" : [ "branch_6" ]
           }
         },
-        "branch_9" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_8",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "false" : [ "branch_7" ]
-          }
-        },
-        "cooldown_6" : {
+        "cooldown_7" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -86,32 +86,13 @@
             }
           }
         },
-        "is_null_8" : {
+        "is_null_9" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
               "node" : "read_2",
               "port" : "target"
             }
-          }
-        },
-        "launch_projectile_3" : {
-          "type" : "living_entity.launch_projectile",
-          "config" : {
-            "projectile" : "ARROW"
-          },
-          "inputs" : {
-            "shooter" : {
-              "node" : "self_1",
-              "port" : "entity"
-            },
-            "target" : {
-              "node" : "read_2",
-              "port" : "target"
-            }
-          },
-          "literals" : {
-            "speed" : 2.5
           }
         },
         "launch_projectile_4" : {
@@ -130,13 +111,44 @@
             }
           },
           "literals" : {
+            "speed" : 2.5
+          }
+        },
+        "launch_projectile_5" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "ARROW"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "target"
+            }
+          },
+          "literals" : {
             "speed" : 2.2
           }
         },
-        "night_end_12" : {
+        "mutate_3" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "fall_distance" : 0.0
+          }
+        },
+        "night_end_13" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_11" ]
+            "next" : [ "spawn_particle_12" ]
           }
         },
         "read_2" : {
@@ -151,7 +163,7 @@
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_11" : {
+        "spawn_particle_12" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -171,10 +183,10 @@
             "particle" : "minecraft:campfire_cosy_smoke"
           }
         },
-        "tick_10" : {
+        "tick_11" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_9" ]
+            "next" : [ "mutate_3", "branch_10" ]
           }
         }
       }

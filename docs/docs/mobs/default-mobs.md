@@ -91,7 +91,7 @@ Cave spiders can become these too.
 | `volley_pillager` | Fires two extra arrows every 4 seconds while it sees you. |
 | `tide_drowned` | Throws a trident every 3 seconds while you are in water. |
 | `swarm_silverfish` | Fast. When you hit it, every silverfish nearby comes for you. |
-| `assassin_spider` | Leaps up to 5 blocks high and lands on you from up to 12 blocks away. |
+| `assassin_spider` | Leaps onto you from up to 12 blocks away, even up into trees. Takes no fall damage. |
 
 ## The End
 

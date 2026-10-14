@@ -44,14 +44,24 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final String TELEPORT_NEAR = "teleport_near";
 
     /**
-     * Upward speed of the assassin spider's leap, about five blocks high.
+     * Upward speed of the assassin spider's leap at a target on its own height, about three blocks high.
      */
-    private static final double LEAP_UP = 0.9;
+    private static final double LEAP_UP = 0.75;
 
     /**
-     * How long the assassin spider's leap lasts in the air, in ticks.
+     * Upward speed the assassin spider's leap gains per block its target stands higher, so it clears trees.
      */
-    private static final int LEAP_TICKS = 22;
+    private static final double LEAP_UP_PER_BLOCK = 0.1;
+
+    /**
+     * Upward speed of the assassin spider's highest leap, about thirteen blocks high.
+     */
+    private static final double LEAP_UP_MAX = 1.6;
+
+    /**
+     * Blocks a leap covers per unit of sideways speed: air drag takes 9 % of it every tick, so about ten.
+     */
+    private static final double LEAP_REACH = 10;
 
     /**
      * Id of the blood dragon, the ender dragon of a dragon fight during a blood night.
@@ -611,6 +621,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     .id();
             graph.on(
                     MOB_TICK,
+                    graph.selfMutate().literal("fall_distance", 0.0).id(),
                     graph.present(
                             graph.selfRead(),
                             TARGET,
@@ -677,8 +688,8 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Leaps at its target every four seconds when it stands between 3 and 12 blocks away: up to five blocks high, far
-     * enough to land on the target.
+     * Leaps at its target every four seconds when it stands between 3 and 12 blocks away: high enough to reach a target
+     * up in a tree and far enough to land on it. Never takes fall damage.
      */
     private CustomMob assassinSpider() {
         return mob("assassin_spider", EntityType.SPIDER, graph -> {
@@ -704,13 +715,14 @@ public final class DefaultMobs implements BloodNightNodes {
                             "velocity",
                             graph.node(VECTOR_CREATE)
                                     .input("x", towards(graph, target, "x"), RESULT)
-                                    .literal("y", LEAP_UP)
+                                    .input("y", leapUp(graph, target), RESULT)
                                     .input("z", towards(graph, target, "z"), RESULT)
                                     .id(),
                             RESULT)
                     .id();
             graph.on(
                     MOB_TICK,
+                    graph.selfMutate().literal("fall_distance", 0.0).id(),
                     graph.present(
                             graph.selfRead(),
                             TARGET,
@@ -726,7 +738,31 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * The speed along one axis that carries the mob to the target during a leap of {@value #LEAP_TICKS} ticks.
+     * The upward speed of a leap: {@value #LEAP_UP}, plus {@value #LEAP_UP_PER_BLOCK} per block the target stands
+     * higher, at most {@value #LEAP_UP_MAX}.
+     */
+    private static String leapUp(MobGraph graph, String target) {
+        String rise = graph.node(MATH_SUBTRACT)
+                .input("first", target, "y")
+                .input("second", graph.selfRead(), "y")
+                .id();
+        String extra = graph.node(MATH_MULTIPLY)
+                .input("first", rise, RESULT)
+                .literal("second", LEAP_UP_PER_BLOCK)
+                .id();
+        String speed = graph.node(MATH_ADD)
+                .input("first", extra, RESULT)
+                .literal("second", LEAP_UP)
+                .id();
+        return graph.node(MATH_CLAMP)
+                .input(VALUE, speed, RESULT)
+                .literal("lower", LEAP_UP)
+                .literal("upper", LEAP_UP_MAX)
+                .id();
+    }
+
+    /**
+     * The speed along one axis that carries the mob to the target during a leap, air drag counted in.
      */
     private static String towards(MobGraph graph, String target, String axis) {
         String gap = graph.node(MATH_SUBTRACT)
@@ -735,7 +771,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 .id();
         return graph.node(MATH_DIVIDE)
                 .input("first", gap, RESULT)
-                .literal("second", (double) LEAP_TICKS)
+                .literal("second", LEAP_REACH)
                 .id();
     }
 

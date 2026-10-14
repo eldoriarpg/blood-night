@@ -7,8 +7,8 @@
     "en" : "Assassin Spider"
   },
   "descriptions" : {
-    "de" : "Springt bis zu 5 Blöcke hoch und landet aus bis zu 12 Blöcken Entfernung auf dir.",
-    "en" : "Leaps up to 5 blocks high and lands on you from up to 12 blocks away."
+    "de" : "Springt dich aus bis zu 12 Blöcken Entfernung an, auch hoch in Bäume. Nimmt keinen Fallschaden.",
+    "en" : "Leaps onto you from up to 12 blocks away, even up into trees. Takes no fall damage."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,6 +28,18 @@
     },
     "behaviour" : {
       "nodes" : {
+        "add_13" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "multiply_12",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 0.75
+          }
+        },
         "and_6" : {
           "type" : "logic.and",
           "inputs" : {
@@ -41,19 +53,19 @@
             }
           }
         },
-        "branch_15" : {
+        "branch_20" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_14",
+              "node" : "cooldown_19",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "mutate_7", "spawn_particle_13" ]
+            "true" : [ "mutate_7", "spawn_particle_18" ]
           }
         },
-        "branch_16" : {
+        "branch_21" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -62,10 +74,10 @@
             }
           },
           "executions" : {
-            "true" : [ "branch_15" ]
+            "true" : [ "branch_20" ]
           }
         },
-        "branch_17" : {
+        "branch_22" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -74,22 +86,35 @@
             }
           },
           "executions" : {
-            "true" : [ "branch_16" ]
+            "true" : [ "branch_21" ]
           }
         },
-        "branch_19" : {
+        "branch_24" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_18",
+              "node" : "is_null_23",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_17" ]
+            "false" : [ "branch_22" ]
           }
         },
-        "cooldown_14" : {
+        "clamp_14" : {
+          "type" : "math.clamp",
+          "inputs" : {
+            "value" : {
+              "node" : "add_13",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "lower" : 0.75,
+            "upper" : 1.6
+          }
+        },
+        "cooldown_19" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -105,13 +130,14 @@
               "node" : "divide_10",
               "port" : "result"
             },
+            "y" : {
+              "node" : "clamp_14",
+              "port" : "result"
+            },
             "z" : {
-              "node" : "divide_12",
+              "node" : "divide_16",
               "port" : "result"
             }
-          },
-          "literals" : {
-            "y" : 0.9
           }
         },
         "distance_3" : {
@@ -136,19 +162,19 @@
             }
           },
           "literals" : {
-            "second" : 22.0
+            "second" : 10.0
           }
         },
-        "divide_12" : {
+        "divide_16" : {
           "type" : "math.divide",
           "inputs" : {
             "first" : {
-              "node" : "subtract_11",
+              "node" : "subtract_15",
               "port" : "result"
             }
           },
           "literals" : {
-            "second" : 22.0
+            "second" : 10.0
           }
         },
         "greater_4" : {
@@ -163,7 +189,7 @@
             "second" : 3.0
           }
         },
-        "is_null_18" : {
+        "is_null_23" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -184,6 +210,30 @@
             "second" : 12.0
           }
         },
+        "multiply_12" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "subtract_11",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 0.1
+          }
+        },
+        "mutate_17" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "fall_distance" : 0.0
+          }
+        },
         "mutate_7" : {
           "type" : "mob.mutate",
           "inputs" : {
@@ -197,10 +247,10 @@
             }
           }
         },
-        "night_end_22" : {
+        "night_end_27" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_21" ]
+            "next" : [ "spawn_particle_26" ]
           }
         },
         "read_0" : {
@@ -224,7 +274,7 @@
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_13" : {
+        "spawn_particle_18" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -244,7 +294,7 @@
             "particle" : "minecraft:crit"
           }
         },
-        "spawn_particle_21" : {
+        "spawn_particle_26" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -265,6 +315,19 @@
           }
         },
         "subtract_11" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "y"
+            },
+            "second" : {
+              "node" : "read_0",
+              "port" : "y"
+            }
+          }
+        },
+        "subtract_15" : {
           "type" : "math.subtract",
           "inputs" : {
             "first" : {
@@ -290,10 +353,10 @@
             }
           }
         },
-        "tick_20" : {
+        "tick_25" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_19" ]
+            "next" : [ "mutate_17", "branch_24" ]
           }
         }
       }
