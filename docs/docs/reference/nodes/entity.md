@@ -1,5 +1,6 @@
 ---
 title: Entities
+description: "Entities: every node of this group, with its inputs and outputs."
 sidebar_position: 4
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: The world
+description: "The world: every node of this group, with its inputs and outputs."
 sidebar_position: 18
 ---
 

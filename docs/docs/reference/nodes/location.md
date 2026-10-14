@@ -1,5 +1,6 @@
 ---
 title: Locations
+description: "Locations: every node of this group, with its inputs and outputs."
 sidebar_position: 9
 ---
 

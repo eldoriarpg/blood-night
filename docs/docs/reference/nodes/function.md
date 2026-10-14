@@ -1,5 +1,6 @@
 ---
 title: Chance and cooldown
+description: "Chance and cooldown: every node of this group, with its inputs and outputs."
 sidebar_position: 2
 ---
 

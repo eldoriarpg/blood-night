@@ -1,5 +1,6 @@
 ---
 title: Settings
+description: Every setting of BloodNight with its default value.
 sidebar_position: 1
 ---
 

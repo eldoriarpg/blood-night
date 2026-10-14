@@ -1,5 +1,6 @@
 ---
 title: Flow
+description: "Flow: every node of this group, with its inputs and outputs."
 sidebar_position: 5
 ---
 

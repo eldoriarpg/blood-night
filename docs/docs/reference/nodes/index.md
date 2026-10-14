@@ -1,5 +1,6 @@
 ---
 title: Nodes
+description: Every node you can use in a mob's graph, by group.
 sidebar_position: 0
 ---
 

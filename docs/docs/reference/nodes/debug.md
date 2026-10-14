@@ -1,5 +1,6 @@
 ---
 title: Debugging
+description: "Debugging: every node of this group, with its inputs and outputs."
 sidebar_position: 3
 ---
 

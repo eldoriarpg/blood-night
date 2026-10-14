@@ -125,6 +125,7 @@ function nodePages(catalog) {
   const overview = [
     '---',
     'title: Nodes',
+    'description: Every node you can use in a mob\'s graph, by group.',
     'sidebar_position: 0',
     '---',
     '',
@@ -147,6 +148,7 @@ function nodePages(catalog) {
     const lines = [
       '---',
       `title: ${label(category)}`,
+      `description: "${label(category)}: every node of this group, with its inputs and outputs."`,
       `sidebar_position: ${index + 1}`,
       '---',
       '',
@@ -204,6 +206,7 @@ function settingsPage(schema) {
   const lines = [
     '---',
     'title: Settings',
+    'description: Every setting of BloodNight with its default value.',
     'sidebar_position: 1',
     '---',
     '',
@@ -298,6 +301,7 @@ function permissionsPage(descriptor) {
   const lines = [
     '---',
     'title: Permissions',
+    'description: Every permission of BloodNight and what it allows.',
     'sidebar_position: 2',
     '---',
     '',

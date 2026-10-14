@@ -1,5 +1,6 @@
 ---
 title: Objects
+description: "Objects: every node of this group, with its inputs and outputs."
 sidebar_position: 13
 ---
 
