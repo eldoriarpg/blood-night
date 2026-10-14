@@ -31,6 +31,7 @@ dependencies {
     testImplementation(libs.placeholderapi)
     testImplementation(libs.miniplaceholders)
     annotationProcessor(libs.strokkcommands.processor)
+    annotationProcessor(libs.ocular)
 }
 
 paper {
@@ -115,6 +116,8 @@ paper {
     }
 }
 
+val devEditor = providers.environmentVariable("BLOODNIGHT_EDITOR_URL").orElse("http://localhost:8080").get()
+
 tasks {
     processResources {
         dependsOn(":catalog:generateCatalog")
@@ -154,7 +157,7 @@ tasks {
 
     runServer {
         minecraftVersion("26.3")
-        jvmArgs("-Dcom.mojang.eula.agree=true")
+        jvmArgs("-Dcom.mojang.eula.agree=true", "-Dbloodnight.editor.url=$devEditor")
     }
 
     register<JavaExec>("generatePayloadSchema") {
@@ -170,5 +173,5 @@ tasks {
 runPaper.folia.registerTask {
     minecraftVersion("26.2")
     runDirectory = layout.projectDirectory.dir("run-folia")
-    jvmArgs("-Dcom.mojang.eula.agree=true")
+    jvmArgs("-Dcom.mojang.eula.agree=true", "-Dbloodnight.editor.url=$devEditor")
 }

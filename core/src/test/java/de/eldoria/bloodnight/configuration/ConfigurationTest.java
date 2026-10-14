@@ -111,6 +111,18 @@ class ConfigurationTest {
     }
 
     @Test
+    void theEditorUrlCanBeOverridden() {
+        System.setProperty("bloodnight.editor.url", "http://localhost:8080");
+        try {
+            Configuration configuration = new Configuration(
+                    plugin.getDataFolder().toPath(), getClass().getClassLoader());
+            assertEquals("http://localhost:8080", configuration.main().editor().url());
+        } finally {
+            System.clearProperty("bloodnight.editor.url");
+        }
+    }
+
+    @Test
     void installedMobsKeepTheirLogicThroughTheFile() {
         MobStore store = new MobStore(BuiltInStore.load());
         List<CustomMob> installed =
