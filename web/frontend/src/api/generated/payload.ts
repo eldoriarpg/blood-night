@@ -627,6 +627,7 @@ export interface WorldPayload {
  */
 export interface WorldSettings {
   enabled?: boolean;
+  displayName?: string;
   nightSelection?: NightSelection;
   nightSettings?: NightSettings;
   mobSettings?: MobSettings;

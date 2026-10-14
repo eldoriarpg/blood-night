@@ -1872,6 +1872,10 @@
           "type" : "boolean",
           "default" : true
         },
+        "displayName" : {
+          "type" : "string",
+          "default" : ""
+        },
         "nightSelection" : {
           "allOf" : [ {
             "$ref" : "#/$defs/NightSelection"

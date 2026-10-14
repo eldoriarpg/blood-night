@@ -21,6 +21,7 @@ Show blood nights on your scoreboard, in the tab list or in chat. BloodNight wor
 | `%bloodnight_percent_left%` | `<bloodnight_percent_left>` | How much of the night is left, like `42.5` |
 | `%bloodnight_next_nights%` | `<bloodnight_next_nights>` | Nights until the next blood night, `0` for the coming one |
 | `%bloodnight_next_time%` | `<bloodnight_next_time>` | Time until the next blood night |
+| `%bloodnight_world_name%` | `<bloodnight_world_name>` | The world's name for players (see [world names](nights/announcements.md#world-names)) |
 
 Without a world, a placeholder uses the world of the player who sees it. To ask about another world, add its name at
 the end:

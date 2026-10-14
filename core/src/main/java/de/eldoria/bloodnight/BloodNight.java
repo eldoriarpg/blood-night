@@ -26,6 +26,7 @@ import de.eldoria.bloodnight.integration.placeholders.MiniExpansion;
 import de.eldoria.bloodnight.integration.placeholders.PapiCommandText;
 import de.eldoria.bloodnight.integration.placeholders.PapiExpansion;
 import de.eldoria.bloodnight.integration.placeholders.Placeholders;
+import de.eldoria.bloodnight.integration.worlds.WorldNames;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
@@ -108,6 +109,7 @@ public final class BloodNight extends JavaPlugin {
     private PluginService service;
     private @Nullable Object miniPlaceholders;
     private PhantomForce phantoms;
+    private WorldNames worldNames;
     private WorldRules worldRules;
     private final Messages messages = new Messages();
     private NightSelector selector;
@@ -171,12 +173,17 @@ public final class BloodNight extends JavaPlugin {
                 () -> configuration.mobs().all());
         getServer().getServicesManager().register(BloodNightService.class, service, this, ServicePriority.Normal);
         var plugins = getServer().getPluginManager();
+        worldNames = new WorldNames(
+                world -> configuration.worldConfig(world).displayName(),
+                () -> pluginLoader("Multiverse-Core"),
+                () -> pluginLoader("Hyperverse"));
         CommandText commandText = hookPlaceholders();
         plugins.registerEvents(new DamageHandler(), this);
         plugins.registerEvents(new TargetPolicy(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
         plugins.registerEvents(new MobDeaths(plugins), this);
-        ForeignMobs foreign = new ForeignMobs(() -> configuration.main().foreignMobs(), this::mythicMobsLoader);
+        ForeignMobs foreign =
+                new ForeignMobs(() -> configuration.main().foreignMobs(), () -> pluginLoader("MythicMobs"));
         plugins.registerEvents(
                 new DropHandler(
                         id -> configuration.mobs().get(id),
@@ -242,7 +249,8 @@ public final class BloodNight extends JavaPlugin {
                 () -> configuration.main().announcements(),
                 configuration::worldConfig,
                 selector::times,
-                tasks);
+                tasks,
+                worldNames::name);
         plugins.registerEvents(announcer, this);
         phantoms = new PhantomForce(
                 bloodNights,
@@ -304,7 +312,8 @@ public final class BloodNight extends JavaPlugin {
                 service,
                 name -> getServer().getWorld(name),
                 () -> getServer().getServerTickManager().getTickRate(),
-                () -> configuration.main().placeholders().revealNext());
+                () -> configuration.main().placeholders().revealNext(),
+                worldNames::plain);
         String version = getPluginMeta().getVersion();
         var plugins = getServer().getPluginManager();
         if (plugins.isPluginEnabled("MiniPlaceholders")) {
@@ -331,11 +340,11 @@ public final class BloodNight extends JavaPlugin {
     }
 
     /**
-     * @return the class loader of MythicMobs while it runs, so its classes can be reached without depending on it
+     * @return the class loader of a plugin while it runs, so its classes can be reached without depending on it
      */
-    private @Nullable ClassLoader mythicMobsLoader() {
-        Plugin mythic = getServer().getPluginManager().getPlugin("MythicMobs");
-        return mythic != null && mythic.isEnabled() ? mythic.getClass().getClassLoader() : null;
+    private @Nullable ClassLoader pluginLoader(String name) {
+        Plugin plugin = getServer().getPluginManager().getPlugin(name);
+        return plugin != null && plugin.isEnabled() ? plugin.getClass().getClassLoader() : null;
     }
 
     /**

@@ -64,7 +64,13 @@ class AnnouncerTest {
         reach("SERVER");
         var plugin = MockBukkit.createMockPlugin();
         announcer = new Announcer(
-                server, nights, () -> announcements, ignored -> settings, ignored -> TIMES, new Tasks(plugin));
+                server,
+                nights,
+                () -> announcements,
+                ignored -> settings,
+                ignored -> TIMES,
+                new Tasks(plugin),
+                target -> Component.text(target.getName()));
         server.getPluginManager().registerEvents(announcer, plugin);
     }
 

@@ -109,3 +109,15 @@ soundSettings:
 - `channel` is the sound slider in the player's settings: `AMBIENT`, `HOSTILE`, `MASTER` and so on.
 
 Sounds are named like in the `/playsound` command.
+
+## World names
+
+Messages name the world with `<world>`. At first that is the folder name, like `world_nether`. You can give a world a
+nicer name with `displayName` in its world file. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html):
+
+```yaml
+displayName: "<red>The Nether"
+```
+
+Without a `displayName`, BloodNight uses the world's alias from [Multiverse-Core](https://modrinth.com/plugin/multiverse-core)
+or Hyperverse, if you have one of them.
