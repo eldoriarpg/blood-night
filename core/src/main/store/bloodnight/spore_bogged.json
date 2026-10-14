@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Spore Bogged",
+    "de": "Sporen-Sumpfskelett"
+  },
+  "descriptions": {
+    "en": "Its arrows poison you and make you dizzy. Leaves a poison cloud when it dies.",
+    "de": "Seine Pfeile vergiften dich und machen dich schwindelig. Hinterlässt beim Tod eine Giftwolke."
+  },
+  "requires": []
+}

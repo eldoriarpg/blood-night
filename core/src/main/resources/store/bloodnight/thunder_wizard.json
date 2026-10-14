@@ -1,0 +1,332 @@
+{
+  "format" : 1,
+  "id" : "thunder_wizard",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Donnermagier",
+    "en" : "Thunder Wizard"
+  },
+  "descriptions" : {
+    "de" : "Markiert, wo du stehst. Kurz danach schlägt dort ein Blitz ein.",
+    "en" : "Marks where you stand. A moment later, lightning strikes there."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "thunder_wizard",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.thunder_wizard:'Thunder Wizard'>",
+      "entityType" : "WITCH",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_13" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_12",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_11" ]
+          }
+        },
+        "branch_14" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_8",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "set_6" ]
+          }
+        },
+        "branch_16" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_15",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_14" ]
+          }
+        },
+        "branch_18" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_17",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_16" ]
+          }
+        },
+        "cooldown_12" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "cooldown_15" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 4000
+          }
+        },
+        "create_9" : {
+          "type" : "spell.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_10",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "power" : 1.0
+          }
+        },
+        "delay_5" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.5
+          },
+          "executions" : {
+            "next" : [ "strike_lightning_4" ]
+          }
+        },
+        "get_3" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "mark",
+            "type" : "location"
+          }
+        },
+        "has_line_of_sight_8" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "read_0",
+              "port" : "target"
+            },
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "is_null_17" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "mutate_21" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "projectile_shoot_20",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "night_end_23" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_22" ]
+          }
+        },
+        "projectile_shoot_20" : {
+          "type" : "event.projectile_shoot",
+          "executions" : {
+            "next" : [ "mutate_21" ]
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "rgb_10" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 255,
+            "green" : 255,
+            "red" : 255
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "set_6" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "mark",
+            "type" : "location"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "read_2",
+              "port" : "location"
+            }
+          },
+          "executions" : {
+            "next" : [ "strike_lightning_7", "delay_5" ]
+          }
+        },
+        "spawn_particle_11" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_9",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 15,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:instant_effect"
+          }
+        },
+        "spawn_particle_22" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "strike_lightning_4" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "get_3",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          }
+        },
+        "strike_lightning_7" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "set_6",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "effect_only" : true
+          }
+        },
+        "tick_19" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_13", "branch_18" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

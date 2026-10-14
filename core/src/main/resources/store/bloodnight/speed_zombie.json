@@ -1,0 +1,113 @@
+{
+  "format" : 1,
+  "id" : "speed_zombie",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Flinker Zombie",
+    "en" : "Speed Zombie"
+  },
+  "descriptions" : {
+    "de" : "Sehr schnell.",
+    "en" : "Very fast."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "speed_zombie",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.speed_zombie:'Speed Zombie'>",
+      "entityType" : "ZOMBIE",
+      "exactType" : false,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_0" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 4,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : true
+          }
+        },
+        "branch_3" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_2",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_0" ]
+          }
+        },
+        "cooldown_2" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "tick_4" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_3" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

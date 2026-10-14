@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Unstable Creeper",
+    "de": "Instabiler Creeper"
+  },
+  "descriptions": {
+    "en": "Charged, with a huge explosion. Explodes right away when you hit it.",
+    "de": "Geladen, mit riesiger Explosion. Explodiert sofort, wenn du ihn triffst."
+  },
+  "requires": []
+}

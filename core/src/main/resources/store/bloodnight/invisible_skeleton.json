@@ -1,0 +1,148 @@
+{
+  "format" : 1,
+  "id" : "invisible_skeleton",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Unsichtbares Skelett",
+    "en" : "Invisible Skeleton"
+  },
+  "descriptions" : {
+    "de" : "Unsichtbar.",
+    "en" : "Invisible."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "invisible_skeleton",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.invisible_skeleton:'Invisible Skeleton'>",
+      "entityType" : "SKELETON",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_0" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:invisibility",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "branch_3" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_2",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_0" ]
+          }
+        },
+        "cooldown_2" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "night_end_7" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_6" ]
+          }
+        },
+        "read_5" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_6" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_5",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_5",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "tick_4" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_3" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

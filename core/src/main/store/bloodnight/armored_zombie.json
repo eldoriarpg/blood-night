@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Armored Zombie",
+    "de": "Gepanzerter Zombie"
+  },
+  "descriptions": {
+    "en": "Wears full diamond armour.",
+    "de": "Trägt eine volle Diamantrüstung."
+  },
+  "requires": []
+}

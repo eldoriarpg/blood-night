@@ -1,0 +1,329 @@
+{
+  "format" : 1,
+  "id" : "unstable_creeper",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Instabiler Creeper",
+    "en" : "Unstable Creeper"
+  },
+  "descriptions" : {
+    "de" : "Geladen, mit riesiger Explosion. Explodiert sofort, wenn du ihn triffst.",
+    "en" : "Charged, with a huge explosion. Explodes right away when you hit it."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "unstable_creeper",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.unstable_creeper:'Unstable Creeper'>",
+      "entityType" : "CREEPER",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "or_11",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "explode_16" ]
+          }
+        },
+        "branch_25" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "or_19",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "explode_24" ]
+          }
+        },
+        "branch_8" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_6" ]
+          }
+        },
+        "cooldown_7" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "damage_by_entity_10" : {
+          "type" : "event.damage_by_entity",
+          "executions" : {
+            "next" : [ "branch_17" ]
+          }
+        },
+        "damage_by_player_18" : {
+          "type" : "event.damage_by_player",
+          "executions" : {
+            "next" : [ "branch_25" ]
+          }
+        },
+        "equal_13" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_by_entity_10",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_12",
+              "port" : "value"
+            }
+          }
+        },
+        "equal_15" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_by_entity_10",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_14",
+              "port" : "value"
+            }
+          }
+        },
+        "equal_21" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_by_player_18",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_20",
+              "port" : "value"
+            }
+          }
+        },
+        "equal_23" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_by_player_18",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_22",
+              "port" : "value"
+            }
+          }
+        },
+        "explode_16" : {
+          "type" : "creeper.explode",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "explode_24" : {
+          "type" : "creeper.explode",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "mutate_0" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "explosion_radius" : 10
+          }
+        },
+        "mutate_2" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "powered" : true
+          }
+        },
+        "mutate_3" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "max_fuse_ticks" : 50
+          }
+        },
+        "or_11" : {
+          "type" : "logic.or",
+          "inputs" : {
+            "first" : {
+              "node" : "equal_13",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "equal_15",
+              "port" : "result"
+            }
+          }
+        },
+        "or_19" : {
+          "type" : "logic.or",
+          "inputs" : {
+            "first" : {
+              "node" : "equal_21",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "equal_23",
+              "port" : "result"
+            }
+          }
+        },
+        "read_5" : {
+          "type" : "creeper.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_4" : {
+          "type" : "mob.spawn",
+          "executions" : {
+            "next" : [ "mutate_0", "mutate_2", "mutate_3" ]
+          }
+        },
+        "spawn_particle_6" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_5",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_5",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 2,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:end_rod"
+          }
+        },
+        "tick_9" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_8" ]
+          }
+        },
+        "value_12" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "ENTITY_ATTACK"
+          }
+        },
+        "value_14" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "PROJECTILE"
+          }
+        },
+        "value_20" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "ENTITY_ATTACK"
+          }
+        },
+        "value_22" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "PROJECTILE"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

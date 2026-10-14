@@ -1,0 +1,110 @@
+{
+  "format" : 1,
+  "id" : "toxic_slime",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Giftiger Schleim",
+    "en" : "Toxic Slime"
+  },
+  "descriptions" : {
+    "de" : "Hinterlässt eine Giftwolke, wenn er stirbt.",
+    "en" : "Leaves a poison cloud when it dies."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "toxic_slime",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.toxic_slime:'Toxic Slime'>",
+      "entityType" : "SLIME",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "death_0" : {
+          "type" : "event.death",
+          "executions" : {
+            "next" : [ "spawn_potion_cloud_2" ]
+          }
+        },
+        "read_1" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "death_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "rgb_3" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 49,
+            "green" : 147,
+            "red" : 78
+          }
+        },
+        "spawn_potion_cloud_2" : {
+          "type" : "world.spawn_potion_cloud",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_3",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "potion" : "minecraft:strong_poison",
+            "radius" : 3.0,
+            "radius_per_tick" : 0.01,
+            "seconds" : 5
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

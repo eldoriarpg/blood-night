@@ -52,6 +52,7 @@ paper {
         "editor" to "opens, applies or closes a web editor session",
         "item" to "registers the held item or removes a registered item",
         "settings" to "shows or changes one setting without the web editor",
+        "store" to "lists, installs and updates mobs from the store",
     )
     serverDependencies {
         listOf("PlaceholderAPI", "MiniPlaceholders", "WorldGuard").forEach { name ->
@@ -93,6 +94,15 @@ tasks {
     processResources {
         dependsOn(":catalog:generateCatalog")
         from(project(":catalog").layout.buildDirectory.file("catalog/catalog.json"))
+    }
+
+    register<JavaExec>("generateStore") {
+        group = "build"
+        description = "Writes src/main/resources/store/bloodnight from the default mobs and src/main/store descriptions"
+        dependsOn("compileTestJava")
+        mainClass = "de.eldoria.bloodnight.store.StoreGeneratorCli"
+        classpath = sourceSets.test.get().runtimeClasspath
+        workingDir = rootDir
     }
 
     shadowJar {

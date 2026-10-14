@@ -1,0 +1,227 @@
+{
+  "format" : 1,
+  "id" : "spore_bogged",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Sporen-Sumpfskelett",
+    "en" : "Spore Bogged"
+  },
+  "descriptions" : {
+    "de" : "Seine Pfeile vergiften dich und machen dich schwindelig. Hinterlässt beim Tod eine Giftwolke.",
+    "en" : "Its arrows poison you and make you dizzy. Leaves a poison cloud when it dies."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "spore_bogged",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.spore_bogged:'Spore Bogged'>",
+      "entityType" : "BOGGED",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_8" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_7",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:poison",
+            "seconds" : 6.0
+          }
+        },
+        "apply_effect_9" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_7",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 0,
+            "effect" : "minecraft:nausea",
+            "seconds" : 4.0
+          }
+        },
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_7",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_8", "apply_effect_9" ]
+          }
+        },
+        "branch_4" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_3",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_2" ]
+          }
+        },
+        "cast_7" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "projectile_hit_6",
+              "port" : "hit_entity"
+            }
+          }
+        },
+        "cooldown_3" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "death_11" : {
+          "type" : "event.death",
+          "executions" : {
+            "next" : [ "spawn_potion_cloud_13" ]
+          }
+        },
+        "projectile_hit_6" : {
+          "type" : "event.projectile_hit",
+          "executions" : {
+            "next" : [ "branch_10" ]
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_12" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "death_11",
+              "port" : "entity"
+            }
+          }
+        },
+        "rgb_14" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 60,
+            "green" : 90,
+            "red" : 110
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_2" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 3,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:crimson_spore"
+          }
+        },
+        "spawn_potion_cloud_13" : {
+          "type" : "world.spawn_potion_cloud",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_14",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_12",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "potion" : "minecraft:poison",
+            "radius" : 3.0,
+            "radius_per_tick" : 0.01,
+            "seconds" : 6
+          }
+        },
+        "tick_5" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_4" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

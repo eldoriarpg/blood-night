@@ -1,0 +1,12 @@
+{
+  "pack": "end",
+  "names": {
+    "en": "Blood Dragon",
+    "de": "Blutdrache"
+  },
+  "descriptions": {
+    "en": "The ender dragon of a dragon fight during a Blood Eclipse. Never spawns by chance.",
+    "de": "Der Enderdrache eines Drachenkampfs während einer Blutfinsternis. Erscheint nie zufällig."
+  },
+  "requires": []
+}

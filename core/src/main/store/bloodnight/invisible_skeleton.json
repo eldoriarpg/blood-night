@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Invisible Skeleton",
+    "de": "Unsichtbares Skelett"
+  },
+  "descriptions": {
+    "en": "Invisible.",
+    "de": "Unsichtbar."
+  },
+  "requires": []
+}

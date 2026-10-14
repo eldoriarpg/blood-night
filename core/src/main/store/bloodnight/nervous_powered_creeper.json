@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Nervous Powered Creeper",
+    "de": "Nervöser geladener Creeper"
+  },
+  "descriptions": {
+    "en": "Charged, fast and explodes almost at once.",
+    "de": "Geladen, schnell und explodiert fast sofort."
+  },
+  "requires": []
+}

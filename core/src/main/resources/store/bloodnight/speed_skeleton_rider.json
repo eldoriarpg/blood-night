@@ -1,0 +1,272 @@
+{
+  "format" : 1,
+  "id" : "speed_skeleton_rider",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Flinker Skelettreiter",
+    "en" : "Speed Skeleton Rider"
+  },
+  "descriptions" : {
+    "de" : "Eine schnelle Spinne mit einem Skelett auf dem Rücken.",
+    "en" : "A fast spider with a skeleton on its back."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "speed_skeleton_rider",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.speed_skeleton_rider:'Speed Skeleton Rider'>",
+      "entityType" : "SPIDER",
+      "exactType" : false,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "apply_effect_15" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : true
+          }
+        },
+        "branch_13" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_12",
+              "port" : "dead"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_10" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_15" ]
+          }
+        },
+        "branch_4" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_3",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_1" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_8" ]
+          }
+        },
+        "cooldown_16" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "damage_10" : {
+          "type" : "living_entity.damage",
+          "inputs" : {
+            "amount" : {
+              "node" : "read_12",
+              "port" : "health"
+            },
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          }
+        },
+        "equal_7" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "extension_damage_5",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_6",
+              "port" : "value"
+            }
+          }
+        },
+        "extension_2" : {
+          "type" : "mob.extension"
+        },
+        "extension_damage_5" : {
+          "type" : "event.extension_damage",
+          "executions" : {
+            "next" : [ "branch_9" ]
+          }
+        },
+        "extension_death_14" : {
+          "type" : "event.extension_death",
+          "executions" : {
+            "next" : [ "branch_13" ]
+          }
+        },
+        "is_null_3" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "mutate_1" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "target_change_0",
+              "port" : "target"
+            }
+          }
+        },
+        "mutate_8" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_damage_5",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "night_end_20" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_19" ]
+          }
+        },
+        "read_12" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_11" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_19" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_12",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_12",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "target_change_0" : {
+          "type" : "event.target_change",
+          "executions" : {
+            "next" : [ "branch_4" ]
+          }
+        },
+        "tick_18" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_17" ]
+          }
+        },
+        "value_6" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "SUFFOCATION"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "CARRIER",
+      "entityType" : "SKELETON",
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

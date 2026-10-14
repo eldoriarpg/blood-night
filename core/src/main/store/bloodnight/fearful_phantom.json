@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Fearful Phantom",
+    "de": "Furchterregendes Phantom"
+  },
+  "descriptions": {
+    "en": "Glows. Its hits slow you down.",
+    "de": "Leuchtet. Seine Treffer verlangsamen dich."
+  },
+  "requires": []
+}

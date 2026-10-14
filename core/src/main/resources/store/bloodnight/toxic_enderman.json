@@ -1,0 +1,287 @@
+{
+  "format" : 1,
+  "id" : "toxic_enderman",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Giftiger Enderman",
+    "en" : "Toxic Enderman"
+  },
+  "descriptions" : {
+    "de" : "Hinterlässt eine Giftwolke, wo er sich wegteleportiert.",
+    "en" : "Leaves a poison cloud where it teleports from."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "toxic_enderman",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.toxic_enderman:'Toxic Enderman'>",
+      "entityType" : "ENDERMAN",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_11",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_10" ]
+          }
+        },
+        "branch_6" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_5",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_3" ]
+          }
+        },
+        "branch_7" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_4",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_6" ]
+          }
+        },
+        "cooldown_11" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "create_8" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_9",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 2.0
+          }
+        },
+        "is_null_4" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_1",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_5" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "mutate_3" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "nearest_player_0" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 16.0
+          }
+        },
+        "night_end_19" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_18" ]
+          }
+        },
+        "power_17" : {
+          "type" : "particle.power",
+          "literals" : {
+            "power" : 1.0
+          }
+        },
+        "read_1" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "rgb_16" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 128,
+            "red" : 0
+          }
+        },
+        "rgb_9" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 128,
+            "red" : 0
+          }
+        },
+        "self_2" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_10" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_8",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_1",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_1",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 5,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_particle_18" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "power_17",
+              "port" : "power"
+            },
+            "location" : {
+              "node" : "read_1",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_1",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 10,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dragon_breath"
+          }
+        },
+        "spawn_potion_cloud_15" : {
+          "type" : "world.spawn_potion_cloud",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_16",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "teleport_14",
+              "port" : "from"
+            }
+          },
+          "literals" : {
+            "potion" : "minecraft:strong_poison",
+            "radius" : 4.0,
+            "radius_per_tick" : 0.01,
+            "seconds" : 10
+          }
+        },
+        "teleport_14" : {
+          "type" : "event.teleport",
+          "executions" : {
+            "next" : [ "spawn_potion_cloud_15" ]
+          }
+        },
+        "tick_13" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_7", "branch_12" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

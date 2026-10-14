@@ -1,0 +1,217 @@
+{
+  "format" : 1,
+  "id" : "volley_pillager",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Salven-Plünderer",
+    "en" : "Volley Pillager"
+  },
+  "descriptions" : {
+    "de" : "Schießt alle 4 Sekunden zwei zusätzliche Pfeile, solange er dich sieht.",
+    "en" : "Fires two extra arrows every 4 seconds while it sees you."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "volley_pillager",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.volley_pillager:'Volley Pillager'>",
+      "entityType" : "PILLAGER",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_5" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_0",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "launch_projectile_3", "launch_projectile_4" ]
+          }
+        },
+        "branch_7" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_6",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_5" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_8",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_7" ]
+          }
+        },
+        "cooldown_6" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 4000
+          }
+        },
+        "has_line_of_sight_0" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "read_2",
+              "port" : "target"
+            },
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "is_null_8" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_2",
+              "port" : "target"
+            }
+          }
+        },
+        "launch_projectile_3" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "ARROW"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 2.5
+          }
+        },
+        "launch_projectile_4" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "ARROW"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 2.2
+          }
+        },
+        "night_end_12" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_11" ]
+          }
+        },
+        "read_2" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_11" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_2",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "tick_10" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_9" ]
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

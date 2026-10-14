@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Thunder Wizard",
+    "de": "Donnermagier"
+  },
+  "descriptions": {
+    "en": "Marks where you stand. A moment later, lightning strikes there.",
+    "de": "Markiert, wo du stehst. Kurz danach schlägt dort ein Blitz ein."
+  },
+  "requires": []
+}

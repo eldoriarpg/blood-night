@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Speed Zombie",
+    "de": "Flinker Zombie"
+  },
+  "descriptions": {
+    "en": "Very fast.",
+    "de": "Sehr schnell."
+  },
+  "requires": []
+}

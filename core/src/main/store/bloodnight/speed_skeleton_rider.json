@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Speed Skeleton Rider",
+    "de": "Flinker Skelettreiter"
+  },
+  "descriptions": {
+    "en": "A fast spider with a skeleton on its back.",
+    "de": "Eine schnelle Spinne mit einem Skelett auf dem Rücken."
+  },
+  "requires": []
+}

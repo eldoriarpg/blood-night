@@ -1,0 +1,12 @@
+{
+  "pack": "classic",
+  "names": {
+    "en": "Fire Phantom",
+    "de": "Feuerphantom"
+  },
+  "descriptions": {
+    "en": "Carries a blaze.",
+    "de": "Trägt eine Lohe."
+  },
+  "requires": []
+}

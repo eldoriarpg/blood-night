@@ -308,6 +308,14 @@
             "notice" : true
           }
         },
+        "store" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/StoreSettings"
+          } ],
+          "default" : {
+            "autoUpdate" : true
+          }
+        },
         "foreignMobs" : {
           "allOf" : [ {
             "$ref" : "#/$defs/ForeignMobSettings"
@@ -404,6 +412,9 @@
         },
         "spawn" : {
           "$ref" : "#/$defs/SpawnRules"
+        },
+        "origin" : {
+          "$ref" : "#/$defs/MobOrigin"
         }
       },
       "required" : [ "id", "attributes", "behaviour", "mobDrops", "extension", "spawn" ]
@@ -932,6 +943,21 @@
         }
       },
       "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue", "vanillaLoot" ]
+    },
+    "MobOrigin" : {
+      "type" : "object",
+      "properties" : {
+        "store" : {
+          "type" : "string"
+        },
+        "entry" : {
+          "type" : "string"
+        },
+        "hash" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "store", "entry", "hash" ]
     },
     "MobSettings" : {
       "type" : "object",
@@ -1683,6 +1709,15 @@
         }
       },
       "required" : [ "weight", "nightOnly", "nightEnd", "reasons", "conditions" ]
+    },
+    "StoreSettings" : {
+      "type" : "object",
+      "properties" : {
+        "autoUpdate" : {
+          "type" : "boolean",
+          "default" : true
+        }
+      }
     },
     "Surface" : {
       "type" : "string",

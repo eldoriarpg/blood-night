@@ -10,12 +10,11 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.night.LengthMode;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
 import de.eldoria.bloodnight.editor.EditorPayload;
-import de.eldoria.bloodnight.graph.BloodNightPlatform;
-import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
+import de.eldoria.bloodnight.store.BuiltInStore;
+import de.eldoria.bloodnight.store.MobStore;
+import de.eldoria.bloodnight.store.StoreState;
 import de.eldoria.graph.model.Graph;
-import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
@@ -112,20 +111,17 @@ class ConfigurationTest {
     }
 
     @Test
-    void seedsTheDefaultMobsOnlyWhenTheFileIsMissing() throws IOException {
-        GraphPlatform platform =
-                BloodNightPlatform.create(CompileClasspath.discover(getClass().getClassLoader()));
-        List<CustomMob> defaults = DefaultMobs.create(platform);
-        new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).seedMobs(() -> defaults);
+    void installedMobsKeepTheirLogicThroughTheFile() {
+        MobStore store = new MobStore(BuiltInStore.load());
+        List<CustomMob> installed =
+                store.install(List.of(), BuiltInStore.CLASSIC).mobs();
+        new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).replaceMobs(installed);
 
         Configuration reread =
                 new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader());
         assertEquals(Map.of(), reread.problems());
-        assertEquals(Set.copyOf(defaults), Set.copyOf(reread.mobs().all()));
-
-        Files.writeString(mobs, "mobs: {}\n");
-        new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).seedMobs(() -> defaults);
-        assertEquals("mobs: {}\n", Files.readString(mobs));
+        assertEquals(Set.copyOf(installed), Set.copyOf(reread.mobs().all()));
+        reread.mobs().all().forEach(mob -> assertEquals(StoreState.CURRENT, store.state(mob), mob.id()));
     }
 
     @Test

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "classic",
+    "names": {
+      "en": "Classic",
+      "de": "Klassisch"
+    },
+    "descriptions": {
+      "en": "The mobs BloodNight always had.",
+      "de": "Die Mobs, die BloodNight schon immer hatte."
+    }
+  },
+  {
+    "id": "newer",
+    "names": {
+      "en": "Newer mobs",
+      "de": "Neuere Mobs"
+    },
+    "descriptions": {
+      "en": "Mobs for breezes, bogged, pillagers, drowned and silverfish.",
+      "de": "Mobs für Böen, Sumpfskelette, Plünderer, Ertrunkene und Silberfischchen."
+    }
+  },
+  {
+    "id": "end",
+    "names": {
+      "en": "The End",
+      "de": "Das Ende"
+    },
+    "descriptions": {
+      "en": "The Blood Dragon for dragon fights.",
+      "de": "Der Blutdrache für Drachenkämpfe."
+    }
+  }
+]

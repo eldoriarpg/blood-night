@@ -1,0 +1,360 @@
+{
+  "format" : 1,
+  "id" : "fire_wizard",
+  "pack" : "classic",
+  "names" : {
+    "de" : "Feuermagier",
+    "en" : "Fire Wizard"
+  },
+  "descriptions" : {
+    "de" : "Wirft alle 5 Sekunden einen großen Feuerball.",
+    "en" : "Throws a large fireball every 5 seconds."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "fire_wizard",
+    "equipment" : {
+      "head" : null,
+      "chest" : null,
+      "legs" : null,
+      "feet" : null,
+      "mainHand" : "minecraft:fire_charge",
+      "offHand" : null
+    },
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.fire_wizard:'Fire Wizard'>",
+      "entityType" : "WITCH",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "attribute_18" : {
+          "type" : "living_entity.attribute",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "attribute" : "minecraft:attack_damage"
+          }
+        },
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_13",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_14" ]
+          }
+        },
+        "branch_22" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_21",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_20" ]
+          }
+        },
+        "branch_23" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_17",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_22" ]
+          }
+        },
+        "branch_4" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_3",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_2" ]
+          }
+        },
+        "branch_7" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_6",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "launch_projectile_5" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_8",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_7" ]
+          }
+        },
+        "cast_17" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "projectile_hit_16",
+              "port" : "hit_entity"
+            }
+          }
+        },
+        "cooldown_3" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "cooldown_6" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 5000
+          }
+        },
+        "damage_20" : {
+          "type" : "living_entity.damage",
+          "inputs" : {
+            "amount" : {
+              "node" : "read_19",
+              "port" : "value"
+            },
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_17",
+              "port" : "result"
+            }
+          }
+        },
+        "equal_13" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "projectile_shoot_11",
+              "port" : "entity_type"
+            },
+            "second" : {
+              "node" : "value_12",
+              "port" : "value"
+            }
+          }
+        },
+        "is_null_21" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_18",
+              "port" : "result"
+            }
+          }
+        },
+        "is_null_8" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "launch_projectile_5" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "LARGE_FIREBALL"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 4.0
+          }
+        },
+        "mutate_14" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "projectile_shoot_11",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "night_end_25" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_24" ]
+          }
+        },
+        "projectile_hit_16" : {
+          "type" : "event.projectile_hit",
+          "executions" : {
+            "next" : [ "branch_23" ]
+          }
+        },
+        "projectile_shoot_11" : {
+          "type" : "event.projectile_shoot",
+          "executions" : {
+            "next" : [ "branch_15" ]
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_19" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_18",
+              "port" : "result"
+            }
+          }
+        },
+        "self_1" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_2" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 5,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dripping_lava"
+          }
+        },
+        "spawn_particle_24" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "tick_10" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_4", "branch_9" ]
+          }
+        },
+        "value_12" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:fireball"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Swarm Silverfish",
+    "de": "Schwarm-Silberfischchen"
+  },
+  "descriptions": {
+    "en": "Fast. When you hit it, every silverfish nearby comes for you.",
+    "de": "Schnell. Wenn du es triffst, kommen alle Silberfischchen in der Nähe zu dir."
+  },
+  "requires": []
+}
