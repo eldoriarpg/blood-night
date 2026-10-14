@@ -54,6 +54,8 @@ import de.eldoria.bloodnight.rules.PhantomForce;
 import de.eldoria.bloodnight.rules.WorldRules;
 import de.eldoria.bloodnight.service.PluginService;
 import de.eldoria.bloodnight.tasks.Tasks;
+import de.eldoria.bloodnight.updates.LynaSource;
+import de.eldoria.bloodnight.updates.UpdateNotice;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import io.papermc.paper.registry.RegistryAccess;
@@ -70,6 +72,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
@@ -296,6 +299,13 @@ public final class BloodNight extends JavaPlugin {
         tasks.global(() -> worldRules.restoreLeftovers(getServer().getWorlds()));
         tasks.globalTimer(Haunting.STEP, haunting::tick);
         tasks.globalTimer(20, announcer::tick);
+        UpdateNotice updates = new UpdateNotice(
+                LynaSource.bloodNight(),
+                getPluginMeta().getVersion(),
+                () -> configuration.main().updates().notice(),
+                getLogger());
+        plugins.registerEvents(updates, this);
+        tasks.asyncTimer(Duration.ofHours(12), updates::check);
         tasks.globalTimer(1, stretch::tick);
         tasks.globalTimer(20, () -> bloodNights.check(getServer().getWorlds()));
         recompile();

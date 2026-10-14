@@ -11,6 +11,8 @@ import org.bukkit.Server;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -61,6 +63,14 @@ public final class Tasks {
      */
     public ScheduledTask globalTimer(long period, Runnable work) {
         return server.getGlobalRegionScheduler().runAtFixedRate(plugin, task -> work.run(), period, period);
+    }
+
+    /**
+     * Runs work off the server's threads every {@code period}, starting right away, e.g. to ask a web service.
+     */
+    public ScheduledTask asyncTimer(Duration period, Runnable work) {
+        return server.getAsyncScheduler()
+                .runAtFixedRate(plugin, task -> work.run(), 0, period.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -294,6 +294,14 @@
             "revealNext" : false
           }
         },
+        "updates" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/UpdateSettings"
+          } ],
+          "default" : {
+            "notice" : true
+          }
+        },
         "foreignMobs" : {
           "allOf" : [ {
             "$ref" : "#/$defs/ForeignMobSettings"
@@ -1764,6 +1772,15 @@
         },
         "numeric" : {
           "type" : "boolean"
+        }
+      }
+    },
+    "UpdateSettings" : {
+      "type" : "object",
+      "properties" : {
+        "notice" : {
+          "type" : "boolean",
+          "default" : true
         }
       }
     },

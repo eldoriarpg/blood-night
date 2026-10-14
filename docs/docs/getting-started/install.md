@@ -47,3 +47,16 @@ You can change the files while the server runs. Use `/bloodnight reload` afterwa
 
 When BloodNight loads a settings file, it adds keys that are missing, with their default value. It never touches
 `mobs.yml`, `items.yml` or `macros.yml` this way. Those are yours.
+
+## New versions
+
+BloodNight looks for a new version when the server starts and every 12 hours after that. When there is one, it
+says so in the console. Players with the permission `bloodnight.updates` see a message when they join. Operators
+have it at first. BloodNight never downloads anything by itself.
+
+To turn this off, set this in `config.yml`:
+
+```yaml
+updates:
+  notice: false
+```
