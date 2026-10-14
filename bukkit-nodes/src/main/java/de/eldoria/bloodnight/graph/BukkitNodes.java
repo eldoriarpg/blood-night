@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.graph;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
+import de.eldoria.bloodnight.api.MovementPreset;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.bloodnight.graph.runtime.Reach;
@@ -29,6 +30,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
@@ -320,6 +322,73 @@ public final class BukkitNodes {
                             ctx.input("location"),
                             ctx.connected("seconds") ? ctx.input("seconds") : CodeBlock.of("2"),
                             ctx.connected("power") ? ctx.input("power") : CodeBlock.of("4"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition MOVE_TO = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.MOB_MOVE_TO, NodeKind.ACTION)
+                    .category("mob")
+                    .name("Move To")
+                    .description("Lets a mob walk to a location along a path it finds; nothing happens without one")
+                    .input("target", "Mob", PortType.of(Mob.class), false)
+                    .input("location", Location.class)
+                    .optionalInput("speed", double.class)
+                    .output("found", boolean.class)
+                    .execution(NEXT)
+                    .describe("target", "The mob that walks")
+                    .describe("location", "Where it walks to")
+                    .describe("speed", "How fast, 1 for its own speed; 1 when not given")
+                    .describe("found", "Whether it found a path")
+                    .build(),
+            ctx -> {
+                CodeBlock found = ctx.bind("found", NEXT);
+                return CodeBlock.builder()
+                        .addStatement(
+                                "final boolean $L = $L.getPathfinder().moveTo($L, $L)",
+                                found,
+                                ctx.input("target"),
+                                ctx.input("location"),
+                                ctx.connected("speed") ? ctx.input("speed") : CodeBlock.of("1.0"))
+                        .add(ctx.chain(NEXT))
+                        .build();
+            });
+
+    public static final StatementDefinition STOP_MOVING = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.MOB_STOP_MOVING, NodeKind.ACTION)
+                    .category("mob")
+                    .name("Stop Moving")
+                    .description("Lets a mob stop walking where it stands; its AI may soon walk on")
+                    .input("target", "Mob", PortType.of(Mob.class), false)
+                    .execution(NEXT)
+                    .describe("target", "The mob that stops")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement("$L.getPathfinder().stopPathfinding()", ctx.input("target"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final ExpressionDefinition HAS_PATH = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.MOB_HAS_PATH, NodeKind.PURE)
+                    .category("mob")
+                    .name("Is Moving")
+                    .description("Whether a mob is walking along a path right now")
+                    .input("target", "Mob", PortType.of(Mob.class), false)
+                    .output(RESULT, boolean.class)
+                    .describe("target", "The mob")
+                    .describe("result", "Whether it has a path it follows")
+                    .build(),
+            (port, ctx) -> CodeBlock.of("$L.getPathfinder().hasPath()", ctx.input("target")));
+
+    public static final StatementDefinition MOVEMENT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.MOB_MOVEMENT, NodeKind.ACTION)
+                    .category("mob")
+                    .name("Change Movement")
+                    .description("Switches how this mob moves, e.g. to flee once it is hurt; its movement numbers stay")
+                    .config("preset", "Movement", PortType.of(MovementPreset.class), StringNode.valueOf("VANILLA"))
+                    .execution(NEXT)
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement("$L.movement($L)", ctx.context(), ctx.config("preset"))
                     .add(ctx.chain(NEXT))
                     .build());
 
@@ -668,6 +737,10 @@ public final class BukkitNodes {
                 SPAWN_PARTICLE,
                 STRIKE_LIGHTNING,
                 SPAWN_TNT,
+                MOVE_TO,
+                STOP_MOVING,
+                HAS_PATH,
+                MOVEMENT,
                 RUN_COMMAND,
                 PLAYER_RUN_COMMAND,
                 BROADCAST,

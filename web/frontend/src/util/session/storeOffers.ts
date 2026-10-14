@@ -48,7 +48,8 @@ export function installOffers(offers: readonly Offer[], payload: EditorPayload):
 }
 
 /**
- * Takes the offer's logic (behaviour and extension) and keeps the installed mob's own name, numbers and drops.
+ * Takes the offer's logic (behaviour, extension and movement) and keeps the installed mob's own name, numbers and
+ * drops.
  *
  * @param offer a mob the store offers
  * @returns the operations updating the installed mob
@@ -57,6 +58,7 @@ export function updateOffer(offer: Offer): PatchOperation[] {
     return [
         {op: 'replace', path: pointer('mobs', offer.id, 'behaviour'), value: offer.mob.behaviour},
         {op: 'replace', path: pointer('mobs', offer.id, 'extension'), value: offer.mob.extension},
+        {op: 'add', path: pointer('mobs', offer.id, 'movement'), value: offer.mob.movement},
         {op: 'add', path: pointer('mobs', offer.id, 'origin'), value: offer.mob.origin},
     ]
 }

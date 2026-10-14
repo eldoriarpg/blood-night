@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.api.MobContext;
+import de.eldoria.bloodnight.api.MovementPreset;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -24,9 +26,20 @@ import java.util.function.Supplier;
  * @param extension its extension, if any
  * @param items     the current item registry
  * @param tasks     runs work on the owning thread
+ * @param movement  switches the mob's movement, keeping its numbers
  */
-record LivingMobContext(LivingEntity entity, @Nullable Entity extension, Supplier<ItemRegistry> items, Tasks tasks)
+record LivingMobContext(
+        LivingEntity entity,
+        @Nullable Entity extension,
+        Supplier<ItemRegistry> items,
+        Tasks tasks,
+        Consumer<MovementPreset> movement)
         implements MobContext {
+    @Override
+    public void movement(MovementPreset preset) {
+        movement.accept(preset);
+    }
+
     @Override
     @Nullable
     public ItemStack item(String id) {

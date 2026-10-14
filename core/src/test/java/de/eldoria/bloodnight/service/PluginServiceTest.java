@@ -15,6 +15,7 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
+import de.eldoria.bloodnight.mobs.movement.Steering;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightTimes;
@@ -69,6 +70,7 @@ class PluginServiceTest {
                 id -> id.equals("zombie") ? zombie : null,
                 nights::running,
                 new Tasks(plugin),
+                Steering.NONE,
                 Logger.getLogger("test"));
         service = new PluginService(
                 server,

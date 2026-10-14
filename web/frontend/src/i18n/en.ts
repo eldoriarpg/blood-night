@@ -179,7 +179,7 @@ export default {
         sheet: {
             title: {mobs: 'Mob settings', macros: 'Macro settings'},
             open: {mobs: 'Mob settings', macros: 'Macro settings'},
-            parts: {attributes: 'Attributes', spawn: 'Spawn rules', equipment: 'Equipment', extension: 'Extension', mobDrops: 'Drops'},
+            parts: {attributes: 'Attributes', spawn: 'Spawn rules', equipment: 'Equipment', extension: 'Extension', mobDrops: 'Drops', movement: 'Movement'},
             set: 'Set up',
             close: 'Close',
             cancel: 'Cancel',
@@ -278,6 +278,16 @@ export default {
             restored: 'Revision {number} restored.',
         },
         enums: {
+            MovementPreset: {
+                VANILLA: 'Like the vanilla mob',
+                AGGRESSIVE: 'Aggressive: hunts the nearest player in range',
+                KEEP_DISTANCE: 'Keeps its distance, for mobs that shoot',
+                HIT_AND_RUN: 'Hit and run: backs off after each hit',
+                STALKER: 'Stalker: closes in when you look away',
+                COWARD: 'Coward: flees when hurt, heals, returns',
+                PACK: 'Pack: attacks what its kind attacks',
+                GUARD: 'Guard: stays near where it spawned',
+            },
             Color: {
                 PINK: 'Pink',
                 BLUE: 'Blue',
@@ -432,6 +442,10 @@ export default {
     },
     settings: {
         fields: {
+            closest: 'Closest (blocks)',
+            farthest: 'Farthest (blocks)',
+            fleeBelow: 'Flees below (share of health, 0 to 1)',
+            preset: 'Moves',
             always: 'Always, not only during blood nights',
             ambience: 'Ambience',
             amount: 'Amount',

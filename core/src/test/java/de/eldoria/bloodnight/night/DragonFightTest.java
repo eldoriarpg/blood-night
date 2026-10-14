@@ -15,6 +15,7 @@ import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
+import de.eldoria.bloodnight.mobs.movement.Steering;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
@@ -86,6 +87,7 @@ class DragonFightTest {
                 id -> id.equals(dragon.id()) ? dragon : null,
                 nights::running,
                 tasks,
+                Steering.NONE,
                 Logger.getLogger("test"));
         server.getPluginManager()
                 .registerEvents(

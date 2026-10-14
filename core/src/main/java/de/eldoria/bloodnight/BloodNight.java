@@ -45,6 +45,7 @@ import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
 import de.eldoria.bloodnight.mobs.PickupGuard;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
+import de.eldoria.bloodnight.mobs.movement.PaperSteering;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.DragonFight;
 import de.eldoria.bloodnight.night.NightCommands;
@@ -191,6 +192,8 @@ public final class BloodNight extends JavaPlugin {
                 world -> configuration.worldConfig(world).enabled(),
                 getServer().getPluginManager(),
                 getLogger());
+        PaperSteering steering = new PaperSteering(getServer().getMobGoals());
+        getServer().getPluginManager().registerEvents(steering, this);
         coordinator = new MobCoordinator(
                 new MobOutfitter(
                         () -> configuration.items(),
@@ -199,6 +202,7 @@ public final class BloodNight extends JavaPlugin {
                 id -> configuration.mobs().get(id),
                 bloodNights::running,
                 tasks,
+                steering,
                 getLogger());
         dispatcher = new TriggerDispatcher(
                 coordinator::behaviour, coordinator::extensionBehaviour, (trigger, entity, error) -> {

@@ -16,6 +16,7 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
+import de.eldoria.bloodnight.mobs.movement.Steering;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.platform.GraphPlatform;
@@ -93,6 +94,7 @@ class DefaultMobsRunTest {
                 mobs::get,
                 world -> running.containsKey(world) ? OptionalLong.of(running.get(world)) : OptionalLong.empty(),
                 new Tasks(plugin),
+                Steering.NONE,
                 Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));

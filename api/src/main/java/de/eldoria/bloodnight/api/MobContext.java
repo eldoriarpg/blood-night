@@ -58,4 +58,11 @@ public interface MobContext {
      * current thread is the global one, otherwise on its next tick.
      */
     void global(Runnable work);
+
+    /**
+     * Switches how the mob moves, e.g. to flee once it is hurt. Mobs that do not find paths ignore it.
+     *
+     * @param preset the movement
+     */
+    void movement(MovementPreset preset);
 }

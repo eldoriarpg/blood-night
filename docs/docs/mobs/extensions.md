@@ -1,6 +1,6 @@
 ---
 title: Riders and mounts
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Riders and mounts

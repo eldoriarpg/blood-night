@@ -260,6 +260,12 @@ export type SpawnReason =
 export type Surface = 'ANY' | 'SKY_VISIBLE' | 'UNDERGROUND';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MovementPreset".
+ */
+export type MovementPreset =
+  'VANILLA' | 'AGGRESSIVE' | 'KEEP_DISTANCE' | 'HIT_AND_RUN' | 'STALKER' | 'COWARD' | 'PACK' | 'GUARD';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "ItemKind".
  */
 export type ItemKind = 'REGISTERED' | 'DEFINED';
@@ -370,6 +376,7 @@ export interface CustomMob {
   extension: Extension;
   spawn: SpawnRules;
   origin?: MobOrigin;
+  movement: Movement;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -510,6 +517,18 @@ export interface MobOrigin {
   store: string;
   entry: string;
   hash: string;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Movement".
+ */
+export interface Movement {
+  preset: MovementPreset;
+  range: number;
+  closest: number;
+  farthest: number;
+  seconds: number;
+  fleeBelow: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1412,6 +1431,17 @@ export const Method = {
     CHAT: "CHAT",
     SUBTITLE: "SUBTITLE",
     TITLE: "TITLE",
+} as const;
+
+export const MovementPreset = {
+    AGGRESSIVE: "AGGRESSIVE",
+    COWARD: "COWARD",
+    GUARD: "GUARD",
+    HIT_AND_RUN: "HIT_AND_RUN",
+    KEEP_DISTANCE: "KEEP_DISTANCE",
+    PACK: "PACK",
+    STALKER: "STALKER",
+    VANILLA: "VANILLA",
 } as const;
 
 export const NightEnd = {

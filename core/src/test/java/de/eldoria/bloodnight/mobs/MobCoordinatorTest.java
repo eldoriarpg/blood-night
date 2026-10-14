@@ -15,6 +15,7 @@ import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mobs.movement.Steering;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
@@ -79,6 +80,7 @@ class MobCoordinatorTest {
                 definitions::get,
                 world -> OptionalLong.empty(),
                 new Tasks(plugin),
+                Steering.NONE,
                 Logger.getLogger("test"));
         service = new BehaviourService(
                 platform, getClass().getClassLoader(), new BytecodeCache(cacheDir), "test", Logger.getLogger("test"));

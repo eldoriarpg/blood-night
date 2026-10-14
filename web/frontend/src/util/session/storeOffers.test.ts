@@ -30,7 +30,7 @@ describe('store offers', () => {
         expect(installOffer(offer, payload([]))).toEqual([{op: 'add', path: '/mobs/speed_zombie', value: offer.mob}])
         expect(installOffers([offer], {store: {}} as unknown as EditorPayload).map(operation => operation.path)).toEqual(['/mobs', '/mobs/speed_zombie'])
         expect(updateOffer(offer).map(operation => operation.path)).toEqual([
-            '/mobs/speed_zombie/behaviour', '/mobs/speed_zombie/extension', '/mobs/speed_zombie/origin',
+            '/mobs/speed_zombie/behaviour', '/mobs/speed_zombie/extension', '/mobs/speed_zombie/movement', '/mobs/speed_zombie/origin',
         ])
     })
 

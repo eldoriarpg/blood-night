@@ -21,7 +21,7 @@ import {fieldsOf, type SchemaDocument} from '~/util/settings/schemaFields'
 import type {WorkspaceEntry, WorkspaceKind} from '~/views/editorview/workspace/workspaceEntries'
 
 /**
- * The settings of the open mob (attributes, spawn rules, equipment, extension, drops) or macro (name, description,
+ * The settings of the open mob (attributes, movement, spawn rules, equipment, extension, drops) or macro (name, description,
  * category), and deleting it. Each part of a mob folds under its header and starts folded, so the sheet opens short;
  * which parts the reader opened is remembered by the browser, for every mob alike. Inline, it fills a column of its
  * own and has nothing to close.
@@ -57,11 +57,11 @@ const value = computed(() => {
 })
 
 const parts = computed(() => props.kind === 'mobs'
-  ? ['attributes', 'spawn', 'equipment', 'extension', 'mobDrops'].map(key => ({key, fields: fieldsOf(document, definitionOf(key))}))
+  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'mobDrops'].map(key => ({key, fields: fieldsOf(document, definitionOf(key))}))
   : [{key: 'macro', fields: fieldsOf(document, 'Macro').filter(field => field.key !== 'id' && field.key !== 'body')}])
 
 function definitionOf(key: string): string {
-  return {attributes: 'Attributes', spawn: 'SpawnRules', equipment: 'Equipment', extension: 'Extension', mobDrops: 'MobDrops'}[key] ?? key
+  return {attributes: 'Attributes', spawn: 'SpawnRules', equipment: 'Equipment', extension: 'Extension', mobDrops: 'MobDrops', movement: 'Movement'}[key] ?? key
 }
 
 function partValue(key: string): Record<string, unknown> | undefined {

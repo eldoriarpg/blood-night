@@ -87,6 +87,10 @@ public interface BloodNightNodes extends StdNodes {
     String WORLD_STRIKE_LIGHTNING = "world.strike_lightning";
     String SERVER_RUN_COMMAND = "server.run_command";
     String WORLD_SPAWN_TNT = "world.spawn_tnt";
+    String MOB_MOVE_TO = "mob.move_to";
+    String MOB_STOP_MOVING = "mob.stop_moving";
+    String MOB_HAS_PATH = "mob.has_path";
+    String MOB_MOVEMENT = "mob.movement";
     String SERVER_BROADCAST = "server.broadcast";
     String PLAYER_RUN_COMMAND = "player.run_command";
     String PLACEHOLDER_PARSE = "placeholder.parse";
