@@ -96,6 +96,21 @@ Each one has a modifier and a value.
 Damage works the same way. With `DEFAULT`, the damage stays normal here. During a blood night, the world's
 [damage modifier](../rules/mob-rules.md) makes every monster hit harder anyway.
 
+### Different in one world
+
+A world can give a mob its own name, health or damage. Put it under `mobSettings.overrides` in the world file:
+
+```yaml
+mobSettings:
+  overrides:
+    speed_zombie:
+      displayName: "<green>Slow Zombie"
+      healthModifier: VALUE
+      health: 10
+```
+
+Leave out what should stay as the mob has it.
+
 ## More attribute changes
 
 `changes` can change any attribute of the mob:

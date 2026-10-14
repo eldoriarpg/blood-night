@@ -767,6 +767,9 @@ export interface MobSettings {
   displayNames?: boolean;
   damageModifier?: number;
   healthMultiplier?: number;
+  overrides?: {
+    [k: string]: AttributeOverride;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -786,6 +789,17 @@ export interface MobSpawning {
 export interface CreeperSettings {
   blockDamage?: boolean;
   always?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "AttributeOverride".
+ */
+export interface AttributeOverride {
+  displayName?: string;
+  healthModifier?: ValueModifier;
+  health?: number;
+  damageModifier?: ValueModifier;
+  damage?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

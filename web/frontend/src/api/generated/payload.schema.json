@@ -145,6 +145,26 @@
       },
       "required" : [ "attribute", "operation", "amount" ]
     },
+    "AttributeOverride" : {
+      "type" : "object",
+      "properties" : {
+        "displayName" : {
+          "type" : "string"
+        },
+        "healthModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "health" : {
+          "type" : "number"
+        },
+        "damageModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "damage" : {
+          "type" : "number"
+        }
+      }
+    },
     "Attributes" : {
       "type" : "object",
       "properties" : {
@@ -997,6 +1017,13 @@
         "healthMultiplier" : {
           "type" : "number",
           "default" : 2.0
+        },
+        "overrides" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/AttributeOverride"
+          },
+          "default" : { }
         }
       }
     },
@@ -2018,6 +2045,7 @@
             "displayNames" : false,
             "forcePhantoms" : true,
             "healthMultiplier" : 2.0,
+            "overrides" : { },
             "spawning" : {
               "ignoredReasons" : [ "CUSTOM" ],
               "mobs" : { },
