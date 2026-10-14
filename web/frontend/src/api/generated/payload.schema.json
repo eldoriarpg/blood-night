@@ -987,7 +987,7 @@
         },
         "displayNames" : {
           "type" : "boolean",
-          "default" : true
+          "default" : false
         },
         "damageModifier" : {
           "type" : "number",
@@ -2010,7 +2010,7 @@
               "blockDamage" : false
             },
             "damageModifier" : 2.0,
-            "displayNames" : true,
+            "displayNames" : false,
             "forcePhantoms" : true,
             "healthMultiplier" : 2.0,
             "spawning" : {

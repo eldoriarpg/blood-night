@@ -55,6 +55,7 @@ import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -157,7 +158,8 @@ class MobSpawnerTest {
     void wrappingAppliesNameAndAttributes() {
         at(13_000);
         LivingEntity mob = spawned();
-        assertTrue(mob.isCustomNameVisible());
+        assertNotNull(mob.customName());
+        assertFalse(mob.isCustomNameVisible());
         assertEquals(50, mob.getAttribute(Attribute.MAX_HEALTH).getValue());
         assertEquals(50, mob.getHealth());
         assertEquals(

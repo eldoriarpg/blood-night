@@ -80,7 +80,8 @@ Without MythicMobs, or with a name MythicMobs does not know, the zombie stays a 
 ## Name
 
 `displayName` is shown above the mob's head. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html),
-so `"<red>Angry Zombie"` works. Each world can hide names with `mobSettings.displayNames: false`.
+so `"<red>Angry Zombie"` works. At first a name only shows when a player looks right at the mob. With
+`mobSettings.displayNames: true`, a world shows the names above the mobs all the time.
 
 ## Health and damage
 

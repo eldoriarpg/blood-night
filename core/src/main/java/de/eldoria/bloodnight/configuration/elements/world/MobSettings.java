@@ -13,13 +13,14 @@ import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawnin
  * <p>
  * {@code damageModifier} scales the damage enemies deal to players, {@code healthMultiplier} makes ordinary enemies
  * that much harder to kill for players (their damage taken is divided by it). {@code forcePhantoms} makes phantoms
- * come for every player, rested or not. {@code displayNames} shows the names of custom mobs above them.
+ * come for every player, rested or not. {@code displayNames} always shows the names of custom mobs above them; off by default, so a name only shows
+ * when a player looks right at the mob.
  */
 public class MobSettings {
     private MobSpawning spawning = new MobSpawning();
     private CreeperSettings creepers = new CreeperSettings();
     private boolean forcePhantoms = true;
-    private boolean displayNames = true;
+    private boolean displayNames = false;
     private double damageModifier = 2;
     private double healthMultiplier = 2;
 

@@ -107,7 +107,7 @@ Settings for one world. Every world has its own file.
 | `mobSettings.creepers.blockDamage` | true or false | `false` |
 | `mobSettings.creepers.always` | true or false | `false` |
 | `mobSettings.forcePhantoms` | true or false | `true` |
-| `mobSettings.displayNames` | true or false | `true` |
+| `mobSettings.displayNames` | true or false | `false` |
 | `mobSettings.damageModifier` | number | `2` |
 | `mobSettings.healthMultiplier` | number | `2` |
 | `announcement.bossBar.enabled` | true or false | `true` |
@@ -232,7 +232,7 @@ mobSettings:
     always: false
     blockDamage: false
   damageModifier: 2
-  displayNames: true
+  displayNames: false
   forcePhantoms: true
   healthMultiplier: 2
   spawning:
