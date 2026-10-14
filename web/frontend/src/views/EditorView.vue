@@ -11,6 +11,7 @@ import ItemsArea from '~/views/editorview/items/ItemsArea.vue'
 import SettingsArea from '~/views/editorview/settings/SettingsArea.vue'
 import RevisionsArea from '~/views/editorview/revisions/RevisionsArea.vue'
 import EditorStatus from '~/views/editorview/EditorStatus.vue'
+import SetupWizard from '~/views/editorview/setup/SetupWizard.vue'
 import ToastContainer from '@/components/feedback/ToastContainer.vue'
 import type {EditorArea} from '~/views/editorview/editorArea'
 
@@ -22,6 +23,8 @@ const route = useRoute()
 const session = useEditorSession()
 const {t} = useI18n()
 const area = ref<EditorArea>('mobs')
+const leftSetup = ref(false)
+const setup = computed(() => !leftSetup.value && session.payload.value?.setup === true ? session.payload.value : null)
 
 useHead({title: () => t('editor.title')})
 
@@ -37,6 +40,7 @@ onBeforeUnmount(() => session.close())
   <div class="flex h-screen flex-col bg-ground text-ink">
     <EditorHeader v-model="area"/>
     <EditorStatus v-if="session.data.value.status !== 'ready'" :status="session.data.value.status"/>
+    <SetupWizard v-else-if="setup" :payload="setup" @leave="leftSetup = true"/>
     <template v-else>
       <MobsArea v-if="area === 'mobs'"/>
       <WorkspaceArea v-else-if="area === 'macros'" kind="macros"/>

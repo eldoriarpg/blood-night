@@ -12,7 +12,7 @@ Only operators have these permissions at first. Give them to other players with 
 
 | Permission | What it allows | Includes |
 |---|---|---|
-| `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.store`, `bloodnight.command.pack`, `bloodnight.command.convert`, `bloodnight.command.night.manage` |
+| `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.store`, `bloodnight.command.pack`, `bloodnight.command.convert`, `bloodnight.command.setup`, `bloodnight.command.night.manage` |
 | `bloodnight.bypass.commands` | Use commands blocked during blood nights |  |
 | `bloodnight.command.convert` | /bloodnight convert, takes over the settings of the old BloodNight |  |
 | `bloodnight.command.debug` | /bloodnight debug, fires the debug trigger of mobs |  |
@@ -25,6 +25,7 @@ Only operators have these permissions at first. Give them to other players with 
 | `bloodnight.command.problems` | /bloodnight problems, lists compile problems and runtime failures of mobs |  |
 | `bloodnight.command.reload` | /bloodnight reload, reads the configuration again and recompiles every mob |  |
 | `bloodnight.command.settings` | /bloodnight settings, shows or changes one setting without the web editor |  |
+| `bloodnight.command.setup` | /bloodnight setup, walks through the first settings and mobs in the web editor |  |
 | `bloodnight.command.source` | /bloodnight source, writes the generated code of a mob to the debug folder |  |
 | `bloodnight.command.spawn` | /bloodnight spawn, spawns a custom mob |  |
 | `bloodnight.command.store` | /bloodnight store, lists, installs and updates mobs from the store |  |

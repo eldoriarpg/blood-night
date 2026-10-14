@@ -6,8 +6,8 @@
 package de.eldoria.bloodnight.metrics;
 
 import de.eldoria.bloodnight.Mobs;
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
+import de.eldoria.bloodnight.rules.Settings;
 import de.eldoria.graph.model.Graph;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MetricsDataTest {
     @Test
     void nightSelectionsCountWorldsWithBloodNights() {
-        assertEquals(
-                Map.of("RANDOM", 2), MetricsData.nightSelections(List.of(new WorldSettings(), new WorldSettings())));
+        assertEquals(Map.of("RANDOM", 2), MetricsData.nightSelections(List.of(Settings.enabled(), Settings.enabled())));
     }
 
     @Test

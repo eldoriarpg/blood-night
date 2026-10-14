@@ -12,7 +12,7 @@ export interface Touched {
     everything: boolean
 }
 
-const READ_ONLY: ReadonlySet<string> = new Set(['choices', 'hashes', 'catalog', 'problems', 'macroProblems', 'configProblems'])
+const READ_ONLY: ReadonlySet<string> = new Set(['choices', 'hashes', 'catalog', 'problems', 'macroProblems', 'configProblems', 'store', 'setup', 'legacy'])
 
 /** Section names, as the service and the locks name them. */
 export const section = {

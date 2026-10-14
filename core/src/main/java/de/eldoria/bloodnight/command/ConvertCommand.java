@@ -48,19 +48,14 @@ final class ConvertCommand {
     }
 
     private void convert(CommandSender sender, boolean apply) {
-        Path folder = plugin.getDataFolder().toPath().resolve(LegacyFolder.FOLDER);
+        Path folder = legacyFolder(plugin);
         if (!Files.isDirectory(folder)) {
             Replies.send(sender, "convert.missing", arg("folder", folder));
             return;
         }
         LegacyConverter.Result result;
         try {
-            result = LegacyConverter.onServer(LegacyFolder.read(folder), plugin.store())
-                    .convert(
-                            plugin.configuration().main(),
-                            loadedWorlds(),
-                            plugin.configuration().mobs().all(),
-                            plugin.configuration().items());
+            result = convert(plugin);
         } catch (IOException | RuntimeException e) {
             Replies.send(sender, "convert.failed", arg("error", String.valueOf(e.getMessage())));
             return;
@@ -92,7 +87,29 @@ final class ConvertCommand {
         }
     }
 
-    private Map<String, WorldSettings> loadedWorlds() {
+    /**
+     * @param plugin the plugin
+     * @return where the old BloodNight's files are expected
+     */
+    static Path legacyFolder(BloodNight plugin) {
+        return plugin.getDataFolder().toPath().resolve(LegacyFolder.FOLDER);
+    }
+
+    /**
+     * @param plugin the plugin
+     * @return the old BloodNight's files converted onto the server's current state
+     * @throws IOException when the old files cannot be read
+     */
+    static LegacyConverter.Result convert(BloodNight plugin) throws IOException {
+        return LegacyConverter.onServer(LegacyFolder.read(legacyFolder(plugin)), plugin.store())
+                .convert(
+                        plugin.configuration().main(),
+                        loadedWorlds(plugin),
+                        plugin.configuration().mobs().all(),
+                        plugin.configuration().items());
+    }
+
+    private static Map<String, WorldSettings> loadedWorlds(BloodNight plugin) {
         Map<String, WorldSettings> worlds = new LinkedHashMap<>();
         for (World world : plugin.getServer().getWorlds()) {
             worlds.put(world.getName(), plugin.configuration().worldConfig(world));

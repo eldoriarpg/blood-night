@@ -41,6 +41,7 @@ Settings for the whole server.
 | `foreignMobs.wrap` | true or false | `false` |
 | `foreignMobs.rules` | true or false | `false` |
 | `foreignMobs.markerKeys` | list of text | `[]` |
+| `setup.done` | true or false | `false` |
 
 The whole file with its defaults:
 
@@ -70,6 +71,8 @@ foreignMobs:
   markerKeys: []
   rules: false
   wrap: false
+setup:
+  done: false
 ```
 
 ## worlds/&lt;world id&gt;.yml
@@ -78,7 +81,7 @@ Settings for one world. Every world has its own file.
 
 | Key | Type | Default |
 |---|---|---|
-| `enabled` | true or false | `true` |
+| `enabled` | true or false | `false` |
 | `displayName` | text | (empty) |
 | `nightSelection.type` | `RANDOM`, `MOON_PHASE`, `REAL_MOON_PHASE`, `INTERVAL`, `PHASE`, `CURVE` | `RANDOM` |
 | `nightSelection.random.probability` | whole number | `60` |
@@ -185,7 +188,7 @@ Settings for one world. Every world has its own file.
 The whole file with its defaults:
 
 ```yaml
-enabled: true
+enabled: false
 displayName: ""
 nightSelection:
   curve:

@@ -23,7 +23,25 @@ The same jar runs on Paper and on Folia. BloodNight does not run on Spigot.
 2. Put it into your server's `plugins` folder.
 3. Start the server.
 
-That's it. BloodNight creates its folder at `plugins/BloodNight`.
+BloodNight creates its folder at `plugins/BloodNight`. No world has blood nights yet. The setup turns them on.
+
+## Set it up
+
+Run `/bloodnight setup`. You get a link to the [web editor](../editor/sessions.md). It walks you through a few
+questions:
+
+1. **Old BloodNight.** Only when the old plugin's files are there. You can take them over, see
+   [Coming from the old BloodNight](coming-from-legacy.md).
+2. **Worlds.** Which worlds get blood nights.
+3. **How often.** Rarely, sometimes, often, or with the moon.
+4. **How hard.** Gentle, normal or brutal.
+5. **Look and sound.** Red sky, heartbeat, and whether players get the resource pack.
+6. **Mobs.** Pick mobs from the [store](../mobs/store.md). The `classic` pack is ticked.
+
+Click **Finish**. Then run `/bloodnight editor apply` on the server. Your blood nights start.
+
+Until the setup is done, the console and operators who join are reminded of it. You can run the setup again at any
+time. It starts from your current settings.
 
 ## What is in the folder
 
