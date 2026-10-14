@@ -36,6 +36,7 @@ import de.eldoria.bloodnight.mobs.MobDeaths;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
+import de.eldoria.bloodnight.mobs.PickupGuard;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.DragonFight;
@@ -169,13 +170,21 @@ public final class BloodNight extends JavaPlugin {
         plugins.registerEvents(new TargetPolicy(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
         plugins.registerEvents(new MobDeaths(plugins), this);
+        ForeignMobs foreign = new ForeignMobs(() -> configuration.main().foreignMobs(), this::mythicMobsLoader);
         plugins.registerEvents(
                 new DropHandler(
                         id -> configuration.mobs().get(id),
                         world -> configuration.worldConfig(world).worldDrops(),
                         () -> configuration.globalDrops(),
                         id -> configuration.items().item(id),
+                        world -> bloodNights.running(world).isPresent(),
+                        foreign,
                         RANDOM),
+                this);
+        plugins.registerEvents(
+                new PickupGuard(
+                        world -> bloodNights.running(world).isPresent(),
+                        world -> configuration.worldConfig(world).worldDrops().vanilla()),
                 this);
         if (!Tasks.regionised()) {
             getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));
@@ -184,7 +193,6 @@ public final class BloodNight extends JavaPlugin {
         getLifecycleManager()
                 .registerEventHandler(LifecycleEvents.COMMANDS.newHandler(
                         event -> BloodNightCommandBrigadier.register(event.registrar(), this)));
-        ForeignMobs foreign = new ForeignMobs(() -> configuration.main().foreignMobs(), this::mythicMobsLoader);
         plugins.registerEvents(
                 new MobSpawner(
                         () -> configuration.mobs().all(),

@@ -24,6 +24,7 @@ import java.util.Map;
  * @param xpScope      whose {@code xpModifier} and {@code xpValue} change the experience dropped
  * @param xpModifier   how the experience changes
  * @param xpValue      the number it changes by
+ * @param vanillaLoot  what happens to the mob's vanilla loot
  */
 public record MobDrops(
         ConfigurationScope weightsScope,
@@ -32,7 +33,15 @@ public record MobDrops(
         List<Drop> dropList,
         ConfigurationScope xpScope,
         ValueModifier xpModifier,
-        double xpValue) {
+        double xpValue,
+        VanillaLoot vanillaLoot) {
+    /**
+     * Keeps the vanilla loot when a file says nothing about it.
+     */
+    public MobDrops {
+        if (vanillaLoot == null) vanillaLoot = VanillaLoot.KEEP;
+    }
+
     public static MobDrops defaultDrops() {
         Map<Integer, Integer> weights = new HashMap<>() {
             {
@@ -55,6 +64,7 @@ public record MobDrops(
                 new ArrayList<>(),
                 ConfigurationScope.GLOBAL,
                 ValueModifier.MULTIPLY,
-                4);
+                4,
+                VanillaLoot.KEEP);
     }
 }

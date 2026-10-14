@@ -188,6 +188,11 @@ export type Operation = 'ADD_NUMBER' | 'ADD_SCALAR' | 'MULTIPLY_SCALAR_1';
 export type ConfigurationScope = 'GLOBAL' | 'WORLD' | 'MOB';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "VanillaLoot".
+ */
+export type VanillaLoot = 'KEEP' | 'MULTIPLY' | 'CLEAR';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "ExtensionType".
  */
 export type ExtensionType = 'NONE' | 'RIDER' | 'CARRIER';
@@ -433,6 +438,7 @@ export interface MobDrops {
   xpScope: ConfigurationScope;
   xpModifier: ValueModifier;
   xpValue: number;
+  vanillaLoot: VanillaLoot;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -893,6 +899,20 @@ export interface WorldDrops {
   xpScope: ConfigurationScope;
   xpModifier: ValueModifier;
   xpValue: number;
+  vanilla: VanillaDrops;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "VanillaDrops".
+ */
+export interface VanillaDrops {
+  enabled: boolean;
+  lootMultiplier: number;
+  extraDrops: boolean;
+  xpModifier: ValueModifier;
+  xpValue: number;
+  excludedTypes: EntityType[];
+  excludedReasons: SpawnReason[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1356,4 +1376,10 @@ export const ValueModifier = {
     DEFAULT: "DEFAULT",
     MULTIPLY: "MULTIPLY",
     VALUE: "VALUE",
+} as const;
+
+export const VanillaLoot = {
+    CLEAR: "CLEAR",
+    KEEP: "KEEP",
+    MULTIPLY: "MULTIPLY",
 } as const;

@@ -14,5 +14,18 @@ public enum ValueModifier {
     /** The game's value is multiplied by the configured number. */
     MULTIPLY,
     /** The configured number replaces the game's value. */
-    VALUE
+    VALUE;
+
+    /**
+     * @param game   the game's value
+     * @param number the configured number
+     * @return the value to use
+     */
+    public double apply(double game, double number) {
+        return switch (this) {
+            case DEFAULT -> game;
+            case MULTIPLY -> game * number;
+            case VALUE -> number;
+        };
+    }
 }

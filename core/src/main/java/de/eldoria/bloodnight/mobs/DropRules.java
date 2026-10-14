@@ -101,11 +101,7 @@ record DropRules(Map<Integer, Integer> weights, List<Drop> table, ValueModifier 
      * @return the experience to drop
      */
     int experience(int vanilla) {
-        return switch (xpModifier) {
-            case DEFAULT -> vanilla;
-            case MULTIPLY -> (int) Math.round(vanilla * xpValue);
-            case VALUE -> (int) Math.round(xpValue);
-        };
+        return (int) Math.round(xpModifier.apply(vanilla, xpValue));
     }
 
     private record Weighted<T>(T value, int weight) {}
