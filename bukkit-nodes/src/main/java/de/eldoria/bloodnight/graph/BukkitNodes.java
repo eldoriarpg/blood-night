@@ -10,6 +10,7 @@ import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
+import de.eldoria.bloodnight.graph.runtime.Reach;
 import de.eldoria.bloodnight.graph.runtime.Trace;
 import de.eldoria.bloodnight.graph.runtime.TraceHits;
 import de.eldoria.graph.definition.EmitContext;
@@ -298,6 +299,70 @@ public final class BukkitNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
+    public static final StatementDefinition RUN_COMMAND = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.SERVER_RUN_COMMAND, NodeKind.ACTION)
+                    .category("server")
+                    .name("Run Command")
+                    .description("Runs a command as the console, e.g. to use another plugin. {player} is the player's"
+                            + " name, {world}, {x}, {y} and {z} where the mob stands")
+                    .input("command", String.class)
+                    .optionalInput("player", Player.class)
+                    .execution(NEXT)
+                    .describe("command", "The command, without the slash")
+                    .describe("player", "The player {player} stands for; leave it empty when there is none")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.runCommand($L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("command"),
+                            ctx.connected("player") ? ctx.input("player") : CodeBlock.of("null"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition PLAYER_RUN_COMMAND = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.PLAYER_RUN_COMMAND, NodeKind.ACTION)
+                    .category("player")
+                    .name("Run Command As Player")
+                    .description("Runs a command as a player, with their permissions. {player}, {world}, {x}, {y}"
+                            + " and {z} are filled in like for Run Command")
+                    .input("target", "Player", PortType.of(Player.class), false)
+                    .input("command", String.class)
+                    .execution(NEXT)
+                    .describe("target", "The player who runs it")
+                    .describe("command", "The command, without the slash")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.playerCommand($L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("target"),
+                            ctx.input("command"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition BROADCAST = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.SERVER_BROADCAST, NodeKind.ACTION)
+                    .category("server")
+                    .name("Broadcast")
+                    .description("Sends a message to the players in the mob's world or on the whole server")
+                    .config("reach", "Who hears it", PortType.of(Reach.class), StringNode.valueOf(Reach.WORLD.name()))
+                    .input("text", String.class)
+                    .execution(NEXT)
+                    .describe("text", "The message, MiniMessage such as <red>Run!")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.broadcast($L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("text"),
+                            ctx.config("reach"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
     public static final StatementDefinition LINE_TRACE = new StatementDefinition(
             NodeDescriptor.builder(BloodNightNodes.WORLD_LINE_TRACE, NodeKind.ACTION)
                     .category("world")
@@ -578,6 +643,9 @@ public final class BukkitNodes {
                 DAMAGE,
                 SPAWN_PARTICLE,
                 STRIKE_LIGHTNING,
+                RUN_COMMAND,
+                PLAYER_RUN_COMMAND,
+                BROADCAST,
                 LINE_TRACE,
                 LAUNCH_PROJECTILE,
                 SPAWN_POTION_CLOUD,

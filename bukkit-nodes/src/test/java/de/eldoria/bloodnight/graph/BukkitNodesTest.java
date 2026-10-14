@@ -12,8 +12,12 @@ import de.eldoria.graph.compiler.GraphCompiler;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import io.papermc.paper.entity.TeleportFlag;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import org.mockbukkit.mockbukkit.entity.ZombieMock;
 import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.LongNode;
@@ -29,11 +34,13 @@ import tools.jackson.databind.node.StringNode;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BukkitNodesTest {
     private ServerMock server;
@@ -79,6 +86,64 @@ class BukkitNodesTest {
             System.setOut(original);
         }
         return buffer.toString(StandardCharsets.UTF_8).lines().toList();
+    }
+
+    @Test
+    void commandsRunWithTheMobsPlace() throws GraphCompilationException {
+        List<String> ran = new ArrayList<>();
+        server.getCommandMap().register("test", new Command("record") {
+            @Override
+            public boolean execute(CommandSender sender, String label, String[] args) {
+                ran.add(sender.getName() + ": " + String.join(" ", args));
+                return true;
+            }
+        });
+        PlayerMock player = server.addPlayer("Steve");
+        player.setOp(true);
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "console", "as_player"))
+                .node(
+                        "console",
+                        NodeInstance.of("server.run_command")
+                                .literal("command", StringNode.valueOf("record {world} {x} {y} {z}")))
+                .node(
+                        "player",
+                        NodeInstance.of("world.nearest_player")
+                                .input("location", "self_get", "location")
+                                .literal("radius", DoubleNode.valueOf(1000)))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
+                .node(
+                        "as_player",
+                        NodeInstance.of("player.run_command")
+                                .input("target", "player", "player")
+                                .literal("command", StringNode.valueOf("record {player}")))
+                .build();
+
+        tick(graph);
+
+        assertEquals(List.of("CONSOLE: world 1 64 3", "Steve: Steve"), ran);
+    }
+
+    @Test
+    void broadcastsReachTheMobsWorld() throws GraphCompilationException {
+        PlayerMock here = server.addPlayer();
+        here.teleport(zombie.getLocation());
+        PlayerMock elsewhere = server.addPlayer();
+        elsewhere.teleport(server.addSimpleWorld("other").getSpawnLocation());
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "say"))
+                .node(
+                        "say",
+                        NodeInstance.of("server.broadcast")
+                                .config("reach", StringNode.valueOf("WORLD"))
+                                .literal("text", StringNode.valueOf("<red>Run")))
+                .build();
+
+        tick(graph);
+
+        assertEquals(Component.text("Run", NamedTextColor.RED), here.nextComponentMessage());
+        assertNull(elsewhere.nextComponentMessage());
     }
 
     @Test

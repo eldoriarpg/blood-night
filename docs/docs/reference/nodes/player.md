@@ -496,3 +496,16 @@ Reads the properties of a Player
 | Y | Number | Gets the y-coordinate of this entity |
 | Yaw | Float | Gets this entity's yaw |
 | Z | Number | Gets the z-coordinate of this entity |
+
+## Run Command As Player
+
+`player.run_command`
+
+Runs a command as a player, with their permissions. \{player\}, \{world\}, \{x\}, \{y\} and \{z\} are filled in like for Run Command
+
+| In | Type | What it is |
+|---|---|---|
+| Player | Player | The player who runs it |
+| Command | Text | The command, without the slash |
+
+Goes on with: **Next**

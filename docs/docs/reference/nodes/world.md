@@ -1,7 +1,7 @@
 ---
 title: The world
 description: "The world: every node of this group, with its inputs and outputs."
-sidebar_position: 18
+sidebar_position: 19
 ---
 
 {/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}

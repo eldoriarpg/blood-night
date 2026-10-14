@@ -64,8 +64,14 @@ The `fearful_phantom` does exactly this. Open it to compare.
 | Timers | Remember when something happened, shared by the whole mob |
 | Variables | Remember a value, shared by the whole mob |
 | Mutate | Reads and changes the properties of something, like a creeper's fuse or a damage amount |
+| Run Command | Runs a command as the console. This is how a mob uses other plugins, like giving money. |
+| Broadcast | Sends a message to the players in the world or on the server |
 
 All nodes are listed in the [node reference](../reference/nodes/index.md).
+
+:::warning[Commands run as the console]
+Run Command can do anything the console can. Only give `bloodnight.command.editor` to people you trust.
+:::
 
 ## On Folia
 
