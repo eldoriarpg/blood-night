@@ -298,7 +298,8 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Powered with a large blast, and explodes at once when an entity hits it or shoots it.
+     * Powered with a large blast. When an entity hits it or shoots it, it hisses, a red area grows around it and it
+     * explodes a second later.
      */
     private CustomMob unstableCreeper() {
         return mob("unstable_creeper", EntityType.CREEPER, graph -> {
@@ -308,16 +309,35 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.creeper("powered", true),
                     graph.creeper("max_fuse_ticks", 50));
             graph.on(MOB_TICK, graph.particles("minecraft:end_rod", 2));
+            String warn = graph.node(WORLD_SHOW_MARKER)
+                    .config("shape", "AREA")
+                    .input("location", graph.selfRead(), "location")
+                    .input("color", graph.color(255, 40, 40), RESULT)
+                    .literal("size", 5.0)
+                    .literal("seconds", 1.0)
+                    .id();
+            String ignite = graph.node(CREEPER_IGNITE)
+                    .input(TARGET, graph.self(), "entity")
+                    .id();
+            String explode = graph.node(CREEPER_EXPLODE)
+                    .input(TARGET, graph.self(), "entity")
+                    .id();
+            String fuse = graph.node(FLOW_DELAY)
+                    .literal("duration", 1.0)
+                    .chain("next", explode)
+                    .id();
+            graph.routine(
+                    "light_fuse",
+                    graph.node(FLOW_DO_ONCE).chain("next", warn, ignite, fuse).id());
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String damage = graph.entry(trigger);
                 String either = graph.node(LOGIC_OR)
                         .input("first", causeIs(graph, damage, "ENTITY_ATTACK"), RESULT)
                         .input("second", causeIs(graph, damage, "PROJECTILE"), RESULT)
                         .id();
-                String explode = graph.node(CREEPER_EXPLODE)
-                        .input(TARGET, graph.self(), "entity")
-                        .id();
-                graph.on(trigger, graph.when(either, RESULT, explode));
+                graph.on(
+                        trigger,
+                        graph.when(either, RESULT, graph.call("light_fuse").id()));
             }
         });
     }
@@ -470,7 +490,8 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Calls lightning down on its target every four seconds instead of throwing potions.
+     * Calls lightning down on its target every four seconds instead of throwing potions. A red area grows on the
+     * marked spot for the 1.5 seconds before the strike.
      */
     private CustomMob thunderWizard() {
         return mob("thunder_wizard", EntityType.WITCH, graph -> {
@@ -496,7 +517,14 @@ public final class DefaultMobs implements BloodNightNodes {
                     .input("location", mark.id(), VALUE)
                     .literal("effect_only", true)
                     .id();
-            mark.chain("next", flash, wait);
+            String warn = graph.node(WORLD_SHOW_MARKER)
+                    .config("shape", "AREA")
+                    .input("location", mark.id(), VALUE)
+                    .input("color", graph.color(255, 40, 40), RESULT)
+                    .literal("size", 1.5)
+                    .literal("seconds", 1.5)
+                    .id();
+            mark.chain("next", flash, warn, wait);
             String sees = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
                     .input(TARGET, graph.self(), "entity")
                     .input("other", graph.selfRead(), TARGET)
@@ -998,7 +1026,8 @@ public final class DefaultMobs implements BloodNightNodes {
 
     /**
      * Routine {@code teleport_near(target)}: teleports the mob next to the target when there is one more than five
-     * blocks away, at most every five seconds, and only onto a spot with room for it.
+     * blocks away, at most every five seconds, and only onto a spot with room for it. A purple pillar shows the spot
+     * for a second before the mob arrives.
      */
     private static void defineTeleportNear(MobGraph graph) {
         String parameter = graph.parameter(TELEPORT_NEAR, TARGET, "living_entity");
@@ -1035,11 +1064,31 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("first", feetFree, "passable")
                 .input("second", headFree, "passable")
                 .id();
+        Graphs.NodeBuilder landing = graph.node(VARIABLE_SET)
+                .config("name", "landing")
+                .config("type", "location")
+                .input(VALUE, spot, RESULT);
+        String landed = graph.node(VARIABLE_GET)
+                .config("name", "landing")
+                .config("type", "location")
+                .id();
+        String warn = graph.node(WORLD_SHOW_MARKER)
+                .config("shape", "PILLAR")
+                .input("location", landing.id(), VALUE)
+                .input("color", graph.color(170, 40, 255), RESULT)
+                .literal("size", 3.0)
+                .literal("seconds", 1.0)
+                .id();
         String teleport = graph.node(ENTITY_TELEPORT)
                 .input(TARGET, graph.self(), "entity")
-                .input("location", spot, RESULT)
+                .input("location", landed, VALUE)
                 .id();
         String puff = graph.particlesAt("minecraft:portal", 10, target, "location");
+        String arrive = graph.node(FLOW_DELAY)
+                .literal("duration", 1.0)
+                .chain("next", teleport, puff)
+                .id();
+        landing.chain("next", warn, arrive);
         graph.routine(
                 TELEPORT_NEAR,
                 graph.present(
@@ -1051,7 +1100,7 @@ public final class DefaultMobs implements BloodNightNodes {
                                 graph.when(
                                         far,
                                         RESULT,
-                                        graph.when(free, RESULT, teleport, graph.resetTimer("teleport"), puff)))));
+                                        graph.when(free, RESULT, graph.resetTimer("teleport"), landing.id())))));
     }
 
     /**

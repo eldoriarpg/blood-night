@@ -394,6 +394,38 @@ Reads the properties of a World
 | Void Damage Min Build Height Offset | Number | Gets the offset applied to getMinHeight() to determine the height at which void damage starts to apply. |
 | Weather Duration | Integer | Get the remaining time in ticks of the current conditions. |
 
+## Show Marker
+
+`world.show_marker`
+
+Shows a glowing marker that grows over its time and then disappears, e.g. where an attack will land; every player sees it, without the resource pack
+
+| In | Type | What it is |
+|---|---|---|
+| Location | Location | Where it shows, on the ground |
+| Color | Color | Its colour |
+| Size | Number | Radius of an area or cross, height of a pillar, in blocks |
+| Seconds | Number | How long it grows and shows |
+| For (optional) | Player | The only player who sees it; everyone when not given |
+
+Goes on with: **Next**
+
+## Show Text
+
+`world.show_text`
+
+Shows floating text for a while, facing whoever looks at it and seen through walls
+
+| In | Type | What it is |
+|---|---|---|
+| Location | Location | Where it floats |
+| Text | Text | What it says, MiniMessage like &lt;red&gt;Run! |
+| Seconds | Number | How long it shows |
+| Size (optional) | Number | Its scale, 1 for normal; 1 when not given |
+| For (optional) | Player | The only player who sees it; everyone when not given |
+
+Goes on with: **Next**
+
 ## Spawn Lit TNT
 
 `world.spawn_tnt`

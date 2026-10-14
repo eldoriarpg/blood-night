@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.api.MovementPreset;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -58,4 +59,12 @@ record TestContext(LivingEntity entity, List<MovementPreset> movements) implemen
     public void global(Runnable work) {
         work.run();
     }
+
+    @Override
+    public void later(Entity entity, long ticks, Runnable work, Runnable retired) {
+        work.run();
+    }
+
+    @Override
+    public void reveal(Entity entity, Player player) {}
 }

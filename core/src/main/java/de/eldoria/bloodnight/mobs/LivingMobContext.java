@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
@@ -64,5 +65,15 @@ record LivingMobContext(
     @Override
     public void global(Runnable work) {
         tasks.globalNow(work);
+    }
+
+    @Override
+    public void later(Entity entity, long ticks, Runnable work, Runnable retired) {
+        tasks.entityLater(entity, ticks, work, retired);
+    }
+
+    @Override
+    public void reveal(Entity entity, Player player) {
+        tasks.entityNow(player, () -> player.showEntity(tasks.plugin(), entity));
     }
 }
