@@ -22,6 +22,7 @@ const tabs = computed(() => SERVER_SECTIONS.map(entry => ({key: entry.key, label
 const current = computed(() => SERVER_SECTIONS.find(entry => entry.key === tab.value) ?? SERVER_SECTIONS[0])
 const sectionName = computed(() => current.value?.root === 'main' ? section.main : section.globalDrops)
 const heldBy = computed(() => locks.heldByOther(sectionName.value))
+const denied = computed(() => !locks.mayChange(sectionName.value))
 const value = computed(() => session.payload.value?.settings?.[current.value?.root ?? 'main'] as Record<string, unknown> | undefined)
 
 watch(sectionName, (now, before) => {
@@ -36,12 +37,13 @@ onBeforeUnmount(() => void locks.release(sectionName.value))
   <main v-if="current" class="min-h-0 flex-1 overflow-y-auto px-6 py-5">
     <PageHeader>{{ t('editor.settings.server') }}</PageHeader>
     <Alert v-if="heldBy" class="mt-3" variant="held">{{ t('editor.settings.heldBy', {name: heldBy}) }}</Alert>
+    <Alert v-else-if="denied" class="mt-3" variant="held">{{ t('editor.permission.readOnly') }}</Alert>
     <TabBar v-model="tab" :tabs="tabs" class="mt-3"/>
     <SettingsForm
         :definition="current.root === 'main' ? 'ConfigFile' : 'GlobalDrops'"
         :path="pointer('settings', current.root)"
         :properties="current.properties"
-        :read-only="heldBy !== null"
+        :read-only="heldBy !== null || denied"
         :value="value"
     />
   </main>

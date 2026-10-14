@@ -95,6 +95,7 @@ export default {
             find: {mobs: 'Mob suchen', macros: 'Makro suchen'},
             new: {mobs: 'Neuer Mob', macros: 'Neues Makro'},
         },
+        permission: {readOnly: 'Diesen Teil darfst du nur ansehen.'},
         workspace: {
             readOnly: '{name} bearbeitet, nur lesen',
             empty: {mobs: 'Es gibt noch keine Mobs.', macros: 'Es gibt noch keine Makros.'},

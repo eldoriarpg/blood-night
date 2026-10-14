@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.editor;
 import de.eldoria.bloodnight.configuration.elements.EditorSettings;
 import de.eldoria.bloodnight.web.api.editor.AddParticipant;
 import de.eldoria.bloodnight.web.api.editor.CreateSession;
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
 import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionCreated;
@@ -20,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -48,10 +50,11 @@ public final class EditorClient {
      * @param catalog        the catalog, JSON
      * @param payload        the editor payload, JSON
      * @param participant    the name of who opens it
+     * @param areas          what the opener may change
      * @return the opened session, with the opener's link
      */
     public CompletableFuture<SessionCreated> open(
-            String catalogVersion, String catalog, String payload, String participant) {
+            String catalogVersion, String catalog, String payload, String participant, Set<EditorArea> areas) {
         String catalogPath = EditorRoutes.path(EditorRoutes.CATALOG, catalogVersion);
         return send(request(catalogPath).method("HEAD", HttpRequest.BodyPublishers.noBody()))
                 .thenCompose(head -> head.statusCode() == 200
@@ -60,7 +63,7 @@ public final class EditorClient {
                                 .thenApply(EditorClient::expectSuccess))
                 .thenCompose(ignored -> {
                     String body = MAPPER.writeValueAsString(
-                            new CreateSession(catalogVersion, MAPPER.readTree(payload), participant));
+                            new CreateSession(catalogVersion, MAPPER.readTree(payload), participant, areas));
                     return send(request(EditorRoutes.SESSIONS).POST(HttpRequest.BodyPublishers.ofString(body)));
                 })
                 .thenApply(response -> MAPPER.readValue(expectSuccess(response).body(), SessionCreated.class));
@@ -83,10 +86,12 @@ public final class EditorClient {
      *
      * @param session the session
      * @param name    their name
+     * @param areas   what they may change
      * @return their personal link; empty when the session expired or was closed
      */
-    public CompletableFuture<Optional<ParticipantCreated>> addParticipant(SessionCreated session, String name) {
-        String body = MAPPER.writeValueAsString(new AddParticipant(name));
+    public CompletableFuture<Optional<ParticipantCreated>> addParticipant(
+            SessionCreated session, String name, Set<EditorArea> areas) {
+        String body = MAPPER.writeValueAsString(new AddParticipant(name, areas));
         return send(authorized(EditorRoutes.path(EditorRoutes.PARTICIPANTS, session.id()), session)
                         .POST(HttpRequest.BodyPublishers.ofString(body)))
                 .thenApply(response -> response.statusCode() == 404

@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.web.api.editor.AddParticipant;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
 import de.eldoria.bloodnight.web.api.editor.ChangeBatch;
 import de.eldoria.bloodnight.web.api.editor.CreateSession;
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
 import de.eldoria.bloodnight.web.api.editor.LockInfo;
 import de.eldoria.bloodnight.web.api.editor.LockRequest;
@@ -28,6 +29,7 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
+import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
@@ -52,8 +54,10 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -183,7 +187,7 @@ final class EditorApp {
                 MAPPER.writeValueAsString(request.payload()),
                 MAPPER.writeValueAsString(new PayloadValidator(catalog).validate(request.payload())));
         String participantToken = Tokens.pullToken();
-        participants.add(id, Tokens.hash(participantToken), name);
+        participants.add(id, Tokens.hash(participantToken), name, areas(request.areas()));
         StoredSession stored = sessions.find(id).orElseThrow();
         ctx.status(HttpStatus.CREATED)
                 .json(new SessionCreated(id, editorUrl(id, participantToken), pullToken, stored.expires()));
@@ -191,22 +195,28 @@ final class EditorApp {
 
     private void addParticipant(Context ctx) {
         StoredSession session = pulling(ctx);
-        String name = name(ctx.bodyAsClass(AddParticipant.class).name());
+        AddParticipant request = ctx.bodyAsClass(AddParticipant.class);
+        String name = name(request.name());
         String token = Tokens.pullToken();
-        participants.add(session.id(), Tokens.hash(token), name);
+        participants.add(session.id(), Tokens.hash(token), name, areas(request.areas()));
         ctx.status(HttpStatus.CREATED).json(new ParticipantCreated(name, editorUrl(session.id(), token)));
     }
 
     private void view(Context ctx) {
         StoredSession session = session(ctx);
-        String you = isPuller(ctx, session) ? null : editing(ctx, session).name();
-        ctx.json(view(session, you));
+        if (isPuller(ctx, session)) {
+            ctx.json(view(session, null, EnumSet.allOf(EditorArea.class)));
+            return;
+        }
+        Participant participant = editing(ctx, session);
+        ctx.json(view(session, participant.name(), participant.areas()));
     }
 
     private void lock(Context ctx) {
         StoredSession session = session(ctx);
         Participant participant = editing(ctx, session);
         String section = ctx.bodyAsClass(LockRequest.class).section();
+        if (!participant.mayChange(section)) throw forbidden(section);
         if (!rooms.of(session.id()).take(participant, section)) {
             throw locked(rooms.of(session.id()).locks().stream()
                     .filter(lock -> lock.section().equals(section))
@@ -275,7 +285,7 @@ final class EditorApp {
     private void result(Context ctx) {
         StoredSession session = pulling(ctx);
         if (session.state() != SessionState.SUBMITTED) throw new ConflictResponse("The session is not submitted yet");
-        ctx.json(view(session, null));
+        ctx.json(view(session, null, EnumSet.allOf(EditorArea.class)));
     }
 
     private void close(Context ctx) {
@@ -318,7 +328,9 @@ final class EditorApp {
             JsonNode current = MAPPER.readTree(session.payload());
             JsonNode payload;
             try {
-                List<LockInfo> blocking = room.claim(participant, Sections.of(current, operations));
+                Sections.Touched touched = Sections.of(current, operations);
+                allowed(participant, touched);
+                List<LockInfo> blocking = room.claim(participant, touched);
                 if (!blocking.isEmpty()) throw locked(blocking);
                 payload = JsonPatch.apply(current, operations);
             } catch (JsonPatch.PatchException e) {
@@ -418,7 +430,26 @@ final class EditorApp {
         return header != null && header.startsWith("Bearer ") ? header.substring(7) : "";
     }
 
-    private SessionView view(StoredSession session, @Nullable String you) {
+    /**
+     * @throws ForbiddenResponse when the change reaches into an area the participant may not change
+     */
+    private static void allowed(Participant participant, Sections.Touched touched) {
+        if (touched.everything() && !participant.mayChangeAll()) throw forbidden("everything");
+        for (String section : touched.sections()) {
+            if (!participant.mayChange(section)) throw forbidden(section);
+        }
+    }
+
+    private static ForbiddenResponse forbidden(String section) {
+        return new ForbiddenResponse("You may not change " + section);
+    }
+
+    private static Set<EditorArea> areas(@Nullable Set<EditorArea> areas) {
+        if (areas == null) throw new BadRequestResponse("Missing areas");
+        return areas.isEmpty() ? EnumSet.noneOf(EditorArea.class) : EnumSet.copyOf(areas);
+    }
+
+    private SessionView view(StoredSession session, @Nullable String you, Set<EditorArea> areas) {
         Room room = rooms.of(session.id());
         return new SessionView(
                 session.id(),
@@ -430,6 +461,7 @@ final class EditorApp {
                 room.locks(),
                 room.online(),
                 you,
+                areas,
                 session.expires());
     }
 

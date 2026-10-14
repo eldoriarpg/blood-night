@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.LockInfo;
 import de.eldoria.bloodnight.web.api.editor.StreamEvent;
 import de.eldoria.bloodnight.web.api.editor.StreamEventType;
@@ -16,6 +17,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,8 +46,8 @@ class RoomTest {
                 }
             },
             Duration.ofMinutes(2));
-    private final Participant steve = new Participant("s", "Steve");
-    private final Participant alex = new Participant("a", "Alex");
+    private final Participant steve = new Participant("s", "Steve", EnumSet.allOf(EditorArea.class));
+    private final Participant alex = new Participant("a", "Alex", EnumSet.allOf(EditorArea.class));
 
     private static Sections.Touched touching(String... sections) {
         return new Sections.Touched(Set.of(sections), false);

@@ -28,6 +28,22 @@ While a session is open, everyone who runs `/bloodnight editor` joins it with th
 When someone works on a part, like one mob or the settings of one world, that part is theirs for a while. Others see
 "is editing this" and can only look at it. This way nobody overwrites someone else's work.
 
+## Who may change what
+
+Everyone in a session sees everything. What they may change depends on their permissions:
+
+| Permission | May change |
+|---|---|
+| `bloodnight.editor.mobs` | Mobs |
+| `bloodnight.editor.macros` | Macros |
+| `bloodnight.editor.items` | Registered items |
+| `bloodnight.editor.worlds` | The settings of the worlds |
+| `bloodnight.editor.server` | The server-wide settings |
+| `bloodnight.editor.drops` | The global drops |
+
+The rest is read only for them. `bloodnight.command.editor` includes all six, so admins can change everything. To let
+a builder edit only mobs, give them `bloodnight.command.editor` and set the other five to `false`.
+
 ## Revisions
 
 Every save is a **revision**. In the Revisions tab you see all of them. Click **Restore** to go back to an older one.

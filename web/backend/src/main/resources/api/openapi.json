@@ -707,9 +707,16 @@
         "properties" : {
           "name" : {
             "type" : "string"
+          },
+          "areas" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EditorArea"
+            },
+            "uniqueItems" : true
           }
         },
-        "required" : [ "name" ]
+        "required" : [ "name", "areas" ]
       },
       "Catalog" : {
         "type" : "object",
@@ -805,9 +812,20 @@
           "payload" : { },
           "participant" : {
             "type" : "string"
+          },
+          "areas" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EditorArea"
+            },
+            "uniqueItems" : true
           }
         },
-        "required" : [ "catalog", "payload", "participant" ]
+        "required" : [ "catalog", "payload", "participant", "areas" ]
+      },
+      "EditorArea" : {
+        "type" : "string",
+        "enum" : [ "MOBS", "MACROS", "ITEMS", "WORLDS", "SERVER", "DROPS" ]
       },
       "ErrorBody" : {
         "type" : "object",
@@ -1086,12 +1104,19 @@
           "you" : {
             "type" : "string"
           },
+          "areas" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EditorArea"
+            },
+            "uniqueItems" : true
+          },
           "expires" : {
             "type" : "string",
             "format" : "date-time"
           }
         },
-        "required" : [ "id", "state", "revision", "catalog", "payload", "problems", "locks", "online", "expires" ]
+        "required" : [ "id", "state", "revision", "catalog", "payload", "problems", "locks", "online", "areas", "expires" ]
       },
       "StreamEvent" : {
         "type" : "object",

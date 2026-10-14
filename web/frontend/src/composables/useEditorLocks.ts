@@ -6,10 +6,12 @@
 import {failure} from '~/api/editor'
 import {showToast} from '~/util/toast'
 import {editorState} from '~/util/editorState'
+import {mayChange as allowed} from '~/util/session/editorAreas'
 
 /**
  * The sections participants hold: who holds one, and taking and releasing them for this participant. A section held
- * by someone else is shown read only.
+ * by someone else is shown read only, and so is one outside the areas this participant may change; for those no lock
+ * is asked for.
  */
 export function useEditorLocks() {
     const {data} = editorState()
@@ -25,7 +27,12 @@ export function useEditorLocks() {
         return name !== null && name !== data.value.you ? name : null
     }
 
+    function mayChange(section: string): boolean {
+        return allowed(section, data.value.areas)
+    }
+
     async function take(section: string): Promise<boolean> {
+        if (!mayChange(section)) return false
         if (holder(section) === data.value.you) return true
         try {
             await session.api().take(section)
@@ -45,5 +52,5 @@ export function useEditorLocks() {
         }
     }
 
-    return {holder, heldByOther, take, release}
+    return {holder, heldByOther, mayChange, take, release}
 }

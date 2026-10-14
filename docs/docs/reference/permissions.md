@@ -15,7 +15,7 @@ Only operators have these permissions at first. Give them to other players with 
 | `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.store`, `bloodnight.command.pack`, `bloodnight.command.night.manage` |
 | `bloodnight.bypass.commands` | Use commands blocked during blood nights |  |
 | `bloodnight.command.debug` | /bloodnight debug, fires the debug trigger of mobs |  |
-| `bloodnight.command.editor` | /bloodnight editor, opens, applies or closes a web editor session |  |
+| `bloodnight.command.editor` | /bloodnight editor, opens, applies or closes a web editor session | `bloodnight.editor.mobs`, `bloodnight.editor.macros`, `bloodnight.editor.items`, `bloodnight.editor.worlds`, `bloodnight.editor.server`, `bloodnight.editor.drops` |
 | `bloodnight.command.export` | /bloodnight export, writes the editor payload and catalog to the debug folder |  |
 | `bloodnight.command.item` | /bloodnight item, registers the held item or removes a registered item |  |
 | `bloodnight.command.night` | /bloodnight night, shows the night selection and the next blood night of a world |  |
@@ -27,4 +27,10 @@ Only operators have these permissions at first. Give them to other players with 
 | `bloodnight.command.source` | /bloodnight source, writes the generated code of a mob to the debug folder |  |
 | `bloodnight.command.spawn` | /bloodnight spawn, spawns a custom mob |  |
 | `bloodnight.command.store` | /bloodnight store, lists, installs and updates mobs from the store |  |
+| `bloodnight.editor.drops` | Change the global drops in the web editor; without it they are read only |  |
+| `bloodnight.editor.items` | Change the registered items in the web editor; without it they are read only |  |
+| `bloodnight.editor.macros` | Change the macros in the web editor; without it they are read only |  |
+| `bloodnight.editor.mobs` | Change the mobs in the web editor; without it they are read only |  |
+| `bloodnight.editor.server` | Change the server-wide settings in the web editor; without it they are read only |  |
+| `bloodnight.editor.worlds` | Change the settings of the worlds in the web editor; without it they are read only |  |
 | `bloodnight.updates` | Hear about new BloodNight versions on join |  |

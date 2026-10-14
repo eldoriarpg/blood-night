@@ -27,6 +27,7 @@ CREATE TABLE web_schema.editor_participant
     session_id TEXT        NOT NULL REFERENCES web_schema.editor_session (id) ON DELETE CASCADE,
     token_hash TEXT        NOT NULL,
     name       TEXT        NOT NULL,
+    areas      TEXT        NOT NULL,
     created    TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (session_id, token_hash)
 );
