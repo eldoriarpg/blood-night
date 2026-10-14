@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight export}: writes the editor payload and catalog to {@code debug/}.
  */
@@ -42,9 +44,9 @@ final class ExportCommand {
                                     plugin.getServer().getWorlds())
                             .asJson());
             Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(plugin.catalog()));
-            sender.sendMessage("Editor payload and catalog written to " + directory);
+            Replies.send(sender, "export.written", arg("directory", directory));
         } catch (IOException e) {
-            sender.sendMessage("Could not write the editor payload: " + e.getMessage());
+            Replies.send(sender, "export.failed", arg("error", String.valueOf(e.getMessage())));
         }
     }
 }

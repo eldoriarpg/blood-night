@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight problems [mob]}: the mobs whose behaviour does not compile or failed while running, or one mob's
  * problems and failures.
@@ -33,15 +35,19 @@ final class ProblemsCommand {
     void list(CommandSender sender) {
         Set<String> mobs = new TreeSet<>(plugin.behaviours().problems().keySet());
         mobs.addAll(plugin.coordinator().failures().keySet());
-        sender.sendMessage(mobs.isEmpty() ? "No mob has problems" : "Mobs with problems: " + String.join(", ", mobs));
+        if (mobs.isEmpty()) {
+            Replies.send(sender, "problems.none");
+        } else {
+            Replies.send(sender, "problems.list", arg("mobs", String.join(", ", mobs)));
+        }
     }
 
     @Executes
     void show(CommandSender sender, @MobSuggestions String mob) {
         List<GraphProblem> problems = plugin.behaviours().problems().getOrDefault(mob, List.of());
         List<String> failed = plugin.coordinator().failures().getOrDefault(mob, List.of());
-        if (problems.isEmpty() && failed.isEmpty()) sender.sendMessage("Mob %s has no problems".formatted(mob));
+        if (problems.isEmpty() && failed.isEmpty()) Replies.send(sender, "problems.mob_none", arg("mob", mob));
         problems.forEach(problem -> sender.sendMessage(problem.toString()));
-        failed.forEach(failure -> sender.sendMessage("Failed at runtime: " + failure));
+        failed.forEach(failure -> Replies.send(sender, "problems.runtime", arg("failure", failure)));
     }
 }

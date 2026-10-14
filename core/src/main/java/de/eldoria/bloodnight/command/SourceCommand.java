@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static de.eldoria.bloodnight.command.Replies.arg;
+
 /**
  * {@code /bloodnight source <mob>}: writes the generated Java source of a mob to {@code debug/<mob>.java}.
  */
@@ -30,7 +32,7 @@ final class SourceCommand {
 
     @DefaultExecutes
     void usage(CommandSender sender) {
-        sender.sendMessage("Usage: /bloodnight source <mob>");
+        Replies.send(sender, "usage", arg("usage", "/bloodnight source <mob>"));
     }
 
     @Executes
@@ -42,11 +44,11 @@ final class SourceCommand {
                             try {
                                 Path file = DebugFolder.of(plugin).resolve(mob + ".java");
                                 Files.writeString(file, compiled.source());
-                                sender.sendMessage("Source of %s written to %s".formatted(mob, file));
+                                Replies.send(sender, "source.written", arg("mob", mob), arg("file", file));
                             } catch (IOException e) {
-                                sender.sendMessage("Could not write source: " + e.getMessage());
+                                Replies.send(sender, "source.failed", arg("error", String.valueOf(e.getMessage())));
                             }
                         },
-                        () -> sender.sendMessage("Mob %s has no compiled behaviour".formatted(mob)));
+                        () -> Replies.send(sender, "source.missing", arg("mob", mob)));
     }
 }

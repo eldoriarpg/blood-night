@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.command;
 import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.night.Prediction;
+import net.kyori.adventure.text.Component;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
@@ -16,6 +17,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
+
+import static de.eldoria.bloodnight.command.Replies.arg;
 
 /**
  * {@code /bloodnight night [force|cancel] [world]}: shows a world's night selection and next blood night, or forces or
@@ -50,17 +53,20 @@ final class NightCommand {
 
     private void report(CommandSender sender, World world) {
         long coming = plugin.selector().times(world).upcoming(NightTimes.now(world));
-        sender.sendMessage("%s: %s, blood night %s"
-                .formatted(
-                        world.getName(),
-                        selection(world),
-                        plugin.bloodNights().running(world).isPresent() ? "running" : "not running"));
-        sender.sendMessage("Coming night %d: %d%% probability"
-                .formatted(coming, plugin.selector().probability(world, coming)));
+        Replies.send(
+                sender,
+                plugin.bloodNights().running(world).isPresent() ? "night.running" : "night.not_running",
+                arg("world", world.getName()),
+                arg("selection", selection(world)));
+        Replies.send(
+                sender,
+                "night.coming",
+                arg("night", coming),
+                arg("probability", plugin.selector().probability(world, coming)));
         sender.sendMessage(plugin.selector()
                 .next(world, HORIZON)
                 .map(prediction -> describe(coming, prediction))
-                .orElse("No blood night in the next %d nights".formatted(HORIZON)));
+                .orElseGet(() -> Replies.text("night.none", arg("nights", HORIZON))));
     }
 
     @Executes("force")
@@ -78,7 +84,7 @@ final class NightCommand {
     private void force(CommandSender sender, World world) {
         plugin.tasks().globalNow(() -> {
             long night = plugin.bloodNights().force(world);
-            sender.sendMessage("Night %d in %s is a blood night".formatted(night, world.getName()));
+            Replies.send(sender, "night.forced", arg("night", night), arg("world", world.getName()));
         });
     }
 
@@ -97,38 +103,38 @@ final class NightCommand {
     private void cancel(CommandSender sender, World world) {
         plugin.tasks().globalNow(() -> {
             long night = plugin.bloodNights().cancel(world);
-            sender.sendMessage("Night %d in %s is an ordinary night".formatted(night, world.getName()));
+            Replies.send(sender, "night.cancelled", arg("night", night), arg("world", world.getName()));
         });
     }
 
-    private String selection(World world) {
+    private Component selection(World world) {
         var settings = plugin.configuration().worldConfig(world).nightSettings();
         if (!world.isFixedTime()) {
-            return plugin.configuration()
+            return Component.text(plugin.configuration()
                     .worldConfig(world)
                     .nightSelection()
                     .type()
-                    .name();
+                    .name());
         }
-        return "TIMED, every %d minutes for %d minutes"
-                .formatted(settings.timed().everyMinutes(), settings.timed().lengthMinutes());
+        return Replies.text(
+                "night.timed",
+                arg("every", settings.timed().everyMinutes()),
+                arg("length", settings.timed().lengthMinutes()));
     }
 
-    private static String describe(long coming, Prediction prediction) {
-        if (prediction.ticksUntil() == 0) return "The blood night is now";
+    private static Component describe(long coming, Prediction prediction) {
+        if (prediction.ticksUntil() == 0) return Replies.text("night.now");
         long nights = prediction.night() - coming;
-        long minutes = prediction.ticksUntil() / 20 / 60;
-        return "Next blood night: night %d, %s, in about %d minutes%s"
-                .formatted(
-                        prediction.night(),
-                        nights == 0 ? "the coming one" : "%d nights after the coming one".formatted(nights),
-                        minutes,
-                        prediction.forced() ? " (forced)" : "");
+        return Replies.text(
+                prediction.forced() ? "night.next_forced" : "night.next",
+                arg("night", prediction.night()),
+                arg("after", nights),
+                arg("minutes", prediction.ticksUntil() / 20 / 60));
     }
 
     private Optional<World> world(CommandSender sender, String name) {
         World world = plugin.getServer().getWorld(name);
-        if (world == null) sender.sendMessage("Unknown world " + name);
+        if (world == null) Replies.send(sender, "night.unknown_world", arg("world", name));
         return Optional.ofNullable(world);
     }
 
