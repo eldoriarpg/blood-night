@@ -21,6 +21,11 @@ import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
+import de.eldoria.bloodnight.integration.placeholders.CommandText;
+import de.eldoria.bloodnight.integration.placeholders.MiniExpansion;
+import de.eldoria.bloodnight.integration.placeholders.PapiCommandText;
+import de.eldoria.bloodnight.integration.placeholders.PapiExpansion;
+import de.eldoria.bloodnight.integration.placeholders.Placeholders;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
@@ -49,6 +54,7 @@ import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -92,6 +98,7 @@ public final class BloodNight extends JavaPlugin {
     private Haunting haunting;
     private BloodPack bloodPack;
     private PluginService service;
+    private @Nullable Object miniPlaceholders;
     private PhantomForce phantoms;
     private final Messages messages = new Messages();
     private NightSelector selector;
@@ -155,6 +162,7 @@ public final class BloodNight extends JavaPlugin {
                 () -> configuration.mobs().all());
         getServer().getServicesManager().register(BloodNightService.class, service, this, ServicePriority.Normal);
         var plugins = getServer().getPluginManager();
+        CommandText commandText = hookPlaceholders();
         plugins.registerEvents(new DamageHandler(), this);
         plugins.registerEvents(new TargetPolicy(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
@@ -197,7 +205,7 @@ public final class BloodNight extends JavaPlugin {
                 this);
         plugins.registerEvents(
                 new NightCommands(
-                        getServer(), world -> configuration.worldConfig(world).nightSettings()),
+                        getServer(), world -> configuration.worldConfig(world).nightSettings(), commandText),
                 this);
         plugins.registerEvents(stretch, this);
         plugins.registerEvents(
@@ -235,7 +243,9 @@ public final class BloodNight extends JavaPlugin {
                         .blockedCommands()),
                 this);
         plugins.registerEvents(
-                new DeathActionHandler(getServer(), tasks, bloodNights, configuration::worldConfig, RANDOM), this);
+                new DeathActionHandler(
+                        getServer(), tasks, bloodNights, configuration::worldConfig, commandText, RANDOM),
+                this);
         bloodSky = new BloodSky(
                 bloodNights, world -> configuration.worldConfig(world).atmosphere(), BloodSky.silently(getServer()));
         plugins.registerEvents(bloodSky, this);
@@ -255,6 +265,30 @@ public final class BloodNight extends JavaPlugin {
         tasks.globalTimer(1, stretch::tick);
         tasks.globalTimer(20, () -> bloodNights.check(getServer().getWorlds()));
         recompile();
+    }
+
+    /**
+     * Offers BloodNight's placeholders to PlaceholderAPI and MiniPlaceholders when they run. Their classes are only
+     * touched then, so the plugin runs without them.
+     *
+     * @return fills PlaceholderAPI placeholders into BloodNight's commands, or leaves them as they are
+     */
+    private CommandText hookPlaceholders() {
+        Placeholders placeholders = new Placeholders(
+                service,
+                name -> getServer().getWorld(name),
+                () -> getServer().getServerTickManager().getTickRate(),
+                () -> configuration.main().placeholders().revealNext());
+        String version = getPluginMeta().getVersion();
+        var plugins = getServer().getPluginManager();
+        if (plugins.isPluginEnabled("MiniPlaceholders")) {
+            miniPlaceholders = MiniExpansion.register(placeholders, version);
+            getLogger().info("Placeholders registered with MiniPlaceholders");
+        }
+        if (!plugins.isPluginEnabled("PlaceholderAPI")) return CommandText.NONE;
+        new PapiExpansion(placeholders, version).register();
+        getLogger().info("Placeholders registered with PlaceholderAPI");
+        return new PapiCommandText();
     }
 
     /**
@@ -286,7 +320,9 @@ public final class BloodNight extends JavaPlugin {
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
         if (announcer != null) announcer.clear();
         if (haunting != null) haunting.clear();
-        if (bloodSky != null) bloodSky.clear(getServer().getWorlds());
+        if (bloodSky != null)
+            bloodSky.clear(getServer().getWorlds(), getServer().isGlobalTickThread());
+        if (miniPlaceholders != null) MiniExpansion.unregister(miniPlaceholders);
         if (phantoms != null) phantoms.restoreAll(getServer().getOnlinePlayers());
         messages.unregister();
         if (dispatcher != null) dispatcher.unregister();

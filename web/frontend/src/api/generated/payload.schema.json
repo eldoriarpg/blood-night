@@ -285,6 +285,14 @@
             "required" : false,
             "url" : "https://bloodnight.docs.eldoria.de/pack/bloodnight.zip"
           }
+        },
+        "placeholders" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/PlaceholderSettings"
+          } ],
+          "default" : {
+            "revealNext" : false
+          }
         }
       }
     },
@@ -1220,6 +1228,15 @@
           },
           "maxItems" : 100,
           "default" : [ 50, 50, 50 ]
+        }
+      }
+    },
+    "PlaceholderSettings" : {
+      "type" : "object",
+      "properties" : {
+        "revealNext" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },

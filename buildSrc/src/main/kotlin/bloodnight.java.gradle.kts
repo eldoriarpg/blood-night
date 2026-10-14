@@ -25,6 +25,7 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://eldonexus.de/repository/maven-public/")
     maven("https://eldonexus.de/repository/maven-proxies/")
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {

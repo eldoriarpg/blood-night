@@ -1,3 +1,4 @@
+import net.minecrell.pluginyml.paper.PaperPluginDescription
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
@@ -19,6 +20,10 @@ dependencies {
     compileOnly(project(":json-schema"))
     testImplementation(project(":json-schema"))
     compileOnly(libs.strokkcommands.annotations)
+    compileOnly(libs.placeholderapi)
+    compileOnly(libs.miniplaceholders)
+    testImplementation(libs.placeholderapi)
+    testImplementation(libs.miniplaceholders)
     annotationProcessor(libs.strokkcommands.processor)
 }
 
@@ -42,6 +47,15 @@ paper {
         "editor" to "opens, applies or closes a web editor session",
         "item" to "registers the held item or removes a registered item",
     )
+    serverDependencies {
+        listOf("PlaceholderAPI", "MiniPlaceholders").forEach { name ->
+            register(name) {
+                required = false
+                joinClasspath = true
+                load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+            }
+        }
+    }
     permissions {
         register("bloodnight.admin") {
             description = "Every blood night command"

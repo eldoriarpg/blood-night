@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.configuration.elements.world.death.DeathActions;
 import de.eldoria.bloodnight.configuration.elements.world.death.LightningSettings;
 import de.eldoria.bloodnight.configuration.elements.world.death.PlayerDeathActions;
 import de.eldoria.bloodnight.configuration.elements.world.death.TimedEffect;
+import de.eldoria.bloodnight.integration.placeholders.CommandText;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.Effects;
@@ -48,12 +49,14 @@ public final class DeathActionHandler implements Listener {
     private final BloodNights nights;
     private final Function<World, WorldSettings> settings;
     private final RandomGenerator random;
+    private final CommandText text;
 
     /**
      * @param server   runs the commands
      * @param tasks    runs commands on the global region and respawn actions on the player's thread, next tick
      * @param nights   the running blood nights
      * @param settings the settings of a world
+     * @param text     fills in other plugins' placeholders
      * @param random   decides the chances; used from several threads
      */
     public DeathActionHandler(
@@ -61,8 +64,10 @@ public final class DeathActionHandler implements Listener {
             Tasks tasks,
             BloodNights nights,
             Function<World, WorldSettings> settings,
+            CommandText text,
             RandomGenerator random) {
         this.server = server;
+        this.text = text;
         this.tasks = tasks;
         this.nights = nights;
         this.settings = settings;
@@ -90,7 +95,7 @@ public final class DeathActionHandler implements Listener {
         if (chance(actions.loseInventoryChance())) event.getDrops().clear();
         if (chance(actions.loseExperienceChance())) event.setDroppedExp(0);
         String name = player.getName();
-        tasks.global(() -> run(actions.deathCommands(), name, world));
+        tasks.global(() -> run(actions.deathCommands(), name, player, world));
     }
 
     @EventHandler
@@ -109,7 +114,7 @@ public final class DeathActionHandler implements Listener {
                 player.addPotionEffect(new PotionEffect(type, (int) Math.round(effect.seconds() * 20), 1));
         }
         String name = player.getName();
-        tasks.global(() -> run(actions.respawnCommands(), name, world));
+        tasks.global(() -> run(actions.respawnCommands(), name, player, world));
     }
 
     private void perform(Location location, DeathActions actions) {
@@ -127,11 +132,11 @@ public final class DeathActionHandler implements Listener {
         }
     }
 
-    private void run(List<String> commands, String player, World world) {
+    private void run(List<String> commands, String name, Player player, World world) {
         for (String command : commands) {
             server.dispatchCommand(
                     server.getConsoleSender(),
-                    command.replace("{player}", player).replace("{world}", world.getName()));
+                    text.resolve(command.replace("{player}", name).replace("{world}", world.getName()), player));
         }
     }
 

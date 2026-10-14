@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.night;
 import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
+import de.eldoria.bloodnight.integration.placeholders.CommandText;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,14 +27,17 @@ import java.util.function.Function;
 public final class NightCommands implements Listener {
     private final Server server;
     private final Function<World, NightSettings> settings;
+    private final CommandText text;
 
     /**
      * @param server   runs the commands
      * @param settings a world's night settings
+     * @param text     fills in other plugins' placeholders
      */
-    public NightCommands(Server server, Function<World, NightSettings> settings) {
+    public NightCommands(Server server, Function<World, NightSettings> settings, CommandText text) {
         this.server = server;
         this.settings = settings;
+        this.text = text;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -50,11 +54,13 @@ public final class NightCommands implements Listener {
         for (String command : commands) {
             String forWorld = command.replace("{world}", world.getName());
             if (!forWorld.contains("{player}")) {
-                server.dispatchCommand(server.getConsoleSender(), forWorld);
+                server.dispatchCommand(server.getConsoleSender(), text.resolve(forWorld, null));
                 continue;
             }
             for (Player player : world.getPlayers()) {
-                server.dispatchCommand(server.getConsoleSender(), forWorld.replace("{player}", player.getName()));
+                server.dispatchCommand(
+                        server.getConsoleSender(),
+                        text.resolve(forWorld.replace("{player}", player.getName()), player));
             }
         }
     }

@@ -82,8 +82,10 @@ public final class PluginService implements BloodNightService {
 
     @Override
     public Optional<NightForecast> next(World world, int horizon) {
+        long coming = selector.times(world).upcoming(NightTimes.now(world));
         return selector.next(world, horizon)
-                .map(prediction -> new NightForecast(prediction.night(), prediction.ticksUntil(), prediction.forced()));
+                .map(prediction -> new NightForecast(
+                        prediction.night(), prediction.night() - coming, prediction.ticksUntil(), prediction.forced()));
     }
 
     @Override

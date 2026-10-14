@@ -92,9 +92,14 @@ public final class BloodSky implements Listener {
     }
 
     /**
-     * Gives every red world its ordinary sky back at once, e.g. when the plugin disables.
+     * Gives every red world its ordinary sky back at once, e.g. when the plugin disables. Commands only run on the
+     * global region; elsewhere (Folia stops plugins off it) nothing happens, and {@link #restore} sets the clocks on
+     * the next start instead.
+     *
+     * @param global whether the current thread is the global region's
      */
-    public void clear(Collection<? extends World> worlds) {
+    public void clear(Collection<? extends World> worlds, boolean global) {
+        if (!global) return;
         for (World world : worlds) {
             if (red.remove(world.getUID())) clock(world, REST);
         }
