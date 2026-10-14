@@ -70,7 +70,7 @@ Each world can change how many mobs turn special, in `mobSettings.spawning`:
 mobSettings:
   spawning:
     spawnPercentage: 50
-    ignoredReasons: [SPAWNER, TRIAL_SPAWNER]
+    ignoredReasons: [CUSTOM, SPAWNER, TRIAL_SPAWNER]
     mobs:
       speed_zombie: 30
       toxic_slime: 0
@@ -78,7 +78,27 @@ mobSettings:
 
 - `spawnPercentage`: the chance a fitting spawn turns special.
 - `ignoredReasons`: mobs from these spawn reasons always stay normal. This is good for mob farms with spawners.
+  `CUSTOM` is in the list at first. Those are mobs other plugins spawn.
 - `mobs`: a different weight for some mobs in this world. 0 turns a mob off here.
+
+## Mobs of other plugins
+
+Some plugins have their own mobs: Citizens NPCs, MythicMobs mobs, or levelled mobs. BloodNight leaves them alone.
+They never turn special. They get no extra damage or health, and their deaths cause no death actions.
+
+BloodNight finds Citizens NPCs and MythicMobs mobs by itself. Other plugins often mark their mobs with a data key.
+Add that key to `markerKeys` in `config.yml`, and BloodNight leaves those mobs alone too:
+
+```yaml
+foreignMobs:
+  wrap: false
+  rules: false
+  markerKeys:
+    - levelledmobs:level
+```
+
+- `wrap: true` lets these mobs turn special after all.
+- `rules: true` gives them the blood night damage, health and death actions.
 
 ## When the night ends
 

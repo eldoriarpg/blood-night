@@ -538,6 +538,7 @@ export interface ConfigFile {
   editor?: EditorSettings;
   resourcePack?: ResourcePackSettings;
   placeholders?: PlaceholderSettings;
+  foreignMobs?: ForeignMobSettings;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -574,6 +575,15 @@ export interface ResourcePackSettings {
  */
 export interface PlaceholderSettings {
   revealNext?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ForeignMobSettings".
+ */
+export interface ForeignMobSettings {
+  wrap?: boolean;
+  rules?: boolean;
+  markerKeys?: string[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

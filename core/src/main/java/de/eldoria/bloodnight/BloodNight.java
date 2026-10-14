@@ -30,6 +30,7 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
+import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobDeaths;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
@@ -52,6 +53,7 @@ import de.eldoria.bloodnight.service.PluginService;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
@@ -182,6 +184,7 @@ public final class BloodNight extends JavaPlugin {
         getLifecycleManager()
                 .registerEventHandler(LifecycleEvents.COMMANDS.newHandler(
                         event -> BloodNightCommandBrigadier.register(event.registrar(), this)));
+        ForeignMobs foreign = new ForeignMobs(() -> configuration.main().foreignMobs(), this::mythicMobsLoader);
         plugins.registerEvents(
                 new MobSpawner(
                         () -> configuration.mobs().all(),
@@ -190,6 +193,7 @@ public final class BloodNight extends JavaPlugin {
                         bloodNights,
                         tasks,
                         plugins,
+                        foreign,
                         RANDOM),
                 this);
         stretch = new NightStretch(
@@ -234,7 +238,7 @@ public final class BloodNight extends JavaPlugin {
         plugins.registerEvents(new CreeperGuard(bloodNights, configuration::worldConfig), this);
         plugins.registerEvents(
                 new MobDamage(
-                        bloodNights, world -> configuration.worldConfig(world).mobSettings()),
+                        bloodNights, world -> configuration.worldConfig(world).mobSettings(), foreign),
                 this);
         plugins.registerEvents(
                 new CommandBlocker(bloodNights, getServer().getCommandMap(), world -> configuration
@@ -244,7 +248,7 @@ public final class BloodNight extends JavaPlugin {
                 this);
         plugins.registerEvents(
                 new DeathActionHandler(
-                        getServer(), tasks, bloodNights, configuration::worldConfig, commandText, RANDOM),
+                        getServer(), tasks, bloodNights, configuration::worldConfig, commandText, foreign, RANDOM),
                 this);
         bloodSky = new BloodSky(
                 bloodNights, world -> configuration.worldConfig(world).atmosphere(), BloodSky.silently(getServer()));
@@ -289,6 +293,14 @@ public final class BloodNight extends JavaPlugin {
         new PapiExpansion(placeholders, version).register();
         getLogger().info("Placeholders registered with PlaceholderAPI");
         return new PapiCommandText();
+    }
+
+    /**
+     * @return the class loader of MythicMobs while it runs, so its classes can be reached without depending on it
+     */
+    private @Nullable ClassLoader mythicMobsLoader() {
+        Plugin mythic = getServer().getPluginManager().getPlugin("MythicMobs");
+        return mythic != null && mythic.isEnabled() ? mythic.getClass().getClassLoader() : null;
     }
 
     /**
