@@ -24,8 +24,8 @@ always do.
 2. Download the two files:
 
    ```bash
-   curl -o compose.yaml https://eldoriarpg.github.io/blood-night/self-hosting/compose.yaml
-   curl -o .env https://eldoriarpg.github.io/blood-night/self-hosting/env.example
+   curl -o compose.yaml https://bloodnight.docs.eldoria.de/self-hosting/compose.yaml
+   curl -o .env https://bloodnight.docs.eldoria.de/self-hosting/env.example
    ```
 
 3. Open `.env` and fill it in:
