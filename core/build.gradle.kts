@@ -51,6 +51,7 @@ paper {
         "night" to "shows the night selection and the next blood night of a world",
         "editor" to "opens, applies or closes a web editor session",
         "item" to "registers the held item or removes a registered item",
+        "settings" to "shows or changes one setting without the web editor",
     )
     serverDependencies {
         listOf("PlaceholderAPI", "MiniPlaceholders", "WorldGuard").forEach { name ->
