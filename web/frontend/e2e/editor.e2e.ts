@@ -6,6 +6,13 @@
 import {expect, test, type Locator, type Page} from '@playwright/test'
 import {stageEditor} from './editorFixture'
 
+
+/** Opens the session and the full graph editor of the mob shown first. */
+async function openGraph(page: Page, link: string): Promise<void> {
+    await page.goto(link)
+    await page.getByRole('button', {name: 'Edit'}).click()
+}
+
 /**
  * Where an element ends up once the canvas has stopped fitting its view.
  *
@@ -133,7 +140,7 @@ test('an item is created from a material', async ({page}) => {
 /** A wire let go on the empty canvas offers the nodes that take it and adds the one picked, wired. */
 test('a pulled wire adds a wired node', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const pin = page.locator('.vue-flow__node[data-id="tick"] [data-handleid="exec:next"]')
     const box = await settledBox(pin)
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
@@ -158,7 +165,7 @@ test('a pulled wire adds a wired node', async ({page}) => {
 /** A single click selects a node; a double click opens its details. */
 test('a double click opens a node', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const node = page.locator('.vue-flow__node[data-id="ignite"]')
     const header = node.getByText('Ignite', {exact: true})
     await header.click()
@@ -199,7 +206,7 @@ test('items are found by type, lore and enchantment', async ({page}) => {
 /** A graph opened without positions is arranged and saved; Arrange lays it out again, and nothing else moves. */
 test('nodes are arranged and their positions saved', async ({page}) => {
     const stage = await stageEditor(page, {}, true)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
 
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
     const placed = stage.changes[0] as {path: string, value: {x: number, y: number}}[]
@@ -234,7 +241,7 @@ test('a drag on the canvas selects nodes', async ({page}) => {
 /** Holding Space turns a drag on the canvas into moving the view. */
 test('space and drag move the view', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const ignite = page.locator('.vue-flow__node[data-id="ignite"]')
     const box = await settledBox(ignite)
     const viewport = page.locator('.vue-flow__transformationpane')
@@ -256,7 +263,6 @@ test('space and drag move the view', async ({page}) => {
 test('mob settings pick named choices and fold their parts', async ({page}) => {
     const stage = await stageEditor(page)
     await page.goto(stage.link)
-    await page.getByRole('button', {name: 'Mob settings'}).click()
     const sheet = page.getByRole('complementary', {name: 'Mob settings'})
     const attributes = sheet.getByRole('button', {name: 'Attributes'})
     await expect(attributes).toHaveAttribute('aria-expanded', 'false')
@@ -274,7 +280,6 @@ test('mob settings pick named choices and fold their parts', async ({page}) => {
     expect(stage.changes).toEqual([[{op: 'add', path: '/mobs/speed_creeper/attributes/entityType', value: 'ZOMBIE'}]])
 
     await page.reload()
-    await page.getByRole('button', {name: 'Mob settings'}).click()
     await expect(sheet.getByRole('button', {name: 'Attributes'})).toHaveAttribute('aria-expanded', 'true')
     await expect(sheet.getByRole('button', {name: 'Spawn rules'})).toHaveAttribute('aria-expanded', 'false')
 })
@@ -282,7 +287,7 @@ test('mob settings pick named choices and fold their parts', async ({page}) => {
 /** A value's type and value are set on the node itself; a new type clears the value the old one held. */
 test('a value is typed and set on its node', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.getByRole('button', {name: 'speed_creeper'}).click()
     await page.getByRole('button', {name: /z_painter/}).click()
     await page.getByRole('button', {name: 'Close'}).first().click()
@@ -302,7 +307,7 @@ test('a value is typed and set on its node', async ({page}) => {
 /** A node taking red, green and blue offers one colour picker that fills all three. */
 test('a colour picker fills red, green and blue', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.getByRole('button', {name: 'speed_creeper'}).click()
     await page.getByRole('button', {name: /z_painter/}).click()
     const node = page.locator('.vue-flow__node[data-id="paint"]')
@@ -330,7 +335,7 @@ test('a node explains itself', async ({page}) => {
 /** A double click on a wire puts a reroute on it, keeping the chain in its place. */
 test('a double click on a wire adds a reroute', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const tick = await settledBox(page.locator('.vue-flow__node[data-id="tick"] [data-handleid="exec:next"]'))
     const ignite = await settledBox(page.locator('.vue-flow__node[data-id="ignite"] [data-handleid="exec-in"]'))
 
@@ -349,7 +354,7 @@ test('a double click on a wire adds a reroute', async ({page}) => {
 /** A dragged node lands on the grid the background draws. */
 test('nodes snap to the grid', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const header = page.locator('.vue-flow__node[data-id="ignite"]').getByText('Ignite', {exact: true})
     const box = await settledBox(header)
 
@@ -377,7 +382,7 @@ test('properties are grouped by the type that brings them', async ({page}) => {
 /** Only values the plugin can read get a field; entities and vectors are wired, and long names do not overlap. */
 test('only typed-in values get a field', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.getByRole('button', {name: 'speed_creeper'}).click()
     await page.getByRole('button', {name: /z_painter/}).click()
     await page.setViewportSize({width: 1600, height: 1200})
@@ -400,7 +405,7 @@ test('only typed-in values get a field', async ({page}) => {
 /** A double click on a field edits it; it does not open the node's details. */
 test('a double click on a field does not open the node', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const field = page.locator('.vue-flow__node[data-id="ignite"]').getByRole('spinbutton', {name: 'fuse'})
     await settledBox(field)
 
@@ -412,7 +417,7 @@ test('a double click on a field does not open the node', async ({page}) => {
 /** A switch picks the type it switches on, and each case takes its value beside its pin. */
 test('a switch matches texts typed beside its cases', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.getByRole('button', {name: 'speed_creeper'}).click()
     await page.getByRole('button', {name: /z_painter/}).click()
     await page.setViewportSize({width: 1600, height: 1200})
@@ -437,7 +442,7 @@ test('a switch matches texts typed beside its cases', async ({page}) => {
 /** Naming an existing variable on Get Variable takes over the type that variable holds. */
 test('a variable node follows the variable it names', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.getByRole('button', {name: 'speed_creeper'}).click()
     await page.getByRole('button', {name: /z_painter/}).click()
     await page.setViewportSize({width: 1600, height: 1200})
@@ -459,7 +464,7 @@ test('a variable node follows the variable it names', async ({page}) => {
 /** Deleting a wired node removes it and its wires in one change. */
 test('a wired node is deleted with its wires', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.locator('.vue-flow__node[data-id="ignite"]').getByText('Ignite', {exact: true}).click()
 
     await page.keyboard.press('Delete')
@@ -475,7 +480,7 @@ test('a wired node is deleted with its wires', async ({page}) => {
 /** A double click on the empty canvas offers every node and adds the one picked there. */
 test('a double click on the canvas adds a node', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await settledBox(page.locator('.vue-flow__node[data-id="ignite"]'))
 
     await page.mouse.dblclick(1100, 600)
@@ -507,7 +512,7 @@ test('the shortcut help opens on demand', async ({page}) => {
 /** A routine the graph defines is called through a Call node, offered with the other nodes and drawn with its parameters. */
 test('a routine is called from the node picker', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     await page.getByRole('button', {name: 'speed_creeper'}).click()
     await page.getByRole('button', {name: /z_painter/}).click()
     await page.getByRole('button', {name: 'Close'}).first().click()
@@ -558,4 +563,37 @@ test('playing an event lights up what it runs', async ({page}) => {
     await expect(page.locator('.vue-flow__edge.bn-lit-wire')).toHaveCount(1)
     await expect(page.getByTestId('step')).toHaveCount(0, {timeout: 5000})
     expect(stage.changes).toEqual([])
+})
+
+/** The full graph editor opens over the list, attributes and preview, and Back returns to them. */
+test('edit opens the graph editor and back returns to the mob list', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+
+    await expect(page.getByRole('button', {name: 'Attributes'})).toBeVisible()
+    await page.getByRole('button', {name: 'Edit'}).click()
+    await expect(page.getByRole('button', {name: 'Back'})).toBeVisible()
+    await expect(page.locator('.vue-flow__node')).toHaveCount(2)
+
+    await page.getByRole('button', {name: 'Back'}).click()
+    await expect(page.getByRole('button', {name: 'Edit'})).toBeVisible()
+})
+
+/** A mob of the store is installed with its origin through the add menu. */
+test('a mob is installed from the store', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+
+    await page.getByRole('button', {name: 'Add', exact: true}).click()
+    await page.getByRole('button', {name: /From the store/}).click()
+    await expect(page.getByText('Night Hound')).toBeVisible()
+    await page.getByRole('button', {name: 'Install', exact: true}).click()
+
+    await expect.poll(() => stage.changes.length).toBe(1)
+    expect(stage.changes[0]).toEqual([expect.objectContaining({
+        op: 'add',
+        path: '/mobs/night_hound',
+        value: expect.objectContaining({origin: {store: 'bloodnight', entry: 'night_hound', hash: 'h1'}}),
+    })])
+    await expect(page.getByText('Installed')).toBeVisible()
 })

@@ -324,6 +324,11 @@ export type DifficultyChange = 'UNCHANGED' | 'PEACEFUL' | 'EASY' | 'NORMAL' | 'H
  * via the `definition` "WeatherChange".
  */
 export type WeatherChange = 'UNCHANGED' | 'CLEAR' | 'RAIN' | 'THUNDER';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "StoreState".
+ */
+export type StoreState = 'OWN' | 'CURRENT' | 'OUTDATED' | 'CHANGED' | 'CHANGED_OUTDATED' | 'ORPHANED';
 
 export interface EditorPayload {
   catalog: string;
@@ -348,6 +353,7 @@ export interface EditorPayload {
   hashes: {
     [k: string]: string;
   };
+  store: EditorStore;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -999,6 +1005,47 @@ export interface EditorChoices {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "EditorStore".
+ */
+export interface EditorStore {
+  packs: StorePack[];
+  offers: Offer[];
+  states: {
+    [k: string]: StoreState;
+  };
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "StorePack".
+ */
+export interface StorePack {
+  id: string;
+  names: {
+    [k: string]: string;
+  };
+  descriptions: {
+    [k: string]: string;
+  };
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Offer".
+ */
+export interface Offer {
+  id: string;
+  pack: string;
+  names: {
+    [k: string]: string;
+  };
+  descriptions: {
+    [k: string]: string;
+  };
+  requires: string[];
+  hash: string;
+  mob: CustomMob;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Catalog".
  */
 export interface Catalog {
@@ -1117,6 +1164,7 @@ export interface EditorPayload1 {
   hashes: {
     [k: string]: string;
   };
+  store: EditorStore;
 }
 
 export const Color = {
@@ -1443,6 +1491,15 @@ export const SpawnReason = {
     TRIAL_SPAWNER: "TRIAL_SPAWNER",
     VILLAGE_DEFENSE: "VILLAGE_DEFENSE",
     VILLAGE_INVASION: "VILLAGE_INVASION",
+} as const;
+
+export const StoreState = {
+    CHANGED: "CHANGED",
+    CHANGED_OUTDATED: "CHANGED_OUTDATED",
+    CURRENT: "CURRENT",
+    ORPHANED: "ORPHANED",
+    OUTDATED: "OUTDATED",
+    OWN: "OWN",
 } as const;
 
 export const Surface = {

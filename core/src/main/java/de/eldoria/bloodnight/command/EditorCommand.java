@@ -130,7 +130,8 @@ final class EditorCommand {
                             plugin.configuration(),
                             plugin.behaviours(),
                             plugin.catalog().version(),
-                            plugin.getServer().getWorlds())
+                            plugin.getServer().getWorlds(),
+                            plugin.store())
                     .asJson();
         } catch (IOException e) {
             Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));

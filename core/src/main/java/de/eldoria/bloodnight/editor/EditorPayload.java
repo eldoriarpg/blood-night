@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
+import de.eldoria.bloodnight.store.MobStore;
 import de.eldoria.graph.compiler.GraphProblem;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
@@ -43,6 +44,7 @@ import java.util.TreeMap;
  * @param choices        the materials and enchantments the server offers
  * @param hashes         SHA-256 of each file the session may replace, as it was when the session opened; checked
  *                       when the result comes back
+ * @param store          the mobs the store offers and how the installed ones stood to it, read only
  */
 public record EditorPayload(
         String catalog,
@@ -54,7 +56,8 @@ public record EditorPayload(
         Map<String, String> configProblems,
         SettingsPayload settings,
         EditorChoices choices,
-        Map<String, String> hashes) {
+        Map<String, String> hashes,
+        EditorStore store) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
             .addModule(new EditorSerialization())
@@ -71,11 +74,16 @@ public record EditorPayload(
      * @param behaviours    the last compilation
      * @param catalog       version of the catalog the server runs
      * @param worlds        the server's worlds
+     * @param store         the mob store
      * @return the payload
      * @throws IOException when a file cannot be hashed
      */
     public static EditorPayload of(
-            Configuration configuration, Behaviours behaviours, String catalog, Collection<? extends World> worlds)
+            Configuration configuration,
+            Behaviours behaviours,
+            String catalog,
+            Collection<? extends World> worlds,
+            MobStore store)
             throws IOException {
         SettingsPayload settings = settings(configuration, worlds);
         Map<String, CustomMob> mobs = new TreeMap<>();
@@ -90,7 +98,8 @@ public record EditorPayload(
                 configuration.problems(),
                 settings,
                 EditorChoices.ofServer(),
-                configuration.fileHashes(worlds));
+                configuration.fileHashes(worlds),
+                EditorStore.of(store, configuration.mobs().all()));
     }
 
     private static Map<String, EditorItem> items(Configuration configuration) {

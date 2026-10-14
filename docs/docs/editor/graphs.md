@@ -9,6 +9,13 @@ A special mob's behaviour is a **graph**. A graph is made of **nodes** (boxes) a
 
 Your server turns each graph into Java code. That is why special mobs run fast, even with many of them.
 
+## The Mobs tab
+
+The Mobs tab has three columns. On the left is the list of your mobs. Click one to see its settings in the middle:
+its attributes, spawn rules, equipment, extension and drops. On the right is its graph, small and only to look at.
+
+Click **Edit** on the graph to open it in full size and change it. **Back** takes you to the three columns again.
+
 ## Three kinds of nodes
 
 **Triggers** start something. They have a red header. "On Hit" runs when the mob hits something. "On Tick" runs

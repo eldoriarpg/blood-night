@@ -162,6 +162,21 @@ const payload = {
         },
     },
     hashes: {},
+    store: {
+        packs: [{id: 'classic', names: {en: 'Classic'}, descriptions: {en: 'The mobs of the old blood night.'}}],
+        offers: [{
+            id: 'night_hound', pack: 'classic', names: {en: 'Night Hound'}, descriptions: {en: 'A wolf that hunts in packs.'}, requires: [], hash: 'h1',
+            mob: {
+                id: 'night_hound',
+                attributes: {displayName: 'Night Hound', entityType: 'ZOMBIE', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+                behaviour: {nodes: {}},
+                extension: {type: 'NONE'},
+                spawn: {weight: 10, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},
+                origin: {store: 'bloodnight', entry: 'night_hound', hash: 'h1'},
+            },
+        }],
+        states: {},
+    },
 }
 
 function withoutPositions(): typeof payload {

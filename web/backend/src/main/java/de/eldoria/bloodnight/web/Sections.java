@@ -23,7 +23,7 @@ import java.util.Set;
  */
 final class Sections {
     private static final Set<String> READ_ONLY =
-            Set.of("choices", "hashes", "catalog", "problems", "macroProblems", "configProblems");
+            Set.of("choices", "hashes", "catalog", "problems", "macroProblems", "configProblems", "store");
 
     private Sections() {}
 

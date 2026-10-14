@@ -22,6 +22,12 @@ The [list of ready-made mobs](default-mobs.md) says what each mob does.
 
 ## Install mobs
 
+The easy way is the [web editor](../editor/sessions.md). In the Mobs tab, click **Add** and then **From the store**.
+You see every pack with its mobs. Click **Install** on one mob, or install the whole pack at once. A mob you already
+have shows **Installed**. When a new version is waiting, the button says **Update**.
+
+You can also use commands:
+
 ```
 /bn store                        shows the packs
 /bn store list classic           shows the mobs of a pack

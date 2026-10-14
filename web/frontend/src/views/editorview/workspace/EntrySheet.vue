@@ -23,12 +23,14 @@ import type {WorkspaceEntry, WorkspaceKind} from '~/views/editorview/workspace/w
 /**
  * The settings of the open mob (attributes, spawn rules, equipment, extension, drops) or macro (name, description,
  * category), and deleting it. Each part of a mob folds under its header and starts folded, so the sheet opens short;
- * which parts the reader opened is remembered by the browser, for every mob alike.
+ * which parts the reader opened is remembered by the browser, for every mob alike. Inline, it fills a column of its
+ * own and has nothing to close.
  */
 const props = defineProps<{
   kind: WorkspaceKind
   entry: WorkspaceEntry
   readOnly: boolean
+  inline?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -108,10 +110,10 @@ function remove(): void {
 </script>
 
 <template>
-  <aside :aria-label="t(`editor.sheet.title.${kind}`)" class="flex max-h-full w-[26rem] flex-col gap-3 overflow-y-auto rounded-panel border border-line bg-surface p-4">
+  <aside :aria-label="t(`editor.sheet.title.${kind}`)" :class="inline ? 'h-full w-full' : 'max-h-full w-[26rem] rounded-panel border border-line'" class="flex flex-col gap-3 overflow-y-auto bg-surface p-4">
     <div class="flex items-center justify-between">
       <SectionLabel>{{ t(`editor.sheet.title.${kind}`) }}</SectionLabel>
-      <MutedIconButton :label="t('editor.sheet.close')" icon="xmark" @click="emit('close')"/>
+      <MutedIconButton v-if="!inline" :label="t('editor.sheet.close')" icon="xmark" @click="emit('close')"/>
     </div>
     <SubHeader class="font-mono">{{ entry.id }}</SubHeader>
     <section v-for="part in parts" :key="part.key" class="flex flex-col">
