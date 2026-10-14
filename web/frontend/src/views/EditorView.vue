@@ -6,6 +6,7 @@
 <script setup lang="ts">
 import EditorHeader from '~/views/editorview/EditorHeader.vue'
 import WorkspaceArea from '~/views/editorview/workspace/WorkspaceArea.vue'
+import MobsArea from '~/views/editorview/mobs/MobsArea.vue'
 import ItemsArea from '~/views/editorview/items/ItemsArea.vue'
 import SettingsArea from '~/views/editorview/settings/SettingsArea.vue'
 import RevisionsArea from '~/views/editorview/revisions/RevisionsArea.vue'
@@ -37,7 +38,8 @@ onBeforeUnmount(() => session.close())
     <EditorHeader v-model="area"/>
     <EditorStatus v-if="session.data.value.status !== 'ready'" :status="session.data.value.status"/>
     <template v-else>
-      <WorkspaceArea v-if="area === 'mobs' || area === 'macros'" :key="area" :kind="area"/>
+      <MobsArea v-if="area === 'mobs'"/>
+      <WorkspaceArea v-else-if="area === 'macros'" kind="macros"/>
       <ItemsArea v-else-if="area === 'items'"/>
       <SettingsArea v-else-if="area === 'settings'"/>
       <RevisionsArea v-else/>

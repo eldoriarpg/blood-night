@@ -30,6 +30,12 @@ import {withVariants} from '~/util/graph/mutate'
  */
 const props = defineProps<{
   kind: WorkspaceKind
+  /** Offers a way back to where the workspace was opened from. */
+  back?: boolean
+}>()
+
+const emit = defineEmits<{
+  back: []
 }>()
 
 const session = useEditorSession()
@@ -100,6 +106,7 @@ function pick(id: string): void {
           @inspect="node => selectedNode = node"
       />
       <div class="pointer-events-none absolute inset-x-4 top-4 flex flex-wrap items-start gap-2">
+        <div v-if="back" class="pointer-events-auto"><SecondaryButton icon="arrow-left" @click="emit('back')">{{ t('editor.mobs.back') }}</SecondaryButton></div>
         <div class="pointer-events-auto flex flex-wrap items-center gap-2">
           <EntrySwitcher :current="entry.id" :entries="entries" :kind="kind" :problems="problemsByEntry" @create="creating = true" @pick="pick"/>
           <SecondaryButton icon="sliders" @click="sheetOpen = !sheetOpen; selectedNode = null">{{ t(`editor.sheet.open.${kind}`) }}</SecondaryButton>

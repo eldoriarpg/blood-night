@@ -65,7 +65,8 @@ class EditorPayloadTest {
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
                         List.of("CREEPER"),
                         List.of("SkeletalKnight")),
-                Map.of("mobs.yml", "abc"));
+                Map.of("mobs.yml", "abc"),
+                EditorStore.empty());
 
         JsonNode json = GraphJson.mapper().readTree(payload.asJson());
 

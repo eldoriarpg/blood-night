@@ -686,9 +686,12 @@
           "additionalProperties" : {
             "type" : "string"
           }
+        },
+        "store" : {
+          "$ref" : "#/$defs/EditorStore"
         }
       },
-      "required" : [ "catalog", "mobs", "macros", "items", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes" ]
+      "required" : [ "catalog", "mobs", "macros", "items", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store" ]
     },
     "EditorSettings" : {
       "type" : "object",
@@ -702,6 +705,30 @@
           "default" : 30
         }
       }
+    },
+    "EditorStore" : {
+      "type" : "object",
+      "properties" : {
+        "packs" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/StorePack"
+          }
+        },
+        "offers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Offer"
+          }
+        },
+        "states" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/StoreState"
+          }
+        }
+      },
+      "required" : [ "packs", "offers", "states" ]
     },
     "EntityType" : {
       "type" : "string",
@@ -1357,6 +1384,42 @@
         }
       }
     },
+    "Offer" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "pack" : {
+          "type" : "string"
+        },
+        "names" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descriptions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "requires" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "hash" : {
+          "type" : "string"
+        },
+        "mob" : {
+          "$ref" : "#/$defs/CustomMob"
+        }
+      },
+      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob" ]
+    },
     "Operation" : {
       "type" : "string",
       "enum" : [ "ADD_NUMBER", "ADD_SCALAR", "MULTIPLY_SCALAR_1" ]
@@ -1742,6 +1805,27 @@
       },
       "required" : [ "weight", "nightOnly", "nightEnd", "reasons", "conditions" ]
     },
+    "StorePack" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "names" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descriptions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      },
+      "required" : [ "id", "names", "descriptions" ]
+    },
     "StoreSettings" : {
       "type" : "object",
       "properties" : {
@@ -1750,6 +1834,10 @@
           "default" : true
         }
       }
+    },
+    "StoreState" : {
+      "type" : "string",
+      "enum" : [ "OWN", "CURRENT", "OUTDATED", "CHANGED", "CHANGED_OUTDATED", "ORPHANED" ]
     },
     "Surface" : {
       "type" : "string",

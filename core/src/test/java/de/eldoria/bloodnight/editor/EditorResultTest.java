@@ -61,7 +61,8 @@ class EditorResultTest {
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
                         List.of("CREEPER"),
                         List.of("SkeletalKnight")),
-                Map.of("mobs.yml", "abc"));
+                Map.of("mobs.yml", "abc"),
+                EditorStore.empty());
 
         EditorResult result = EditorResult.of(EditorPayload.MAPPER.readTree(payload.asJson()));
 
