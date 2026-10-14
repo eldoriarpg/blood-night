@@ -488,6 +488,10 @@
       "type" : "string",
       "enum" : [ "NIGHT_END", "NEVER" ]
     },
+    "DifficultyChange" : {
+      "type" : "string",
+      "enum" : [ "UNCHANGED", "PEACEFUL", "EASY", "NORMAL", "HARD" ]
+    },
     "Drop" : {
       "type" : "object",
       "properties" : {
@@ -1031,6 +1035,42 @@
         "maxSeconds" : {
           "type" : "integer",
           "default" : 900
+        }
+      }
+    },
+    "NightRuleSettings" : {
+      "type" : "object",
+      "properties" : {
+        "difficulty" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/DifficultyChange"
+          } ],
+          "default" : "UNCHANGED"
+        },
+        "monsterSpawnLimit" : {
+          "type" : "integer",
+          "default" : -1
+        },
+        "monsterTicksPerSpawn" : {
+          "type" : "integer",
+          "default" : -1
+        },
+        "weather" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/WeatherChange"
+          } ],
+          "default" : "UNCHANGED"
+        },
+        "gameRules" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          },
+          "default" : { }
+        },
+        "phantomsOnlyAtBloodNights" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -1770,6 +1810,10 @@
       "type" : "string",
       "enum" : [ "KEEP", "MULTIPLY", "CLEAR" ]
     },
+    "WeatherChange" : {
+      "type" : "string",
+      "enum" : [ "UNCHANGED", "CLEAR", "RAIN", "THUNDER" ]
+    },
     "WorldDrops" : {
       "type" : "object",
       "properties" : {
@@ -2066,6 +2110,19 @@
               "excludedTypes" : [ ],
               "excludedReasons" : [ "SPAWNER", "TRIAL_SPAWNER", "NETHER_PORTAL" ]
             }
+          }
+        },
+        "nightRules" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/NightRuleSettings"
+          } ],
+          "default" : {
+            "difficulty" : "UNCHANGED",
+            "gameRules" : { },
+            "monsterSpawnLimit" : -1,
+            "monsterTicksPerSpawn" : -1,
+            "phantomsOnlyAtBloodNights" : false,
+            "weather" : "UNCHANGED"
           }
         }
       }

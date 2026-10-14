@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.configuration.elements;
 import de.eldoria.bloodnight.configuration.elements.world.AnnouncementSettings;
 import de.eldoria.bloodnight.configuration.elements.world.AtmosphereSettings;
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
+import de.eldoria.bloodnight.configuration.elements.world.NightRuleSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
 import de.eldoria.bloodnight.configuration.elements.world.SoundSettings;
@@ -28,6 +29,7 @@ public class WorldSettings {
     private SoundSettings soundSettings = new SoundSettings();
     private DeathActionSettings deathActions = new DeathActionSettings();
     private WorldDrops worldDrops = WorldDrops.defaultDrops();
+    private NightRuleSettings nightRules = new NightRuleSettings();
 
     /**
      * @return whether the world has blood nights at all
@@ -46,6 +48,13 @@ public class WorldSettings {
 
     public MobSettings mobSettings() {
         return mobSettings;
+    }
+
+    /**
+     * @return how the world itself changes during a blood night
+     */
+    public NightRuleSettings nightRules() {
+        return nightRules;
     }
 
     /**

@@ -22,6 +22,8 @@ export const WORLD_SECTIONS: readonly SettingsSection[] = [
     {key: 'sounds', properties: ['soundSettings']},
     {key: 'death', properties: ['deathActions']},
     {key: 'drops', properties: ['worldDrops']},
+    {key: 'atmosphere', properties: ['atmosphere']},
+    {key: 'rules', properties: ['nightRules']},
 ]
 
 /** A tab of the server settings: a part of the settings payload and some of its properties, or all of it. */
@@ -35,5 +37,7 @@ export interface ServerSection {
 export const SERVER_SECTIONS: readonly ServerSection[] = [
     {key: 'messages', root: 'main', properties: ['announcements']},
     {key: 'editor', root: 'main', properties: ['editor']},
+    {key: 'resourcePack', root: 'main', properties: ['resourcePack']},
+    {key: 'plugins', root: 'main', properties: ['placeholders', 'foreignMobs']},
     {key: 'drops', root: 'globalDrops', properties: undefined},
 ]

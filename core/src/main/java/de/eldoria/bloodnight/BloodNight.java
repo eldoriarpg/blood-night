@@ -50,10 +50,15 @@ import de.eldoria.bloodnight.rules.CreeperGuard;
 import de.eldoria.bloodnight.rules.DeathActionHandler;
 import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
+import de.eldoria.bloodnight.rules.WorldRules;
 import de.eldoria.bloodnight.service.PluginService;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import org.bukkit.GameRule;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -103,6 +108,7 @@ public final class BloodNight extends JavaPlugin {
     private PluginService service;
     private @Nullable Object miniPlaceholders;
     private PhantomForce phantoms;
+    private WorldRules worldRules;
     private final Messages messages = new Messages();
     private NightSelector selector;
     private BloodNights bloodNights;
@@ -244,6 +250,13 @@ public final class BloodNight extends JavaPlugin {
                 tasks);
         plugins.registerEvents(phantoms, this);
         plugins.registerEvents(new CreeperGuard(bloodNights, configuration::worldConfig), this);
+        worldRules = new WorldRules(
+                bloodNights,
+                world -> configuration.worldConfig(world).nightRules(),
+                BloodNight::gameRule,
+                getServer()::isGlobalTickThread,
+                getLogger());
+        plugins.registerEvents(worldRules, this);
         plugins.registerEvents(
                 new MobDamage(
                         bloodNights, world -> configuration.worldConfig(world).mobSettings(), foreign),
@@ -272,6 +285,7 @@ public final class BloodNight extends JavaPlugin {
         plugins.registerEvents(bloodPack, this);
         bloodPack.refresh();
         tasks.global(() -> bloodSky.restore(getServer().getWorlds()));
+        tasks.global(() -> worldRules.restoreLeftovers(getServer().getWorlds()));
         tasks.globalTimer(Haunting.STEP, haunting::tick);
         tasks.globalTimer(20, announcer::tick);
         tasks.globalTimer(1, stretch::tick);
@@ -301,6 +315,19 @@ public final class BloodNight extends JavaPlugin {
         new PapiExpansion(placeholders, version).register();
         getLogger().info("Placeholders registered with PlaceholderAPI");
         return new PapiCommandText();
+    }
+
+    /**
+     * @param key a game rule key such as {@code minecraft:spawn_phantoms}
+     * @return the game rule, if there is one
+     */
+    private static @Nullable GameRule<?> gameRule(String key) {
+        NamespacedKey name = NamespacedKey.fromString(key);
+        return name == null
+                ? null
+                : RegistryAccess.registryAccess()
+                        .getRegistry(RegistryKey.GAME_RULE)
+                        .get(name);
     }
 
     /**
