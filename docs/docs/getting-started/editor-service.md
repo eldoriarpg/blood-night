@@ -10,45 +10,73 @@ most servers never need this page.
 
 Some owners like to run everything themselves. You can do that too.
 
-## How it works
+## What you need
 
-The editor is a small website with its own server, the **editor service**. Your Minecraft server sends its mobs and
-settings there. You edit them in the browser. Then your Minecraft server fetches the result.
+- A machine with [Docker](https://docs.docker.com/engine/install/) and Docker Compose.
+- An address for it that your Minecraft server **and** your players can reach, like `https://editor.example.com`.
 
-Your Minecraft server finds the editor service with these settings in `config.yml`:
+`localhost` does not work here. Your Minecraft server usually runs on another machine, and your players' browsers
+always do.
+
+## Set it up
+
+1. Make a folder for the editor and go into it.
+2. Download the two files:
+
+   ```bash
+   curl -o compose.yaml https://eldoriarpg.github.io/blood-night/self-hosting/compose.yaml
+   curl -o .env https://eldoriarpg.github.io/blood-night/self-hosting/env.example
+   ```
+
+3. Open `.env` and fill it in:
+
+   ```bash
+   EDITOR_ADDRESS=https://editor.example.com
+   DB_PASSWORD=a-long-random-password
+   PORT=4000
+   BLOODNIGHT_VERSION=latest
+   ```
+
+   | Setting | What it is |
+   |---|---|
+   | `EDITOR_ADDRESS` | The address everyone uses to reach the editor. No `/` at the end. |
+   | `DB_PASSWORD` | A password for the database. Only the editor uses it. |
+   | `PORT` | The port the editor listens on, on this machine. |
+   | `BLOODNIGHT_VERSION` | Which editor version to run. `latest` is the newest. |
+
+4. Start it:
+
+   ```bash
+   docker compose up -d
+   ```
+
+5. Make `EDITOR_ADDRESS` lead to this machine's `PORT`. Most people use a web server like
+   [Caddy](https://caddyserver.com) or nginx in front of it. They also give you HTTPS.
+
+## Connect your Minecraft server
+
+Set the same address in your Minecraft server's `plugins/BloodNight/config.yml`:
 
 ```yaml
 editor:
-  url: https://bloodnight.eldoria.de
-  timeoutSeconds: 30
+  url: https://editor.example.com
 ```
 
-- `url` is the address of the editor service.
-- `timeoutSeconds` is how long your server waits for an answer.
+Then run `/bloodnight reload` and try `/bloodnight editor`.
 
-## Run it with Docker
+## What runs inside
 
-The editor service needs a PostgreSQL database. Docker starts everything for you. In the BloodNight repository run:
+| Part | What it does |
+|---|---|
+| `frontend` | The editor website. It is the only part you open to the outside. It passes requests for `/api` on to `web`. |
+| `web` | The editor service. It keeps the editor sessions. |
+| `postgres` | The database for the sessions. |
+
+## Updating
 
 ```bash
-DB_PASSWORD=choose-a-password ./toolchain.sh docker-up
+docker compose pull
+docker compose up -d
 ```
 
-This starts three parts:
-
-| Part | Address |
-|---|---|
-| Database | inside Docker only |
-| Editor service | `http://localhost:8080` |
-| Editor website | `http://localhost:4000` |
-
-Now set `editor.url` to `http://localhost:8080` and run `/bloodnight reload`.
-
-## Let other players in
-
-If players on other computers should use your editor, they must be able to reach it. Set these before you start it:
-
-| Setting | What it does |
-|---|---|
-| `EDITOR_URL` | The link players get. `{id}` and `{token}` are filled in. Example: `https://editor.example.com/session/{id}#{token}` |
-| `ALLOWED_ORIGINS` | The address of your editor website, so browsers may talk to the service |
+Your sessions stay. They live in a Docker volume.
