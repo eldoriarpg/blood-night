@@ -39,5 +39,6 @@ export const SERVER_SECTIONS: readonly ServerSection[] = [
     {key: 'editor', root: 'main', properties: ['editor']},
     {key: 'resourcePack', root: 'main', properties: ['resourcePack']},
     {key: 'plugins', root: 'main', properties: ['placeholders', 'foreignMobs']},
+    {key: 'updates', root: 'main', properties: ['updates']},
     {key: 'drops', root: 'globalDrops', properties: undefined},
 ]

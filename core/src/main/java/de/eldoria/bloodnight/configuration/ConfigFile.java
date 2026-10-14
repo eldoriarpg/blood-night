@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.configuration.elements.EditorSettings;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.PlaceholderSettings;
 import de.eldoria.bloodnight.configuration.elements.ResourcePackSettings;
+import de.eldoria.bloodnight.configuration.elements.UpdateSettings;
 
 /**
  * The server-wide settings in {@code config.yml}; everything about nights and mobs is set per world.
@@ -19,6 +20,7 @@ public class ConfigFile {
     private EditorSettings editor = new EditorSettings();
     private ResourcePackSettings resourcePack = new ResourcePackSettings();
     private PlaceholderSettings placeholders = new PlaceholderSettings();
+    private UpdateSettings updates = new UpdateSettings();
     private ForeignMobSettings foreignMobs = new ForeignMobSettings();
 
     /**
@@ -40,6 +42,13 @@ public class ConfigFile {
      */
     public ResourcePackSettings resourcePack() {
         return resourcePack;
+    }
+
+    /**
+     * @return whether the server hears about new versions
+     */
+    public UpdateSettings updates() {
+        return updates;
     }
 
     /**

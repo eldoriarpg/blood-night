@@ -35,6 +35,7 @@ Settings for the whole server.
 | `resourcePack.required` | true or false | `false` |
 | `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
 | `placeholders.revealNext` | true or false | `false` |
+| `updates.notice` | true or false | `true` |
 | `foreignMobs.wrap` | true or false | `false` |
 | `foreignMobs.rules` | true or false | `false` |
 | `foreignMobs.markerKeys` | list of text | `[]` |
@@ -58,6 +59,8 @@ resourcePack:
   url: https://bloodnight.docs.eldoria.de/pack/bloodnight.zip
 placeholders:
   revealNext: false
+updates:
+  notice: true
 foreignMobs:
   markerKeys: []
   rules: false

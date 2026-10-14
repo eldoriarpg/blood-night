@@ -24,3 +24,4 @@ Only operators have these permissions at first. Give them to other players with 
 | `bloodnight.command.reload` | /bloodnight reload, reads the configuration again and recompiles every mob |  |
 | `bloodnight.command.source` | /bloodnight source, writes the generated code of a mob to the debug folder |  |
 | `bloodnight.command.spawn` | /bloodnight spawn, spawns a custom mob |  |
+| `bloodnight.updates` | Hear about new BloodNight versions on join |  |
