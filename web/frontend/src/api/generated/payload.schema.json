@@ -26,7 +26,7 @@
           "default" : {
             "color" : "RED",
             "enabled" : true,
-            "flags" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ],
+            "flags" : [ "CREATE_WORLD_FOG" ],
             "overlay" : "PROGRESS",
             "title" : "<red><bold><name>"
           }
@@ -207,7 +207,7 @@
             "$ref" : "#/$defs/Flag"
           },
           "uniqueItems" : true,
-          "default" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ]
+          "default" : [ "CREATE_WORLD_FOG" ]
         }
       }
     },
@@ -1824,7 +1824,7 @@
             "bossBar" : {
               "color" : "RED",
               "enabled" : true,
-              "flags" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ],
+              "flags" : [ "CREATE_WORLD_FOG" ],
               "overlay" : "PROGRESS",
               "title" : "<red><bold><name>"
             },

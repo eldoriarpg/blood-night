@@ -20,7 +20,7 @@ public class BossBarSettings {
     private String title = "<red><bold><name>";
     private BossBar.Color color = BossBar.Color.RED;
     private BossBar.Overlay overlay = BossBar.Overlay.PROGRESS;
-    private Set<BossBar.Flag> flags = EnumSet.of(BossBar.Flag.CREATE_WORLD_FOG, BossBar.Flag.DARKEN_SCREEN);
+    private Set<BossBar.Flag> flags = EnumSet.of(BossBar.Flag.CREATE_WORLD_FOG);
 
     public boolean enabled() {
         return enabled;

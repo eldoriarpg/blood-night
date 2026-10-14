@@ -18,12 +18,12 @@
           {
             "name": "Tint",
             "type": "float",
-            "value": 0.45
+            "value": 0.3
           },
           {
             "name": "Vignette",
             "type": "float",
-            "value": 0.75
+            "value": 0.45
           }
         ]
       }

@@ -97,7 +97,7 @@ Settings for one world. Every world has its own file.
 | `announcement.bossBar.title` | text | `<red><bold><name>` |
 | `announcement.bossBar.color` | `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, `WHITE` | `RED` |
 | `announcement.bossBar.overlay` | `PROGRESS`, `NOTCHED_6`, `NOTCHED_10`, `NOTCHED_12`, `NOTCHED_20` | `PROGRESS` |
-| `announcement.bossBar.flags` | list of `DARKEN_SCREEN`, `PLAY_BOSS_MUSIC`, `CREATE_WORLD_FOG` | `["DARKEN_SCREEN","CREATE_WORLD_FOG"]` |
+| `announcement.bossBar.flags` | list of `DARKEN_SCREEN`, `PLAY_BOSS_MUSIC`, `CREATE_WORLD_FOG` | `["CREATE_WORLD_FOG"]` |
 | `announcement.effect.enabled` | true or false | `true` |
 | `announcement.effect.effect` | text | `minecraft:darkness` |
 | `announcement.effect.seconds` | whole number | `5` |
@@ -213,7 +213,6 @@ announcement:
     color: RED
     enabled: true
     flags:
-      - DARKEN_SCREEN
       - CREATE_WORLD_FOG
     overlay: PROGRESS
     title: <red><bold><name>
