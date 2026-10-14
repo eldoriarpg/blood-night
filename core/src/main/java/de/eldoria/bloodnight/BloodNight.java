@@ -7,6 +7,7 @@ package de.eldoria.bloodnight;
 
 import de.eldoria.bloodnight.announce.Announcer;
 import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.api.BloodNightService;
 import de.eldoria.bloodnight.atmosphere.BloodPack;
 import de.eldoria.bloodnight.atmosphere.BloodSky;
 import de.eldoria.bloodnight.atmosphere.Haunting;
@@ -25,6 +26,7 @@ import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
+import de.eldoria.bloodnight.mobs.MobDeaths;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
@@ -41,9 +43,11 @@ import de.eldoria.bloodnight.rules.CreeperGuard;
 import de.eldoria.bloodnight.rules.DeathActionHandler;
 import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
+import de.eldoria.bloodnight.service.PluginService;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.graph.payload.Catalog;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -87,6 +91,7 @@ public final class BloodNight extends JavaPlugin {
     private BloodSky bloodSky;
     private Haunting haunting;
     private BloodPack bloodPack;
+    private PluginService service;
     private PhantomForce phantoms;
     private final Messages messages = new Messages();
     private NightSelector selector;
@@ -141,10 +146,19 @@ public final class BloodNight extends JavaPlugin {
                     }
                 });
 
+        service = new PluginService(
+                getServer(),
+                bloodNights,
+                selector,
+                coordinator,
+                id -> configuration.mobs().get(id),
+                () -> configuration.mobs().all());
+        getServer().getServicesManager().register(BloodNightService.class, service, this, ServicePriority.Normal);
         var plugins = getServer().getPluginManager();
         plugins.registerEvents(new DamageHandler(), this);
         plugins.registerEvents(new TargetPolicy(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
+        plugins.registerEvents(new MobDeaths(plugins), this);
         plugins.registerEvents(
                 new DropHandler(
                         id -> configuration.mobs().get(id),
@@ -167,6 +181,7 @@ public final class BloodNight extends JavaPlugin {
                         coordinator,
                         bloodNights,
                         tasks,
+                        plugins,
                         RANDOM),
                 this);
         stretch = new NightStretch(
@@ -314,6 +329,13 @@ public final class BloodNight extends JavaPlugin {
      */
     public Tasks tasks() {
         return tasks;
+    }
+
+    /**
+     * @return what other plugins get through {@link BloodNightService}
+     */
+    public PluginService service() {
+        return service;
     }
 
     /**

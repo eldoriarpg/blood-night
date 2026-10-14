@@ -165,6 +165,20 @@ public final class NightSelector {
         return clock.instant().plus(Duration.ofMillis((long) (ticks / rate * 1000)));
     }
 
+    /**
+     * @return whether an admin forced the night
+     */
+    public boolean isForced(World world, long night) {
+        return contains(world, FORCED, night);
+    }
+
+    /**
+     * @return whether an admin cancelled the night
+     */
+    public boolean isCancelled(World world, long night) {
+        return contains(world, CANCELLED, night);
+    }
+
     private boolean contains(World world, NamespacedKey key, long night) {
         return nights(world, key).contains(night);
     }

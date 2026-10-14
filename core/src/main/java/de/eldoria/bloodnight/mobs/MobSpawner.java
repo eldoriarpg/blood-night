@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
+import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -16,10 +17,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.plugin.PluginManager;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.OptionalLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -39,6 +43,7 @@ public class MobSpawner implements Listener {
     private final MobCoordinator coordinator;
     private final BloodNights nights;
     private final Tasks tasks;
+    private final PluginManager events;
     private final RandomGenerator random;
 
     /**
@@ -47,6 +52,7 @@ public class MobSpawner implements Listener {
      * @param coordinator   registers the custom mobs
      * @param nights        the running blood nights
      * @param tasks         runs the takeover on the entity's thread
+     * @param events        where {@link CustomMobSpawnEvent} is called, so other plugins can keep an entity as it is
      * @param random        rolls the spawn chance and the pick; used from several threads
      */
     public MobSpawner(
@@ -55,12 +61,14 @@ public class MobSpawner implements Listener {
             MobCoordinator coordinator,
             BloodNights nights,
             Tasks tasks,
+            PluginManager events,
             RandomGenerator random) {
         this.mobs = mobs;
         this.settings = settings;
         this.coordinator = coordinator;
         this.nights = nights;
         this.tasks = tasks;
+        this.events = events;
         this.random = random;
     }
 
@@ -80,6 +88,12 @@ public class MobSpawner implements Listener {
                 mobs.get(), entity.getType(), SpawnContexts.of(entity, night.isPresent()), spawning::weight);
         if (candidates.isEmpty() || spawning.spawnPercentage() <= random.nextInt(100)) return;
         MobSelector.pick(candidates, spawning::weight, random).ifPresent(mob -> {
+            CustomMobSpawnEvent spawn = new CustomMobSpawnEvent(
+                    entity,
+                    mob.id(),
+                    Objects.requireNonNullElse(entity.getEntitySpawnReason(), CreatureSpawnEvent.SpawnReason.DEFAULT));
+            events.callEvent(spawn);
+            if (spawn.isCancelled()) return;
             night.ifPresent(number -> MobTags.markNight(entity, number));
             coordinator.register(entity, mob);
         });
