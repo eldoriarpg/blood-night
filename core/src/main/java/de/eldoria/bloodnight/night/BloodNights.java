@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.night;
 
 import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
+import de.eldoria.bloodnight.api.event.EndReason;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
 import org.bukkit.World;
 import org.bukkit.plugin.PluginManager;
@@ -62,7 +63,7 @@ public final class BloodNights {
     public void check(Collection<? extends World> worlds) {
         for (World world : worlds) {
             if (!enabled.test(world)) {
-                end(world);
+                end(world, EndReason.DISABLED);
                 continue;
             }
             long fullTime = NightTimes.now(world);
@@ -70,7 +71,8 @@ public final class BloodNights {
             NightTimes times = selector.times(world);
             long night = times.upcoming(fullTime);
             boolean isNight = times.isNight(fullTime);
-            if (current != null && (!isNight || current != night) && !held.contains(world.getUID())) end(world);
+            if (current != null && (!isNight || current != night) && !held.contains(world.getUID()))
+                end(world, EndReason.TIME);
             if (!isNight || running.containsKey(world.getUID())) continue;
             Long seen = decided.put(world.getUID(), night);
             if (seen != null && seen == night) continue;
@@ -111,7 +113,7 @@ public final class BloodNights {
     public long cancel(World world) {
         long night = selector.times(world).upcoming(NightTimes.now(world));
         selector.cancel(world, night);
-        if (running.containsKey(world.getUID())) end(world);
+        if (running.containsKey(world.getUID())) end(world, EndReason.CANCELLED);
         return night;
     }
 
@@ -149,14 +151,16 @@ public final class BloodNights {
         NightTimes times = selector.times(world);
         boolean scheduled =
                 times.isNight(now) && times.upcoming(now) == current && selector.isBloodNight(world, current);
-        if (!scheduled) end(world);
+        if (!scheduled) end(world, EndReason.RELEASED);
     }
 
     /**
      * Ends every running blood night, e.g. when the plugin disables.
      */
     public void endAll(Collection<? extends World> worlds) {
-        worlds.stream().filter(world -> running.containsKey(world.getUID())).forEach(this::end);
+        worlds.stream()
+                .filter(world -> running.containsKey(world.getUID()))
+                .forEach(world -> end(world, EndReason.SHUTDOWN));
     }
 
     private void begin(World world, long night) {
@@ -170,10 +174,10 @@ public final class BloodNights {
         logger.info("Blood night %d began in %s".formatted(night, world.getName()));
     }
 
-    private void end(World world) {
+    private void end(World world, EndReason reason) {
         Long night = running.remove(world.getUID());
         if (night == null) return;
-        events.callEvent(new BloodNightEndEvent(world, night));
+        events.callEvent(new BloodNightEndEvent(world, night, reason));
         logger.info("Blood night %d ended in %s".formatted(night, world.getName()));
     }
 }

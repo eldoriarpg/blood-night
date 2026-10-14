@@ -7,15 +7,12 @@ package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.util.MobTags;
 import net.strokkur.commands.DefaultExecutes;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 /**
@@ -46,19 +43,14 @@ final class SpawnCommand {
         Location location = sender instanceof Player player
                 ? player.getLocation()
                 : plugin.getServer().getWorlds().getFirst().getSpawnLocation();
-        plugin.tasks().at(location, () -> spawn(sender, mob, definition, location));
+        plugin.tasks().at(location, () -> spawn(sender, mob, location));
     }
 
-    private void spawn(CommandSender sender, String mob, CustomMob definition, Location location) {
-        Entity entity = location.getWorld()
-                .spawnEntity(location, definition.attributes().entityType());
-        if (!(entity instanceof LivingEntity living)) {
-            entity.remove();
+    private void spawn(CommandSender sender, String mob, Location location) {
+        if (plugin.service().spawn(mob, location).isEmpty()) {
             sender.sendMessage("Mob %s is not a living entity type".formatted(mob));
             return;
         }
-        plugin.bloodNights().running(living.getWorld()).ifPresent(night -> MobTags.markNight(living, night));
-        plugin.coordinator().register(living, definition);
         sender.sendMessage("Spawned %s at %d %d %d"
                 .formatted(mob, location.getBlockX(), location.getBlockY(), location.getBlockZ()));
     }

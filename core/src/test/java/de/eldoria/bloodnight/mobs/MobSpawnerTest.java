@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.mobs;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.items.ItemRegistry;
@@ -25,6 +26,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,7 +96,14 @@ class MobSpawnerTest {
                 ignored -> true,
                 server.getPluginManager(),
                 Logger.getLogger("test"));
-        spawner = new MobSpawner(mobs::all, ignored -> settings, coordinator, nights, tasks, new SplittableRandom(1));
+        spawner = new MobSpawner(
+                mobs::all,
+                ignored -> settings,
+                coordinator,
+                nights,
+                tasks,
+                server.getPluginManager(),
+                new SplittableRandom(1));
     }
 
     @AfterEach
@@ -156,5 +166,21 @@ class MobSpawnerTest {
         at(24_000);
         server.getScheduler().performTicks(20);
         assertFalse(mob.isValid());
+    }
+
+    @Test
+    void otherPluginsCanKeepAnEntityVanilla() {
+        server.getPluginManager()
+                .registerEvents(
+                        new Listener() {
+                            @EventHandler
+                            void keep(CustomMobSpawnEvent event) {
+                                event.setCancelled(true);
+                            }
+                        },
+                        MockBukkit.createMockPlugin());
+        at(13_000);
+
+        assertFalse(MobTags.isCustomMob(spawned()));
     }
 }
