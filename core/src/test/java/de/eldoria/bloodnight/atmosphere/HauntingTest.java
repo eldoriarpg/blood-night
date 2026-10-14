@@ -105,4 +105,11 @@ class HauntingTest extends AtmosphereTest {
             return border;
         }
     }
+
+    @Test
+    void theHeartbeatFadesWithDistance() {
+        assertEquals(0.03f, Haunting.heartbeatVolume(0), 1e-6);
+        assertEquals(0.45f, Haunting.heartbeatVolume(1), 1e-6);
+        assertTrue(Haunting.heartbeatVolume(0.5) < (0.03f + 0.45f) / 2);
+    }
 }
