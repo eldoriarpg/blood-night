@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.announce;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.translation.Argument;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
@@ -20,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
@@ -45,7 +48,7 @@ class MessagesTest {
     }
 
     private static String begin(Locale locale) {
-        return render(Messages.message(Messages.NIGHT_BEGIN, Argument.string("world", "world")), locale);
+        return render(Messages.message(NightKind.NIGHT.key("begin"), Argument.string("world", "world")), locale);
     }
 
     private static Properties bundle(String language) throws IOException {
@@ -59,16 +62,15 @@ class MessagesTest {
 
     @Test
     void englishHasEveryText() throws IOException {
-        assertEquals(
-                Set.of(
-                        Messages.NIGHT_BEGIN,
-                        Messages.NIGHT_END,
-                        Messages.NIGHT_JOINED,
-                        Messages.NIGHT_LEFT,
-                        Messages.NIGHT_SLEEP,
-                        Messages.COMMAND_BLOCKED,
-                        "bloodnight.bossbar.title"),
-                bundle("en").stringPropertyNames());
+        Set<String> expected = new HashSet<>(Set.of(
+                Messages.NIGHT_SLEEP,
+                Messages.COMMAND_BLOCKED,
+                NightKind.DRAGON.key("begin"),
+                NightKind.DRAGON.key("end")));
+        for (NightKind kind : List.of(NightKind.NIGHT, NightKind.TIDE, NightKind.ECLIPSE)) {
+            for (String text : List.of("begin", "end", "joined", "left", "name")) expected.add(kind.key(text));
+        }
+        assertEquals(expected, bundle("en").stringPropertyNames());
     }
 
     @ParameterizedTest
@@ -102,7 +104,10 @@ class MessagesTest {
 
     @Test
     void miniMessageReachesTheTexts() {
-        Component title = MiniMessage.miniMessage().deserialize("<red><lang:bloodnight.bossbar.title>");
-        assertEquals("Blutnacht", render(title, Locale.GERMANY));
+        Component title = MiniMessage.miniMessage()
+                .deserialize(
+                        "<red><name>",
+                        Placeholder.component("name", Component.translatable("bloodnight.eclipse.name")));
+        assertEquals("Blutfinsternis", render(title, Locale.GERMANY));
     }
 }

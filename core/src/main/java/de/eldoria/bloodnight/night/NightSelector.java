@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.night;
 
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.Night;
+import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightProbability;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -41,19 +41,20 @@ public final class NightSelector {
     private static final NamespacedKey CANCELLED = new NamespacedKey("bloodnight", "cancelled_nights");
     private static final long MIX = 0x9E3779B97F4A7C15L;
 
-    private final Function<World, NightSelection> settings;
+    private final Function<World, NightProbability> settings;
     private final Function<World, NightTimes> times;
     private final Clock clock;
     private final DoubleSupplier tickRate;
 
     /**
-     * @param settings the night selection of a world
+     * @param settings how likely a world's nights are blood nights: its night selection, or its timed nights when it
+     *                 has no day cycle
      * @param times    when a world's nights are
      * @param clock    real time, to place nights for the real moon phase
      * @param tickRate the server's ticks per second
      */
     public NightSelector(
-            Function<World, NightSelection> settings,
+            Function<World, NightProbability> settings,
             Function<World, NightTimes> times,
             Clock clock,
             DoubleSupplier tickRate) {
@@ -89,7 +90,7 @@ public final class NightSelector {
      * @return the next blood night from the one running or about to begin on, if there is one within the horizon
      */
     public Optional<Prediction> next(World world, int horizon) {
-        long fullTime = world.getFullTime();
+        long fullTime = NightTimes.now(world);
         NightTimes nights = times(world);
         long first = nights.upcoming(fullTime);
         for (long night = first; night < first + horizon; night++) {
@@ -159,7 +160,7 @@ public final class NightSelector {
     }
 
     private Instant expectedStart(World world, long night) {
-        long ticks = times(world).ticksUntil(world.getFullTime(), night);
+        long ticks = times(world).ticksUntil(NightTimes.now(world), night);
         double rate = Math.max(tickRate.getAsDouble(), 1);
         return clock.instant().plus(Duration.ofMillis((long) (ticks / rate * 1000)));
     }

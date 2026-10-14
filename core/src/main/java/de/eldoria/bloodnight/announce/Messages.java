@@ -34,10 +34,6 @@ import static net.kyori.adventure.text.Component.translatable;
  * language falls back to the configured fallback language.
  */
 public final class Messages {
-    public static final String NIGHT_BEGIN = "bloodnight.night.begin";
-    public static final String NIGHT_END = "bloodnight.night.end";
-    public static final String NIGHT_JOINED = "bloodnight.night.joined";
-    public static final String NIGHT_LEFT = "bloodnight.night.left";
     public static final String NIGHT_SLEEP = "bloodnight.night.sleep";
     public static final String COMMAND_BLOCKED = "bloodnight.command.blocked";
     private static final List<String> LOCALES = List.of("en", "de", "es", "ms", "tr", "zh");

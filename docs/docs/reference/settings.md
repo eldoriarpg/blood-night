@@ -79,6 +79,11 @@ Settings for one world. Every world has its own file.
 | `nightSettings.beginCommands` | list of text | `[]` |
 | `nightSettings.endCommands` | list of text | `[]` |
 | `nightSettings.blockedCommands` | list of text | `[]` |
+| `nightSettings.timed.everyMinutes` | whole number | `60` |
+| `nightSettings.timed.chance` | whole number | `30` |
+| `nightSettings.timed.lengthMinutes` | whole number | `10` |
+| `nightSettings.timed.dragonFight` | true or false | `true` |
+| `nightSettings.timed.dragon` | text | `blood_dragon` |
 | `mobSettings.spawning.spawnPercentage` | whole number | `50` |
 | `mobSettings.spawning.ignoredReasons` | list of `NATURAL`, `JOCKEY`, `CHUNK_GEN`, `SPAWNER`, `TRIAL_SPAWNER`, `EGG`, `SPAWNER_EGG`, `LIGHTNING`, `BUILD_SNOWMAN`, `BUILD_IRONGOLEM`, `BUILD_COPPERGOLEM`, `BUILD_WITHER`, `VILLAGE_DEFENSE`, `VILLAGE_INVASION`, `BREEDING`, `SLIME_SPLIT`, `REINFORCEMENTS`, `NETHER_PORTAL`, `DISPENSE_EGG`, `INFECTION`, `CURED`, `OCELOT_BABY`, `SILVERFISH_BLOCK`, `MOUNT`, `TRAP`, `ENDER_PEARL`, `SHOULDER_ENTITY`, `DROWNED`, `SHEARED`, `EXPLOSION`, `RAID`, `PATROL`, `BEEHIVE`, `PIGLIN_ZOMBIFIED`, `SPELL`, `FROZEN`, `METAMORPHOSIS`, `DUPLICATION`, `COMMAND`, `ENCHANTMENT`, `OMINOUS_ITEM_SPAWNER`, `BUCKET`, `POTION_EFFECT`, `REANIMATE`, `REHYDRATION`, `CUSTOM`, `DEFAULT` | `[]` |
 | `mobSettings.spawning.mobs` | map | `{}` |
@@ -89,7 +94,7 @@ Settings for one world. Every world has its own file.
 | `mobSettings.damageModifier` | number | `2` |
 | `mobSettings.healthMultiplier` | number | `2` |
 | `announcement.bossBar.enabled` | true or false | `true` |
-| `announcement.bossBar.title` | text | `<red><bold><lang:bloodnight.bossbar.title>` |
+| `announcement.bossBar.title` | text | `<red><bold><name>` |
 | `announcement.bossBar.color` | `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, `WHITE` | `RED` |
 | `announcement.bossBar.overlay` | `PROGRESS`, `NOTCHED_6`, `NOTCHED_10`, `NOTCHED_12`, `NOTCHED_20` | `PROGRESS` |
 | `announcement.bossBar.flags` | list of `DARKEN_SCREEN`, `PLAY_BOSS_MUSIC`, `CREATE_WORLD_FOG` | `["DARKEN_SCREEN","CREATE_WORLD_FOG"]` |
@@ -185,6 +190,12 @@ nightSettings:
     mode: NORMAL
     seconds: 600
   skippable: false
+  timed:
+    chance: 30
+    dragon: blood_dragon
+    dragonFight: true
+    everyMinutes: 60
+    lengthMinutes: 10
 mobSettings:
   creepers:
     always: false
@@ -205,7 +216,7 @@ announcement:
       - DARKEN_SCREEN
       - CREATE_WORLD_FOG
     overlay: PROGRESS
-    title: <red><bold><lang:bloodnight.bossbar.title>
+    title: <red><bold><name>
   effect:
     effect: minecraft:darkness
     enabled: true

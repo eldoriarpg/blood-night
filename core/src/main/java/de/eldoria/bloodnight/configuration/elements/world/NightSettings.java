@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.configuration.elements.world;
 
 import de.eldoria.bloodnight.configuration.elements.world.night.NightLength;
+import de.eldoria.bloodnight.configuration.elements.world.night.TimedNights;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class NightSettings {
     private List<String> beginCommands = new ArrayList<>();
     private List<String> endCommands = new ArrayList<>();
     private List<String> blockedCommands = new ArrayList<>();
+    private TimedNights timed = new TimedNights();
 
     /**
      * @return the time of day nights begin, 0 to 23999
@@ -73,5 +75,13 @@ public class NightSettings {
 
     public List<String> blockedCommands() {
         return blockedCommands;
+    }
+
+    /**
+     * @return when blood nights come in a world without a day cycle; such worlds use nothing else of these settings
+     *     but the commands
+     */
+    public TimedNights timed() {
+        return timed;
     }
 }

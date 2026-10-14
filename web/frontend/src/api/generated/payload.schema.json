@@ -28,7 +28,7 @@
             "enabled" : true,
             "flags" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ],
             "overlay" : "PROGRESS",
-            "title" : "<red><bold><lang:bloodnight.bossbar.title>"
+            "title" : "<red><bold><name>"
           }
         },
         "effect" : {
@@ -187,7 +187,7 @@
         },
         "title" : {
           "type" : "string",
-          "default" : "<red><bold><lang:bloodnight.bossbar.title>"
+          "default" : "<red><bold><name>"
         },
         "color" : {
           "allOf" : [ {
@@ -1105,6 +1105,18 @@
             "type" : "string"
           },
           "default" : [ ]
+        },
+        "timed" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/TimedNights"
+          } ],
+          "default" : {
+            "chance" : 30,
+            "dragon" : "blood_dragon",
+            "dragonFight" : true,
+            "everyMinutes" : 60,
+            "lengthMinutes" : 10
+          }
         }
       }
     },
@@ -1579,6 +1591,31 @@
         }
       }
     },
+    "TimedNights" : {
+      "type" : "object",
+      "properties" : {
+        "everyMinutes" : {
+          "type" : "integer",
+          "default" : 60
+        },
+        "chance" : {
+          "type" : "integer",
+          "default" : 30
+        },
+        "lengthMinutes" : {
+          "type" : "integer",
+          "default" : 10
+        },
+        "dragonFight" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "dragon" : {
+          "type" : "string",
+          "default" : "blood_dragon"
+        }
+      }
+    },
     "TypeInfo" : {
       "type" : "object",
       "properties" : {
@@ -1749,7 +1786,14 @@
               "mode" : "NORMAL",
               "seconds" : 600
             },
-            "skippable" : false
+            "skippable" : false,
+            "timed" : {
+              "chance" : 30,
+              "dragon" : "blood_dragon",
+              "dragonFight" : true,
+              "everyMinutes" : 60,
+              "lengthMinutes" : 10
+            }
           }
         },
         "mobSettings" : {
@@ -1782,7 +1826,7 @@
               "enabled" : true,
               "flags" : [ "DARKEN_SCREEN", "CREATE_WORLD_FOG" ],
               "overlay" : "PROGRESS",
-              "title" : "<red><bold><lang:bloodnight.bossbar.title>"
+              "title" : "<red><bold><name>"
             },
             "effect" : {
               "effect" : "minecraft:darkness",

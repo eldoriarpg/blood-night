@@ -669,6 +669,7 @@ export interface NightSettings {
   beginCommands?: string[];
   endCommands?: string[];
   blockedCommands?: string[];
+  timed?: TimedNights;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -678,6 +679,17 @@ export interface NightLength {
   mode?: LengthMode & string;
   seconds?: number;
   maxSeconds?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "TimedNights".
+ */
+export interface TimedNights {
+  everyMinutes?: number;
+  chance?: number;
+  lengthMinutes?: number;
+  dragonFight?: boolean;
+  dragon?: string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

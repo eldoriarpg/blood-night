@@ -29,7 +29,7 @@ import java.util.function.ToLongBiFunction;
  * every tick, not now and then, keeps the sun and moon from jumping. A blood night that begins late, e.g. forced in
  * the middle of the night or picked up after a restart, gets the share of its length that is left. When the time was
  * moved from outside (by more than the one tick the world advances by itself), the stretch lets go and does not fight
- * it.
+ * it. Worlds without a day cycle have timed nights of their own length and are never stretched.
  */
 public final class NightStretch implements Listener {
     private final Server server;
@@ -58,6 +58,7 @@ public final class NightStretch implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBegin(BloodNightBeginEvent event) {
         World world = event.getWorld();
+        if (world.isFixedTime()) return;
         OptionalLong length = settings.apply(world).length().ticks(seeds.applyAsLong(world, event.night()));
         if (length.isEmpty()) return;
         NightTimes nights = times.apply(world);

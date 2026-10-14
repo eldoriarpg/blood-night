@@ -106,7 +106,7 @@ class AnnouncerTest {
     void beginAndEndAreAnnouncedWithBarEffectAndSounds() {
         PlayerMock player = player(world);
         at(13_000);
-        assertEquals(Messages.NIGHT_BEGIN, key(player.nextComponentMessage()));
+        assertEquals(NightKind.NIGHT.key("begin"), key(player.nextComponentMessage()));
         assertTrue(player.activeBossBars().iterator().hasNext());
         assertNotNull(player.getPotionEffect(PotionEffectType.DARKNESS));
         assertFalse(player.getHeardSounds().isEmpty());
@@ -114,7 +114,7 @@ class AnnouncerTest {
         assertEquals(0.5f, player.activeBossBars().iterator().next().progress());
         player.removePotionEffect(PotionEffectType.DARKNESS);
         at(23_000);
-        assertEquals(Messages.NIGHT_END, key(player.nextComponentMessage()));
+        assertEquals(NightKind.NIGHT.key("end"), key(player.nextComponentMessage()));
         assertFalse(player.activeBossBars().iterator().hasNext());
         assertNotNull(player.getPotionEffect(PotionEffectType.DARKNESS));
     }
@@ -125,7 +125,7 @@ class AnnouncerTest {
         PlayerMock inside = player(world);
         PlayerMock outside = player(other);
         at(13_000);
-        assertEquals(Messages.NIGHT_BEGIN, key(inside.nextComponentMessage()));
+        assertEquals(NightKind.NIGHT.key("begin"), key(inside.nextComponentMessage()));
         assertNull(outside.nextComponentMessage());
         assertFalse(outside.activeBossBars().iterator().hasNext());
     }
@@ -136,10 +136,10 @@ class AnnouncerTest {
         PlayerMock player = player(other);
         at(13_000);
         player.teleport(world.getSpawnLocation());
-        assertEquals(Messages.NIGHT_JOINED, key(player.nextActionBar()));
+        assertEquals(NightKind.NIGHT.key("joined"), key(player.nextActionBar()));
         assertTrue(player.activeBossBars().iterator().hasNext());
         player.teleport(other.getSpawnLocation());
-        assertEquals(Messages.NIGHT_LEFT, key(player.nextActionBar()));
+        assertEquals(NightKind.NIGHT.key("left"), key(player.nextActionBar()));
         assertFalse(player.activeBossBars().iterator().hasNext());
     }
 

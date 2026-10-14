@@ -46,13 +46,14 @@ While a blood night runs, players in that world see a boss bar. It gets shorter 
 announcement:
   bossBar:
     enabled: true
-    title: "<red><bold><lang:bloodnight.bossbar.title>"
+    title: "<red><bold><name>"
     color: RED
     overlay: PROGRESS
     flags: [CREATE_WORLD_FOG, DARKEN_SCREEN]
 ```
 
-- `title` uses MiniMessage. The default shows "Blood Night" in the player's language.
+- `title` uses MiniMessage. `<name>` is the night's name in the player's language: Blood Night, Blood Tide in the
+  Nether, Blood Eclipse in the End.
 - `color`: `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE` or `WHITE`.
 - `overlay`: `PROGRESS` for one bar, or `NOTCHED_6`, `NOTCHED_10`, `NOTCHED_12`, `NOTCHED_20` for a bar with steps.
 - `flags` add effects: `CREATE_WORLD_FOG` brings fog, `DARKEN_SCREEN` makes the sky darker, `PLAY_BOSS_MUSIC` plays

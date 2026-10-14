@@ -30,6 +30,7 @@ import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.night.DragonFight;
 import de.eldoria.bloodnight.night.NightCommands;
 import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightSkipGuard;
@@ -111,8 +112,10 @@ public final class BloodNight extends JavaPlugin {
                 buildFingerprint(),
                 getLogger());
         selector = new NightSelector(
-                world -> configuration.worldConfig(world).nightSelection(),
-                world -> NightTimes.of(configuration.worldConfig(world).nightSettings()),
+                world -> world.isFixedTime()
+                        ? configuration.worldConfig(world).nightSettings().timed()
+                        : configuration.worldConfig(world).nightSelection(),
+                world -> NightTimes.of(world, configuration.worldConfig(world).nightSettings()),
                 Clock.systemUTC(),
                 () -> getServer().getServerTickManager().getTickRate());
         bloodNights = new BloodNights(
@@ -182,6 +185,15 @@ public final class BloodNight extends JavaPlugin {
                         getServer(), world -> configuration.worldConfig(world).nightSettings()),
                 this);
         plugins.registerEvents(stretch, this);
+        plugins.registerEvents(
+                new DragonFight(
+                        bloodNights,
+                        world ->
+                                configuration.worldConfig(world).nightSettings().timed(),
+                        id -> configuration.mobs().get(id),
+                        coordinator,
+                        tasks),
+                this);
         messages.register(configuration.main().announcements().fallbackLocale());
         announcer = new Announcer(
                 getServer(),

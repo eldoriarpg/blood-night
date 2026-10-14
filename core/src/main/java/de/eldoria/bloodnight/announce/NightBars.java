@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.night.NightTimes;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -33,8 +34,9 @@ final class NightBars {
      * @param settings the world's boss bar settings
      * @param times    the world's night times
      * @param night    the running night's number
+     * @param name     the key of the night's name, filled into the title's {@code <name>}
      */
-    void update(Player player, BossBarSettings settings, NightTimes times, long night) {
+    void update(Player player, BossBarSettings settings, NightTimes times, long night, String name) {
         if (!settings.enabled()) {
             hide(player);
             return;
@@ -42,11 +44,12 @@ final class NightBars {
         BossBar bar = bars.computeIfAbsent(
                 player.getUniqueId(),
                 _ -> BossBar.bossBar(Component.empty(), 1f, settings.color(), settings.overlay()));
-        bar.name(MiniMessage.miniMessage().deserialize(settings.title()))
+        bar.name(MiniMessage.miniMessage()
+                        .deserialize(settings.title(), Placeholder.component("name", Component.translatable(name))))
                 .color(settings.color())
                 .overlay(settings.overlay())
                 .flags(settings.flags())
-                .progress(remaining(times, night, player.getWorld().getFullTime()));
+                .progress(remaining(times, night, NightTimes.now(player.getWorld())));
         player.showBossBar(bar);
     }
 

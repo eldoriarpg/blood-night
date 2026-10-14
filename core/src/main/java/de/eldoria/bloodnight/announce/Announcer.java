@@ -30,6 +30,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -50,6 +53,7 @@ public final class Announcer implements Listener {
     private final Tasks tasks;
     private final NightBars bars = new NightBars();
     private final Ambience ambience = new Ambience();
+    private final Set<UUID> dragonFights = ConcurrentHashMap.newKeySet();
 
     /**
      * @param server        the server
@@ -78,7 +82,9 @@ public final class Announcer implements Listener {
     public void onBegin(BloodNightBeginEvent event) {
         World world = event.getWorld();
         WorldSettings worldSettings = settings.apply(world);
-        broadcast(world, Messages.NIGHT_BEGIN);
+        NightKind kind = nights.held(world) ? NightKind.DRAGON : NightKind.of(world);
+        if (kind == NightKind.DRAGON) dragonFights.add(world.getUID());
+        broadcast(world, kind.key("begin"));
         for (Player player : world.getPlayers()) {
             tasks.entityNow(player, () -> {
                 Ambience.play(
@@ -86,7 +92,12 @@ public final class Announcer implements Listener {
                         worldSettings.soundSettings(),
                         worldSettings.soundSettings().begin());
                 applyEffect(player, worldSettings.announcement().effect());
-                bars.update(player, worldSettings.announcement().bossBar(), times.apply(world), event.night());
+                bars.update(
+                        player,
+                        worldSettings.announcement().bossBar(),
+                        times.apply(world),
+                        event.night(),
+                        NightKind.of(world).key("name"));
             });
         }
     }
@@ -95,7 +106,7 @@ public final class Announcer implements Listener {
     public void onEnd(BloodNightEndEvent event) {
         World world = event.getWorld();
         WorldSettings worldSettings = settings.apply(world);
-        broadcast(world, Messages.NIGHT_END);
+        broadcast(world, (dragonFights.remove(world.getUID()) ? NightKind.DRAGON : NightKind.of(world)).key("end"));
         for (Player player : world.getPlayers()) {
             tasks.entityNow(player, () -> {
                 bars.hide(player);
@@ -117,7 +128,7 @@ public final class Announcer implements Listener {
         ambience.forget(player);
         if (nights.running(from).isPresent()
                 && settings.apply(from).announcement().joinWarning()) {
-            tell(player, Messages.NIGHT_LEFT);
+            tell(player, NightKind.of(from).key("left"));
         }
         entered(player);
     }
@@ -164,7 +175,12 @@ public final class Announcer implements Listener {
             return;
         }
         WorldSettings worldSettings = settings.apply(world);
-        bars.update(player, worldSettings.announcement().bossBar(), times.apply(world), night.getAsLong());
+        bars.update(
+                player,
+                worldSettings.announcement().bossBar(),
+                times.apply(world),
+                night.getAsLong(),
+                NightKind.of(world).key("name"));
         ambience.tick(player, worldSettings.soundSettings());
     }
 
@@ -173,9 +189,15 @@ public final class Announcer implements Listener {
         var night = nights.running(world);
         if (night.isEmpty()) return;
         WorldSettings worldSettings = settings.apply(world);
-        if (worldSettings.announcement().joinWarning()) tell(player, Messages.NIGHT_JOINED);
+        if (worldSettings.announcement().joinWarning())
+            tell(player, NightKind.of(world).key("joined"));
         applyEffect(player, worldSettings.announcement().effect());
-        bars.update(player, worldSettings.announcement().bossBar(), times.apply(world), night.getAsLong());
+        bars.update(
+                player,
+                worldSettings.announcement().bossBar(),
+                times.apply(world),
+                night.getAsLong(),
+                NightKind.of(world).key("name"));
     }
 
     private void broadcast(World world, String key) {
