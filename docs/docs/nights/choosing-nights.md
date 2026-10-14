@@ -123,4 +123,5 @@ blood night will be.
 enabled: false
 ```
 
-Worlds without a day and night cycle, like the Nether and the End, never have blood nights anyway.
+The Nether and the End have no night. They get blood nights by the clock instead, see
+[The Nether and the End](./nether-and-end.md).

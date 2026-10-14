@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.night.Prediction;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
@@ -48,14 +49,11 @@ final class NightCommand {
     }
 
     private void report(CommandSender sender, World world) {
-        long coming = plugin.selector().times(world).upcoming(world.getFullTime());
+        long coming = plugin.selector().times(world).upcoming(NightTimes.now(world));
         sender.sendMessage("%s: %s, blood night %s"
                 .formatted(
                         world.getName(),
-                        plugin.configuration()
-                                .worldConfig(world)
-                                .nightSelection()
-                                .type(),
+                        selection(world),
                         plugin.bloodNights().running(world).isPresent() ? "running" : "not running"));
         sender.sendMessage("Coming night %d: %d%% probability"
                 .formatted(coming, plugin.selector().probability(world, coming)));
@@ -101,6 +99,19 @@ final class NightCommand {
             long night = plugin.bloodNights().cancel(world);
             sender.sendMessage("Night %d in %s is an ordinary night".formatted(night, world.getName()));
         });
+    }
+
+    private String selection(World world) {
+        var settings = plugin.configuration().worldConfig(world).nightSettings();
+        if (!world.isFixedTime()) {
+            return plugin.configuration()
+                    .worldConfig(world)
+                    .nightSelection()
+                    .type()
+                    .name();
+        }
+        return "TIMED, every %d minutes for %d minutes"
+                .formatted(settings.timed().everyMinutes(), settings.timed().lengthMinutes());
     }
 
     private static String describe(long coming, Prediction prediction) {

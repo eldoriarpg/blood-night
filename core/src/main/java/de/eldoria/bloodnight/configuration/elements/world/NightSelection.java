@@ -18,7 +18,7 @@ import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.Ra
  * How a world chooses its blood nights: the active {@code type} and the settings of every type, so switching type
  * keeps the others' settings. Holds no state; which night is which comes from its number.
  */
-public class NightSelection {
+public class NightSelection implements NightProbability {
     private NightSelectionType type = NightSelectionType.RANDOM;
     private Random random = new Random();
     private MoonPhase moonPhase = new MoonPhase();
@@ -37,6 +37,7 @@ public class NightSelection {
      * @param night a night
      * @return how likely it is a blood night under the active type, 0 to 100
      */
+    @Override
     public int probability(Night night) {
         NightProbability active =
                 switch (type) {

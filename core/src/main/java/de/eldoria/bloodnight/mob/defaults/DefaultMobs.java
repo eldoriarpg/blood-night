@@ -9,10 +9,12 @@ import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.Despawn;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.compiler.Graphs;
@@ -23,6 +25,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -37,6 +40,11 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final String TARGET = "target";
     private static final String VALUE = "value";
     private static final String TELEPORT_NEAR = "teleport_near";
+
+    /**
+     * Id of the blood dragon, the ender dragon of a dragon fight during a blood night.
+     */
+    public static final String BLOOD_DRAGON = "blood_dragon";
 
     private final GraphPlatform platform;
 
@@ -75,7 +83,8 @@ public final class DefaultMobs implements BloodNightNodes {
                 mobs.blazeRider(),
                 mobs.speedSkeletonRider(),
                 mobs.witherSkeletonRider(),
-                mobs.toxicSlime());
+                mobs.toxicSlime(),
+                mobs.bloodDragon());
     }
 
     private CustomMob armoredZombie() {
@@ -672,6 +681,59 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("second", allowed, VALUE)
                 .id();
         graph.on(EVENT_PROJECTILE_SHOOT, graph.unless(same, RESULT, graph.cancel(shoot)));
+    }
+
+    /**
+     * The ender dragon of a dragon fight during a blood night: twice the health, harder hits, a dragon fireball at the
+     * nearest player every six seconds and lightning on them every ten, its hits wither. Never spawns by chance; the
+     * dragon fight turns the dragon into it (see {@link #BLOOD_DRAGON}).
+     */
+    private CustomMob bloodDragon() {
+        CustomMob dragon = mob(BLOOD_DRAGON, "<dark_red>Blood Dragon", EntityType.ENDER_DRAGON, graph -> {
+            String nearest = graph.node(WORLD_NEAREST_PLAYER)
+                    .input("location", graph.selfRead(), "location")
+                    .literal("radius", 128.0)
+                    .id();
+            String fireball = graph.node(LIVING_ENTITY_LAUNCH_PROJECTILE)
+                    .config("projectile", ProjectileKind.DRAGON_FIREBALL)
+                    .input("shooter", graph.self(), "entity")
+                    .input(TARGET, nearest, "player")
+                    .literal("speed", 2.0)
+                    .id();
+            String victim =
+                    graph.node(ENTITY_READ).input(TARGET, nearest, "player").id();
+            String lightning = graph.node(WORLD_STRIKE_LIGHTNING)
+                    .input(TARGET, graph.selfRead(), "world")
+                    .input("location", victim, "location")
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.dust(160, 0, 0, 4, 30),
+                    graph.every(6000, graph.present(nearest, "player", fireball)),
+                    graph.every(10000, graph.present(nearest, "player", lightning)));
+            String hit = graph.entry(EVENT_HIT);
+            String hitPlayer = graph.as("player", hit, "entity");
+            graph.on(
+                    EVENT_HIT,
+                    graph.when(hitPlayer, "matches", graph.effect(hitPlayer, RESULT, "minecraft:wither", 5, 1)));
+        });
+        Attributes base = dragon.attributes();
+        return new CustomMob(
+                dragon.id(),
+                dragon.equipment(),
+                new Attributes(
+                        base.displayName(),
+                        base.entityType(),
+                        true,
+                        ValueModifier.VALUE,
+                        400,
+                        ValueModifier.MULTIPLY,
+                        1.5,
+                        List.of()),
+                dragon.behaviour(),
+                dragon.mobDrops(),
+                dragon.extension(),
+                new SpawnRules(0, false, Despawn.NEVER, Set.of(), SpawnConditions.any()));
     }
 
     private CustomMob mob(String id, String name, EntityType type, Consumer<MobGraph> behaviour) {

@@ -1,14 +1,15 @@
 ---
-title: The 24 ready-made mobs
+title: The ready-made mobs
 sidebar_position: 5
 ---
 
-# The 24 ready-made mobs
+# The ready-made mobs
 
 BloodNight writes these mobs into `mobs.yml` the first time it starts. You can change them, copy them or delete
 them. If you delete `mobs.yml`, BloodNight writes them again on the next start.
 
-All of them have double health, only spawn during blood nights and go away when the night ends.
+The first 24 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
+different, see below.
 
 ## Zombies
 
@@ -73,6 +74,12 @@ All of them have double health, only spawn during blood nights and go away when 
 | ID | What it does |
 |---|---|
 | `toxic_slime` | Leaves a poison cloud when it dies. |
+
+## The End
+
+| ID | What it does |
+|---|---|
+| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning, its hits wither. It never spawns by chance. |
 
 Open any of them in the [web editor](../editor/sessions.md) to see how they work. They are good examples for your
 own mobs.

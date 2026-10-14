@@ -76,8 +76,10 @@ class BloodSkyTest extends AtmosphereTest {
                     .forEach(keyframe -> ticks.add(keyframe.path("ticks").asLong()));
             assertEquals(List.of(0L, BloodSky.FULL, BloodSky.FADE_OUT, BloodSky.REST), ticks);
         }
-        JsonNode tag = read("/datapack/data/minecraft/tags/timeline/in_overworld.json");
-        assertEquals("bloodnight:blood_night", tag.path("values").get(0).asString());
+        for (String dimension : List.of("in_overworld", "in_nether", "in_end")) {
+            JsonNode tag = read("/datapack/data/minecraft/tags/timeline/%s.json".formatted(dimension));
+            assertEquals("bloodnight:blood_night", tag.path("values").get(0).asString(), dimension);
+        }
     }
 
     private static JsonNode read(String resource) throws IOException {

@@ -26,7 +26,8 @@ import java.util.function.Function;
 /**
  * Turns the sky of a world red during its blood nights.
  * <p>
- * The plugin's data pack adds the world clock {@value #CLOCK} and a timeline on it to every overworld-like dimension.
+ * The plugin's data pack adds the world clock {@value #CLOCK} and a timeline on it to the overworld, the Nether and
+ * the End.
  * The timeline blends sky, fog, clouds and light to red between clock time 0 and {@value #FULL}, holds them until
  * {@value #FADE_OUT}, and blends them back by {@value #REST}; outside of that it changes nothing. Clients play the
  * timeline themselves, so a blood night only needs the clock set at its begin and end. Paper keeps a clock per world

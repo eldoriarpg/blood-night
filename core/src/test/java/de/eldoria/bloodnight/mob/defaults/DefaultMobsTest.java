@@ -40,9 +40,10 @@ class DefaultMobsTest {
     }
 
     @Test
-    void everyLegacyMobIsThere() {
-        assertEquals(24, mobs.size());
-        assertEquals(24, mobs.stream().map(CustomMob::id).distinct().count());
+    void everyLegacyMobAndTheBloodDragonAreThere() {
+        assertEquals(25, mobs.size());
+        assertEquals(25, mobs.stream().map(CustomMob::id).distinct().count());
+        assertTrue(mobs.stream().anyMatch(mob -> mob.id().equals(DefaultMobs.BLOOD_DRAGON)));
     }
 
     @Test
@@ -73,7 +74,7 @@ class DefaultMobsTest {
     void everyParticleGetsTheDataItNeeds() {
         MockBukkit.mock();
         try {
-            assertEquals(24, DefaultMobs.create(platform).size());
+            assertEquals(25, DefaultMobs.create(platform).size());
         } finally {
             MockBukkit.unmock();
         }

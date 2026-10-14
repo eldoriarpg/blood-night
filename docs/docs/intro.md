@@ -14,7 +14,7 @@ mob can be faster, stronger or sneakier than a normal one. It can throw fireball
 You decide how your special mobs behave. You build their behaviour in a **web editor** by connecting little boxes
 called nodes. No coding needed. Your server turns those boxes into fast Java code.
 
-BloodNight comes with 24 ready-made special mobs, so it works right after you install it.
+BloodNight comes with ready-made special mobs, so it works right after you install it.
 
 ## What you can do
 

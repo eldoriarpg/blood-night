@@ -46,7 +46,7 @@ final class NightBars {
                 .color(settings.color())
                 .overlay(settings.overlay())
                 .flags(settings.flags())
-                .progress(remaining(times, night, player.getWorld().getFullTime()));
+                .progress(remaining(times, night, NightTimes.now(player.getWorld())));
         player.showBossBar(bar);
     }
 

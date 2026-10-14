@@ -8,6 +8,8 @@ package de.eldoria.bloodnight.night;
 import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
+import de.eldoria.bloodnight.configuration.elements.world.night.TimedNights;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.world.WorldMock;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -189,5 +192,45 @@ class BloodNightsTest {
 
         assertTrue(nights.running(world).isEmpty());
         assertEquals(List.of("begin 0", "end 0"), events);
+    }
+
+    @Test
+    void worldsWithoutADayCycleHaveTimedNights() {
+        WorldMock end = new WorldMock();
+        end.setName("the_end");
+        end.setEnvironment(World.Environment.THE_END);
+        server.addWorld(end);
+        NightSettings settings = Selections.read(
+                "{\"timed\":{\"everyMinutes\":10,\"chance\":100,\"lengthMinutes\":2}}", NightSettings.class);
+        TimedNights timed = settings.timed();
+        NightTimes times = NightTimes.of(end, settings);
+        BloodNights timedNights = new BloodNights(
+                new NightSelector(ignored -> timed, ignored -> times, CLOCK, () -> 20),
+                ignored -> true,
+                server.getPluginManager(),
+                Logger.getLogger("test"));
+
+        end.setGameTime(3 * 12_000 + 100);
+        timedNights.check(List.of(end));
+        assertEquals(3, timedNights.running(end).getAsLong());
+        assertEquals(new NightTimes(0, 2_400, 12_000), times);
+
+        end.setGameTime(3 * 12_000 + 2_400);
+        timedNights.check(List.of(end));
+        assertTrue(timedNights.running(end).isEmpty());
+    }
+
+    @Test
+    void heldBloodNightsLastUntilReleased() {
+        world.setFullTime(1_000);
+        nights.hold(world);
+        assertTrue(nights.running(world).isPresent());
+
+        world.setFullTime(5_000);
+        nights.check(List.of(world));
+        assertTrue(nights.running(world).isPresent());
+
+        nights.release(world);
+        assertTrue(nights.running(world).isEmpty());
     }
 }
