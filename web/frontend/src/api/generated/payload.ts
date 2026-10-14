@@ -314,6 +314,16 @@ export type Scare = 'FLINCH' | 'SCREAM' | 'GUARDIAN';
  */
 export type Source =
   'MASTER' | 'MUSIC' | 'RECORD' | 'WEATHER' | 'BLOCK' | 'HOSTILE' | 'NEUTRAL' | 'PLAYER' | 'AMBIENT' | 'VOICE' | 'UI';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "DifficultyChange".
+ */
+export type DifficultyChange = 'UNCHANGED' | 'PEACEFUL' | 'EASY' | 'NORMAL' | 'HARD';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "WeatherChange".
+ */
+export type WeatherChange = 'UNCHANGED' | 'CLEAR' | 'RAIN' | 'THUNDER';
 
 export interface EditorPayload {
   catalog: string;
@@ -625,6 +635,7 @@ export interface WorldSettings {
   soundSettings?: SoundSettings;
   deathActions?: DeathActionSettings;
   worldDrops?: WorldDrops;
+  nightRules?: NightRuleSettings;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -916,6 +927,20 @@ export interface VanillaDrops {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "NightRuleSettings".
+ */
+export interface NightRuleSettings {
+  difficulty?: DifficultyChange & string;
+  monsterSpawnLimit?: number;
+  monsterTicksPerSpawn?: number;
+  weather?: WeatherChange & string;
+  gameRules?: {
+    [k: string]: string;
+  };
+  phantomsOnlyAtBloodNights?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "EditorChoices".
  */
 export interface EditorChoices {
@@ -1068,6 +1093,14 @@ export const ConfigurationScope = {
 export const Despawn = {
     NEVER: "NEVER",
     NIGHT_END: "NIGHT_END",
+} as const;
+
+export const DifficultyChange = {
+    EASY: "EASY",
+    HARD: "HARD",
+    NORMAL: "NORMAL",
+    PEACEFUL: "PEACEFUL",
+    UNCHANGED: "UNCHANGED",
 } as const;
 
 export const EntityType = {
@@ -1382,4 +1415,11 @@ export const VanillaLoot = {
     CLEAR: "CLEAR",
     KEEP: "KEEP",
     MULTIPLY: "MULTIPLY",
+} as const;
+
+export const WeatherChange = {
+    CLEAR: "CLEAR",
+    RAIN: "RAIN",
+    THUNDER: "THUNDER",
+    UNCHANGED: "UNCHANGED",
 } as const;
