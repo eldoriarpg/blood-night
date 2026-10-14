@@ -64,6 +64,9 @@ editor:
 
 Then run `/bloodnight reload` and try `/bloodnight editor`.
 
+You can also set it from outside, for example when the server runs in a container: the environment variable
+`BLOODNIGHT_EDITOR_URL` or the Java option `-Dbloodnight.editor.url=...` win over the file.
+
 ## What runs inside
 
 | Part | What it does |

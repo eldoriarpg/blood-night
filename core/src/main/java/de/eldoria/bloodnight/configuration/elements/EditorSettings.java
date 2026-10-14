@@ -5,11 +5,22 @@
  */
 package de.eldoria.bloodnight.configuration.elements;
 
+import dev.chojo.ocular.override.Env;
+import dev.chojo.ocular.override.Overwrite;
+import dev.chojo.ocular.override.Prop;
+
 /**
- * Where the web editor's service runs: the hosted one by default, or a server's own.
+ * Where the web editor's service runs: the hosted one by default, or a server's own. The system property
+ * {@code bloodnight.editor.url} or the environment variable {@code BLOODNIGHT_EDITOR_URL} replace the configured URL,
+ * e.g. for a local test server.
  */
 public class EditorSettings {
+    @Overwrite(
+            prop = @Prop("bloodnight.editor.url"),
+            env = @Env("BLOODNIGHT_EDITOR_URL"),
+            description = "Where the web editor's service runs")
     private String url = "https://bloodnight.eldoria.de";
+
     private int timeoutSeconds = 30;
 
     /**
