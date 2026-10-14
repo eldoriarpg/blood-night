@@ -537,6 +537,7 @@ export interface ConfigFile {
   announcements?: Announcements;
   editor?: EditorSettings;
   resourcePack?: ResourcePackSettings;
+  placeholders?: PlaceholderSettings;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -566,6 +567,13 @@ export interface ResourcePackSettings {
   url?: string;
   required?: boolean;
   prompt?: string;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "PlaceholderSettings".
+ */
+export interface PlaceholderSettings {
+  revealNext?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

@@ -56,7 +56,7 @@ class BloodSkyTest extends AtmosphereTest {
         commands.clear();
 
         sky.restore(List.of(world));
-        sky.clear(List.of(world));
+        sky.clear(List.of(world), true);
 
         assertEquals(
                 List.of(

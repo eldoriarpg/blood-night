@@ -47,7 +47,7 @@ class NightActionsTest {
         world = server.addSimpleWorld("world");
         settings = Selections.read("""
                 {"length": {"mode": "EXTENDED", "seconds": 1000},
-                 "beginCommands": ["record begin {world}", "record hello {player}"],
+                 "beginCommands": ["record begin {world} %test%", "record hello {player} %test%"],
                  "endCommands": ["record end {world}"]}""", NightSettings.class);
         NightSelection always = Selections.of("{\"type\":\"RANDOM\",\"random\":{\"probability\":100}}");
         selector = new NightSelector(
@@ -55,7 +55,14 @@ class NightActionsTest {
         nights = new BloodNights(selector, ignored -> true, server.getPluginManager(), Logger.getLogger("test"));
         stretch = new NightStretch(server, ignored -> settings, ignored -> TIMES, (world, night) -> night);
         server.getPluginManager().registerEvents(new NightSkipGuard(nights, ignored -> settings.skippable()), plugin);
-        server.getPluginManager().registerEvents(new NightCommands(server, ignored -> settings), plugin);
+        server.getPluginManager()
+                .registerEvents(
+                        new NightCommands(
+                                server,
+                                ignored -> settings,
+                                (command, player) ->
+                                        command.replace("%test%", player == null ? "world" : player.getName())),
+                        plugin);
         server.getPluginManager().registerEvents(stretch, plugin);
         server.getCommandMap().register("test", new Command("record") {
             @Override
@@ -103,7 +110,7 @@ class NightActionsTest {
         beginNight();
         nights.cancel(world);
 
-        assertEquals(List.of("begin world", "hello Alex", "hello Steve", "end world"), commands);
+        assertEquals(List.of("begin world world", "hello Alex Alex", "hello Steve Steve", "end world"), commands);
     }
 
     @Test

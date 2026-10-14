@@ -34,6 +34,7 @@ Settings for the whole server.
 | `resourcePack.url` | text | `https://bloodnight.docs.eldoria.de/pack/bloodnight.zip` |
 | `resourcePack.required` | true or false | `false` |
 | `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
+| `placeholders.revealNext` | true or false | `false` |
 
 The whole file with its defaults:
 
@@ -52,6 +53,8 @@ resourcePack:
   prompt: <red>BloodNight would like to show its blood nights with a few extra effects.
   required: false
   url: https://bloodnight.docs.eldoria.de/pack/bloodnight.zip
+placeholders:
+  revealNext: false
 ```
 
 ## worlds/&lt;world id&gt;.yml
