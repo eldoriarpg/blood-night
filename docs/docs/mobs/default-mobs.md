@@ -11,7 +11,7 @@ copy them or delete them.
 Their names show in each player's language, English or German so far. Players without the
 [resource pack](../nights/atmosphere.md#the-resource-pack) may see the English names.
 
-The first 29 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
+The first 30 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
 different, see below.
 
 ## Zombies
@@ -91,6 +91,7 @@ Cave spiders can become these too.
 | `volley_pillager` | Fires two extra arrows every 4 seconds while it sees you. |
 | `tide_drowned` | Throws a trident every 3 seconds while you are in water. |
 | `swarm_silverfish` | Fast. When you hit it, every silverfish nearby comes for you. |
+| `assassin_spider` | Leaps up to 5 blocks high and lands on you from up to 12 blocks away. |
 
 ## The End
 

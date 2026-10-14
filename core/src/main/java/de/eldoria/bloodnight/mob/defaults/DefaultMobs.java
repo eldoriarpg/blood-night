@@ -43,6 +43,16 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final String TELEPORT_NEAR = "teleport_near";
 
     /**
+     * Upward speed of the assassin spider's leap, about five blocks high.
+     */
+    private static final double LEAP_UP = 0.9;
+
+    /**
+     * How long the assassin spider's leap lasts in the air, in ticks.
+     */
+    private static final int LEAP_TICKS = 22;
+
+    /**
      * Id of the blood dragon, the ender dragon of a dragon fight during a blood night.
      */
     public static final String BLOOD_DRAGON = "blood_dragon";
@@ -104,6 +114,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 mobs.volleyPillager(),
                 mobs.tideDrowned(),
                 mobs.swarmSilverfish(),
+                subtypesToo(mobs.assassinSpider()),
                 mobs.bloodDragon());
     }
 
@@ -659,6 +670,69 @@ public final class DefaultMobs implements BloodNightNodes {
             each.chain("body", graph.when(same, RESULT, graph.when(mob, "matches", hunt)));
             graph.on(EVENT_DAMAGE_BY_PLAYER, graph.when(attacker, "matches", graph.every(2000, each.id())));
         });
+    }
+
+    /**
+     * Leaps at its target every four seconds when it stands between 3 and 12 blocks away: up to five blocks high, far
+     * enough to land on the target.
+     */
+    private CustomMob assassinSpider() {
+        return mob("assassin_spider", EntityType.SPIDER, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            String distance = graph.node(LOCATION_DISTANCE)
+                    .input(TARGET, graph.selfRead(), "location")
+                    .input("other", target, "location")
+                    .id();
+            String far = graph.node(LOGIC_GREATER)
+                    .input("first", distance, RESULT)
+                    .literal("second", 3.0)
+                    .id();
+            String near = graph.node(LOGIC_LESS)
+                    .input("first", distance, RESULT)
+                    .literal("second", 12.0)
+                    .id();
+            String inReach = graph.node(LOGIC_AND)
+                    .input("first", far, RESULT)
+                    .input("second", near, RESULT)
+                    .id();
+            String leap = graph.selfMutate()
+                    .input(
+                            "velocity",
+                            graph.node(VECTOR_CREATE)
+                                    .input("x", towards(graph, target, "x"), RESULT)
+                                    .literal("y", LEAP_UP)
+                                    .input("z", towards(graph, target, "z"), RESULT)
+                                    .id(),
+                            RESULT)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.when(
+                                    graph.selfRead(),
+                                    "on_ground",
+                                    graph.when(
+                                            inReach,
+                                            RESULT,
+                                            graph.every(4000, leap, graph.particlesAround("minecraft:crit", 15))))));
+            smokeAtNightEnd(graph);
+        });
+    }
+
+    /**
+     * The speed along one axis that carries the mob to the target during a leap of {@value #LEAP_TICKS} ticks.
+     */
+    private static String towards(MobGraph graph, String target, String axis) {
+        String gap = graph.node(MATH_SUBTRACT)
+                .input("first", target, axis)
+                .input("second", graph.selfRead(), axis)
+                .id();
+        return graph.node(MATH_DIVIDE)
+                .input("first", gap, RESULT)
+                .literal("second", (double) LEAP_TICKS)
+                .id();
     }
 
     /**
