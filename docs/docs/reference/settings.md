@@ -130,6 +130,8 @@ Settings for one world. Every world has its own file.
 | `atmosphere.darknessPulses` | true or false | `true` |
 | `atmosphere.rain` | true or false | `false` |
 | `atmosphere.heartbeat` | true or false | `true` |
+| `atmosphere.heartbeatRange` | number | `30` |
+| `atmosphere.heartbeatLoudestWithin` | number | `5` |
 | `atmosphere.screenEffect` | true or false | `true` |
 | `atmosphere.particles` | list of map | `[{"particle":"minecraft:ash","perSecond":12},{"particle":"minecraft:crimson_spore","perSecond":4}]` |
 | `atmosphere.scares.enabled` | true or false | `false` |
@@ -263,6 +265,8 @@ announcement:
 atmosphere:
   darknessPulses: true
   heartbeat: true
+  heartbeatLoudestWithin: 5
+  heartbeatRange: 30
   particles:
     - particle: minecraft:ash
       perSecond: 12

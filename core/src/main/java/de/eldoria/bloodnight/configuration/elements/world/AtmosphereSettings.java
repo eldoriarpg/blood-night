@@ -25,6 +25,8 @@ public class AtmosphereSettings {
     private boolean darknessPulses = true;
     private boolean rain = false;
     private boolean heartbeat = true;
+    private double heartbeatRange = 30;
+    private double heartbeatLoudestWithin = 5;
     private boolean screenEffect = true;
     private List<AmbientParticle> particles = new ArrayList<>(
             List.of(new AmbientParticle("minecraft:ash", 12), new AmbientParticle("minecraft:crimson_spore", 4)));
@@ -63,6 +65,20 @@ public class AtmosphereSettings {
      */
     public boolean heartbeat() {
         return heartbeat;
+    }
+
+    /**
+     * @return how far away a monster can be for the heartbeat to start, in blocks, at least 1
+     */
+    public double heartbeatRange() {
+        return Math.max(heartbeatRange, 1);
+    }
+
+    /**
+     * @return within how many blocks of a monster the heartbeat is at its loudest and fastest, below the range
+     */
+    public double heartbeatLoudestWithin() {
+        return Math.clamp(heartbeatLoudestWithin, 0, heartbeatRange() - 0.5);
     }
 
     /**

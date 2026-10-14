@@ -63,7 +63,6 @@ public final class Haunting implements Listener {
     private static final int WARNING = 1600;
     private static final int RECENTER = 400;
     private static final double PARTICLE_RADIUS = 8;
-    private static final double HEARTBEAT_RANGE = 20;
     private static final double HEARTBEAT_QUIETEST = 0.03;
     private static final double HEARTBEAT_LOUDEST = 0.45;
     private static final double CALM_SILENCE = 0.7;
@@ -170,7 +169,7 @@ public final class Haunting implements Listener {
             player.sendPotionEffectChange(player, new PotionEffect(PotionEffectType.DARKNESS, 40, 0, false, false));
             state.nextPulse = step + pulseDelay();
         }
-        if (atmosphere.heartbeat()) heartbeat(player, state);
+        if (atmosphere.heartbeat()) heartbeat(player, state, atmosphere);
         if (atmosphere.scares().enabled()
                 && step % MINUTE_STEPS == MINUTE_STEPS - 1
                 && ThreadLocalRandom.current().nextInt(100)
@@ -180,14 +179,16 @@ public final class Haunting implements Listener {
     }
 
     /**
-     * Beats when a monster is within {@value #HEARTBEAT_RANGE} blocks: faster and louder the closer the nearest one is,
-     * from every two seconds at the edge to four times a second right next to it (see {@link #heartbeatVolume}). Good
-     * armor keeps the player calmer ({@link ArmorCalm}): the beat comes up to half as often and is quieter.
+     * Beats when a monster is within the world's heartbeat range: faster and louder the closer the nearest one is, from
+     * every two seconds at the edge to four times a second once it is within the loudest distance (see
+     * {@link #closeness} and {@link #heartbeatVolume}). Good armor keeps the player calmer ({@link ArmorCalm}): the beat
+     * comes up to half as often and is quieter.
      */
-    private static void heartbeat(Player player, Haunted state) {
-        double nearest = nearestEnemy(player);
-        if (nearest > HEARTBEAT_RANGE) return;
-        double closeness = 1 - nearest / HEARTBEAT_RANGE;
+    private static void heartbeat(Player player, Haunted state, AtmosphereSettings atmosphere) {
+        double range = atmosphere.heartbeatRange();
+        double nearest = nearestEnemy(player, range);
+        if (nearest > range) return;
+        double closeness = closeness(nearest, range, atmosphere.heartbeatLoudestWithin());
         double calm = ArmorCalm.of(player);
         long every = Math.max(1, Math.round((8 - 7 * closeness) * (1 + calm)));
         if (state.steps - state.lastBeat < every) return;
@@ -197,20 +198,30 @@ public final class Haunting implements Listener {
     }
 
     /**
-     * Faint at the edge of the range and only loud right next to a monster: the volume follows the square of the
+     * @param distance blocks to the nearest monster
+     * @param range    the heartbeat's range
+     * @param loudest  within how many blocks it is at its loudest
+     * @return 0 at the edge of the range, rising to 1 at the loudest distance and closer
+     */
+    static double closeness(double distance, double range, double loudest) {
+        return Math.clamp((range - distance) / (range - loudest), 0, 1);
+    }
+
+    /**
+     * Faint at the edge of the range and only loud close to a monster: the volume follows the square of the
      * closeness, between {@value #HEARTBEAT_QUIETEST} and {@value #HEARTBEAT_LOUDEST}.
      *
-     * @param closeness 0 at the edge of the range, 1 right next to the monster
+     * @param closeness 0 at the edge of the range, 1 at the loudest distance
      */
     static float heartbeatVolume(double closeness) {
         double clamped = Math.clamp(closeness, 0, 1);
         return (float) (HEARTBEAT_QUIETEST + (HEARTBEAT_LOUDEST - HEARTBEAT_QUIETEST) * clamped * clamped);
     }
 
-    private static double nearestEnemy(Player player) {
+    private static double nearestEnemy(Player player, double range) {
         Location at = player.getLocation();
         double nearest = Double.MAX_VALUE;
-        for (Entity entity : player.getNearbyEntities(HEARTBEAT_RANGE, HEARTBEAT_RANGE / 2, HEARTBEAT_RANGE)) {
+        for (Entity entity : player.getNearbyEntities(range, range / 2, range)) {
             if (entity instanceof Enemy && !entity.isDead()) {
                 nearest = Math.min(nearest, entity.getLocation().distance(at));
             }

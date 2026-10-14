@@ -875,6 +875,8 @@ export interface AtmosphereSettings {
   darknessPulses?: boolean;
   rain?: boolean;
   heartbeat?: boolean;
+  heartbeatRange?: number;
+  heartbeatLoudestWithin?: number;
   screenEffect?: boolean;
   particles?: AmbientParticle[];
   scares?: Scares;

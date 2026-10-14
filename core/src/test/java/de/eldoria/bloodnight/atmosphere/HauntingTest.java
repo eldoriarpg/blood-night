@@ -120,4 +120,12 @@ class HauntingTest extends AtmosphereTest {
         assertEquals(0.45f, Haunting.heartbeatVolume(1), 1e-6);
         assertTrue(Haunting.heartbeatVolume(0.5) < (0.03f + 0.45f) / 2);
     }
+
+    @Test
+    void theHeartbeatIsLoudestWithinItsDistanceAndSilentAtItsRange() {
+        assertEquals(1, Haunting.closeness(5, 30, 5), 1e-9);
+        assertEquals(1, Haunting.closeness(2, 30, 5), 1e-9);
+        assertEquals(0, Haunting.closeness(30, 30, 5), 1e-9);
+        assertEquals(0.5, Haunting.closeness(17.5, 30, 5), 1e-9);
+    }
 }

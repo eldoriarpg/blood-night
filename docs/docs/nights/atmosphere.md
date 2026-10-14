@@ -22,6 +22,8 @@ atmosphere:
   darknessPulses: true
   rain: false
   heartbeat: true
+  heartbeatRange: 30
+  heartbeatLoudestWithin: 5
   screenEffect: true
   particles:
     - particle: minecraft:ash
@@ -50,7 +52,7 @@ in every world of the normal overworld kind. The Nether and the End keep their s
 | `vignette` | The edge of the screen glows red. |
 | `darknessPulses` | Every minute or so the screen goes dark for a moment. |
 | `rain` | It rains for them, even if the weather is clear. Off by default. |
-| `heartbeat` | They hear a heartbeat when a monster is within 20 blocks. Far away it is slow and faint. The closer the monster gets, the faster and louder it beats. Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. |
+| `heartbeat` | They hear a heartbeat when a monster is within `heartbeatRange` blocks (30). Far away it is slow and faint. The closer the monster gets, the faster and louder it beats, up to its loudest within `heartbeatLoudestWithin` blocks (5). Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. |
 | `particles` | Ash and spores drift around them. Add or remove particles as you like. |
 
 Only the player sees and hears these. The world itself does not change.
