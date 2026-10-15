@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,16 +23,34 @@ public enum MarkerShape {
     /**
      * Two flat bars crossing on the ground; its size is the radius.
      */
-    CROSS;
+    CROSS,
+    /**
+     * A flat ring on the ground, made of short bars turned along its edge; its size is the radius.
+     */
+    CIRCLE;
 
     private static final double THIN = 0.06;
     private static final double LIFT = 0.02;
     private static final double BEAM = 0.25;
+    private static final double SEGMENT = 0.6;
+    private static final int FEWEST_SEGMENTS = 16;
+    private static final int MOST_SEGMENTS = 48;
+    private static final double OVERLAP = 1.05;
 
     /**
-     * One box of a marker, relative to the marker's location: its size along each axis and the corner it starts at.
+     * One box of a marker, relative to the marker's location: its size along each axis, the corner it starts at, and
+     * how far it is turned about that corner around the vertical axis.
+     *
+     * @param yaw the turn in radians; a turn of a quarter maps the box's width onto its negative z axis
      */
-    public record Bar(double width, double height, double depth, double x, double y, double z) {}
+    public record Bar(double width, double height, double depth, double x, double y, double z, double yaw) {
+        /**
+         * A box that is not turned.
+         */
+        public Bar(double width, double height, double depth, double x, double y, double z) {
+            this(width, height, depth, x, y, z, 0);
+        }
+    }
 
     /**
      * @param size the marker's size, at least a tenth of a block
@@ -46,6 +65,33 @@ public enum MarkerShape {
                 List.of(
                         new Bar(2 * s, THIN, BEAM, -s, LIFT, -BEAM / 2),
                         new Bar(BEAM, THIN, 2 * s, -BEAM / 2, LIFT, -s));
+            case CIRCLE -> ring(s);
         };
+    }
+
+    /**
+     * Short bars along a circle, each turned so its length follows the edge and centred on it; neighbours overlap a
+     * little so the ring shows no gaps. Larger rings get more bars, between {@value #FEWEST_SEGMENTS} and
+     * {@value #MOST_SEGMENTS}.
+     */
+    private static List<Bar> ring(double radius) {
+        int count = (int) Math.clamp(Math.round(2 * Math.PI * radius / SEGMENT), FEWEST_SEGMENTS, MOST_SEGMENTS);
+        double length = 2 * Math.PI * radius / count * OVERLAP;
+        List<Bar> bars = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            double angle = 2 * Math.PI * i / count;
+            double yaw = -angle - Math.PI / 2;
+            double centreX = length / 2 * Math.cos(yaw) + BEAM / 2 * Math.sin(yaw);
+            double centreZ = -length / 2 * Math.sin(yaw) + BEAM / 2 * Math.cos(yaw);
+            bars.add(new Bar(
+                    length,
+                    THIN,
+                    BEAM,
+                    radius * Math.cos(angle) - centreX,
+                    LIFT,
+                    radius * Math.sin(angle) - centreZ,
+                    yaw));
+        }
+        return bars;
     }
 }

@@ -327,7 +327,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.creeper("max_fuse_ticks", 50));
             graph.on(MOB_TICK, graph.particles("minecraft:end_rod", 2));
             String warn = graph.node(WORLD_SHOW_MARKER)
-                    .config("shape", "AREA")
+                    .config("shape", "CIRCLE")
                     .input("location", graph.selfRead(), "location")
                     .input("color", graph.color(255, 40, 40), RESULT)
                     .literal("size", 5.0)
@@ -574,7 +574,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     .literal("effect_only", true)
                     .id();
             String warn = graph.node(WORLD_SHOW_MARKER)
-                    .config("shape", "AREA")
+                    .config("shape", "CIRCLE")
                     .input("location", mark.id(), VALUE)
                     .input("color", graph.color(255, 40, 40), RESULT)
                     .literal("size", 1.5)

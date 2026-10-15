@@ -7,8 +7,8 @@
     "en" : "Thunder Wizard"
   },
   "descriptions" : {
-    "de" : "Markiert, wo du stehst, mit einer roten Fläche. Ist sie voll, schlägt dort ein Blitz ein.",
-    "en" : "Marks where you stand with a red area. When the area is full, lightning strikes there."
+    "de" : "Markiert, wo du stehst, mit einem roten Ring. Ist er voll, schlägt dort ein Blitz ein.",
+    "en" : "Marks where you stand with a red ring. When the ring is full, lightning strikes there."
   },
   "requires" : [ ],
   "mob" : {
@@ -224,7 +224,7 @@
         "show_marker_8" : {
           "type" : "world.show_marker",
           "config" : {
-            "shape" : "AREA"
+            "shape" : "CIRCLE"
           },
           "inputs" : {
             "color" : {

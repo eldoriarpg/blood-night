@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.enchantments.BloodEnchantments;
+import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
@@ -17,7 +18,6 @@ import org.bukkit.loot.LootTable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The blood night reward: the loot table {@value #TABLE} of the plugin's data pack, which server owners replace with a
@@ -50,7 +50,7 @@ public final class RewardLoot {
     /**
      * @param mob    the mob the reward is for
      * @param killer the player who killed it
-     * @return one roll of the reward table, nothing when the table is missing
+     * @return one roll of the reward table, nothing when the table is missing or does not fit a mob's loot
      */
     public static Collection<ItemStack> roll(LivingEntity mob, Player killer) {
         LootTable table = Bukkit.getLootTable(KEY);
@@ -59,6 +59,6 @@ public final class RewardLoot {
                 .lootedEntity(mob)
                 .killer(killer)
                 .build();
-        return table.populateLoot(ThreadLocalRandom.current(), context);
+        return BukkitRuntime.rollLoot(table, context);
     }
 }

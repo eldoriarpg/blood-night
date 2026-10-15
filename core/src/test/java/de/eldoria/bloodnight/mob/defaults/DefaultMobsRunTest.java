@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.TriggerDispatcher;
+import de.eldoria.bloodnight.graph.runtime.MarkerShape;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
@@ -184,7 +185,9 @@ class DefaultMobsRunTest {
 
         assertTrue(creeper.isIgnited());
         assertFalse(creeper.isDead());
-        assertFalse(world.getEntitiesByClass(BlockDisplay.class).isEmpty());
+        assertEquals(
+                MarkerShape.CIRCLE.bars(5).size(),
+                world.getEntitiesByClass(BlockDisplay.class).size());
     }
 
     @Test

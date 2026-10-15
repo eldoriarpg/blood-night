@@ -38,6 +38,8 @@ import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
@@ -50,6 +52,7 @@ import java.util.function.Supplier;
  */
 public final class BukkitRuntime {
     private static final boolean REGIONISED = regionised();
+    private static final Set<NamespacedKey> UNFIT_TABLES = ConcurrentHashMap.newKeySet();
 
     private BukkitRuntime() {}
 
@@ -142,10 +145,26 @@ public final class BukkitRuntime {
         context.at(at, () -> {
             LootContext.Builder builder = new LootContext.Builder(at).lootedEntity(mob);
             if (looter != null) builder.killer(looter);
-            for (ItemStack item : loot.populateLoot(ThreadLocalRandom.current(), builder.build())) {
-                world.dropItemNaturally(at, item);
-            }
+            for (ItemStack item : rollLoot(loot, builder.build())) world.dropItemNaturally(at, item);
         });
+    }
+
+    /**
+     * Rolls a loot table, or gives nothing when the table asks for more than the context has, e.g. a table of the type
+     * {@code minecraft:block} rolled for a mob; that is logged once per table. The plugin's tables are of the type
+     * {@code minecraft:entity}, which needs the looted entity and nothing else.
+     */
+    public static Collection<ItemStack> rollLoot(LootTable table, LootContext context) {
+        try {
+            return table.populateLoot(ThreadLocalRandom.current(), context);
+        } catch (IllegalArgumentException e) {
+            if (UNFIT_TABLES.add(table.getKey())) {
+                Bukkit.getLogger()
+                        .warning("Loot table %s does not fit a mob's loot: %s"
+                                .formatted(table.getKey(), e.getMessage()));
+            }
+            return List.of();
+        }
     }
 
     /**

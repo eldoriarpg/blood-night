@@ -5,8 +5,8 @@
     "de": "Instabiler Creeper"
   },
   "descriptions": {
-    "en": "Charged, with a huge explosion. When you hit it, a red area grows around it. Run: it explodes a second later.",
-    "de": "Geladen, mit riesiger Explosion. Triffst du ihn, wächst eine rote Fläche um ihn. Lauf: Er explodiert eine Sekunde später."
+    "en": "Charged, with a huge explosion. When you hit it, a red ring grows around it. Run: it explodes a second later.",
+    "de": "Geladen, mit riesiger Explosion. Triffst du ihn, wächst ein roter Ring um ihn. Lauf: Er explodiert eine Sekunde später."
   },
   "requires": []
 }
