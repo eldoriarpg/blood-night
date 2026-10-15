@@ -14,6 +14,13 @@ CI verifies a feature, fix or chore branch through its pull request only; pushin
 Open a draft pull request to have a branch verified before it is ready for review. Renovate branches, `main` and
 version tags are verified on push.
 
+## Versions and publishing
+
+The version comes from git (PublishData): a tag `v1.2.0` builds `1.2.0`, everything else builds the next version in
+`gradle.properties` with `-SNAPSHOT`. Never set a version in a build script. Pushes to `main` and version tags
+publish the API to EldoNexus (`maven-releases` / `maven-snapshots`) and the plugin jar to its internal repositories.
+After a release, raise `version` in `gradle.properties` to the next one.
+
 ## Toolchain
 
 Every command goes through `./toolchain.sh`, which runs it in the project's nix environment (`shell.nix`; run

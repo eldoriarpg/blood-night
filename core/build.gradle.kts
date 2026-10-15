@@ -6,6 +6,20 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.plugin.yml.paper)
     alias(libs.plugins.run.paper)
+    `maven-publish`
+}
+
+publishData {
+    eldoNexus(internal = true)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("plugin") {
+            artifactId = "bloodnight"
+            artifact(tasks.shadowJar)
+        }
+    }
 }
 
 dependencies {

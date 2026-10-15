@@ -83,3 +83,14 @@ docker compose up -d
 ```
 
 Your sessions stay. They live in a Docker volume.
+
+## Behind a proxy
+
+The editor limits how many sessions one address opens per hour. To know who is asking, it trusts the addresses a
+proxy passes on, but only from proxies it trusts. By default that is every private address, which covers the
+frontend and a web server on the same machine. If your web server or a service like Cloudflare sits somewhere else,
+add its addresses to `TRUSTED_PROXIES` in `.env`, separated by commas:
+
+```bash
+TRUSTED_PROXIES=172.16.0.0/12,10.0.0.0/8,192.168.0.0/16,127.0.0.1,::1,203.0.113.0/24
+```

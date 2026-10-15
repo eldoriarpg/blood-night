@@ -81,6 +81,7 @@ class EditorAppTest {
                 20,
                 1024 * 1024,
                 ASSETS,
+                List.of(),
                 database);
         Database.open(database);
         app = new EditorApp(

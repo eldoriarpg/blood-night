@@ -1,0 +1,28 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+env:
+  JAVA_VERSION: 25
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish to EldoNexus
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Publish the API and the plugin
+        run: ./gradlew :api:publishAllPublicationsToEldoNexusRepository :core:publishAllPublicationsToEldoNexusRepository
+        env:
+          ORG_GRADLE_PROJECT_EldoNexusUsername: ${{ secrets.NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_EldoNexusPassword: ${{ secrets.NEXUS_PASSWORD }}
