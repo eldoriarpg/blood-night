@@ -5,8 +5,7 @@
  */
 package de.eldoria.bloodnight.updates;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import de.eldoria.bloodnight.announce.Texts;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,10 +27,7 @@ public final class UpdateNotice implements Listener {
     public static final String PERMISSION = "bloodnight.updates";
 
     static final String DOWNLOAD = "https://github.com/eldoriarpg/blood-night/releases/latest";
-    private static final String MESSAGE =
-            "<red>BloodNight <latest> is out.</red> <gray>You run <current>.</gray> <click:open_url:'"
-                    + DOWNLOAD
-                    + "'><underlined>Download it</underlined></click>";
+    static final String AVAILABLE = "bloodnight.update.available";
     private final ReleaseSource source;
     private final String current;
     private final BooleanSupplier enabled;
@@ -68,11 +64,11 @@ public final class UpdateNotice implements Listener {
         Player player = event.getPlayer();
         String found = latest;
         if (found == null || !enabled.getAsBoolean() || !player.hasPermission(PERMISSION)) return;
-        player.sendMessage(message(found));
-    }
-
-    private Component message(String found) {
-        return MiniMessage.miniMessage()
-                .deserialize(MESSAGE, Placeholder.unparsed("latest", found), Placeholder.unparsed("current", current));
+        Texts.sender()
+                .sendMessage(
+                        player,
+                        AVAILABLE,
+                        Placeholder.unparsed("latest", found),
+                        Placeholder.unparsed("current", current));
     }
 }

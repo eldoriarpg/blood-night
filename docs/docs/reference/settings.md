@@ -27,7 +27,7 @@ Settings for the whole server.
 | `announcements.reach` | `SERVER`, `WORLD`, `NONE` | `SERVER` |
 | `announcements.method` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR` | `SUBTITLE` |
 | `announcements.personalMethod` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR` | `ACTION_BAR` |
-| `announcements.fallbackLocale` | text | `en_US` |
+| `announcements.fallbackLocale` | `en_US`, `de_DE`, `es_ES`, `fr_FR`, `ms_MY`, `tr_TR`, `zh_CN` | `en_US` |
 | `editor.url` | text | `https://bloodnight.eldoria.de` |
 | `editor.timeoutSeconds` | whole number | `30` |
 | `resourcePack.offer` | true or false | `true` |

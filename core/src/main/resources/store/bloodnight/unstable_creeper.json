@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Instabiler Creeper",
-    "en" : "Unstable Creeper"
+    "en" : "Unstable Creeper",
+    "es" : "Creeper inestable",
+    "fr" : "Creeper instable",
+    "ms" : "Creeper Tidak Stabil",
+    "tr" : "Dengesiz Creeper",
+    "zh" : "不稳定苦力怕"
   },
   "descriptions" : {
     "de" : "Geladen. Triffst du ihn, leuchtet er und ein roter Ring wächst um ihn. Lauf: Eine Sekunde später explodiert er so weit wie der Ring.",
-    "en" : "Charged. When you hit it, it glows and a red ring grows around it. Run: a second later it explodes as far as the ring."
+    "en" : "Charged. When you hit it, it glows and a red ring grows around it. Run: a second later it explodes as far as the ring.",
+    "es" : "Cargado. Cuando lo golpeas, brilla y crece un anillo rojo a su alrededor. Corre: un segundo después explota hasta donde llega el anillo.",
+    "fr" : "Chargé. Quand tu le frappes, il brille et un anneau rouge grandit autour de lui. Cours : une seconde plus tard, il explose jusqu'à l'anneau.",
+    "ms" : "Bercas. Apabila anda memukulnya, ia bercahaya dan gelang merah membesar di sekelilingnya. Lari: sesaat kemudian ia meletup sejauh gelang itu.",
+    "tr" : "Yüklüdür. Ona vurunca parlar ve çevresinde kırmızı bir halka büyür. Kaç: bir saniye sonra halkanın ulaştığı yere kadar patlar.",
+    "zh" : "带电。击中它后，它会发光，周围会扩大出一个红圈。快跑：一秒后它会在红圈范围内爆炸。"
   },
   "requires" : [ ],
   "mob" : {

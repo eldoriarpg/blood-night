@@ -17,7 +17,7 @@ import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.Effects;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.translation.Argument;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -48,6 +48,7 @@ import java.util.function.Supplier;
  * sees or hears is done on that player's thread.
  */
 public final class Announcer implements Listener {
+    static final String NIGHT_SLEEP = "bloodnight.night.sleep";
     private final Server server;
     private final BloodNights nights;
     private final Supplier<Announcements> announcements;
@@ -162,7 +163,7 @@ public final class Announcer implements Listener {
         World world = event.getPlayer().getWorld();
         if (nights.running(world).isEmpty()
                 || settings.apply(world).nightSettings().skippable()) return;
-        tell(event.getPlayer(), Messages.NIGHT_SLEEP);
+        tell(event.getPlayer(), NIGHT_SLEEP);
     }
 
     /**
@@ -230,19 +231,16 @@ public final class Announcer implements Listener {
                     case WORLD -> world.getPlayers();
                     case NONE -> List.of();
                 };
-        var message = Messages.message(key, Argument.component("world", names.apply(world)));
+        var worldName = Placeholder.component("world", names.apply(world));
         for (Player player : audience) {
-            tasks.entityNow(player, () -> Delivery.send(player, config.method(), config.prefix(), message));
+            tasks.entityNow(player, () -> Delivery.send(player, config.method(), key, worldName));
         }
     }
 
     private void tell(Player player, String key) {
         Announcements config = announcements.get();
         Delivery.send(
-                player,
-                config.personalMethod(),
-                config.prefix(),
-                Messages.message(key, Argument.component("world", names.apply(player.getWorld()))));
+                player, config.personalMethod(), key, Placeholder.component("world", names.apply(player.getWorld())));
     }
 
     private boolean affected(Player player) {

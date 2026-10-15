@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Ghost Creeper",
-    "de": "Geister-Creeper"
+    "de": "Geister-Creeper",
+    "es": "Creeper fantasma",
+    "fr": "Creeper fantôme",
+    "ms": "Creeper Hantu",
+    "tr": "Hayalet Creeper",
+    "zh": "幽灵苦力怕"
   },
   "descriptions": {
     "en": "Rides an invisible vex, so it flies. Above you it hisses, and a second later it drops on you.",
-    "de": "Reitet einen unsichtbaren Plagegeist und fliegt so. Über dir zischt er, und eine Sekunde später lässt er sich auf dich fallen."
+    "de": "Reitet einen unsichtbaren Plagegeist und fliegt so. Über dir zischt er, und eine Sekunde später lässt er sich auf dich fallen.",
+    "es": "Va montado en un vex invisible, así que vuela. Sobre ti sisea y, un segundo después, cae encima de ti.",
+    "fr": "Chevauche un vex invisible, donc il vole. Au-dessus de toi, il siffle, et une seconde plus tard il te tombe dessus.",
+    "ms": "Menunggang vex yang halimunan, jadi ia terbang. Di atas anda ia berdesis, dan sesaat kemudian ia jatuh ke atas anda.",
+    "tr": "Görünmez bir vex sürer, bu yüzden uçar. Üstündeyken tıslar ve bir saniye sonra üstüne düşer.",
+    "zh": "骑着一只隐形的恼鬼，所以会飞。在你上方时它会发出嘶嘶声，一秒后落到你身上。"
   },
   "requires": []
 }

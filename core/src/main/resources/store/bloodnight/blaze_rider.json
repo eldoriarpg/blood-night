@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Lohenreiter",
-    "en" : "Blaze Rider"
+    "en" : "Blaze Rider",
+    "es" : "Jinete de blaze",
+    "fr" : "Cavalier blaze",
+    "ms" : "Penunggang Blaze",
+    "tr" : "Blaze Binicisi",
+    "zh" : "烈焰骑士"
   },
   "descriptions" : {
     "de" : "Eine Spinne mit einer Lohe auf dem Rücken. Spieler direkt neben ihr fangen Feuer.",
-    "en" : "A spider with a blaze on its back. Players right next to it catch fire."
+    "en" : "A spider with a blaze on its back. Players right next to it catch fire.",
+    "es" : "Una araña con un blaze a la espalda. Los jugadores que están justo a su lado se prenden fuego.",
+    "fr" : "Une araignée avec un blaze sur le dos. Les joueurs juste à côté d'elle prennent feu.",
+    "ms" : "Labah-labah dengan blaze di belakangnya. Pemain yang betul-betul di sebelahnya terbakar.",
+    "tr" : "Sırtında bir blaze taşıyan örümcek. Hemen yanındaki oyuncular tutuşur.",
+    "zh" : "背上驮着烈焰人的蜘蛛。紧挨着它的玩家会着火。"
   },
   "requires" : [ ],
   "mob" : {

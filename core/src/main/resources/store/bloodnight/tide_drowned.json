@@ -4,11 +4,21 @@
   "pack" : "newer",
   "names" : {
     "de" : "Gezeiten-Ertrunkener",
-    "en" : "Tide Drowned"
+    "en" : "Tide Drowned",
+    "es" : "Ahogado de la marea",
+    "fr" : "Noyé des marées",
+    "ms" : "Drowned Pasang",
+    "tr" : "Gelgit Boğulmuşu",
+    "zh" : "潮汐溺尸"
   },
   "descriptions" : {
     "de" : "Wirft alle 3 Sekunden einen Dreizack, solange du im Wasser bist.",
-    "en" : "Throws a trident every 3 seconds while you are in water."
+    "en" : "Throws a trident every 3 seconds while you are in water.",
+    "es" : "Lanza un tridente cada 3 segundos mientras estás en el agua.",
+    "fr" : "Lance un trident toutes les 3 secondes tant que tu es dans l'eau.",
+    "ms" : "Melontar serampang setiap 3 saat semasa anda berada di dalam air.",
+    "tr" : "Sen sudayken her 3 saniyede bir üç dişli mızrak fırlatır.",
+    "zh" : "你在水中时，每 3 秒扔出一把三叉戟。"
   },
   "requires" : [ ],
   "mob" : {

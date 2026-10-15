@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Phantomseele",
-    "en" : "Phantom Soul"
+    "en" : "Phantom Soul",
+    "es" : "Alma de phantom",
+    "fr" : "Âme de phantom",
+    "ms" : "Roh Fantom",
+    "tr" : "Fantom Ruhu",
+    "zh" : "幻翼之魂"
   },
   "descriptions" : {
     "de" : "Unsichtbar, solange es kreist. Wenn es auf dich herabstößt, zeigt es sich und leuchtet. Seine Treffer blenden dich.",
-    "en" : "Invisible while it circles. When it dives at you, it shows itself and glows. Its hits blind you."
+    "en" : "Invisible while it circles. When it dives at you, it shows itself and glows. Its hits blind you.",
+    "es" : "Es invisible mientras da vueltas. Cuando se lanza en picado hacia ti, se deja ver y brilla. Sus golpes te ciegan.",
+    "fr" : "Invisible tant qu'il tourne en rond. Quand il plonge sur toi, il se montre et brille. Ses coups t'aveuglent.",
+    "ms" : "Halimunan semasa ia berlegar. Apabila ia menjunam ke arah anda, ia menampakkan diri dan bercahaya. Pukulannya membutakan anda.",
+    "tr" : "Daire çizerken görünmezdir. Üstüne dalınca görünür olur ve parlar. Vuruşları seni kör eder.",
+    "zh" : "盘旋时隐形。俯冲向你时会现身并发光。它的攻击会让你失明。"
   },
   "requires" : [ ],
   "mob" : {

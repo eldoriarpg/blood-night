@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Toxic Slime",
-    "de": "Giftiger Schleim"
+    "de": "Giftiger Schleim",
+    "es": "Slime tóxico",
+    "fr": "Slime toxique",
+    "ms": "Slime Toksik",
+    "tr": "Zehirli Balçık",
+    "zh": "剧毒史莱姆"
   },
   "descriptions": {
     "en": "Its hits poison you. Leaves a poison cloud when it dies.",
-    "de": "Seine Treffer vergiften dich. Hinterlässt eine Giftwolke, wenn er stirbt."
+    "de": "Seine Treffer vergiften dich. Hinterlässt eine Giftwolke, wenn er stirbt.",
+    "es": "Sus golpes te envenenan. Deja una nube venenosa al morir.",
+    "fr": "Ses coups t'empoisonnent. Laisse un nuage de poison en mourant.",
+    "ms": "Pukulannya meracuni anda. Meninggalkan awan racun apabila ia mati.",
+    "tr": "Vuruşları seni zehirler. Ölünce bir zehir bulutu bırakır.",
+    "zh": "它的攻击会让你中毒。死亡时留下一团毒云。"
   },
   "requires": []
 }

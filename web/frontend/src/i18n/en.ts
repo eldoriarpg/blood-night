@@ -485,6 +485,7 @@ export default {
                 PLAY_BOSS_MUSIC: 'Play boss music',
                 CREATE_WORLD_FOG: 'Create world fog',
             },
+            Language: {en_US: 'English', de_DE: 'Deutsch', es_ES: 'Español', fr_FR: 'Français', ms_MY: 'Bahasa Melayu', tr_TR: 'Türkçe', zh_CN: '简体中文'},
             LengthMode: {NORMAL: 'Normal', EXTENDED: 'Extended', RANGE: 'Within a range'},
             Method: {CHAT: 'Chat', TITLE: 'Title', SUBTITLE: 'Subtitle', ACTION_BAR: 'Action bar'},
             NightEnd: {REMOVE: 'Remove', KEEP: 'Keep as it is', REVERT: 'Turn into an ordinary mob'},

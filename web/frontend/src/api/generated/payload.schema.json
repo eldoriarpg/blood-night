@@ -77,7 +77,9 @@
           "default" : "ACTION_BAR"
         },
         "fallbackLocale" : {
-          "type" : "string",
+          "allOf" : [ {
+            "$ref" : "#/$defs/Language"
+          } ],
           "default" : "en_US"
         }
       }
@@ -1026,6 +1028,10 @@
     "ItemKind" : {
       "type" : "string",
       "enum" : [ "REGISTERED", "DEFINED" ]
+    },
+    "Language" : {
+      "type" : "string",
+      "enum" : [ "en_US", "de_DE", "es_ES", "fr_FR", "ms_MY", "tr_TR", "zh_CN" ]
     },
     "LengthMode" : {
       "type" : "string",

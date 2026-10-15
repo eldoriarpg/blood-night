@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Fearful Enderman",
-    "de": "Furchterregender Enderman"
+    "de": "Furchterregender Enderman",
+    "es": "Enderman aterrador",
+    "fr": "Enderman terrifiant",
+    "ms": "Enderman Menggerunkan",
+    "tr": "Korkunç Enderman",
+    "zh": "恐怖末影人"
   },
   "descriptions": {
     "en": "Comes for the nearest player. It screams every 12 seconds: look away within a second, or you go blind. Its hits blind you too.",
-    "de": "Kommt zum nächsten Spieler. Alle 12 Sekunden schreit es: Schau innerhalb einer Sekunde weg, sonst wirst du blind. Auch seine Schläge blenden dich."
+    "de": "Kommt zum nächsten Spieler. Alle 12 Sekunden schreit es: Schau innerhalb einer Sekunde weg, sonst wirst du blind. Auch seine Schläge blenden dich.",
+    "es": "Va a por el jugador más cercano. Grita cada 12 segundos: aparta la mirada en menos de un segundo o te quedarás ciego. Sus golpes también te ciegan.",
+    "fr": "Vient vers le joueur le plus proche. Il hurle toutes les 12 secondes : détourne le regard en moins d'une seconde, sinon tu deviens aveugle. Ses coups t'aveuglent aussi.",
+    "ms": "Mendatangi pemain yang paling dekat. Ia menjerit setiap 12 saat: alihkan pandangan dalam masa sesaat, atau anda menjadi buta. Pukulannya juga membutakan anda.",
+    "tr": "En yakındaki oyuncuya gelir. Her 12 saniyede bir çığlık atar: bir saniye içinde başka yere bak, yoksa kör olursun. Vuruşları da seni kör eder.",
+    "zh": "冲向最近的玩家。每 12 秒尖叫一次：一秒内移开视线，否则你会失明。它的攻击也会让你失明。"
   },
   "requires": []
 }

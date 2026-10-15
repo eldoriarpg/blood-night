@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.configuration.elements;
 
+import de.eldoria.bloodnight.web.api.Language;
+
 /**
  * How blood nights are announced, server-wide.
  * <p>
@@ -18,7 +20,7 @@ public class Announcements {
     private Reach reach = Reach.SERVER;
     private Method method = Method.SUBTITLE;
     private Method personalMethod = Method.ACTION_BAR;
-    private String fallbackLocale = "en_US";
+    private Language fallbackLocale = Language.en_US;
 
     public String prefix() {
         return prefix;
@@ -36,7 +38,7 @@ public class Announcements {
         return personalMethod;
     }
 
-    public String fallbackLocale() {
+    public Language fallbackLocale() {
         return fallbackLocale;
     }
 

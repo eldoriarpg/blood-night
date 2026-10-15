@@ -46,7 +46,7 @@ final class SourceCommand {
                                 Files.writeString(file, compiled.source());
                                 Replies.send(sender, "source.written", arg("mob", mob), arg("file", file));
                             } catch (IOException e) {
-                                Replies.send(sender, "source.failed", arg("error", String.valueOf(e.getMessage())));
+                                Replies.send(sender, "source.failed", arg("reason", String.valueOf(e.getMessage())));
                             }
                         },
                         () -> Replies.send(sender, "source.missing", arg("mob", mob)));

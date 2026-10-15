@@ -108,7 +108,7 @@ final class EditorCommand {
         client().addParticipant(open.get(), participant(sender), areas(sender))
                 .whenComplete((joined, error) -> sync(() -> {
                     if (error != null) {
-                        Replies.send(sender, "editor.failed", arg("error", reason(error)));
+                        Replies.send(sender, "editor.failed", arg("reason", reason(error)));
                         return;
                     }
                     if (joined.isEmpty()) {
@@ -155,7 +155,7 @@ final class EditorCommand {
                     plugin.store());
             payload = (setup ? opened.forSetup(legacy(sender)) : opened).asJson();
         } catch (IOException e) {
-            Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "editor.unreadable", arg("reason", String.valueOf(e.getMessage())));
             return;
         }
         String catalog = CatalogGenerator.write(plugin.catalog());
@@ -163,7 +163,7 @@ final class EditorCommand {
         client().open(plugin.catalog().version(), catalog, payload, participant(sender), areas(sender))
                 .whenComplete((session, error) -> sync(() -> {
                     if (error != null) {
-                        Replies.send(sender, "editor.failed", arg("error", reason(error)));
+                        Replies.send(sender, "editor.failed", arg("reason", reason(error)));
                         return;
                     }
                     previous.ifPresent(old -> client().close(old));
@@ -179,7 +179,7 @@ final class EditorCommand {
             return EditorLegacy.of(
                     ConvertCommand.convert(plugin), plugin.getServer().getWorlds());
         } catch (IOException | RuntimeException e) {
-            Replies.send(sender, "convert.failed", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "convert.failed", arg("reason", String.valueOf(e.getMessage())));
             return null;
         }
     }
@@ -243,7 +243,7 @@ final class EditorCommand {
                         : client().pull(session.get()))
                 .whenComplete((view, error) -> sync(() -> {
                     if (error != null) {
-                        Replies.send(sender, "editor.failed", arg("error", reason(error)));
+                        Replies.send(sender, "editor.failed", arg("reason", reason(error)));
                         return;
                     }
                     if (view == null) {
@@ -262,12 +262,12 @@ final class EditorCommand {
         try {
             hashes = plugin.configuration().fileHashes(plugin.getServer().getWorlds());
         } catch (IOException e) {
-            Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "editor.unreadable", arg("reason", String.valueOf(e.getMessage())));
             return;
         }
         client().applied(session, revision, hashes)
                 .whenComplete((ignored, error) -> sync(() -> {
-                    if (error != null) Replies.send(sender, "editor.failed", arg("error", reason(error)));
+                    if (error != null) Replies.send(sender, "editor.failed", arg("reason", reason(error)));
                     else Replies.send(sender, "editor.stays_open");
                 }));
     }
@@ -293,7 +293,7 @@ final class EditorCommand {
         try {
             result = EditorResult.of(view.payload());
         } catch (RuntimeException e) {
-            Replies.send(sender, "editor.session_unreadable", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "editor.session_unreadable", arg("reason", String.valueOf(e.getMessage())));
             return false;
         }
         ItemRegistry items = itemsBefore(result, view.payload().path("setup").asBoolean(false));
@@ -310,7 +310,7 @@ final class EditorCommand {
         try {
             backup = plugin.configuration().backup();
         } catch (IOException e) {
-            Replies.send(sender, "editor.backup_failed", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "editor.backup_failed", arg("reason", String.valueOf(e.getMessage())));
             return false;
         }
         plugin.configuration().replaceMobs(result.mobs().values());
@@ -365,7 +365,7 @@ final class EditorCommand {
             changed = EditorChecks.changedFiles(
                     result, plugin.configuration().fileHashes(plugin.getServer().getWorlds()));
         } catch (IOException e) {
-            Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "editor.unreadable", arg("reason", String.valueOf(e.getMessage())));
             return false;
         }
         if (changed.isEmpty()) return true;

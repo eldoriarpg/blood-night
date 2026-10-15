@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Furchterregendes Phantom",
-    "en" : "Fearful Phantom"
+    "en" : "Fearful Phantom",
+    "es" : "Phantom aterrador",
+    "fr" : "Phantom terrifiant",
+    "ms" : "Fantom Menggerunkan",
+    "tr" : "Korkunç Fantom",
+    "zh" : "恐怖幻翼"
   },
   "descriptions" : {
     "de" : "Leuchtet. Seine Treffer verlangsamen dich und holen dich aus dem Elytra-Flug.",
-    "en" : "Glows. Its hits slow you down and knock you out of elytra flight."
+    "en" : "Glows. Its hits slow you down and knock you out of elytra flight.",
+    "es" : "Brilla. Sus golpes te ralentizan y te sacan del vuelo con élitros.",
+    "fr" : "Brille. Ses coups te ralentissent et te font tomber de ton vol en élytres.",
+    "ms" : "Bercahaya. Pukulannya melambatkan anda dan menjatuhkan anda daripada penerbangan elytra.",
+    "tr" : "Parlar. Vuruşları seni yavaşlatır ve elytra uçuşundan düşürür.",
+    "zh" : "发光。它的攻击会让你减速，并打断你的鞘翅飞行。"
   },
   "requires" : [ ],
   "mob" : {

@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Magic Skeleton",
-    "de": "Magisches Skelett"
+    "de": "Magisches Skelett",
+    "es": "Esqueleto mágico",
+    "fr": "Squelette magique",
+    "ms": "Rangka Sihir",
+    "tr": "Büyülü İskelet",
+    "zh": "魔法骷髅"
   },
   "descriptions": {
     "en": "Its arrows bring slowness, weakness, poison and nausea, always in this order. The dust on it shows what comes next.",
-    "de": "Seine Pfeile bringen Langsamkeit, Schwäche, Gift und Übelkeit, immer in dieser Reihenfolge. Der Staub an ihm zeigt, was als Nächstes kommt."
+    "de": "Seine Pfeile bringen Langsamkeit, Schwäche, Gift und Übelkeit, immer in dieser Reihenfolge. Der Staub an ihm zeigt, was als Nächstes kommt.",
+    "es": "Sus flechas traen lentitud, debilidad, veneno y náuseas, siempre en este orden. El polvo que lo rodea muestra lo que viene después.",
+    "fr": "Ses flèches apportent lenteur, faiblesse, poison et nausée, toujours dans cet ordre. La poussière sur lui montre ce qui vient ensuite.",
+    "ms": "Anak panahnya membawa kelembapan, kelemahan, racun dan loya, sentiasa mengikut urutan ini. Debu padanya menunjukkan apa yang akan datang seterusnya.",
+    "tr": "Okları her zaman bu sırayla yavaşlık, güçsüzlük, zehir ve mide bulantısı getirir. Üstündeki toz sıradakini gösterir.",
+    "zh": "它的箭依次带来缓慢、虚弱、中毒和反胃，顺序总是如此。它身上的尘雾显示下一个效果。"
   },
   "requires": []
 }

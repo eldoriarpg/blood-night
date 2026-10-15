@@ -286,6 +286,11 @@ export type Reach = 'SERVER' | 'WORLD' | 'NONE';
 export type Method = 'CHAT' | 'TITLE' | 'SUBTITLE' | 'ACTION_BAR';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Language".
+ */
+export type Language = 'en_US' | 'de_DE' | 'es_ES' | 'fr_FR' | 'ms_MY' | 'tr_TR' | 'zh_CN';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "NightSelectionType".
  */
 export type NightSelectionType = 'RANDOM' | 'MOON_PHASE' | 'REAL_MOON_PHASE' | 'INTERVAL' | 'PHASE' | 'CURVE';
@@ -613,7 +618,7 @@ export interface Announcements {
   reach?: Reach & string;
   method?: Method & string;
   personalMethod?: Method & string;
-  fallbackLocale?: string;
+  fallbackLocale?: Language & string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1461,6 +1466,16 @@ export const Flag = {
 export const ItemKind = {
     DEFINED: "DEFINED",
     REGISTERED: "REGISTERED",
+} as const;
+
+export const Language = {
+    de_DE: "de_DE",
+    en_US: "en_US",
+    es_ES: "es_ES",
+    fr_FR: "fr_FR",
+    ms_MY: "ms_MY",
+    tr_TR: "tr_TR",
+    zh_CN: "zh_CN",
 } as const;
 
 export const LengthMode = {

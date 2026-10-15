@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Invisible Skeleton",
-    "de": "Unsichtbares Skelett"
+    "de": "Unsichtbares Skelett",
+    "es": "Esqueleto invisible",
+    "fr": "Squelette invisible",
+    "ms": "Rangka Halimunan",
+    "tr": "Görünmez İskelet",
+    "zh": "隐形骷髅"
   },
   "descriptions": {
     "en": "Invisible, but it shows itself for a second after each shot. Its arrows glow.",
-    "de": "Unsichtbar, zeigt sich aber nach jedem Schuss für eine Sekunde. Seine Pfeile leuchten."
+    "de": "Unsichtbar, zeigt sich aber nach jedem Schuss für eine Sekunde. Seine Pfeile leuchten.",
+    "es": "Es invisible, pero se deja ver durante un segundo después de cada disparo. Sus flechas brillan.",
+    "fr": "Invisible, mais il se montre une seconde après chaque tir. Ses flèches brillent.",
+    "ms": "Halimunan, tetapi ia menampakkan diri selama sesaat selepas setiap tembakan. Anak panahnya bercahaya.",
+    "tr": "Görünmezdir ama her atıştan sonra bir saniye görünür. Okları parlar.",
+    "zh": "隐形，但每次射击后会现身一秒。它的箭会发光。"
   },
   "requires": []
 }

@@ -4,11 +4,21 @@
   "pack" : "newer",
   "names" : {
     "de" : "Trägerphantom",
-    "en" : "Carrier Phantom"
+    "en" : "Carrier Phantom",
+    "es" : "Phantom porteador",
+    "fr" : "Phantom porteur",
+    "ms" : "Fantom Pembawa",
+    "tr" : "Taşıyıcı Fantom",
+    "zh" : "搬运幻翼"
   },
   "descriptions" : {
     "de" : "Packt dich, trägt dich 20 Blöcke hoch und lässt dich fallen. Triff es im Anflug, um den Griff zu verhindern, oder drück fünfmal Schleichen, um dich loszureißen.",
-    "en" : "Grabs you, carries you 20 blocks up and drops you. Hit it on its way in to stop the grab, or press sneak five times to break loose."
+    "en" : "Grabs you, carries you 20 blocks up and drops you. Hit it on its way in to stop the grab, or press sneak five times to break loose.",
+    "es" : "Te agarra, te sube 20 bloques y te suelta. Golpéalo mientras se acerca para evitar que te agarre, o pulsa agacharse cinco veces para soltarte.",
+    "fr" : "T'attrape, t'emporte 20 blocs plus haut et te lâche. Frappe-le pendant son approche pour l'empêcher de t'attraper, ou accroupis-toi cinq fois pour te libérer.",
+    "ms" : "Menyambar anda, membawa anda 20 blok ke atas dan menjatuhkan anda. Pukul ia semasa ia datang untuk menghalang sambarannya, atau tekan menyelinap lima kali untuk melepaskan diri.",
+    "tr" : "Seni yakalar, 20 blok yukarı taşır ve bırakır. Yakalamasını durdurmak için gelirken ona vur ya da kurtulmak için beş kez eğil.",
+    "zh" : "抓住你，把你带到 20 格高处再扔下。在它飞来时击中它可以阻止抓取，或者按五次潜行挣脱。"
   },
   "requires" : [ ],
   "mob" : {

@@ -5,36 +5,33 @@
  */
 package de.eldoria.bloodnight.announce;
 
+import de.eldoria.bloodnight.web.api.Language;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.translation.Argument;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * The texts the server renders on its own: night names and the blood curse's death message.
+ */
 class MessagesTest {
     private final Messages messages = new Messages();
 
@@ -52,90 +49,53 @@ class MessagesTest {
         return PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(component, locale));
     }
 
-    private static String begin(Locale locale) {
-        return render(Messages.message(NightKind.NIGHT.key("begin"), Argument.string("world", "world")), locale);
+    private static String eclipse(Locale locale) {
+        return render(Component.translatable(NightKind.ECLIPSE.key("name")), locale);
     }
 
     private static Properties bundle(String language) throws IOException {
-        try (InputStream stream =
-                MessagesTest.class.getClassLoader().getResourceAsStream("messages/%s.properties".formatted(language))) {
+        try (InputStream stream = MessagesTest.class
+                .getClassLoader()
+                .getResourceAsStream("translations/%s.properties".formatted(language))) {
             Properties properties = new Properties();
             properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
             return properties;
         }
     }
 
-    private static final String COMMANDS = "bloodnight.command.";
-
     @Test
     void englishHasEveryText() throws IOException {
-        Set<String> expected = new HashSet<>(Set.of(
-                Messages.NIGHT_SLEEP,
-                Messages.COMMAND_BLOCKED,
-                Messages.BLOOD_CURSE_DEATH,
-                Messages.BLOOD_CURSE_DEATH + ".player",
-                NightKind.DRAGON.key("begin"),
-                NightKind.DRAGON.key("end")));
-        for (NightKind kind : List.of(NightKind.NIGHT, NightKind.TIDE, NightKind.ECLIPSE)) {
-            for (String text : List.of("begin", "end", "joined", "left", "name")) expected.add(kind.key(text));
-        }
-        for (String text : List.of("title", "danger", "help", "reward", "end", "ready")) {
-            expected.add("bloodnight.intro." + text);
-        }
-        Set<String> announcements = new HashSet<>(bundle("en").stringPropertyNames());
-        announcements.removeIf(key ->
-                key.startsWith(COMMANDS) && !key.equals(Messages.COMMAND_BLOCKED) || key.startsWith("bloodnight.mob."));
-        assertEquals(expected, announcements);
-    }
-
-    @Test
-    void germanHasEveryCommandText() throws IOException {
-        Set<String> english = new HashSet<>(bundle("en").stringPropertyNames());
-        english.removeIf(key -> !key.startsWith(COMMANDS));
-        assertTrue(bundle("de").stringPropertyNames().containsAll(english));
-    }
-
-    @Test
-    void everyCommandTextTheCommandsUseExists() throws IOException {
-        Pattern used = Pattern.compile("Replies\\.(?:send|text)\\(\\s*(?:sender,\\s*)?\"([a-z_.]+)\"(?!\\s*\\+)");
-        Set<String> english = bundle("en").stringPropertyNames();
-        try (Stream<Path> files = Files.list(Path.of("src/main/java/de/eldoria/bloodnight/command"))) {
-            for (Path file : files.toList()) {
-                Matcher matcher = used.matcher(Files.readString(file));
-                while (matcher.find()) {
-                    assertTrue(english.contains(COMMANDS + matcher.group(1)), file + ": " + matcher.group(1));
-                }
-            }
-        }
+        Set<String> expected =
+                new HashSet<>(Set.of(Messages.BLOOD_CURSE_DEATH, Messages.BLOOD_CURSE_DEATH + ".player"));
+        for (NightKind kind : List.of(NightKind.NIGHT, NightKind.TIDE, NightKind.ECLIPSE))
+            expected.add(kind.key("name"));
+        assertEquals(expected, bundle("en").stringPropertyNames());
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"de", "es", "ms", "tr", "zh"})
-    void translationsOnlyHaveEnglishKeys(String language) throws IOException {
-        assertTrue(
-                bundle("en").stringPropertyNames().containsAll(bundle(language).stringPropertyNames()));
+    @EnumSource(Language.class)
+    void everyLanguageHasEveryText(Language language) throws IOException {
+        assertEquals(
+                bundle("en").stringPropertyNames(), bundle(language.language()).stringPropertyNames());
     }
 
     @Test
     void textsFollowThePlayersLanguage() {
-        assertEquals("A blood night has begun in world.", begin(Locale.US));
-        assertEquals("Eine Blutnacht hat in world begonnen.", begin(Locale.GERMANY));
-        assertEquals("Eine Blutnacht hat in world begonnen.", begin(Locale.of("de", "AT")));
-        assertEquals("血夜在世界 world 降临了...", begin(Locale.SIMPLIFIED_CHINESE));
+        assertEquals("Blood Eclipse", eclipse(Locale.US));
+        assertEquals("Blutfinsternis", eclipse(Locale.GERMANY));
+        assertEquals("Blutfinsternis", eclipse(Locale.of("de", "AT")));
+        assertEquals("血蚀", eclipse(Locale.SIMPLIFIED_CHINESE));
     }
 
     @Test
     void missingTextsFallBack() {
-        assertEquals("A blood night has begun in world.", begin(Locale.FRANCE));
-        assertEquals(
-                "Sleeping will not end this blood night.",
-                render(Messages.message(Messages.NIGHT_SLEEP), Locale.of("ms", "MY")));
+        assertEquals("Blood Eclipse", eclipse(Locale.ITALY));
     }
 
     @Test
     void theFallbackIsConfigurable() {
         messages.fallback("de_DE");
-        assertEquals("Eine Blutnacht hat in world begonnen.", begin(Locale.FRANCE));
+        assertEquals("Blutfinsternis", eclipse(Locale.ITALY));
     }
 
     @Test

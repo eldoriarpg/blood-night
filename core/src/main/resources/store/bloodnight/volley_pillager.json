@@ -4,11 +4,21 @@
   "pack" : "newer",
   "names" : {
     "de" : "Salven-Plünderer",
-    "en" : "Volley Pillager"
+    "en" : "Volley Pillager",
+    "es" : "Saqueador de ráfagas",
+    "fr" : "Pillard à salves",
+    "ms" : "Pillager Bertubi",
+    "tr" : "Yaylım Yağmacısı",
+    "zh" : "齐射掠夺者"
   },
   "descriptions" : {
     "de" : "Schießt alle 4 Sekunden zwei zusätzliche Pfeile, solange er dich sieht.",
-    "en" : "Fires two extra arrows every 4 seconds while it sees you."
+    "en" : "Fires two extra arrows every 4 seconds while it sees you.",
+    "es" : "Dispara dos flechas extra cada 4 segundos mientras te ve.",
+    "fr" : "Tire deux flèches en plus toutes les 4 secondes tant qu'il te voit.",
+    "ms" : "Menembak dua anak panah tambahan setiap 4 saat selagi ia nampak anda.",
+    "tr" : "Seni gördüğü sürece her 4 saniyede bir iki ok daha atar.",
+    "zh" : "看到你时，每 4 秒额外射出两支箭。"
   },
   "requires" : [ ],
   "mob" : {

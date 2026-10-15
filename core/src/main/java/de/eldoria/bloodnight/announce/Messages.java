@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.announce;
 
+import de.eldoria.bloodnight.web.api.Language;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -27,22 +29,22 @@ import java.util.Properties;
 import static net.kyori.adventure.text.Component.translatable;
 
 /**
- * The plugin's texts, translated for each player's client language.
+ * The texts the server renders for each player on its own, through Adventure's global translator: the death message
+ * of the blood curse, the night names on boss bars, and the names of store mobs.
  * <p>
- * Texts are MiniMessage in {@code messages/<language>.properties}, registered with Adventure's global translator, so
- * every message is a translatable component that the server renders in the receiver's language. A text missing in a
- * language falls back to the configured fallback language.
+ * Chat texts are not here; they go through {@link Texts}. These are MiniMessage in
+ * {@code translations/<language>.properties}, and a text missing in a language falls back to the configured fallback
+ * language.
  */
 public final class Messages {
-    public static final String NIGHT_SLEEP = "bloodnight.night.sleep";
-    public static final String COMMAND_BLOCKED = "bloodnight.command.blocked";
     /**
      * Death message of the data pack's damage type {@code bloodnight:blood_curse}, which clients have no text for;
      * with {@code .player} when someone dealt it.
      */
     public static final String BLOOD_CURSE_DEATH = "death.attack.bloodnight.blood_curse";
 
-    private static final List<String> LOCALES = List.of("en", "de", "es", "ms", "tr", "zh");
+    private static final List<String> LOCALES =
+            Arrays.stream(Language.values()).map(Language::language).toList();
 
     private final MiniMessageTranslationStore store =
             MiniMessageTranslationStore.create(Key.key("bloodnight", "messages"));
@@ -98,7 +100,7 @@ public final class Messages {
     }
 
     private static Map<String, String> load(String locale) {
-        String path = "messages/%s.properties".formatted(locale);
+        String path = "translations/%s.properties".formatted(locale);
         try (InputStream stream = Messages.class.getClassLoader().getResourceAsStream(path)) {
             if (stream == null) throw new IllegalStateException("Missing " + path);
             Properties properties = new Properties();

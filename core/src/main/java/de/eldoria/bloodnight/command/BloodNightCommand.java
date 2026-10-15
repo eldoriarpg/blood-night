@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.announce.Texts;
 import net.strokkur.commands.Aliases;
 import net.strokkur.commands.Command;
 import net.strokkur.commands.DefaultExecutes;
@@ -106,8 +107,8 @@ final class BloodNightCommand {
             Replies.send(
                     sender,
                     "help.line",
-                    arg("syntax", "/bloodnight " + syntax),
-                    arg("description", Replies.text("help." + name)));
+                    arg("syntax", Texts.command("/bloodnight " + syntax, "/bloodnight " + name + " ")),
+                    arg("description", Replies.text(sender, "help." + name)));
         });
         Replies.send(sender, "help.docs");
     }

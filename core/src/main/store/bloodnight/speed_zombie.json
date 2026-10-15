@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Speed Zombie",
-    "de": "Flinker Zombie"
+    "de": "Flinker Zombie",
+    "es": "Zombi veloz",
+    "fr": "Zombie rapide",
+    "ms": "Zombi Laju",
+    "tr": "Hızlı Zombi",
+    "zh": "疾速僵尸"
   },
   "descriptions": {
     "en": "Every 6 seconds it growls and lunges at you very fast, then it is slow for a moment.",
-    "de": "Alle 6 Sekunden knurrt es und stürzt sich sehr schnell auf dich, danach ist es kurz langsam."
+    "de": "Alle 6 Sekunden knurrt es und stürzt sich sehr schnell auf dich, danach ist es kurz langsam.",
+    "es": "Cada 6 segundos gruñe y se lanza contra ti muy rápido; después es lento durante un momento.",
+    "fr": "Toutes les 6 secondes, il grogne et se jette sur toi très vite, puis il est lent un moment.",
+    "ms": "Setiap 6 saat ia menggeram dan menerpa ke arah anda dengan sangat laju, kemudian ia perlahan seketika.",
+    "tr": "Her 6 saniyede bir hırlar ve çok hızlı üstüne atılır, sonra bir an yavaşlar.",
+    "zh": "每 6 秒低吼一声并极快地扑向你，之后会短暂变慢。"
   },
   "requires": []
 }

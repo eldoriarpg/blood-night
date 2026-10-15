@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Giftiger Enderman",
-    "en" : "Toxic Enderman"
+    "en" : "Toxic Enderman",
+    "es" : "Enderman tóxico",
+    "fr" : "Enderman toxique",
+    "ms" : "Enderman Toksik",
+    "tr" : "Zehirli Enderman",
+    "zh" : "剧毒末影人"
   },
   "descriptions" : {
     "de" : "Hinterlässt eine Giftwolke, wo er sich wegteleportiert.",
-    "en" : "Leaves a poison cloud where it teleports from."
+    "en" : "Leaves a poison cloud where it teleports from.",
+    "es" : "Deja una nube venenosa en el lugar desde el que se teletransporta.",
+    "fr" : "Laisse un nuage de poison à l'endroit d'où il se téléporte.",
+    "ms" : "Meninggalkan awan racun di tempat ia berteleport.",
+    "tr" : "Işınlandığı yerde bir zehir bulutu bırakır.",
+    "zh" : "在它传送离开的地方留下一团毒云。"
   },
   "requires" : [ ],
   "mob" : {

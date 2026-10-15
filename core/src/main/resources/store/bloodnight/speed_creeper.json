@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Flinker Creeper",
-    "en" : "Speed Creeper"
+    "en" : "Speed Creeper",
+    "es" : "Creeper veloz",
+    "fr" : "Creeper rapide",
+    "ms" : "Creeper Laju",
+    "tr" : "Hızlı Creeper",
+    "zh" : "疾速苦力怕"
   },
   "descriptions" : {
     "de" : "Schnell, mit kurzer Zündschnur. Seine Explosion setzt Feuer.",
-    "en" : "Fast, with a short fuse. Its explosion sets fire."
+    "en" : "Fast, with a short fuse. Its explosion sets fire.",
+    "es" : "Rápido y con una mecha corta. Su explosión prende fuego.",
+    "fr" : "Rapide, avec une mèche courte. Son explosion met le feu.",
+    "ms" : "Laju, dengan sumbu yang pendek. Letupannya menyebabkan kebakaran.",
+    "tr" : "Hızlıdır, fitili kısadır. Patlaması ateş yakar.",
+    "zh" : "速度快，引信短。它的爆炸会引发火焰。"
   },
   "requires" : [ ],
   "mob" : {

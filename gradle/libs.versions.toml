@@ -43,6 +43,8 @@ ocular = { module = "dev.chojo:ocular", version.ref = "ocular" }
 eldoutil-items = { module = "de.eldoria.util:items", version.ref = "eldoutil" }
 eldoutil-entities = { module = "de.eldoria.util:entities", version.ref = "eldoutil" }
 eldoutil-debugging = { module = "de.eldoria.util:debugging", version.ref = "eldoutil" }
+eldoutil-messaging = { module = "de.eldoria.util:messaging", version.ref = "eldoutil" }
+eldoutil-localization = { module = "de.eldoria.util:localization", version.ref = "eldoutil" }
 
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
@@ -77,7 +79,7 @@ testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupit
 sadu = ["sadu-postgresql", "sadu-datasource", "sadu-queries", "sadu-mapper", "sadu-updater"]
 jackson-lite = ["jackson-core", "jackson-databind", "jackson-annotations"]
 jackson-full = ["jackson-core", "jackson-databind", "jackson-annotations", "jackson-yaml"]
-eldoria-utilities = ["eldoutil-items", "eldoutil-entities", "eldoutil-debugging"]
+eldoria-utilities = ["eldoutil-items", "eldoutil-entities", "eldoutil-debugging", "eldoutil-messaging", "eldoutil-localization"]
 junit = ["junit-jupiter", "junit-params"]
 
 [plugins]

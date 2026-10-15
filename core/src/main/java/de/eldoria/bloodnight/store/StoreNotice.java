@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.store;
 
-import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.announce.Texts;
 import de.eldoria.bloodnight.mob.CustomMob;
-import net.kyori.adventure.text.minimessage.translation.Argument;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -57,6 +57,6 @@ public final class StoreNotice implements Listener {
         if (!player.hasPermission(PERMISSION)) return;
         List<String> waiting = waiting();
         if (waiting.isEmpty()) return;
-        player.sendMessage(Messages.message(WAITING, Argument.string("mobs", String.join(", ", waiting))));
+        Texts.sender().sendMessage(player, WAITING, Placeholder.unparsed("mobs", String.join(", ", waiting)));
     }
 }

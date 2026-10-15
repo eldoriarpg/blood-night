@@ -5,7 +5,8 @@
  */
 
 /**
- * English is the language fallen back to; German is the one translation beside it.
+ * English is the language fallen back to; German, Spanish, French, Malay, Turkish and Chinese are translated, the
+ * languages the plugin ships.
  *
  * <p>The messages are not part of this configuration. `@nuxtjs/i18n` reads the locale files named
  * in `nuxt.config.ts` and loads a language only once it is shown, and every server request gets an

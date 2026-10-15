@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Witherskelettreiter",
-    "en" : "Wither Skeleton Rider"
+    "en" : "Wither Skeleton Rider",
+    "es" : "Jinete esqueleto del Wither",
+    "fr" : "Cavalier squelette wither",
+    "ms" : "Penunggang Rangka Wither",
+    "tr" : "Wither İskeleti Binicisi",
+    "zh" : "凋灵骷髅骑士"
   },
   "descriptions" : {
     "de" : "Eine schnelle Spinne mit einem Witherskelett auf dem Rücken. Ihr Biss hält dich kurz wie in einem Netz fest.",
-    "en" : "A fast spider with a wither skeleton on its back. Its bite webs you in place for a moment."
+    "en" : "A fast spider with a wither skeleton on its back. Its bite webs you in place for a moment.",
+    "es" : "Una araña rápida con un esqueleto del Wither a la espalda. Su mordisco te atrapa en una telaraña durante un momento.",
+    "fr" : "Une araignée rapide avec un squelette wither sur le dos. Sa morsure te cloue sur place un moment, comme dans une toile.",
+    "ms" : "Labah-labah laju dengan rangka wither di belakangnya. Gigitannya menjerat anda di tempat seketika seperti sarang labah-labah.",
+    "tr" : "Sırtında bir wither iskeleti taşıyan hızlı bir örümcek. Isırığı seni bir an ağla yerinde tutar.",
+    "zh" : "背上驮着凋灵骷髅的快速蜘蛛。被它咬到会像被蛛网缠住一样定住片刻。"
   },
   "requires" : [ ],
   "mob" : {

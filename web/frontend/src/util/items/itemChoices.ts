@@ -27,7 +27,9 @@ export interface MinecraftNames {
 }
 
 /** The Minecraft language file of each editor language. */
-const LANGUAGES: Readonly<Record<string, string>> = {en: 'en_us', de: 'de_de'}
+const LANGUAGES: Readonly<Record<string, string>> = {
+    en: 'en_us', de: 'de_de', es: 'es_es', fr: 'fr_fr', ms: 'ms_my', tr: 'tr_tr', zh: 'zh_cn',
+}
 
 /**
  * @param key a key, e.g. `minecraft:diamond_sword`

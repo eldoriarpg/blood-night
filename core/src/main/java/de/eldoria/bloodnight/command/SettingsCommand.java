@@ -68,7 +68,7 @@ final class SettingsCommand {
                     ConfigFile changed =
                             SettingsPaths.write(plugin.configuration().main(), ConfigFile.class, path, value);
                     plugin.configuration().replaceMain(changed);
-                    plugin.messages().fallback(changed.announcements().fallbackLocale());
+                    plugin.applyTextSettings();
                     plugin.bloodPack().refresh();
                     show(sender, "settings.set", path, changed);
                     return;
@@ -81,7 +81,7 @@ final class SettingsCommand {
                 show(sender, "settings.set", path, changed);
             } catch (IllegalArgumentException e) {
                 Replies.send(
-                        sender, "settings.invalid", arg("path", path), arg("error", String.valueOf(e.getMessage())));
+                        sender, "settings.invalid", arg("path", path), arg("reason", String.valueOf(e.getMessage())));
             }
         });
     }

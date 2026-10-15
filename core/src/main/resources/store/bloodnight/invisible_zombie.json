@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Unsichtbarer Zombie",
-    "en" : "Invisible Zombie"
+    "en" : "Invisible Zombie",
+    "es" : "Zombi invisible",
+    "fr" : "Zombie invisible",
+    "ms" : "Zombi Halimunan",
+    "tr" : "Görünmez Zombi",
+    "zh" : "隐形僵尸"
   },
   "descriptions" : {
     "de" : "Unsichtbar, aber an seinen Füßen zeigt sich feiner Staub. Wenn du es triffst, wird es für 10 Sekunden sichtbar.",
-    "en" : "Invisible, but faint dust shows at its feet. When you hit it, it shows up for 10 seconds."
+    "en" : "Invisible, but faint dust shows at its feet. When you hit it, it shows up for 10 seconds.",
+    "es" : "Es invisible, pero a sus pies se ve un leve polvo. Cuando lo golpeas, se deja ver durante 10 segundos.",
+    "fr" : "Invisible, mais une fine poussière apparaît à ses pieds. Quand tu le frappes, il se montre pendant 10 secondes.",
+    "ms" : "Halimunan, tetapi debu samar kelihatan di kakinya. Apabila anda memukulnya, ia kelihatan selama 10 saat.",
+    "tr" : "Görünmezdir ama ayaklarında hafif bir toz görünür. Ona vurunca 10 saniye görünür olur.",
+    "zh" : "隐形，但脚下会显出淡淡的尘雾。击中它后，它会现身 10 秒。"
   },
   "requires" : [ ],
   "mob" : {

@@ -11,7 +11,7 @@ const I18N = fileURLToPath(new URL('../src/i18n/', import.meta.url))
 const SNAPSHOTS = fileURLToPath(new URL('../node_modules/.cache/bloodnight-eslint/locales/', import.meta.url))
 
 /** The languages of the application, each a module under `src/i18n` named by its code. */
-export const LANGUAGES = ['en', 'de']
+export const LANGUAGES = ['en', 'de', 'es', 'fr', 'ms', 'tr', 'zh']
 
 /**
  * The locale files as `@intlify/eslint-plugin-vue-i18n` reads them.
