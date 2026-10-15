@@ -5,6 +5,7 @@
  */
 import type {ItemAsset} from '~/api/generated/schema'
 import {translated} from '~/util/items/itemChoices'
+import {searchTexts} from '~/util/search/textMatch'
 
 /** What a choice belongs to: a graph type by its catalog id, or an enum of the payload schema by its definition name. */
 export interface ChoiceOf {
@@ -113,8 +114,9 @@ export function choiceLabel(value: string, of: ChoiceOf, names: ChoiceNames, loc
 }
 
 /**
- * The choices matching a search: every word of it must be found in a choice's label or key. Labels starting with
- * the search come first; the order is kept otherwise.
+ * The choices matching a search: every word of it must be found in a choice's label or key, inside them or
+ * abbreviating them (see {@link searchTexts}). Labels starting with the search come first; the order is kept
+ * otherwise.
  *
  * @param options the choices' keys
  * @param labels their labels by key; a key without one is matched by itself
@@ -122,11 +124,5 @@ export function choiceLabel(value: string, of: ChoiceOf, names: ChoiceNames, loc
  * @returns the matching keys
  */
 export function searchLabelled(options: readonly string[], labels: Readonly<Record<string, string>>, query: string): string[] {
-    const needle = query.trim().toLowerCase()
-    if (needle === '') return [...options]
-    const words = needle.split(/\s+/)
-    const label = (option: string) => (labels[option] ?? option).toLowerCase()
-    const matches = options.filter(option => words.every(word => label(option).includes(word) || option.toLowerCase().includes(word)))
-    const starts = (option: string) => label(option).startsWith(needle)
-    return [...matches.filter(starts), ...matches.filter(option => !starts(option))]
+    return searchTexts(options, option => [labels[option] ?? option, option], query)
 }
