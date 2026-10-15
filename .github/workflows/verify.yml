@@ -137,7 +137,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
       - name: Build the node catalog and the plugin descriptor
-        run: ./gradlew :catalog:generateCatalog :core:generatePaperPluginDescription
+        run: ./gradlew :catalog:generateCatalog :core:generatePaperPluginDescription :api:javadoc
       - name: Set up Node
         uses: actions/setup-node@v5
         with:

@@ -73,6 +73,7 @@ const config: Config = {
       items: [
         {type: 'docSidebar', sidebarId: 'guide', position: 'left', label: 'Guide'},
         {type: 'docSidebar', sidebarId: 'reference', position: 'left', label: 'Reference'},
+        {href: 'pathname:///javadoc/index.html', label: 'Javadoc', position: 'left'},
         {href: 'https://github.com/eldoriarpg/blood-night', label: 'GitHub', position: 'right'},
       ],
     },

@@ -205,7 +205,7 @@ case "$cmd" in
     fe-e2e-install)   fe; run npx playwright install --with-deps chromium firefox ;;
     docs-install)       docs; run npm install "$@" ;;
     docs-install-clean) docs; run npm ci "$@" ;;
-    docs-dev)           docs; run npm start -- "$@" ;;
+    docs-dev)           be; run ./gradlew :api:javadoc -q; docs; run npm start -- "$@" ;;
     docs-generate)
         be
         run ./gradlew :catalog:generateCatalog :core:generatePaperPluginDescription -q
@@ -213,7 +213,7 @@ case "$cmd" in
         run node scripts/generate.mjs
         ;;
     docs-check)         docs; run node scripts/generate.mjs --check ;;
-    docs-build)         docs; run npm run build ;;
+    docs-build)         be; run ./gradlew :api:javadoc -q; docs; run npm run build ;;
     api-types)
         be
         run ./gradlew :core:generatePayloadSchema :web-backend:generateApiSpec -q

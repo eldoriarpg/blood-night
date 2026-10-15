@@ -1,0 +1,117 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+
+/**
+ * Gives the javadoc the look of the BloodNight documentation it is published with: the same fonts, the BloodNight red
+ * and the same light and dark colours. The theme follows the one picked on the documentation site, else the system.
+ */
+:root {
+    --body-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif;
+    --block-font-family: var(--body-font-family);
+    --code-font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --body-font-size: 15px;
+    --block-font-size: 15px;
+    --code-font-size: 13.5px;
+
+    --bn-primary: #c8243a;
+    --bn-primary-dark: #8c1928;
+    --body-text-color: #1c1e21;
+    --block-text-color: #1c1e21;
+    --body-background-color: #ffffff;
+    --detail-background-color: #ffffff;
+    --code-background-color: #f6f7f8;
+    --mark-background-color: #f6f7f8;
+    --detail-block-color: #f6f7f8;
+    --navbar-background-color: #ffffff;
+    --navbar-text-color: #1c1e21;
+    --subnav-background-color: #f6f7f8;
+    --subnav-link-color: var(--bn-primary);
+    --selected-background-color: var(--bn-primary);
+    --selected-text-color: #ffffff;
+    --selected-link-color: #ffffff;
+    --table-header-color: #f6f7f8;
+    --even-row-color: #ffffff;
+    --odd-row-color: #fbf6f6;
+    --title-color: #1c1e21;
+    --link-color: var(--bn-primary);
+    --link-color-active: var(--bn-primary-dark);
+    --toc-background-color: #fbf6f6;
+    --toc-highlight-color: #f3e4e5;
+    --toc-hover-color: #f8eced;
+    --snippet-background-color: #f6f7f8;
+    --snippet-highlight-color: #f3c3c9;
+    --border-color: #dadde1;
+    --table-border-color: #dadde1;
+    --search-input-background-color: #ffffff;
+    --search-input-text-color: #1c1e21;
+    --search-input-placeholder-color: #8d949e;
+    --search-tag-highlight-color: #f3c3c9;
+    --button-border-color: #dadde1;
+    --tab-border-radius: 6px 6px 0 0;
+}
+
+:root[data-theme='dark'] {
+    --bn-primary: #ff6b77;
+    --bn-primary-dark: #ff9ba4;
+    --body-text-color: #f2e6e4;
+    --block-text-color: #f2e6e4;
+    --body-background-color: #0e0909;
+    --detail-background-color: #0e0909;
+    --code-background-color: #211819;
+    --mark-background-color: #211819;
+    --detail-block-color: #161011;
+    --navbar-background-color: #161011;
+    --navbar-text-color: #f2e6e4;
+    --subnav-background-color: #161011;
+    --selected-background-color: #8c1928;
+    --selected-text-color: #f2e6e4;
+    --table-header-color: #161011;
+    --even-row-color: #0e0909;
+    --odd-row-color: #140d0e;
+    --title-color: #f2e6e4;
+    --toc-background-color: #110b0c;
+    --toc-highlight-color: #2a1c1d;
+    --toc-hover-color: #201516;
+    --snippet-background-color: #161011;
+    --snippet-highlight-color: #5a1a22;
+    --border-color: #2a1c1d;
+    --table-border-color: #3a2527;
+    --search-input-background-color: #161011;
+    --search-input-text-color: #f2e6e4;
+    --search-input-placeholder-color: #9c8a89;
+    --search-tag-highlight-color: #5a1a22;
+    --button-border-color: #3a2527;
+    --invalid-tag-background-color: #4a1a1f;
+    --invalid-tag-text-color: #f2e6e4;
+    color-scheme: dark;
+}
+
+.flex-box > header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.top-nav a:link, .top-nav a:visited {
+    color: var(--bn-primary);
+}
+
+h1, h2, h3, h4, .title {
+    font-family: var(--body-font-family);
+    font-weight: 700;
+    font-style: normal;
+}
+
+code, pre {
+    border-radius: 4px;
+}
+
+.search-tag-result, ul.ui-autocomplete {
+    background: var(--body-background-color);
+    color: var(--body-text-color);
+}
+
+footer .legal-copy a, .bn-docs-link {
+    color: var(--link-color);
+}
