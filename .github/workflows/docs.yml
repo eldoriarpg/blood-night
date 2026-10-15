@@ -3,8 +3,11 @@ name: Documentation
 on:
   push:
     branches: [main]
-    paths: ['docs/**', 'plugin/resourcepack/**', '.github/workflows/docs.yml']
+    paths: ['docs/**', 'plugin/resourcepack/**', 'plugin/api/**', '.github/workflows/docs.yml']
   workflow_dispatch:
+
+env:
+  JAVA_VERSION: 25
 
 permissions:
   contents: read
@@ -24,6 +27,16 @@ jobs:
         working-directory: docs
     steps:
       - uses: actions/checkout@v7
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Build the javadoc
+        working-directory: .
+        run: ./gradlew :api:javadoc
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
