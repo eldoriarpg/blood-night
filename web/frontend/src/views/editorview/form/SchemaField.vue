@@ -17,6 +17,7 @@ import FieldTexts from '~/views/editorview/form/FieldTexts.vue'
 import FieldSuggestedTexts from '~/views/editorview/form/FieldSuggestedTexts.vue'
 import FieldJson from '~/views/editorview/form/FieldJson.vue'
 import SchemaForm from '~/views/editorview/form/SchemaForm.vue'
+import MutedText from '@/components/typography/MutedText.vue'
 import {fieldLabel} from '~/views/editorview/form/fieldLabel'
 import {fieldOptions} from '~/util/settings/fieldOptions'
 import type {Field} from '~/util/settings/schemaFields'
@@ -37,6 +38,8 @@ const props = defineProps<{
   field: Field
   value: unknown
   path: string
+  /** A line under the field saying what it does, where that depends on other settings or is not obvious. */
+  help?: string
   readOnly: boolean
 }>()
 
@@ -45,6 +48,7 @@ const session = useEditorSession()
 const {t, te} = useI18n()
 
 const label = computed(() => fieldLabel(props.field.key, t, te))
+const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind))
 const current = computed(() => props.value ?? props.field.defaultValue)
 const draft = ref<string | number | undefined>(undefined)
 const numberDraft = computed<number | undefined>({
@@ -92,26 +96,26 @@ function save(value: unknown): void {
 
 <template>
   <div class="py-3">
-    <ToggleSetting v-if="field.kind === 'boolean'" :disabled="readOnly" :label="label" :model-value="Boolean(current)" @update:model-value="save"/>
-    <LabelledField v-else-if="field.kind === 'integer'" v-slot="{id}" :label="label">
+    <ToggleSetting v-if="field.kind === 'boolean'" :disabled="readOnly" :hint="help" :label="label" :model-value="Boolean(current)" @update:model-value="save"/>
+    <LabelledField v-else-if="field.kind === 'integer'" v-slot="{id}" :help="help" :label="label">
       <NumberInput :id="id" v-model="numberDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
-    <LabelledField v-else-if="field.kind === 'number'" v-slot="{id}" :label="label">
+    <LabelledField v-else-if="field.kind === 'number'" v-slot="{id}" :help="help" :label="label">
       <DecimalInput :id="id" v-model="numberDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
-    <LabelledField v-else-if="itemField" :label="label">
+    <LabelledField v-else-if="itemField" :help="help" :label="label">
       <ItemPicker :choices="itemChoices" :label="label" :model-value="textDraft" :read-only="readOnly" clearable @update:model-value="save"/>
     </LabelledField>
-    <LabelledField v-else-if="mythicField" :label="label">
+    <LabelledField v-else-if="mythicField" :help="help" :label="label">
       <ChoicePicker :label="label" :model-value="choiceValue || undefined" :options="mythicOptions" :read-only="readOnly" clearable @update:model-value="save($event ?? '')"/>
     </LabelledField>
-    <LabelledField v-else-if="attributeOptions.length > 0" :label="label">
+    <LabelledField v-else-if="attributeOptions.length > 0" :help="help" :label="label">
       <ChoicePicker :label="label" :labels="attributeLabels(attributeOptions)" :model-value="choiceValue ?? undefined" :options="attributeOptions" :read-only="readOnly" @update:model-value="save"/>
     </LabelledField>
-    <LabelledField v-else-if="field.kind === 'text'" v-slot="{id}" :label="label">
+    <LabelledField v-else-if="field.kind === 'text'" v-slot="{id}" :help="help" :label="label">
       <TextInput :id="id" v-model="textDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
-    <LabelledField v-else-if="field.kind === 'choice'" :label="label">
+    <LabelledField v-else-if="field.kind === 'choice'" :help="help" :label="label">
       <ChoicePicker :label="label" :labels="optionLabels" :model-value="choiceValue ?? undefined" :options="options" :read-only="readOnly" @update:model-value="save"/>
     </LabelledField>
     <FieldChoices v-else-if="field.kind === 'choices'" :label="label" :labels="optionLabels" :options="options" :read-only="readOnly" :value="textsValue" @save="save"/>
@@ -124,5 +128,6 @@ function save(value: unknown): void {
     <FieldMap v-else-if="field.kind === 'map' && field.item" :item="field.item" :label="label" :path="path" :read-only="readOnly" :value="objectValue" @save="save"/>
     <FieldList v-else-if="field.kind === 'list' && field.item" :item="field.item" :label="label" :path="path" :read-only="readOnly" :value="listValue" @save="save"/>
     <FieldJson v-else :label="label" :read-only="readOnly" :value="current" @save="save"/>
+    <MutedText v-if="help && !inlineHelp" size="sm" tag="p">{{ help }}</MutedText>
   </div>
 </template>

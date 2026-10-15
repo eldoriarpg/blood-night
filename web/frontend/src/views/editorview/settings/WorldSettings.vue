@@ -20,7 +20,8 @@ import {WORLD_SECTIONS} from '~/util/settings/settingsSections'
 
 /**
  * A world's settings: the worlds in a sidebar, the picked world's sections as tabs, and copying its settings to other
- * worlds. Opening a world takes its section; a world someone else holds is shown read only.
+ * worlds. A world without blood nights shows only its general section, since nothing else of it is used. Opening a
+ * world takes its section; a world someone else holds is shown read only.
  */
 const session = useEditorSession()
 const locks = useEditorLocks()
@@ -36,8 +37,9 @@ const worlds = computed(() => Object.entries(session.payload.value?.settings?.wo
 const world = computed(() => worlds.value.find(candidate => candidate.uid === picked.value) ?? worlds.value[0])
 const heldBy = computed(() => world.value ? locks.heldByOther(section.world(world.value.uid)) : null)
 const denied = computed(() => !locks.mayChange(world.value ? section.world(world.value.uid) : ''))
-const tabs = computed(() => WORLD_SECTIONS.map(entry => ({key: entry.key, label: t(`editor.settings.sections.${entry.key}`)})))
-const current = computed(() => WORLD_SECTIONS.find(entry => entry.key === tab.value) ?? WORLD_SECTIONS[0])
+const sections = computed(() => world.value?.enabled === false ? WORLD_SECTIONS.slice(0, 1) : WORLD_SECTIONS)
+const tabs = computed(() => sections.value.map(entry => ({key: entry.key, label: t(`editor.settings.sections.${entry.key}`)})))
+const current = computed(() => sections.value.find(entry => entry.key === tab.value) ?? sections.value[0])
 const value = computed(() => world.value ? session.payload.value?.settings?.worlds?.[world.value.uid]?.settings as Record<string, unknown> | undefined : undefined)
 
 watch(() => world.value?.uid, (now, before) => {

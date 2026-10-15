@@ -12,10 +12,12 @@ import PresenceList from '~/views/editorview/PresenceList.vue'
 import {failure} from '~/api/editor'
 import {showToast} from '~/util/toast'
 import {EDITOR_AREAS, type EditorArea} from '~/views/editorview/editorArea'
+import {docsLink} from '~/util/docsLinks'
 import {changesSinceApply} from '~/util/session/lastApplied'
 
 /**
- * The editor's header: the brand, the areas as tabs (mobs with their problem count), who is online, whether
+ * The editor's header: the brand, the areas as tabs (mobs with their problem count), a link to the docs about the
+ * open area, who is online, whether
  * everything is saved, when the server last applied the session and what changed since, and marking the session as
  * done so the server can apply it, again after each apply.
  */
@@ -68,6 +70,13 @@ async function submit(): Promise<void> {
       </BareButton>
     </nav>
     <div class="flex-1"/>
+    <a
+        :href="docsLink(area)"
+        class="text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+        data-testid="docs-link"
+        rel="noopener"
+        target="_blank"
+    >{{ t('editor.header.docs') }}</a>
     <template v-if="ready">
       <PresenceList :names="data.online" :you="data.you"/>
       <span class="text-sm text-ink-faint">
