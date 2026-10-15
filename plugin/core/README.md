@@ -16,14 +16,17 @@ listeners and timers, and compiles every mob's behaviour in the background.
   fresh instances of the new classes on the main thread, and `TriggerDispatcher` listens only for triggers some graph
   uses.
 - **Custom mobs.** A `CustomMob` (in `mobs.yml`) has an entity type, attributes, equipment, an optional extension
-  (an entity riding or carrying it), drops, spawn rules and its behaviour graph. `MobSpawner` takes over a naturally
+  (an entity riding or carrying it), loot settings, spawn rules and its behaviour graph. `MobSpawner` takes over a naturally
   spawning entity one tick after it spawned when its world is enabled, a custom mob fits by type, spawn rules and
   weight, and the world's spawn chance hits. Each living mob has its own behaviour instance (`MobCoordinator`); mobs
   are tagged in their persistent data and taken over again when their chunk loads.
-- **Drops.** A custom mob killed by a player drops extra items on top of its vanilla loot (`DropHandler`,
-  `DropRules`): how many is picked by the count weights, each item by its weight from the drop tables in use (global,
-  world, mob), and the experience follows the XP setting. The mob's own drop settings apply, else its world's; each
-  setting's scope says which level it takes. Other deaths keep their vanilla drops only.
+- **Loot.** Loot tables (`loot_tables.yml`) list entries: an item, a weight, an amount (a range or weighted
+  choices) and whether it can drop twice in one kill. The mob, its world and the server assign tables; a kill by a
+  player pools the tables of every level the mob inherits, lets a level with `replaceSame` take the same items out of
+  broader ones, rolls how many entries drop from the most specific level that sets it, and picks them by weight
+  (`LootRoll`, `DropHandler`). Experience follows the most specific level that sets it. Ordinary enemies roll their
+  own lists during blood nights. Other plugins can change the rolled loot (`BloodNightLootEvent`). Other deaths keep
+  their vanilla drops only.
 - **Nights.** `NightSelector` decides each night by its number alone: a roll from a per-world secret salt and the
   night number against the probability of the world's night selection type (random, interval, curve, moon phase, real
   moon phase, custom phases). The answer is stable across restarts and can be asked for in advance. Salt and admin
@@ -73,17 +76,17 @@ Files live in the plugin's data folder (`plugins/BloodNight/`). There are two ki
 
 - **Settings files** are completed on load: once read they are written back, so options added by a newer version
   appear with their defaults.
-  - `config.yml`: server-wide announcements (prefix, reach, method, fallback language) and the editor service
-    (`url`, `timeoutSeconds`).
-  - `global_drops.yml`: drop weights, drops and experience settings.
+  - `config.yml`: server-wide announcements (prefix, reach, method, fallback language), the editor service
+    (`url`, `timeoutSeconds`) and the server's loot.
   - `worlds/<world UID>.yml`: everything per world: `enabled`, night selection, night times, length, commands and
-    blocked commands, mob settings and spawning, announcements, sounds, death actions, world drops. Created the first
+    blocked commands, mob settings and spawning, announcements, sounds, death actions, the world's loot. Created the first
     time the world's settings are read.
 - **User data files** are never completed or rewritten on load. One that cannot be read is reported, treated as empty
   and left untouched until it reads again on a later reload.
   - `mobs.yml`: the custom mobs; written with the default mobs on first start only.
   - `items.yml`: the item registry.
   - `macros.yml`: the macro library shared by all mobs.
+  - `loot_tables.yml`: the loot tables by id.
 
 The plugin also writes `cache/` (compiled behaviours), `debug/` (output of `source` and `export`),
 `editor-session.json` (the open editor session, so it survives a restart) and `backups/<time>/` (copies of every file

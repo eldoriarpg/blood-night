@@ -18,7 +18,7 @@ new advancement pops up in the corner of the screen, like the ones of the game.
 | Still Breathing | Be alive in the world when a blood night ends. |
 | Night Slayer | Kill 10 special mobs in one blood night. |
 | Bestiary | Kill every special mob of the [store](../mobs/store.md) once. The tab shows how many are left. |
-| Warded | Put on armor with [Night Ward V](../mobs/drops-and-items.md#blood-night-enchantments). |
+| Warded | Put on armor with [Night Ward V](../mobs/items.md#blood-night-enchantments). |
 | Dragon's Blood | Be close by when the Blood Dragon dies. |
 
 Mobs you make yourself don't count for Bestiary, but they do count for Night Slayer.

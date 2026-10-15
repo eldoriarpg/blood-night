@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
 import de.eldoria.bloodnight.store.MobStore;
@@ -39,10 +40,11 @@ import java.util.TreeMap;
  * @param macros         the macro library
  * @param items          the items by id: registered from the game (name, lore and enchantments editable) and made in
  *                       the editor
+ * @param lootTables     the loot tables by id
  * @param problems       problems per mob id
  * @param macroProblems  problems per macro id
  * @param configProblems files that could not be read, with the reason
- * @param settings       the server-wide settings, the global drops and every world's settings
+ * @param settings       the server-wide settings and every world's settings
  * @param choices        the materials and enchantments the server offers
  * @param hashes         SHA-256 of each file the session may replace, as it was when the session opened; checked
  *                       when the result comes back
@@ -56,6 +58,7 @@ public record EditorPayload(
         Map<String, CustomMob> mobs,
         List<Macro> macros,
         Map<String, EditorItem> items,
+        Map<String, LootTable> lootTables,
         Map<String, List<GraphProblem>> problems,
         Map<String, List<GraphProblem>> macroProblems,
         Map<String, String> configProblems,
@@ -100,6 +103,7 @@ public record EditorPayload(
                 mobs,
                 configuration.macros().macros(),
                 items(configuration.items()),
+                configuration.lootTables().tables(),
                 behaviours.problems(),
                 behaviours.macroProblems(),
                 configuration.problems(),
@@ -121,6 +125,7 @@ public record EditorPayload(
                 mobs,
                 macros,
                 items,
+                lootTables,
                 problems,
                 macroProblems,
                 configProblems,
@@ -146,7 +151,7 @@ public record EditorPayload(
                     world.getUID().toString(),
                     SettingsPayload.WorldPayload.of(world, configuration.worldConfig(world)));
         }
-        return new SettingsPayload(configuration.main(), configuration.globalDrops(), settings);
+        return new SettingsPayload(configuration.main(), settings);
     }
 
     /**

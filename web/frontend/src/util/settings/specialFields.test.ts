@@ -5,7 +5,7 @@
  */
 import {describe, expect, it} from 'vitest'
 import type {Field, FieldKind} from '~/util/settings/schemaFields'
-import {parentKey, specialField} from './specialFields'
+import {groupKey, parentKey, specialField} from './specialFields'
 
 function field(key: string, kind: FieldKind): Field {
     return {key, kind, options: [], children: [], item: undefined, defaultValue: undefined, enumName: undefined, definition: undefined}
@@ -20,7 +20,9 @@ describe('special fields', () => {
         expect(specialField(field('effect', 'text'), 'effect')).toBe('effect')
         expect(specialField(field('dragon', 'text'), 'timed')).toBe('mob')
         expect(specialField(field('title', 'text'), 'bossBar')).toBe('miniMessage')
-        expect(specialField(field('weights', 'map'), 'worldDrops')).toBe('dropWeights')
+        expect(specialField(field('slots', 'map'), 'loot')).toBe('dropWeights')
+        expect(specialField(field('tables', 'texts'), 'ordinary')).toBe('lootTables')
+        expect(specialField({...field('experience', 'group'), definition: 'Experience'}, 'loot')).toBe('experience')
         expect(specialField(field('gameRules', 'map'), 'nightRules')).toBe('gameRules')
         expect(specialField(field('mobs', 'map'), 'spawning')).toBe('worldMobs')
         expect(specialField(field('overrides', 'map'), 'mobSettings')).toBe('mobMap')
@@ -35,6 +37,11 @@ describe('special fields', () => {
         expect(specialField(field('begin', 'integer'), 'something')).toBeUndefined()
         expect(specialField(field('dragon', 'text'), 'other')).toBeUndefined()
         expect(specialField(field('enabled', 'boolean'), 'bossBar')).toBeUndefined()
+    })
+
+    it('reads a mob\'s loot apart from a world\'s', () => {
+        expect(groupKey('/mobs/zombie/loot')).toBe('mobLoot')
+        expect(groupKey('/settings/worlds/w/settings/loot')).toBe('loot')
     })
 
     it('finds the parent of a field', () => {

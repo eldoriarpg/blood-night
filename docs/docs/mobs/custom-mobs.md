@@ -41,14 +41,14 @@ mobs:
       damage: 2
       changes: []
     behaviour: ...
-    mobDrops: ...
+    loot: ...
     extension: ...
     spawn: ...
 ```
 
 - `id` is the mob's name in commands. It must be in small letters. Numbers and `_` are fine.
 - `behaviour` is the graph you build in the editor. See [Graphs](../editor/graphs.md).
-- `mobDrops` is explained in [Drops and items](./drops-and-items.md).
+- `loot` is explained in [Loot tables](./loot-tables.md).
 - `extension` is explained in [Riders and mounts](./extensions.md).
 - `spawn` is explained in [When mobs spawn](./spawning.md).
 
@@ -165,7 +165,7 @@ changes:
 Each slot (`head`, `chest`, `legs`, `feet`, `mainHand`, `offHand`) takes an item:
 
 - an item name like `minecraft:diamond_sword`, or
-- the ID of an item from your [item list](./drops-and-items.md#items).
+- the ID of an item from your [item list](./items.md).
 
 Leave a slot empty (or the whole `equipment` empty) and the mob keeps the gear it spawned with. A skeleton keeps its
 bow this way.

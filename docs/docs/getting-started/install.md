@@ -49,9 +49,9 @@ time. It starts from your current settings.
 |---|---|
 | `config.yml` | Settings for the whole server |
 | `worlds/<world id>.yml` | Settings for one world. Each world gets its own file. |
-| `global_drops.yml` | Drops all worlds can use |
 | `mobs.yml` | Your special mobs |
 | `items.yml` | Items you registered or made in the editor |
+| `loot_tables.yml` | Your [loot tables](../mobs/loot-tables.md) |
 | `macros.yml` | Macros: pieces of behaviour you can reuse |
 | `backups/` | Copies of all files, made before the editor changes anything |
 

@@ -11,7 +11,8 @@ export const DOCS_URL = 'https://bloodnight.docs.eldoria.de'
 const PAGES: Record<EditorArea, string> = {
     mobs: '/mobs/custom-mobs',
     macros: '/editor/macros-and-routines',
-    items: '/mobs/drops-and-items#items',
+    items: '/mobs/items',
+    loot: '/mobs/loot-tables',
     settings: '/reference/settings',
     revisions: '/editor/sessions#revisions',
 }
@@ -33,7 +34,7 @@ const WORLD_SECTION_PAGES: Readonly<Record<string, string>> = {
     sounds: '/nights/announcements#sounds',
     deathPlayers: '/rules/death-actions#only-for-players',
     deathMobs: '/rules/death-actions',
-    drops: '/mobs/drops-and-items#how-many-drops',
+    loot: '/mobs/loot-tables#worlds-and-the-server',
     atmosphere: '/nights/atmosphere',
     rules: '/rules/world-rules',
 }
@@ -45,7 +46,7 @@ const SERVER_SECTION_PAGES: Readonly<Record<string, string>> = {
     resourcePack: '/nights/atmosphere#the-resource-pack',
     plugins: '/placeholders',
     updates: '/reference/settings',
-    drops: '/mobs/drops-and-items#drop-tables',
+    loot: '/mobs/loot-tables#worlds-and-the-server',
 }
 
 /** Other places of the editor the documentation explains. */

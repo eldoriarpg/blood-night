@@ -280,19 +280,17 @@
         }
       }
     },
-    "mobDrops" : {
-      "weightsScope" : "GLOBAL",
-      "weights" : {
-        "1" : 90,
-        "2" : 50,
-        "3" : 10
+    "loot" : {
+      "tables" : [ "carrier_phantom" ],
+      "slots" : {
+        "0" : 2,
+        "1" : 5,
+        "2" : 2
       },
-      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
-      "dropList" : [ ],
-      "xpScope" : "GLOBAL",
-      "xpModifier" : "MULTIPLY",
-      "xpValue" : 4.0,
-      "vanillaLoot" : "KEEP"
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null
     },
     "extension" : {
       "type" : "NONE",
@@ -321,6 +319,32 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    }
+  },
+  "lootTables" : {
+    "carrier_phantom" : {
+      "name" : "Carrier Phantom",
+      "entries" : [ {
+        "item" : "minecraft:phantom_membrane",
+        "weight" : 10,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 3,
+          "choices" : { }
+        },
+        "repeatable" : true
+      }, {
+        "item" : "minecraft:feather",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 5,
+          "choices" : { }
+        },
+        "repeatable" : false
+      } ]
     }
   }
 }

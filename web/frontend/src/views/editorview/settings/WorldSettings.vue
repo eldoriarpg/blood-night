@@ -29,8 +29,9 @@ import {WORLD_KIND, worldSectionShows, type WorldKind} from '~/util/settings/wor
 const session = useEditorSession()
 const locks = useEditorLocks()
 const {t} = useI18n()
-const picked = ref('')
-const tab = ref(WORLD_SECTIONS[0]?.key ?? 'general')
+const {place} = useEditorNavigation()
+const picked = computed({get: () => place.value.world, set: uid => place.value.world = uid})
+const tab = computed({get: () => place.value.worldTab || (WORLD_SECTIONS[0]?.key ?? 'general'), set: key => place.value.worldTab = key})
 const copying = ref(false)
 const copySections = ref<string[]>([])
 

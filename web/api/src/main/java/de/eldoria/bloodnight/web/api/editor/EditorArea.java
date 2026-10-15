@@ -21,8 +21,8 @@ public enum EditorArea {
     WORLDS,
     /** The server-wide settings, {@code settings/main}. */
     SERVER,
-    /** The global drops, {@code settings/globalDrops}. */
-    DROPS;
+    /** The loot tables, {@code lootTables/<id>}. */
+    LOOT;
 
     /**
      * @param section a lockable section, e.g. {@code mobs/speed_zombie}
@@ -34,7 +34,7 @@ public enum EditorArea {
         if (section.startsWith("items/")) return ITEMS;
         if (section.startsWith("settings/worlds/")) return WORLDS;
         if (section.equals("settings/main")) return SERVER;
-        if (section.equals("settings/globalDrops")) return DROPS;
+        if (section.startsWith("lootTables/")) return LOOT;
         return null;
     }
 }

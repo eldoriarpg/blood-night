@@ -18,5 +18,52 @@
     "tr": "Her 6 saniyede bir hırlar ve çok hızlı üstüne atılır, sonra bir an yavaşlar.",
     "zh": "每 6 秒低吼一声并极快地扑向你，之后会短暂变慢。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "speed_zombie": {
+        "name": "Speed Zombie",
+        "entries": [
+          {
+            "item": "minecraft:rotten_flesh",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:sugar",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:feather",
+            "weight": 3,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

@@ -18,5 +18,52 @@
     "tr": "Daire çizerken görünmezdir. Üstüne dalınca görünür olur ve parlar. Vuruşları seni kör eder.",
     "zh": "盘旋时隐形。俯冲向你时会现身并发光。它的攻击会让你失明。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "phantom_soul": {
+        "name": "Phantom Soul",
+        "entries": [
+          {
+            "item": "minecraft:phantom_membrane",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:ghast_tear",
+            "weight": 2,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:echo_shard",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

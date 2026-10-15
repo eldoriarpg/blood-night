@@ -18,5 +18,63 @@
     "tr": "Sırtında bir iskelet taşıyan hızlı bir örümcek. Yaklaşınca iskelet ateş edebilsin diye uzağa sıçrar.",
     "zh": "背上驮着骷髅的快速蜘蛛。你靠近时，它会跳开，让骷髅射击。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "speed_skeleton_rider": {
+        "name": "Speed Skeleton Rider",
+        "entries": [
+          {
+            "item": "minecraft:bone",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:arrow",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 4,
+              "max": 10,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:leather",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:saddle",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

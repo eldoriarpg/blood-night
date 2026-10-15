@@ -18,5 +18,52 @@
     "tr": "Görünmez bir vex sürer, bu yüzden uçar. Üstündeyken tıslar ve bir saniye sonra üstüne düşer.",
     "zh": "骑着一只隐形的恼鬼，所以会飞。在你上方时它会发出嘶嘶声，一秒后落到你身上。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "ghost_creeper": {
+        "name": "Ghost Creeper",
+        "entries": [
+          {
+            "item": "minecraft:gunpowder",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:phantom_membrane",
+            "weight": 3,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:ghast_tear",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

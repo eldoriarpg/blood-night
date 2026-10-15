@@ -20,7 +20,7 @@ class SectionsTest {
     private static final JsonNode PAYLOAD = json("""
             {'mobs':{'a':{'id':'a','attributes':{}},'b':{'id':'b','attributes':{}}},
              'macros':[{'id':'burst','name':'b','body':{}},{'id':'jump','name':'j','body':{}}],
-             'settings':{'main':{'x':0},'globalDrops':{},'worlds':{'w1':{'settings':{}}}},
+             'settings':{'main':{'x':0},'worlds':{'w1':{'settings':{}}}},'lootTables':{'gems':{}},
              'items':{},'hashes':{}}
             """);
 
@@ -42,7 +42,7 @@ class SectionsTest {
                 "[{'op':'add','path':'/macros/-','value':{'id':'dash'}}]|macros/dash",
                 "[{'op':'remove','path':'/macros/0'}]|macros/burst",
                 "[{'op':'replace','path':'/settings/main/x','value':1}]|settings/main",
-                "[{'op':'add','path':'/settings/globalDrops/x','value':1}]|settings/globalDrops",
+                "[{'op':'add','path':'/lootTables/gems/name','value':'Gems'}]|lootTables/gems",
                 "[{'op':'replace','path':'/settings/worlds/w1/settings','value':{}}]|settings/worlds/w1"
             })
     void pointersNameTheirSection(String operations, String section) {

@@ -18,5 +18,52 @@
     "tr": "Yüklü, hızlı ve neredeyse anında patlar.",
     "zh": "带电、速度快，几乎立刻爆炸。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "nervous_powered_creeper": {
+        "name": "Nervous Powered Creeper",
+        "entries": [
+          {
+            "item": "minecraft:gunpowder",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 3,
+              "max": 6,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:redstone",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 6,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:tnt",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

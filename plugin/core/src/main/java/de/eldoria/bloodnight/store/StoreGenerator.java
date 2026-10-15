@@ -7,10 +7,13 @@ package de.eldoria.bloodnight.store;
 
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
+import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.web.api.Language;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +80,15 @@ public final class StoreGenerator {
         for (CustomMob plain : mobs) {
             Description description = described(described, plain.id());
             MobName name = new MobName(plain.attributes().name().style(), description.names());
-            CustomMob mob = plain.withAttributes(plain.attributes().withName(name));
+            StoreLoot loot = Objects.requireNonNullElse(description.loot(), StoreLoot.NONE);
+            CustomMob mob = plain.withAttributes(plain.attributes().withName(name))
+                    .withLoot(new MobLoot(
+                            List.copyOf(loot.tables().keySet()),
+                            loot.slots(),
+                            true,
+                            true,
+                            plain.loot().vanillaLoot(),
+                            plain.loot().experience()));
             packages.add(new MobPackage(
                     StoreFiles.FORMAT,
                     mob.id(),
@@ -84,7 +96,8 @@ public final class StoreGenerator {
                     description.names(),
                     description.descriptions(),
                     description.requires(),
-                    mob));
+                    mob,
+                    loot.tables()));
         }
         StoreFiles.write(
                 store,
@@ -131,5 +144,24 @@ public final class StoreGenerator {
      * @param requires     plugins it needs
      */
     record Description(
-            String pack, Map<String, String> names, Map<String, String> descriptions, List<String> requires) {}
+            String pack,
+            Map<String, String> names,
+            Map<String, String> descriptions,
+            List<String> requires,
+            @Nullable StoreLoot loot) {}
+
+    /**
+     * The loot a store mob brings: its own tables by id, and how many entries a kill drops.
+     *
+     * @param tables the tables, assigned to the mob in this order
+     * @param slots  weights by number of drops; none leaves it to the world and the server
+     */
+    record StoreLoot(
+            Map<String, LootTable> tables, @Nullable Map<Integer, Integer> slots) {
+        static final StoreLoot NONE = new StoreLoot(Map.of(), null);
+
+        StoreLoot {
+            tables = tables == null ? Map.of() : Collections.unmodifiableMap(new LinkedHashMap<>(tables));
+        }
+    }
 }

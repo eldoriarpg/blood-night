@@ -12,8 +12,8 @@ import de.eldoria.bloodnight.configuration.elements.world.NightRuleSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
 import de.eldoria.bloodnight.configuration.elements.world.SoundSettings;
-import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
 import de.eldoria.bloodnight.configuration.elements.world.death.DeathActionSettings;
+import de.eldoria.bloodnight.loot.WorldLoot;
 
 /**
  * The settings of one world. Fields are not final: the configuration reads them in place, and Jackson 3 does not write
@@ -29,7 +29,7 @@ public class WorldSettings {
     private AtmosphereSettings atmosphere = new AtmosphereSettings();
     private SoundSettings soundSettings = new SoundSettings();
     private DeathActionSettings deathActions = new DeathActionSettings();
-    private WorldDrops worldDrops = WorldDrops.defaultDrops();
+    private WorldLoot loot = WorldLoot.defaults();
     private NightRuleSettings nightRules = new NightRuleSettings();
 
     /**
@@ -90,7 +90,7 @@ public class WorldSettings {
         return soundSettings;
     }
 
-    public WorldDrops worldDrops() {
-        return worldDrops;
+    public WorldLoot loot() {
+        return loot;
     }
 }

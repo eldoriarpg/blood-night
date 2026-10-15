@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.store;
 
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.editor.EditorPayload;
+import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.graph.model.Graph;
@@ -19,6 +20,7 @@ import tools.jackson.databind.node.DoubleNode;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +29,9 @@ class MobStoreTest {
     private static final Graph OLD = Graph.builder().build();
     private static final Graph NEW =
             Graph.builder().node("tick", NodeInstance.of("mob.tick")).build();
+    private static final Map<String, LootTable> TABLES = Map.of(
+            "runner_loot", new LootTable("Runner", List.of()),
+            "runner_bones", new LootTable("Bones", List.of()));
     private static final Graph EDITED =
             Graph.builder().node("spawn", NodeInstance.of("mob.spawn")).build();
 
@@ -43,7 +48,7 @@ class MobStoreTest {
     private static MobStore store(Graph behaviour) {
         CustomMob mob = Mobs.zombie("runner", behaviour);
         MobPackage mobPackage = new MobPackage(
-                StoreFiles.FORMAT, "runner", "classic", Map.of("en", "Runner"), Map.of(), List.of(), mob);
+                StoreFiles.FORMAT, "runner", "classic", Map.of("en", "Runner"), Map.of(), List.of(), mob, TABLES);
         return new MobStore(new Store(
                 "test", List.of(new StorePack("classic", Map.of(), Map.of())), List.of(StoreEntry.of(mobPackage))));
     }
@@ -55,7 +60,7 @@ class MobStoreTest {
 
     @Test
     void installedMobsAreCurrentUntilTheStoreChanges() {
-        CustomMob installed = only(store(OLD).install(List.of(), "classic"));
+        CustomMob installed = only(store(OLD).install(List.of(), Set.of(), "classic"));
 
         assertEquals(StoreState.CURRENT, store(OLD).state(installed));
         assertEquals(StoreState.OUTDATED, store(NEW).state(installed));
@@ -67,7 +72,7 @@ class MobStoreTest {
         Graph decimals = Graph.builder()
                 .node("wait", NodeInstance.of("flow.delay").literal("duration", DoubleNode.valueOf(60.0)))
                 .build();
-        CustomMob installed = only(store(decimals).install(List.of(), "classic"));
+        CustomMob installed = only(store(decimals).install(List.of(), Set.of(), "classic"));
         String json = EditorPayload.MAPPER.writeValueAsString(installed);
         CustomMob edited = EditorPayload.MAPPER.readValue(json.replace("60.0", "60"), CustomMob.class);
 
@@ -76,8 +81,17 @@ class MobStoreTest {
     }
 
     @Test
+    void installAddsOnlyTheTablesTheServerLacks() {
+        MobStore.Change fresh = store(OLD).install(List.of(), Set.of(), "runner");
+        MobStore.Change kept = store(OLD).install(List.of(), Set.of("runner_loot"), "runner");
+
+        assertEquals(TABLES, fresh.tables());
+        assertEquals(Map.of("runner_bones", TABLES.get("runner_bones")), kept.tables());
+    }
+
+    @Test
     void installSkipsTakenIds() {
-        MobStore.Change change = store(OLD).install(List.of(Mobs.zombie("runner", EDITED)), "runner");
+        MobStore.Change change = store(OLD).install(List.of(Mobs.zombie("runner", EDITED)), Set.of(), "runner");
 
         assertEquals(List.of(), change.done());
         assertEquals(List.of("runner"), change.skipped());
@@ -85,13 +99,13 @@ class MobStoreTest {
 
     @Test
     void untouchedMobsUpdateOnTheirOwnAndKeepTheirTuning() {
-        CustomMob installed = only(store(OLD).install(List.of(), "classic"));
+        CustomMob installed = only(store(OLD).install(List.of(), Set.of(), "classic"));
         CustomMob tuned = new CustomMob(
                 installed.id(),
                 installed.equipment(),
                 installed.attributes(),
                 installed.behaviour(),
-                installed.mobDrops(),
+                installed.loot(),
                 installed.extension(),
                 new SpawnRules(
                         99,
@@ -110,7 +124,7 @@ class MobStoreTest {
 
     @Test
     void changedMobsOnlyUpdateWhenAsked() {
-        CustomMob installed = only(store(OLD).install(List.of(), "classic"));
+        CustomMob installed = only(store(OLD).install(List.of(), Set.of(), "classic"));
         CustomMob edited = installed.withLogic(EDITED, installed.extension(), installed.movement());
         MobStore newer = store(NEW);
 

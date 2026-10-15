@@ -6,16 +6,19 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.Mobs;
-import de.eldoria.bloodnight.configuration.elements.ConfigurationScope;
+import de.eldoria.bloodnight.api.event.BloodNightLootEvent;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
-import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
-import de.eldoria.bloodnight.configuration.elements.world.VanillaDrops;
-import de.eldoria.bloodnight.configuration.elements.world.WorldDrops;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.loot.Experience;
+import de.eldoria.bloodnight.loot.LootAmount;
+import de.eldoria.bloodnight.loot.LootEntry;
+import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.MobLoot;
+import de.eldoria.bloodnight.loot.OrdinaryLoot;
+import de.eldoria.bloodnight.loot.ServerLoot;
+import de.eldoria.bloodnight.loot.WorldLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.Drop;
-import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.mob.meta.VanillaLoot;
 import de.eldoria.bloodnight.util.MobTags;
@@ -28,6 +31,7 @@ import org.bukkit.entity.Cow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
+import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;
@@ -38,38 +42,51 @@ import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.random.RandomGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DropHandlerTest {
+    private static final Map<String, LootTable> TABLES = Map.of(
+            "gems", table("minecraft:diamond", LootAmount.exactly(3)),
+            "emeralds", table("minecraft:emerald", LootAmount.exactly(1)),
+            "pearls", table("minecraft:ender_pearl", LootAmount.exactly(40)));
+
     private ServerMock server;
     private WorldMock world;
     private CustomMob gemmy;
     private boolean bloodNight;
-    private WorldDrops worldDrops = WorldDrops.defaultDrops();
+    private WorldLoot worldLoot = WorldLoot.defaults();
+    private ServerLoot serverLoot = new ServerLoot(List.of("emeralds"), Map.of(1, 1), null, null);
+    private Consumer<Event> events = event -> {};
     private DropHandler handler;
 
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();
         world = server.addSimpleWorld("world");
-        gemmy = gemmy(VanillaLoot.KEEP);
+        gemmy = gemmy(VanillaLoot.KEEP, false);
         ItemRegistry items = new ItemRegistry(null, null);
         handler = new DropHandler(
                 id -> id.equals("gemmy") ? gemmy : null,
-                world -> worldDrops,
-                GlobalDrops::defaultDrops,
+                world -> worldLoot,
+                () -> serverLoot,
+                TABLES::get,
                 items::item,
                 world -> bloodNight,
                 new ForeignMobs(ForeignMobSettings::new, () -> null),
                 RandomGenerator.of("L64X128MixRandom"),
                 RegionRules.NONE,
-                (mob, killer) -> List.of(new ItemStack(Material.NETHER_STAR)));
+                (mob, killer) -> List.of(new ItemStack(Material.NETHER_STAR)),
+                event -> events.accept(event),
+                Logger.getAnonymousLogger());
     }
 
     @AfterEach
@@ -77,24 +94,19 @@ class DropHandlerTest {
         MockBukkit.unmock();
     }
 
-    private static CustomMob gemmy(VanillaLoot vanillaLoot) {
-        CustomMob zombie = Mobs.zombie("gemmy", Graph.builder().build());
-        return new CustomMob(
-                zombie.id(),
-                zombie.equipment(),
-                zombie.attributes(),
-                zombie.behaviour(),
-                new MobDrops(
-                        ConfigurationScope.MOB,
+    private static LootTable table(String item, LootAmount amount) {
+        return new LootTable(item, List.of(new LootEntry(item, 1, amount, false)));
+    }
+
+    private static CustomMob gemmy(VanillaLoot vanillaLoot, boolean inherit) {
+        return Mobs.zombie("gemmy", Graph.builder().build())
+                .withLoot(new MobLoot(
+                        List.of("gems"),
                         Map.of(1, 1),
-                        List.of(ConfigurationScope.MOB),
-                        List.of(new Drop("minecraft:diamond", 3, 1)),
-                        ConfigurationScope.MOB,
-                        ValueModifier.VALUE,
-                        10,
-                        vanillaLoot),
-                zombie.extension(),
-                zombie.spawn());
+                        inherit,
+                        true,
+                        vanillaLoot,
+                        new Experience(ValueModifier.VALUE, 10)));
     }
 
     private EntityDeathEvent die(LivingEntity entity, boolean byPlayer, ItemStack... drops) {
@@ -116,12 +128,57 @@ class DropHandlerTest {
     }
 
     @Test
-    void aPlayerKillAddsTheDropsToTheVanillaLoot() {
+    void aPlayerKillAddsTheRolledLootToTheVanillaLoot() {
         EntityDeathEvent event = death(true);
 
         assertEquals(
                 List.of(new ItemStack(Material.ROTTEN_FLESH), new ItemStack(Material.DIAMOND, 3)), event.getDrops());
         assertEquals(10, event.getDroppedExp());
+    }
+
+    @Test
+    void inheritingMobsShareThePoolWithTheServer() {
+        gemmy = gemmy(VanillaLoot.CLEAR, true);
+        Set<List<ItemStack>> seen = new HashSet<>();
+
+        for (int kill = 0; kill < 40; kill++) seen.add(death(true).getDrops());
+
+        assertEquals(
+                Set.of(List.of(new ItemStack(Material.DIAMOND, 3)), List.of(new ItemStack(Material.EMERALD))), seen);
+    }
+
+    @Test
+    void theMostSpecificExperienceWins() {
+        gemmy = Mobs.zombie("gemmy", Graph.builder().build()).withLoot(MobLoot.inherited());
+
+        EntityDeathEvent event = death(true);
+
+        assertEquals(20, event.getDroppedExp());
+    }
+
+    @Test
+    void largeAmountsAreSplitIntoStacks() {
+        assertEquals(
+                List.of(new ItemStack(Material.ENDER_PEARL, 16), new ItemStack(Material.ENDER_PEARL, 4)),
+                DropHandler.stacks(new ItemStack(Material.ENDER_PEARL), 20));
+    }
+
+    @Test
+    void theLootEventCanChangeAndCancelTheRolledLoot() {
+        events = event -> {
+            if (event instanceof BloodNightLootEvent loot) {
+                assertEquals("gemmy", loot.mobId());
+                loot.loot().get("gems").set(0, new ItemStack(Material.GOLD_INGOT));
+            }
+        };
+        assertEquals(
+                List.of(new ItemStack(Material.ROTTEN_FLESH), new ItemStack(Material.GOLD_INGOT)),
+                death(true).getDrops());
+
+        events = event -> {
+            if (event instanceof BloodNightLootEvent loot) loot.setCancelled(true);
+        };
+        assertEquals(List.of(new ItemStack(Material.ROTTEN_FLESH)), death(true).getDrops());
     }
 
     @Test
@@ -141,7 +198,7 @@ class DropHandlerTest {
     @Test
     void worldsCanTurnTheRewardOff() {
         bloodNight = true;
-        worldDrops = withoutReward();
+        worldLoot = new WorldLoot(null, null, null, null, null, false, null);
 
         EntityDeathEvent event = death(true);
 
@@ -159,7 +216,7 @@ class DropHandlerTest {
 
     @Test
     void specialMobsCanDropTheirVanillaLoot() {
-        gemmy = gemmy(VanillaLoot.CLEAR);
+        gemmy = gemmy(VanillaLoot.CLEAR, false);
         Zombie zombie = zombie();
         zombie.getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
         MobTags.markCustomMob(zombie, gemmy);
@@ -207,9 +264,7 @@ class DropHandlerTest {
     @Test
     void excludedKindsAndAnimalsKeepTheirLoot() {
         bloodNight = true;
-        VanillaDrops vanilla = VanillaDrops.defaultDrops();
-        worldDrops = withVanilla(new VanillaDrops(
-                true, 2, false, ValueModifier.MULTIPLY, 2, EnumSet.of(EntityType.ZOMBIE), vanilla.excludedReasons()));
+        worldLoot = withOrdinary(new OrdinaryLoot(null, null, null, null, null, null, Set.of(EntityType.ZOMBIE), null));
 
         EntityDeathEvent zombie = die(zombie(), true, new ItemStack(Material.ROTTEN_FLESH));
         Cow cow = world.spawn(new Location(world, 0, 64, 0), Cow.class);
@@ -220,21 +275,10 @@ class DropHandlerTest {
     }
 
     @Test
-    void ordinaryEnemiesCanRollTheWorldsDrops() {
+    void ordinaryEnemiesRollTheirOwnTables() {
         bloodNight = true;
-        VanillaDrops vanilla = VanillaDrops.defaultDrops();
-        worldDrops = withVanilla(new VanillaDrops(
-                true, 1, true, ValueModifier.DEFAULT, 0, vanilla.excludedTypes(), vanilla.excludedReasons()));
-        worldDrops = new WorldDrops(
-                ConfigurationScope.WORLD,
-                Map.of(1, 1),
-                List.of(ConfigurationScope.WORLD),
-                List.of(new Drop("minecraft:emerald", 1, 1)),
-                worldDrops.xpScope(),
-                worldDrops.xpModifier(),
-                worldDrops.xpValue(),
-                worldDrops.vanilla(),
-                worldDrops.rewardLoot());
+        worldLoot = withOrdinary(
+                new OrdinaryLoot(null, 1.0, List.of("emeralds"), Map.of(1, 1), ValueModifier.DEFAULT, 0.0, null, null));
 
         EntityDeathEvent event = die(zombie(), true, new ItemStack(Material.ROTTEN_FLESH));
 
@@ -242,31 +286,7 @@ class DropHandlerTest {
         assertEquals(5, event.getDroppedExp());
     }
 
-    private static WorldDrops withVanilla(VanillaDrops vanilla) {
-        WorldDrops drops = WorldDrops.defaultDrops();
-        return new WorldDrops(
-                drops.weightsScope(),
-                drops.weights(),
-                drops.dropTables(),
-                drops.dropList(),
-                drops.xpScope(),
-                drops.xpModifier(),
-                drops.xpValue(),
-                vanilla,
-                drops.rewardLoot());
-    }
-
-    private static WorldDrops withoutReward() {
-        WorldDrops drops = WorldDrops.defaultDrops();
-        return new WorldDrops(
-                drops.weightsScope(),
-                drops.weights(),
-                drops.dropTables(),
-                drops.dropList(),
-                drops.xpScope(),
-                drops.xpModifier(),
-                drops.xpValue(),
-                drops.vanilla(),
-                false);
+    private static WorldLoot withOrdinary(OrdinaryLoot ordinary) {
+        return new WorldLoot(null, null, null, null, null, null, ordinary);
     }
 }

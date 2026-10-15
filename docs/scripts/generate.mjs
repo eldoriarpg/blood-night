@@ -201,7 +201,6 @@ function settingsPage(schema) {
   const files = [
     ['config.yml', 'ConfigFile', 'Settings for the whole server.'],
     ['worlds/<world id>.yml', 'WorldSettings', 'Settings for one world. Every world has its own file.'],
-    ['global_drops.yml', 'GlobalDrops', 'Drops every world can use.'],
   ]
   const lines = [
     '---',

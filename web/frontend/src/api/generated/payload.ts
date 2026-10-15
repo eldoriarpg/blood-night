@@ -183,11 +183,6 @@ export type ValueModifier = 'DEFAULT' | 'MULTIPLY' | 'VALUE';
 export type Operation = 'ADD_NUMBER' | 'ADD_SCALAR' | 'MULTIPLY_SCALAR_1';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "ConfigurationScope".
- */
-export type ConfigurationScope = 'GLOBAL' | 'WORLD' | 'MOB';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "VanillaLoot".
  */
 export type VanillaLoot = 'KEEP' | 'MULTIPLY' | 'CLEAR';
@@ -269,6 +264,11 @@ export type MovementPreset =
  * via the `definition` "ItemKind".
  */
 export type ItemKind = 'REGISTERED' | 'DEFINED';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "AmountMode".
+ */
+export type AmountMode = 'RANGE' | 'CHOICES';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Severity".
@@ -355,6 +355,9 @@ export interface EditorPayload {
   items: {
     [k: string]: EditorItem;
   };
+  lootTables: {
+    [k: string]: LootTable;
+  };
   problems: {
     [k: string]: GraphProblem[];
   };
@@ -382,7 +385,7 @@ export interface CustomMob {
   equipment?: Equipment;
   attributes: Attributes;
   behaviour: Graph;
-  mobDrops: MobDrops;
+  loot: MobLoot;
   extension: Extension;
   spawn: SpawnRules;
   origin?: MobOrigin;
@@ -474,28 +477,25 @@ export interface Edge {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "MobDrops".
+ * via the `definition` "MobLoot".
  */
-export interface MobDrops {
-  weightsScope: ConfigurationScope;
-  weights: {
+export interface MobLoot {
+  tables: string[];
+  slots?: {
     [k: string]: number;
   };
-  dropTables: ConfigurationScope[];
-  dropList: Drop[];
-  xpScope: ConfigurationScope;
-  xpModifier: ValueModifier;
-  xpValue: number;
+  inherit: boolean;
+  replaceSame: boolean;
   vanillaLoot: VanillaLoot;
+  experience?: Experience;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Drop".
+ * via the `definition` "Experience".
  */
-export interface Drop {
-  itemId: string;
-  amount: number;
-  weight: number;
+export interface Experience {
+  modifier: ValueModifier;
+  value: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -576,6 +576,36 @@ export interface EditorItem {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "LootTable".
+ */
+export interface LootTable {
+  name: string;
+  entries: LootEntry[];
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "LootEntry".
+ */
+export interface LootEntry {
+  item: string;
+  weight: number;
+  amount: LootAmount;
+  repeatable: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "LootAmount".
+ */
+export interface LootAmount {
+  mode: AmountMode;
+  min: number;
+  max: number;
+  choices: {
+    [k: string]: number;
+  };
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "GraphProblem".
  */
 export interface GraphProblem {
@@ -599,7 +629,6 @@ export interface MacroFrame {
  */
 export interface SettingsPayload {
   main: ConfigFile;
-  globalDrops: GlobalDrops;
   worlds: {
     [k: string]: WorldPayload;
   };
@@ -618,6 +647,7 @@ export interface ConfigFile {
   foreignMobs?: ForeignMobSettings;
   setup?: SetupSettings;
   advancements?: boolean;
+  loot?: ServerLoot;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -689,15 +719,25 @@ export interface SetupSettings {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "GlobalDrops".
+ * via the `definition` "ServerLoot".
  */
-export interface GlobalDrops {
-  weights: {
+export interface ServerLoot {
+  tables: string[];
+  slots?: {
     [k: string]: number;
   };
-  drops: Drop[];
-  xpModifier: ValueModifier;
-  xpValue: number;
+  ordinary: Ordinary;
+  experience: Experience;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Ordinary".
+ */
+export interface Ordinary {
+  tables: string[];
+  slots?: {
+    [k: string]: number;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -723,7 +763,7 @@ export interface WorldSettings {
   atmosphere?: AtmosphereSettings;
   soundSettings?: SoundSettings;
   deathActions?: DeathActionSettings;
-  worldDrops?: WorldDrops;
+  loot?: WorldLoot;
   nightRules?: NightRuleSettings;
 }
 /**
@@ -1019,29 +1059,30 @@ export interface DeathActions {
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "WorldDrops".
+ * via the `definition` "WorldLoot".
  */
-export interface WorldDrops {
-  weightsScope: ConfigurationScope;
-  weights: {
+export interface WorldLoot {
+  tables: string[];
+  slots?: {
     [k: string]: number;
   };
-  dropTables: ConfigurationScope[];
-  dropList: Drop[];
-  xpScope: ConfigurationScope;
-  xpModifier: ValueModifier;
-  xpValue: number;
-  vanilla: VanillaDrops;
+  inherit: boolean;
+  replaceSame: boolean;
+  experience?: Experience;
   rewardLoot: boolean;
+  ordinary: OrdinaryLoot;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "VanillaDrops".
+ * via the `definition` "OrdinaryLoot".
  */
-export interface VanillaDrops {
+export interface OrdinaryLoot {
   enabled: boolean;
   lootMultiplier: number;
-  extraDrops: boolean;
+  tables: string[];
+  slots?: {
+    [k: string]: number;
+  };
   xpModifier: ValueModifier;
   xpValue: number;
   excludedTypes: EntityType[];
@@ -1133,6 +1174,9 @@ export interface Offer {
   requires: string[];
   hash: string;
   mob: CustomMob;
+  lootTables: {
+    [k: string]: LootTable;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1257,6 +1301,9 @@ export interface EditorPayload1 {
   items: {
     [k: string]: EditorItem;
   };
+  lootTables: {
+    [k: string]: LootTable;
+  };
   problems: {
     [k: string]: GraphProblem[];
   };
@@ -1276,6 +1323,11 @@ export interface EditorPayload1 {
   legacy?: EditorLegacy;
 }
 
+export const AmountMode = {
+    CHOICES: "CHOICES",
+    RANGE: "RANGE",
+} as const;
+
 export const Color = {
     BLUE: "BLUE",
     GREEN: "GREEN",
@@ -1284,12 +1336,6 @@ export const Color = {
     RED: "RED",
     WHITE: "WHITE",
     YELLOW: "YELLOW",
-} as const;
-
-export const ConfigurationScope = {
-    GLOBAL: "GLOBAL",
-    MOB: "MOB",
-    WORLD: "WORLD",
 } as const;
 
 export const DifficultyChange = {

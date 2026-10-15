@@ -18,5 +18,52 @@
     "tr": "Seni yakalar. Bir saniye içinde eğil, yoksa seni 20 bloğa kadar havaya taşır ve bırakır.",
     "zh": "抓住你。一秒内潜行，否则它会把你带到最高 20 格的空中然后松手。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "launcher_enderman": {
+        "name": "Launcher Enderman",
+        "entries": [
+          {
+            "item": "minecraft:ender_pearl",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:feather",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:slime_ball",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

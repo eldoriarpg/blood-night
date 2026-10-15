@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.configuration.elements.world.VanillaDrops;
+import de.eldoria.bloodnight.loot.OrdinaryLoot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
@@ -31,7 +31,7 @@ class PickupGuardTest {
     @BeforeEach
     void setUp() {
         world = MockBukkit.mock().addSimpleWorld("world");
-        guard = new PickupGuard(ignored -> bloodNight, ignored -> VanillaDrops.defaultDrops());
+        guard = new PickupGuard(ignored -> bloodNight, ignored -> OrdinaryLoot.defaults());
     }
 
     @AfterEach

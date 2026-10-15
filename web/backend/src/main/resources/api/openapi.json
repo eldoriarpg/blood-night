@@ -955,7 +955,7 @@
       },
       "EditorArea" : {
         "type" : "string",
-        "enum" : [ "MOBS", "MACROS", "ITEMS", "WORLDS", "SERVER", "DROPS" ]
+        "enum" : [ "MOBS", "MACROS", "ITEMS", "WORLDS", "SERVER", "LOOT" ]
       },
       "ErrorBody" : {
         "type" : "object",

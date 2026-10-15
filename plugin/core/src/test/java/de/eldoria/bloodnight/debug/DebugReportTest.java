@@ -38,7 +38,7 @@ class DebugReportTest {
         Files.createDirectories(folder.resolve("worlds"));
         for (String file : List.of(
                 "config.yml",
-                "global_drops.yml",
+                "loot_tables.yml",
                 "mobs.yml",
                 "items.yml",
                 "macros.yml",
@@ -52,6 +52,6 @@ class DebugReportTest {
                 .map(path -> folder.relativize(path).toString().replace('\\', '/'))
                 .toList();
 
-        assertEquals(List.of("config.yml", "global_drops.yml", "worlds/a.yml", "worlds/b.yml"), carried);
+        assertEquals(List.of("config.yml", "loot_tables.yml", "worlds/a.yml", "worlds/b.yml"), carried);
     }
 }

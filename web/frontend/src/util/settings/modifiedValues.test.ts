@@ -67,10 +67,9 @@ describe('modified values', () => {
         expect(shownFields(attributes, {mythicType: 'SkeletonKing'}).map(entry => entry.key)).toEqual(['mythicType', 'mythicLevel'])
     })
 
-    it('hides a mob\'s own drop settings that its scopes do not use', () => {
-        const drops = [field('vanillaLoot', 'choice'), field('weightsScope', 'choice', 'GLOBAL'), field('weights', 'map'), field('dropTables', 'choices'), field('dropList', 'list')]
-        expect(shownFields(drops, {dropTables: ['GLOBAL']}).map(entry => entry.key)).toEqual(['vanillaLoot', 'weightsScope', 'dropTables'])
-        expect(shownFields(drops, {weightsScope: 'MOB', dropTables: ['MOB']}).map(entry => entry.key))
-            .toEqual(['vanillaLoot', 'weightsScope', 'weights', 'dropTables', 'dropList'])
+    it('hides replacing items where no broader loot joins', () => {
+        const loot = [field('tables', 'texts'), field('inherit', 'boolean', true), field('replaceSame', 'boolean', true)]
+        expect(shownFields(loot, {}).map(entry => entry.key)).toEqual(['tables', 'inherit', 'replaceSame'])
+        expect(shownFields(loot, {inherit: false}).map(entry => entry.key)).toEqual(['tables', 'inherit'])
     })
 })

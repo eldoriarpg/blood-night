@@ -212,19 +212,17 @@
         }
       }
     },
-    "mobDrops" : {
-      "weightsScope" : "GLOBAL",
-      "weights" : {
-        "1" : 90,
-        "2" : 50,
-        "3" : 10
+    "loot" : {
+      "tables" : [ "volley_pillager" ],
+      "slots" : {
+        "0" : 2,
+        "1" : 5,
+        "2" : 2
       },
-      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
-      "dropList" : [ ],
-      "xpScope" : "GLOBAL",
-      "xpModifier" : "MULTIPLY",
-      "xpValue" : 4.0,
-      "vanillaLoot" : "KEEP"
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null
     },
     "extension" : {
       "type" : "NONE",
@@ -253,6 +251,45 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    }
+  },
+  "lootTables" : {
+    "volley_pillager" : {
+      "name" : "Volley Pillager",
+      "entries" : [ {
+        "item" : "minecraft:arrow",
+        "weight" : 10,
+        "amount" : {
+          "mode" : "CHOICES",
+          "min" : 1,
+          "max" : 1,
+          "choices" : {
+            "8" : 3,
+            "16" : 1
+          }
+        },
+        "repeatable" : true
+      }, {
+        "item" : "minecraft:emerald",
+        "weight" : 4,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 2,
+          "choices" : { }
+        },
+        "repeatable" : false
+      }, {
+        "item" : "minecraft:crossbow",
+        "weight" : 1,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false
+      } ]
     }
   }
 }

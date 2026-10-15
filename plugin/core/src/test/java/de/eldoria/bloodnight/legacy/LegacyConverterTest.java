@@ -10,6 +10,10 @@ import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeOverride;
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.loot.Experience;
+import de.eldoria.bloodnight.loot.LootAmount;
+import de.eldoria.bloodnight.loot.LootEntry;
+import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
@@ -71,7 +75,8 @@ class LegacyConverterTest {
                 new ConfigFile(),
                 Map.of("world", new WorldSettings(), "world_nether", new WorldSettings()),
                 List.of(),
-                new ItemRegistry());
+                new ItemRegistry(),
+                new LootTables());
     }
 
     @Test
@@ -121,9 +126,14 @@ class LegacyConverterTest {
         assertEquals(ValueModifier.VALUE, override.healthModifier());
         assertEquals(40.0, override.health());
 
-        String item = armored.mobDrops().dropList().getFirst().itemId();
-        assertEquals(Material.DIAMOND, result.items().item(item).getType());
-        assertEquals(5, armored.mobDrops().dropList().getFirst().weight());
+        assertEquals(List.of("legacy_armored_zombie"), armored.loot().tables());
+        assertEquals(true, armored.loot().inherit());
+        LootEntry entry = result.loot().get("legacy_armored_zombie").entries().getFirst();
+        assertEquals(Material.DIAMOND, result.items().item(entry.item()).getType());
+        assertEquals(5, entry.weight());
+        assertEquals(LootAmount.exactly(2), entry.amount());
+        assertTrue(entry.repeatable());
+        assertEquals(new Experience(ValueModifier.MULTIPLY, 4), world.loot().experience());
     }
 
     @Test

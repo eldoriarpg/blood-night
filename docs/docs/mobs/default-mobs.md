@@ -1,6 +1,6 @@
 ---
 title: The ready-made mobs
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # The ready-made mobs

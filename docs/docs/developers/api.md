@@ -93,6 +93,7 @@ Don't use them: they can change in any version.
 | `CustomMobSpawnEvent` | A spawning mob is about to become a special mob | Yes. The mob stays normal. |
 | `CustomMobDeathEvent` | A special mob died. You can still change its drops. | No |
 | `CustomMobNightEndEvent` | A special mob's blood night is over and it is about to go or turn ordinary. `action(...)` changes what happens. | Yes. The mob stays as it is. |
+| `BloodNightLootEvent` | A player killed a special mob, or an ordinary monster in a blood night, and its [loot tables](../mobs/loot-tables.md) were rolled. `loot()` holds the stacks by table ID; change, add or remove them. `mobId()` is null for an ordinary monster. | Yes. Nothing from the tables drops. |
 | `DeathActionEvent` | A death is about to cause lightning, thunder or a shockwave. `action()` says which. | Yes. That one is left out. |
 | `BloodNightSettingsChangeEvent` | The settings changed and are in use. `cause()` says why: `RELOAD`, `EDITOR`, `COMMAND`, `STORE` or `CONVERT`. | No |
 

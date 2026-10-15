@@ -57,7 +57,7 @@ Need help from us? This uploads a report about your server and BloodNight, and g
 for example on our Discord.
 
 The first time, it tells you what it sends and asks you to run the command again. The report holds your server and
-plugin versions, the log, `config.yml`, `global_drops.yml`, your world files, your mobs and their problems. Addresses,
+plugin versions, the log, `config.yml`, `loot_tables.yml`, your world files, your mobs and their problems. Addresses,
 passwords and tokens are hidden before it leaves your server. Your mob files and the editor session stay at home.
 
 You also get a second link. It deletes the report right away. Otherwise it is deleted by itself after a while.

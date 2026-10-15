@@ -77,7 +77,7 @@ class DragonFightTest {
                         ValueModifier.DEFAULT,
                         1),
                 plain.behaviour(),
-                plain.mobDrops(),
+                plain.loot(),
                 plain.extension(),
                 plain.spawn());
         Tasks tasks = new Tasks(plugin);

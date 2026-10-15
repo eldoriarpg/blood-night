@@ -73,6 +73,25 @@ class PayloadValidatorTest {
     }
 
     @Test
+    void lootTablesNeedKnownItemsAndAssignmentsKnownTables() {
+        String payload = """
+                {"items":{"sword":{}},
+                 "lootTables":{"gems":{"entries":[{"item":"sword"},{"item":"ruby"},{"item":"minecraft:diamond"}]}},
+                 "mobs":{"a":{"id":"a","attributes":{"entityType":"ZOMBIE"},"loot":{"tables":["gems","gone"]}}},
+                 "settings":{"main":{"loot":{"tables":["gone"],"ordinary":{"tables":["gems"]}}},
+                   "worlds":{"w":{"settings":{"loot":{"tables":[],"ordinary":{"tables":["lost"]}}}}}}}
+                """;
+
+        assertEquals(
+                List.of(
+                        "/mobs/a/loot/tables/1",
+                        "/lootTables/gems/entries/1/item",
+                        "/settings/main/loot/tables/0",
+                        "/settings/worlds/w/settings/loot/ordinary/tables/0"),
+                paths(payload));
+    }
+
+    @Test
     void theShapeIsChecked() {
         assertTrue(paths("[]").contains(""));
         assertEquals(

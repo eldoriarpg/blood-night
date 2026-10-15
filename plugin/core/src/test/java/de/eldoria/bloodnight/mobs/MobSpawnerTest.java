@@ -99,7 +99,7 @@ class MobSpawnerTest {
                         3,
                         List.of(new AttributeChange("minecraft:movement_speed", Operation.ADD_SCALAR, 1))),
                 strong.behaviour(),
-                strong.mobDrops(),
+                strong.loot(),
                 strong.extension(),
                 strong.spawn());
         mobs.add(strong);
@@ -258,7 +258,7 @@ class MobSpawnerTest {
                 strong.equipment(),
                 strong.attributes(),
                 strong.behaviour(),
-                strong.mobDrops(),
+                strong.loot(),
                 strong.extension(),
                 new SpawnRules(1_000_000, true, NightEnd.REVERT, Set.of(), SpawnConditions.any())));
         at(13_000);
@@ -295,7 +295,7 @@ class MobSpawnerTest {
                         "SkeletalKnight",
                         3),
                 strong.behaviour(),
-                strong.mobDrops(),
+                strong.loot(),
                 strong.extension(),
                 new SpawnRules(1_000_000, true, NightEnd.REMOVE, Set.of(), SpawnConditions.any())));
         at(13_000);
@@ -325,7 +325,7 @@ class MobSpawnerTest {
                         "SkeletalKnight",
                         3),
                 strong.behaviour(),
-                strong.mobDrops(),
+                strong.loot(),
                 strong.extension(),
                 strong.spawn());
         LivingEntity zombie = zombie();

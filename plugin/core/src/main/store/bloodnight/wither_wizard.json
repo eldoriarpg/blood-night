@@ -18,5 +18,63 @@
     "tr": "Arka arkaya üç wither kafatası fırlatır, sonra 8 saniye dinlenir. Canı yarının altına düşünce bir kez iyileşir.",
     "zh": "连续扔出三个凋灵之首，然后休息 8 秒。生命值低于一半时会治疗自己一次。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "wither_wizard": {
+        "name": "Wither Wizard",
+        "entries": [
+          {
+            "item": "minecraft:coal",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:nether_wart",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:lapis_lazuli",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:wither_rose",
+            "weight": 2,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

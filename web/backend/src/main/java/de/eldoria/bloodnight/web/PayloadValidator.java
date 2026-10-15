@@ -25,9 +25,11 @@ import java.util.stream.Collectors;
 
 /**
  * Checks an edited payload as far as the service can without a server: its shape, the graphs of mobs and macros
- * against the server's catalog (known node types, ports, connections to existing nodes and outputs) and that mobs
- * only use items of the payload or material keys such as {@code minecraft:diamond_helmet}, whose existence is
- * left to the server like anything else that needs it (entity types, effect keys) when it pulls the result. Catalogs leave empty port lists out, so a missing list counts as empty.
+ * against the server's catalog (known node types, ports, connections to existing nodes and outputs), that mobs and
+ * loot tables only use items of the payload or material keys such as {@code minecraft:diamond_helmet}, whose existence is
+ * left to the server like anything else that needs it (entity types, effect keys) when it pulls the result, and that
+ * mobs, worlds and the server only assign loot tables of the payload. Catalogs leave empty port lists out, so a
+ * missing list counts as empty.
  * <p>
  * Uses of macros ({@code macro.<id>}) need a macro of that id in the payload; uses of routines
  * ({@code routine.<name>}) need a {@code routine.define} of that name in the same graph, and their inputs are the
@@ -57,11 +59,24 @@ final class PayloadValidator {
         }
         Set<String> macros = macroIds(payload.path("macros"));
         Set<String> items = new HashSet<>(payload.path("items").propertyNames());
+        Set<String> tables = new HashSet<>(payload.path("lootTables").propertyNames());
         JsonNode mobs = payload.path("mobs");
         if (!mobs.isMissingNode() && !mobs.isObject()) problems.add(new PayloadProblem("/mobs", "Mobs are no object"));
         for (var entry : mobs.properties()) {
             String path = "/mobs/" + escape(entry.getKey());
             validateMob(path, entry.getKey(), entry.getValue(), macros, items, problems);
+            validateAssigned(path + "/loot", entry.getValue().path("loot"), tables, problems);
+        }
+        for (var entry : payload.path("lootTables").properties()) {
+            JsonNode entries = entry.getValue().path("entries");
+            for (int i = 0; i < entries.size(); i++) {
+                JsonNode item = entries.get(i).path("item");
+                if (!item.isString() || !knownItem(items, item.asString())) {
+                    problems.add(new PayloadProblem(
+                            "/lootTables/" + escape(entry.getKey()) + "/entries/" + i + "/item",
+                            "Unknown item " + item.asString("")));
+                }
+            }
         }
         JsonNode macroList = payload.path("macros");
         if (!macroList.isMissingNode() && !macroList.isArray()) {
@@ -75,6 +90,15 @@ final class PayloadValidator {
         JsonNode settings = payload.path("settings");
         if (!settings.isMissingNode() && !settings.isObject()) {
             problems.add(new PayloadProblem("/settings", "Settings are no object"));
+        }
+        JsonNode server = settings.path("main").path("loot");
+        validateAssigned("/settings/main/loot", server, tables, problems);
+        validateAssigned("/settings/main/loot/ordinary", server.path("ordinary"), tables, problems);
+        for (var world : settings.path("worlds").properties()) {
+            String path = "/settings/worlds/" + escape(world.getKey()) + "/settings/loot";
+            JsonNode loot = world.getValue().path("settings").path("loot");
+            validateAssigned(path, loot, tables, problems);
+            validateAssigned(path + "/ordinary", loot.path("ordinary"), tables, problems);
         }
         return problems;
     }
@@ -97,14 +121,6 @@ final class PayloadValidator {
         }
         validateItems(path + "/equipment", mob.path("equipment"), items, problems);
         validateItems(path + "/extension/equipment", mob.path("extension").path("equipment"), items, problems);
-        JsonNode drops = mob.path("mobDrops").path("dropList");
-        for (int i = 0; i < drops.size(); i++) {
-            JsonNode item = drops.get(i).path("itemId");
-            if (item.isString() && !knownItem(items, item.asString())) {
-                problems.add(new PayloadProblem(
-                        path + "/mobDrops/dropList/" + i + "/itemId", "Unknown item " + item.asString()));
-            }
-        }
         if (!mob.path("behaviour").isMissingNode())
             validateGraph(path + "/behaviour", mob.path("behaviour"), macros, problems);
     }
@@ -115,6 +131,17 @@ final class PayloadValidator {
             JsonNode item = equipment.path(slot);
             if (item.isString() && !knownItem(items, item.asString())) {
                 problems.add(new PayloadProblem(path + "/" + slot, "Unknown item " + item.asString()));
+            }
+        }
+    }
+
+    private static void validateAssigned(
+            String path, JsonNode loot, Set<String> tables, List<PayloadProblem> problems) {
+        JsonNode assigned = loot.path("tables");
+        for (int i = 0; i < assigned.size(); i++) {
+            String table = assigned.get(i).asString("");
+            if (!tables.contains(table)) {
+                problems.add(new PayloadProblem(path + "/tables/" + i, "Unknown loot table " + table));
             }
         }
     }

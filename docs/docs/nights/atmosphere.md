@@ -85,7 +85,7 @@ BloodNight knows in advance which nights will be blood nights, so this only happ
 | `vignette` | The edge of the screen glows red. |
 | `darknessPulses` | Every minute or so the world grows dark for a moment and slowly brightens again. This works through the blood night's [boss bar](announcements.md), so it needs the bar switched on. |
 | `rain` | It rains for them, even if the weather is clear. Off by default. |
-| `heartbeat` | They hear a heartbeat when a monster is within `heartbeatRange` blocks (30). Far away it is slow and faint. The closer the monster gets, the faster and louder it beats, up to its loudest within `heartbeatLoudestWithin` blocks (5). Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. Armor with [Night Ward](../mobs/drops-and-items.md#the-blood-night-reward) calms twice as much. |
+| `heartbeat` | They hear a heartbeat when a monster is within `heartbeatRange` blocks (30). Far away it is slow and faint. The closer the monster gets, the faster and louder it beats, up to its loudest within `heartbeatLoudestWithin` blocks (5). Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. Armor with [Night Ward](../mobs/items.md#the-blood-night-reward) calms twice as much. |
 | `particles` | Ash and spores drift around them. Add or remove particles as you like. Only used with `worldParticles: false`. |
 
 Only the player sees and hears these. The world itself does not change.

@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.store;
 
+import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
 
@@ -14,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 
 /**
@@ -21,7 +24,8 @@ import java.util.function.Predicate;
  * caller decides when to write them.
  * <p>
  * An installed mob records its entry and the hash of the logic it brought ({@link MobOrigin}). An update replaces only
- * the logic ({@link MobLogic}) and keeps the server's tuning.
+ * the logic ({@link MobLogic}) and keeps the server's tuning. Installing adds the loot tables a mob brings where the
+ * server has no table of that id; neither an install nor an update replaces a table the server has.
  */
 public final class MobStore {
     private final Store store;
@@ -57,10 +61,12 @@ public final class MobStore {
     /**
      * Installs a pack or one entry. Entries whose id the server already uses are skipped.
      *
-     * @return the new mobs and what happened
+     * @param tables the ids of the server's loot tables
+     * @return the new mobs, the loot tables they bring that the server lacks, and what happened
      */
-    public Change install(Collection<CustomMob> mobs, String packOrEntry) {
+    public Change install(Collection<CustomMob> mobs, Set<String> tables, String packOrEntry) {
         Map<String, CustomMob> result = byId(mobs);
+        Map<String, LootTable> added = new TreeMap<>();
         List<String> done = new ArrayList<>();
         List<String> skipped = new ArrayList<>();
         for (StoreEntry entry : store.resolve(packOrEntry)) {
@@ -69,9 +75,12 @@ public final class MobStore {
                 continue;
             }
             result.put(entry.id(), entry.mob().withOrigin(origin(entry)));
+            entry.mobPackage().lootTables().forEach((id, table) -> {
+                if (!tables.contains(id)) added.putIfAbsent(id, table);
+            });
             done.add(entry.id());
         }
-        return new Change(List.copyOf(result.values()), done, skipped);
+        return new Change(List.copyOf(result.values()), added, done, skipped);
     }
 
     /**
@@ -98,7 +107,7 @@ public final class MobStore {
                             .withOrigin(origin(entry)));
             done.add(mob.id());
         }
-        return new Change(List.copyOf(result.values()), done, List.of());
+        return new Change(List.copyOf(result.values()), Map.of(), done, List.of());
     }
 
     /**
@@ -126,8 +135,10 @@ public final class MobStore {
      * The mobs after an install or update.
      *
      * @param mobs    every mob of the server afterwards
+     * @param tables  the loot tables to add, which the installed mobs assign and the server lacks
      * @param done    the ids installed or updated
      * @param skipped the ids skipped because the server already has a mob of that id
      */
-    public record Change(List<CustomMob> mobs, List<String> done, List<String> skipped) {}
+    public record Change(
+            List<CustomMob> mobs, Map<String, LootTable> tables, List<String> done, List<String> skipped) {}
 }

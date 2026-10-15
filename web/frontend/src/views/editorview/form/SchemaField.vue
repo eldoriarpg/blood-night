@@ -13,7 +13,7 @@ import SubHeader from '@/components/typography/SubHeader.vue'
 import FieldList from '~/views/editorview/form/FieldList.vue'
 import FieldSounds from '~/views/editorview/form/FieldSounds.vue'
 import FieldSpecial from '~/views/editorview/form/FieldSpecial.vue'
-import {parentKey, specialField} from '~/util/settings/specialFields'
+import {groupKey, parentKey, specialField} from '~/util/settings/specialFields'
 import type {SoundEntry} from '~/api/generated/payload'
 import FieldMap from '~/views/editorview/form/FieldMap.vue'
 import FieldChoices from '~/views/editorview/form/FieldChoices.vue'
@@ -54,13 +54,14 @@ const {t, te} = useI18n()
 
 const soundList = computed(() => props.field.kind === 'list' && props.field.item?.definition === 'SoundEntry')
 const parent = computed(() => parentKey(props.path))
+const group = computed(() => groupKey(props.path.split('/').slice(0, -1).join('/')))
 const NIGHT_COMMANDS: ReadonlySet<string> = new Set(['beginCommands', 'endCommands'])
 const COMMAND_LISTS: ReadonlySet<string> = new Set([...NIGHT_COMMANDS, 'deathCommands', 'respawnCommands'])
 const commandSuggestions = computed(() => props.field.key.endsWith('Commands') ? session.payload.value?.choices?.commands ?? [] : undefined)
 const special = computed(() => specialField(props.field, parent.value))
 const label = computed(() => {
   if (soundList.value && te(`settings.soundLists.${props.field.key}`)) return t(`settings.soundLists.${props.field.key}`)
-  const inGroup = `settings.fieldsIn.${parent.value}.${props.field.key}`
+  const inGroup = `settings.fieldsIn.${group.value}.${props.field.key}`
   return te(inGroup) ? t(inGroup) : fieldLabel(props.field.key, t, te)
 })
 const example = computed(() => te(`settings.examples.${props.field.key}`) ? t(`settings.examples.${props.field.key}`, {player: '{player}', world: '{world}'}) : undefined)
@@ -70,7 +71,7 @@ const placeholders = computed(() => {
     ? [{token: '{player}', meaning: t(each ? 'editor.placeholders.playerEach' : 'editor.placeholders.player')}, {token: '{world}', meaning: t('editor.placeholders.world')}]
     : undefined
 })
-const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind) || special.value === 'dropWeights' || special.value === 'moonPhases' || special.value === 'phaseCycle' || special.value === 'curve' || special.value === 'worldMobs' || special.value === 'mobName')
+const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind) || special.value === 'dropWeights' || special.value === 'lootTables' || special.value === 'experience' || special.value === 'moonPhases' || special.value === 'phaseCycle' || special.value === 'curve' || special.value === 'worldMobs' || special.value === 'mobName')
 const current = computed(() => props.value ?? props.field.defaultValue)
 const draft = ref<string | number | undefined>(undefined)
 const numberDraft = computed<number | undefined>({
@@ -120,7 +121,12 @@ watch(current, value => {
 }, {immediate: true})
 
 function save(value: unknown): void {
-  if (props.readOnly || JSON.stringify(value) === JSON.stringify(props.value)) return
+  if (props.readOnly) return
+  if (value === undefined) {
+    if (props.value !== undefined && props.value !== null) void changes.apply([{op: 'remove', path: props.path}])
+    return
+  }
+  if (JSON.stringify(value) === JSON.stringify(props.value)) return
   void changes.apply([{op: 'add', path: props.path, value}])
 }
 </script>

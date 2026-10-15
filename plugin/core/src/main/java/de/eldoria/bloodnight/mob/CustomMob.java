@@ -7,10 +7,10 @@ package de.eldoria.bloodnight.mob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
-import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
 import de.eldoria.bloodnight.mob.meta.Movement;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
@@ -26,7 +26,7 @@ import java.util.Objects;
  * @param equipment item ids per slot; none keeps what the entity spawned with
  * @param attributes type, name, health and damage
  * @param behaviour the behaviour graph
- * @param mobDrops  drops on death
+ * @param loot      what it drops when a player kills it; none inherits its world's and the server's loot
  * @param extension entity riding or carrying the mob
  * @param spawn     when the mob takes over spawning entities and when it goes again
  * @param origin    the store entry the mob was installed from; {@code null} for the user's own mobs
@@ -37,7 +37,7 @@ public record CustomMob(
         @Nullable Equipment equipment,
         Attributes attributes,
         Graph behaviour,
-        MobDrops mobDrops,
+        MobLoot loot,
         Extension extension,
         SpawnRules spawn,
         @Nullable MobOrigin origin,
@@ -48,6 +48,7 @@ public record CustomMob(
         Objects.requireNonNull(behaviour, "Behaviour can not be null");
         Objects.requireNonNull(extension, "Extension can not be null");
         Objects.requireNonNull(spawn, "Spawn rules can not be null");
+        loot = Objects.requireNonNullElseGet(loot, MobLoot::inherited);
         movement = Movement.orVanilla(movement);
     }
 
@@ -59,11 +60,11 @@ public record CustomMob(
             @Nullable Equipment equipment,
             Attributes attributes,
             Graph behaviour,
-            MobDrops mobDrops,
+            MobLoot loot,
             Extension extension,
             SpawnRules spawn,
             @Nullable MobOrigin origin) {
-        this(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, Movement.VANILLA);
+        this(id, equipment, attributes, behaviour, loot, extension, spawn, origin, Movement.VANILLA);
     }
 
     /**
@@ -74,43 +75,50 @@ public record CustomMob(
             @Nullable Equipment equipment,
             Attributes attributes,
             Graph behaviour,
-            MobDrops mobDrops,
+            MobLoot loot,
             Extension extension,
             SpawnRules spawn) {
-        this(id, equipment, attributes, behaviour, mobDrops, extension, spawn, null);
+        this(id, equipment, attributes, behaviour, loot, extension, spawn, null);
     }
 
     /**
      * @return the same mob with other attributes
      */
     public CustomMob withAttributes(Attributes attributes) {
-        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
+    }
+
+    /**
+     * @return the same mob with other loot settings
+     */
+    public CustomMob withLoot(MobLoot loot) {
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
     }
 
     /**
      * @return the same mob with another origin
      */
     public CustomMob withOrigin(@Nullable MobOrigin origin) {
-        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
     }
 
     /**
      * @return the same mob, tuning and origin kept, with another behaviour, extension and movement
      */
     public CustomMob withLogic(Graph behaviour, Extension extension, Movement movement) {
-        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
     }
 
     /**
      * @return the same mob moving another way
      */
     public CustomMob withMovement(Movement movement) {
-        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
     }
 
     /**
-     * Reads a mob; one without {@code behaviour} gets an empty graph, one without {@code spawn} the default rules, one
-     * without {@code movement} the vanilla one.
+     * Reads a mob; one without {@code behaviour} gets an empty graph, one without {@code loot} inherits its world's and
+     * the server's, one without {@code spawn} the default rules, one without {@code movement} the vanilla one.
      */
     @JsonCreator
     static CustomMob read(
@@ -118,7 +126,7 @@ public record CustomMob(
             @JsonProperty("equipment") @Nullable Equipment equipment,
             @JsonProperty("attributes") Attributes attributes,
             @JsonProperty("behaviour") @Nullable Graph behaviour,
-            @JsonProperty("mobDrops") MobDrops mobDrops,
+            @JsonProperty("loot") @Nullable MobLoot loot,
             @JsonProperty("extension") Extension extension,
             @JsonProperty("spawn") @Nullable SpawnRules spawn,
             @JsonProperty("origin") @Nullable MobOrigin origin,
@@ -128,7 +136,7 @@ public record CustomMob(
                 equipment,
                 attributes,
                 behaviour == null ? Graph.builder().build() : behaviour,
-                mobDrops,
+                Objects.requireNonNullElseGet(loot, MobLoot::inherited),
                 extension,
                 Objects.requireNonNullElseGet(spawn, SpawnRules::defaults),
                 origin,

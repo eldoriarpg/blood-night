@@ -8,7 +8,6 @@ package de.eldoria.bloodnight.editor;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.configuration.ConfigFile;
-import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -55,10 +54,11 @@ class EditorPayloadTest {
                 Map.of("test", mob),
                 List.of(),
                 Map.of(),
+                Map.of(),
                 Behaviours.empty().problems(),
                 Map.of(),
                 Map.of("items.yml", "broken"),
-                new SettingsPayload(new ConfigFile(), GlobalDrops.defaultDrops(), Map.of()),
+                new SettingsPayload(new ConfigFile(), Map.of()),
                 new EditorChoices(
                         "26.3",
                         List.of("minecraft:stone"),

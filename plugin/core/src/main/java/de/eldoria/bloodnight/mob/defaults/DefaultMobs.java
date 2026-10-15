@@ -8,12 +8,12 @@ package de.eldoria.bloodnight.mob.defaults;
 import de.eldoria.bloodnight.api.MovementPreset;
 import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
+import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
-import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.Movement;
 import de.eldoria.bloodnight.mob.meta.NightEnd;
@@ -1660,7 +1660,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 mob.equipment(),
                 mob.attributes(),
                 mob.behaviour(),
-                mob.mobDrops(),
+                mob.loot(),
                 mob.extension(),
                 new SpawnRules(
                         rules.weight(),
@@ -1689,7 +1689,7 @@ public final class DefaultMobs implements BloodNightNodes {
                         base.damage(),
                         base.changes()),
                 mob.behaviour(),
-                mob.mobDrops(),
+                mob.loot(),
                 mob.extension(),
                 mob.spawn());
     }
@@ -1920,7 +1920,7 @@ public final class DefaultMobs implements BloodNightNodes {
                         1.5,
                         List.of()),
                 dragon.behaviour(),
-                dragon.mobDrops(),
+                dragon.loot(),
                 dragon.extension(),
                 new SpawnRules(0, false, NightEnd.KEEP, Set.of(), SpawnConditions.any()));
     }
@@ -1950,7 +1950,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 equipment,
                 new Attributes(translated(id), type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
                 built(id, graph),
-                MobDrops.defaultDrops(),
+                MobLoot.inherited(),
                 extension,
                 SpawnRules.defaults());
     }

@@ -18,5 +18,41 @@
     "tr": "Parlar. Vuruşları seni yavaşlatır ve elytra uçuşundan düşürür.",
     "zh": "发光。它的攻击会让你减速，并打断你的鞘翅飞行。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "fearful_phantom": {
+        "name": "Fearful Phantom",
+        "entries": [
+          {
+            "item": "minecraft:phantom_membrane",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:glow_ink_sac",
+            "weight": 3,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

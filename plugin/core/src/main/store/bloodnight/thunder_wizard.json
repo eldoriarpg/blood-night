@@ -18,5 +18,63 @@
     "tr": "Durduğun yeri üst üste üç kez kırmızı bir halkayla işaretler. Halka dolunca oraya yıldırım düşer: hareket etmeye devam et.",
     "zh": "连续三次用红圈标记你所站的位置。红圈填满时，闪电会劈在那里：保持移动。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "thunder_wizard": {
+        "name": "Thunder Wizard",
+        "entries": [
+          {
+            "item": "minecraft:redstone",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:copper_ingot",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:lapis_lazuli",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:lightning_rod",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

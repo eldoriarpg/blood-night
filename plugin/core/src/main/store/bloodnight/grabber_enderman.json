@@ -18,5 +18,52 @@
     "tr": "Her 10 saniyede bir çevresindeki yaratıkları yakalar ve önüne bırakır.",
     "zh": "每 10 秒抓起周围的生物，放到你面前。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "grabber_enderman": {
+        "name": "Grabber Enderman",
+        "entries": [
+          {
+            "item": "minecraft:ender_pearl",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:string",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:lead",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }
