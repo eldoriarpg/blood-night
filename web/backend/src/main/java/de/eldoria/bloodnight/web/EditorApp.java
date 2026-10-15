@@ -94,6 +94,7 @@ final class EditorApp {
     private final CatalogRepository catalogs;
     private final Rooms rooms;
     private final RateLimiter limiter;
+    private final ClientAddress clientAddress;
     private final ItemAssets assets;
 
     EditorApp(
@@ -111,6 +112,7 @@ final class EditorApp {
         this.catalogs = catalogs;
         this.rooms = rooms;
         this.limiter = new RateLimiter(config.sessionsPerHour(), Duration.ofHours(1), clock);
+        this.clientAddress = ClientAddress.trusting(config.trustedProxies());
     }
 
     /**
@@ -171,7 +173,7 @@ final class EditorApp {
     }
 
     private void open(Context ctx) {
-        if (!limiter.tryAcquire(ctx.ip())) {
+        if (!limiter.tryAcquire(clientAddress.of(ctx.ip(), ctx.header("X-Forwarded-For")))) {
             throw new TooManyRequestsResponse("Too many sessions opened, try again later");
         }
         CreateSession request = ctx.bodyAsClass(CreateSession.class);

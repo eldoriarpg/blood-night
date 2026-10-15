@@ -27,6 +27,7 @@ spotbugs = "6.5.12"
 spotbugs-annotations = "4.10.4"
 jspecify = "1.0.1"
 palantir = "2.84.0"
+publishdata = "2.0.0"
 
 [libraries]
 strokkcommands-annotations = { module = "net.strokkur.commands:annotations-paper", version.ref = "strokkcommands" }
@@ -84,3 +85,4 @@ plugin-yml-paper = { id = "de.eldoria.plugin-yml.paper", version.ref = "plugin-y
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs" }
+publishdata = { id = "de.chojo.publishdata", version.ref = "publishdata" }

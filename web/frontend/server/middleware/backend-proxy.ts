@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-import {defineEventHandler, proxyRequest} from 'h3'
+import {defineEventHandler, getRequestHeader, getRequestIP, proxyRequest} from 'h3'
 import {useRuntimeConfig} from '#imports'
 
 /**
@@ -17,6 +17,15 @@ function belongsToBackend(path: string): boolean {
 }
 
 /**
+ * @returns the forwarded addresses with the one this request came from appended
+ */
+function forwardedFor(event: Parameters<typeof getRequestIP>[0]): string {
+    const before = getRequestHeader(event, 'x-forwarded-for')
+    const remote = getRequestIP(event) ?? ''
+    return before ? `${before}, ${remote}` : remote
+}
+
+/**
  * Hands the paths the backend owns straight to it, at the address this server holds while it runs.
  *
  * <p>The address is read per request, so one build serves any backend. Everything else falls
@@ -25,10 +34,13 @@ function belongsToBackend(path: string): boolean {
  * <p>This covers HTTP only. A WebSocket upgrade never reaches a middleware: Nitro hands it to the
  * route that declares a WebSocket handler for the path, which is where the editor stream is relayed
  * (`server/routes/api/v1/editor/sessions/[id]/stream.ts`).
+ *
+ * <p>The address the request came from is appended to `X-Forwarded-For`, as any proxy does, so the
+ * backend can tell callers apart (it trusts this server through `TRUSTED_PROXIES`).
  */
 export default defineEventHandler(event => {
     if (!belongsToBackend(event.path)) return
 
     const {backendUrl} = useRuntimeConfig(event)
-    return proxyRequest(event, `${backendUrl}${event.path}`)
+    return proxyRequest(event, `${backendUrl}${event.path}`, {headers: {'x-forwarded-for': forwardedFor(event)}})
 })

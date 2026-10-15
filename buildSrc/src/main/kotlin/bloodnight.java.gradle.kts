@@ -7,12 +7,12 @@ plugins {
     java
     id("com.diffplug.spotless")
     id("com.github.spotbugs")
+    id("de.chojo.publishdata")
 }
 
 val libs = the<LibrariesForLibs>()
 
 group = "de.eldoria.bloodnight"
-version = "1.0.0"
 
 java {
     toolchain {

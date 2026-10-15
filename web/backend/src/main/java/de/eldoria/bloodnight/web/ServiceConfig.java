@@ -24,6 +24,8 @@ import java.util.function.Function;
  * @param maxPayloadBytes    largest request body ({@code MAX_PAYLOAD_MB}, 10)
  * @param assetCache         where Minecraft's item assets are kept once fetched ({@code ASSET_CACHE},
  *                           {@code /var/cache/bloodnight/assets})
+ * @param trustedProxies     proxies whose forwarded client address is believed, as addresses or ranges, comma
+ *                           separated ({@code TRUSTED_PROXIES}); empty trusts none, see {@link ClientAddress}
  * @param database           the database connection
  */
 public record ServiceConfig(
@@ -34,6 +36,7 @@ public record ServiceConfig(
         int sessionsPerHour,
         long maxPayloadBytes,
         Path assetCache,
+        List<String> trustedProxies,
         DatabaseConfig database) {
 
     /**
@@ -55,14 +58,12 @@ public record ServiceConfig(
         return new ServiceConfig(
                 integer(env, "PORT", 8080),
                 text(env, "EDITOR_URL", "http://localhost:4000/session/{id}#{token}"),
-                Arrays.stream(text(env, "ALLOWED_ORIGINS", "").split(","))
-                        .map(String::strip)
-                        .filter(origin -> !origin.isEmpty())
-                        .toList(),
+                list(env, "ALLOWED_ORIGINS"),
                 Duration.ofHours(integer(env, "SESSION_HOURS", 168)),
                 integer(env, "SESSIONS_PER_HOUR", 20),
                 integer(env, "MAX_PAYLOAD_MB", 10) * 1024L * 1024L,
                 Path.of(text(env, "ASSET_CACHE", "/var/cache/bloodnight/assets")),
+                list(env, "TRUSTED_PROXIES"),
                 new DatabaseConfig(
                         text(env, "DB_HOST", "localhost"),
                         integer(env, "DB_PORT", 5432),
@@ -75,6 +76,13 @@ public record ServiceConfig(
     private static String text(Function<String, String> env, String name, String fallback) {
         String value = env.apply(name);
         return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private static List<String> list(Function<String, String> env, String name) {
+        return Arrays.stream(text(env, name, "").split(","))
+                .map(String::strip)
+                .filter(entry -> !entry.isEmpty())
+                .toList();
     }
 
     private static int integer(Function<String, String> env, String name, int fallback) {

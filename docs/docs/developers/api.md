@@ -21,6 +21,9 @@ dependencies {
 }
 ```
 
+Every change on `main` is published too, as `<next version>-SNAPSHOT`. Use it to try what is coming before it is
+released.
+
 Add BloodNight as a dependency in your `paper-plugin.yml`, so your plugin loads after it.
 
 ## Ask BloodNight
