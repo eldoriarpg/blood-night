@@ -19,7 +19,8 @@ you can also [run your own](../getting-started/editor-service.md).
 4. Click **Mark as done** in the editor.
 5. Run `/bloodnight editor apply` on the server.
 
-Nothing changes on your server before step 5.
+Nothing changes on your server before step 5. After that the session stays open: keep editing, mark it as done again
+and apply again, as often as you like.
 
 ## Working together
 
@@ -55,7 +56,7 @@ Restoring adds a new revision, so nothing is ever lost.
 
 - Every mob has a valid name and kind.
 - Every item a mob uses exists.
-- No file on the server changed since the session opened.
+- No file on the server changed since the session opened, or since its last apply.
 
 If something is wrong, nothing changes and the session stays open. Fix it in the editor and try again.
 
@@ -65,11 +66,17 @@ anyway and replaces those changes.
 Before applying, BloodNight copies all files into `backups/` with the date and time. Then it replaces the files,
 reloads and builds every mob again.
 
+### After applying
+
+The session stays open. The editor shows when it was last applied and how many changes came since. To apply those
+changes, mark the session as done again and run `/bloodnight editor apply` once more. If nothing changed since the
+last apply, `apply` tells you so and does nothing.
+
 ## Other commands
 
 | Command | What it does |
 |---|---|
 | `/bloodnight editor new` | Closes the open session and starts a fresh one |
-| `/bloodnight editor cancel` | Closes the session without applying |
+| `/bloodnight editor cancel` | Closes the session |
 
-A session that nobody applies ends after 7 days.
+A session ends when you cancel it, when you start a new one, or after 7 days without use.

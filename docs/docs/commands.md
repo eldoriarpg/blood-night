@@ -16,7 +16,7 @@ All commands start with `/bloodnight`. The short form is `/bn`.
 | `/bn spawn <mob>` | Spawns a special mob on the block you look at, or where you stand when you look at none | `bloodnight.command.spawn` |
 | `/bn editor` | Opens the web editor or joins the open session | `bloodnight.command.editor` |
 | `/bn editor new` | Starts a fresh editor session | `bloodnight.command.editor` |
-| `/bn editor apply [force]` | Applies what you made in the editor | `bloodnight.command.editor` |
+| `/bn editor apply [force]` | Applies what you made in the editor; the session stays open for more changes | `bloodnight.command.editor` |
 | `/bn editor cancel` | Closes the editor session | `bloodnight.command.editor` |
 | `/bn item register` | Saves the item in your hand and gives it an ID | `bloodnight.command.item` |
 | `/bn item remove <id>` | Removes a saved item | `bloodnight.command.item` |

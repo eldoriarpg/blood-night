@@ -16,7 +16,7 @@ import java.util.List;
  * an event's type are left out.
  *
  * @param type         what happened
- * @param revision     the session's revision ({@code HELLO}, {@code CHANGE})
+ * @param revision     the session's revision ({@code HELLO}, {@code CHANGE}), the applied one ({@code APPLIED})
  * @param author       who saved the change ({@code CHANGE})
  * @param operations   the change's JSON Patch operations ({@code CHANGE})
  * @param section      the section ({@code LOCK}, {@code UNLOCK})
@@ -53,6 +53,10 @@ public record StreamEvent(
 
     public static StreamEvent presence(List<String> participants) {
         return new StreamEvent(StreamEventType.PRESENCE, null, null, null, null, null, participants, null);
+    }
+
+    public static StreamEvent applied(int revision) {
+        return new StreamEvent(StreamEventType.APPLIED, revision, null, null, null, null, null, null);
     }
 
     public static StreamEvent of(StreamEventType type) {

@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-import type {Catalog, EditorArea, LockInfo, PayloadProblem, SessionState} from '~/api/generated/schema'
+import type {Catalog, EditorArea, LastApplied, LockInfo, PayloadProblem, SessionState} from '~/api/generated/schema'
 import type {EditorPayload} from '~/api/generated/payload'
 import type {EditorStream} from '~/api/editorStream'
 import type {PatchOperation} from '~/util/patch/jsonPatch'
@@ -32,6 +32,8 @@ export interface EditorData {
     online: string[]
     problems: PayloadProblem[]
     state: SessionState
+    /** When the server last applied the session; null before the first apply. */
+    lastApplied: LastApplied | null
     /** The parts of the payload this participant may change; the others are read only. */
     areas: EditorArea[]
 }
@@ -43,7 +45,7 @@ export interface EditorData {
 export function editorState() {
     const data = useState<EditorData>('editorState', () => ({
         id: '', token: '', you: '', status: 'idle', catalog: null, confirmed: null, revision: 0, pending: [], nextPending: 1,
-        locks: [], online: [], problems: [], state: 'EDITING', areas: [],
+        locks: [], online: [], problems: [], state: 'EDITING', lastApplied: null, areas: [],
     }))
     const stream = useState<EditorStream | null>('editorState.stream', () => null)
     return {
@@ -54,7 +56,7 @@ export function editorState() {
             stream.value = null
             Object.assign(data.value, {
                 id: '', token: '', you: '', status: 'idle', catalog: null, confirmed: null, revision: 0, pending: [], nextPending: 1,
-                locks: [], online: [], problems: [], state: 'EDITING', areas: [],
+                locks: [], online: [], problems: [], state: 'EDITING', lastApplied: null, areas: [],
             } satisfies EditorData)
         },
     }

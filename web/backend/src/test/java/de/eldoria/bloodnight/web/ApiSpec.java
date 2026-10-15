@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.schema.JsonSchemas;
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.assets.ItemIndex;
 import de.eldoria.bloodnight.web.api.editor.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.AppliedReport;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
 import de.eldoria.bloodnight.web.api.editor.ChangeBatch;
 import de.eldoria.bloodnight.web.api.editor.CreateSession;
@@ -193,6 +194,15 @@ final class ApiSpec {
                     null,
                     200,
                     SessionView.class),
+            new Operation(
+                    "post",
+                    EditorRoutes.APPLIED,
+                    "reportApplied",
+                    "The server applied the session and keeps it open",
+                    "pull",
+                    AppliedReport.class,
+                    204,
+                    null),
             new Operation(
                     "get",
                     AssetRoutes.ITEMS,

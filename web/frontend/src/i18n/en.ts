@@ -44,7 +44,10 @@ export default {
             saving: 'Saving',
             submit: 'Mark as done',
             submitAgain: 'Mark as done again',
-            submitted: 'Marked as done. Run /bloodnight editor apply on the server to apply it.',
+            submitted: 'Marked as done. Run /bloodnight editor apply on the server to apply it. The session stays open afterwards.',
+            applied: 'Applied {when} (revision {revision})',
+            changeSince: '1 change since',
+            changesSince: '{count} changes since',
         },
         changes: {
             held: '{names} is editing this right now.',

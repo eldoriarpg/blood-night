@@ -24,10 +24,12 @@ package de.eldoria.bloodnight.web.api.editor;
  *   <li>{@code POST} {@value #RESTORE}: make a revision's payload the newest revision ({@link ChangeAccepted})</li>
  *   <li>{@code POST} {@value #SUBMIT}: mark the session as done</li>
  *   <li>{@code GET} {@value #RESULT}: the submitted session, with the pull token as bearer</li>
+ *   <li>{@code POST} {@value #APPLIED}: the server applied the session and keeps it open ({@link AppliedReport}), with
+ *   the pull token as bearer</li>
  *   <li>{@code DELETE} {@value #SESSION}: close the session, with the pull token as bearer</li>
  * </ul>
- * Editing calls carry a participant token as bearer, the server's calls ({@code result}, {@code participants},
- * closing) its pull token; reading the session accepts either. Changes apply on the latest revision and may only
+ * Editing calls carry a participant token as bearer, the server's calls ({@code result}, {@code applied},
+ * {@code participants}, closing) its pull token; reading the session accepts either. Changes apply on the latest revision and may only
  * touch sections that are free or held by the sender, otherwise they are refused with {@code 423 Locked}; whole saves
  * and restores need every section free of others.
  */
@@ -45,6 +47,7 @@ public final class EditorRoutes {
     public static final String STREAM = "/api/v1/editor/sessions/{id}/stream";
     public static final String SUBMIT = "/api/v1/editor/sessions/{id}/submit";
     public static final String RESULT = "/api/v1/editor/sessions/{id}/result";
+    public static final String APPLIED = "/api/v1/editor/sessions/{id}/applied";
 
     private EditorRoutes() {}
 

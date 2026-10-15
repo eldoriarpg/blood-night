@@ -14,7 +14,12 @@ public enum SessionState {
      */
     EDITING,
     /**
-     * Marked as done in the editor; the server may pull it. Editing is still possible and submits again.
+     * Marked as done in the editor; the server may pull it. Editing goes back to {@link #EDITING}.
      */
-    SUBMITTED
+    SUBMITTED,
+    /**
+     * Applied by the server, which keeps the session open: editing goes back to {@link #EDITING}, and marking it as
+     * done again lets the server apply it again.
+     */
+    APPLIED
 }

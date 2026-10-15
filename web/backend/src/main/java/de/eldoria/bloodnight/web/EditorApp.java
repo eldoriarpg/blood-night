@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.web;
 
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.editor.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.AppliedReport;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
 import de.eldoria.bloodnight.web.api.editor.ChangeBatch;
 import de.eldoria.bloodnight.web.api.editor.CreateSession;
@@ -138,6 +139,7 @@ final class EditorApp {
             javalin.routes.post(EditorRoutes.RESTORE, this::restore);
             javalin.routes.post(EditorRoutes.SUBMIT, this::submit);
             javalin.routes.get(EditorRoutes.RESULT, this::result);
+            javalin.routes.post(EditorRoutes.APPLIED, this::applied);
             javalin.routes.delete(EditorRoutes.SESSION, this::close);
             javalin.routes.ws(EditorRoutes.STREAM, this::stream);
             javalin.routes.get(AssetRoutes.ITEMS, this::items);
@@ -286,6 +288,20 @@ final class EditorApp {
         StoredSession session = pulling(ctx);
         if (session.state() != SessionState.SUBMITTED) throw new ConflictResponse("The session is not submitted yet");
         ctx.json(view(session, null, EnumSet.allOf(EditorArea.class)));
+    }
+
+    private void applied(Context ctx) {
+        StoredSession session = pulling(ctx);
+        AppliedReport report = ctx.bodyAsClass(AppliedReport.class);
+        if (report.revision() < 0 || report.revision() > session.revision()) {
+            throw new BadRequestResponse("No such revision");
+        }
+        if (report.hashes() == null) throw new BadRequestResponse("Missing hashes");
+        if (!sessions.applied(session.id(), report.revision(), MAPPER.writeValueAsString(report.hashes()))) {
+            throw new NotFoundResponse("No such session");
+        }
+        rooms.of(session.id()).broadcast(StreamEvent.applied(report.revision()));
+        ctx.status(HttpStatus.NO_CONTENT);
     }
 
     private void close(Context ctx) {
@@ -455,6 +471,7 @@ final class EditorApp {
                 session.id(),
                 session.state(),
                 session.revision(),
+                session.lastApplied(),
                 session.catalog(),
                 MAPPER.readTree(session.payload()),
                 MAPPER.readValue(session.problems(), PROBLEMS),

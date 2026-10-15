@@ -95,6 +95,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/editor/sessions/{id}/applied": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The server applied the session and keeps it open */
+        post: operations["reportApplied"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/editor/sessions/{id}/changes": {
         parameters: {
             query?: never;
@@ -257,6 +274,12 @@ export interface components {
             areas: components["schemas"]["EditorArea"][];
             name: string;
         };
+        AppliedReport: {
+            hashes: {
+                [key: string]: string;
+            };
+            revision: number;
+        };
         Catalog: {
             bindings: {
                 [key: string]: string;
@@ -325,6 +348,11 @@ export interface components {
             };
             version: string;
         };
+        LastApplied: {
+            /** Format: date-time */
+            at: string;
+            revision: number;
+        };
         LockInfo: {
             holder: string;
             section: string;
@@ -377,13 +405,14 @@ export interface components {
             pullToken: string;
         };
         /** @enum {string} */
-        SessionState: "EDITING" | "SUBMITTED";
+        SessionState: "EDITING" | "SUBMITTED" | "APPLIED";
         SessionView: {
             areas: components["schemas"]["EditorArea"][];
             catalog: string;
             /** Format: date-time */
             expires: string;
             id: string;
+            lastApplied?: components["schemas"]["LastApplied"];
             locks: components["schemas"]["LockInfo"][];
             online: string[];
             payload: unknown;
@@ -403,7 +432,7 @@ export interface components {
             type?: components["schemas"]["StreamEventType"];
         };
         /** @enum {string} */
-        StreamEventType: "HELLO" | "CHANGE" | "LOCK" | "UNLOCK" | "PRESENCE" | "SUBMITTED" | "CLOSED";
+        StreamEventType: "HELLO" | "CHANGE" | "LOCK" | "UNLOCK" | "PRESENCE" | "SUBMITTED" | "APPLIED" | "CLOSED";
         TypeInfo: {
             arguments?: string[];
             assignableTo?: string[];
@@ -429,6 +458,7 @@ export interface components {
     pathItems: never;
 }
 export type AddParticipant = components['schemas']['AddParticipant'];
+export type AppliedReport = components['schemas']['AppliedReport'];
 export type Catalog = components['schemas']['Catalog'];
 export type ChangeAccepted = components['schemas']['ChangeAccepted'];
 export type ChangeBatch = components['schemas']['ChangeBatch'];
@@ -439,6 +469,7 @@ export type ErrorBody = components['schemas']['ErrorBody'];
 export type ExecutionInfo = components['schemas']['ExecutionInfo'];
 export type ItemAsset = components['schemas']['ItemAsset'];
 export type ItemIndex = components['schemas']['ItemIndex'];
+export type LastApplied = components['schemas']['LastApplied'];
 export type LockInfo = components['schemas']['LockInfo'];
 export type LockRequest = components['schemas']['LockRequest'];
 export type NodeType = components['schemas']['NodeType'];
@@ -653,6 +684,39 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Success */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An error, e.g. 404, 409 or 423 Locked */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    reportApplied: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppliedReport"];
+            };
+        };
         responses: {
             /** @description Success */
             204: {
@@ -1010,11 +1074,13 @@ export const EditorArea = {
 } as const;
 
 export const SessionState = {
+    APPLIED: "APPLIED",
     EDITING: "EDITING",
     SUBMITTED: "SUBMITTED",
 } as const;
 
 export const StreamEventType = {
+    APPLIED: "APPLIED",
     CHANGE: "CHANGE",
     CLOSED: "CLOSED",
     HELLO: "HELLO",

@@ -27,7 +27,7 @@ import static de.chojo.sadu.queries.api.query.Query.query;
 final class SessionRepository {
     private static final String COLUMNS =
             "id, pull_token_hash, state, revision, catalog, payload::TEXT AS payload, problems::TEXT AS problems,"
-                    + " created, expires";
+                    + " created, expires, applied_revision, applied_at";
     private final Duration lifetime;
 
     /**
@@ -132,6 +132,34 @@ final class SessionRepository {
                 .changed();
     }
 
+    /**
+     * Records that the server applied a revision and keeps the session. The session counts as applied only when
+     * nobody changed it since that revision; the files' hashes after the apply replace the payload's, in the current
+     * and the initial payload, so every revision checks the next apply against what this one wrote.
+     *
+     * @param id       the session
+     * @param revision the revision the server applied
+     * @param hashes   the server's file hashes after the apply, JSON
+     * @return whether the session exists
+     */
+    boolean applied(String id, int revision, String hashes) {
+        return query("""
+                UPDATE editor_session
+                SET state = CASE WHEN revision = :revision THEN :state ELSE state END,
+                    applied_revision = :revision, applied_at = now(),
+                    payload = jsonb_set(payload, '{hashes}', CAST(:hashes AS JSONB)),
+                    initial_payload = jsonb_set(initial_payload, '{hashes}', CAST(:hashes AS JSONB)),
+                    expires = now() + make_interval(secs => :lifetime)
+                WHERE id = :id AND expires > now();""")
+                .single(call().bind("id", id)
+                        .bind("revision", revision)
+                        .bind("hashes", hashes)
+                        .bind("state", SessionState.APPLIED.name())
+                        .bind("lifetime", lifetime.toSeconds()))
+                .update()
+                .changed();
+    }
+
     boolean delete(String id) {
         return query("DELETE FROM editor_session WHERE id = :id;")
                 .single(call().bind("id", id))
@@ -166,6 +194,10 @@ final class SessionRepository {
                 row.getString("payload"),
                 row.getString("problems"),
                 row.getTimestamp("created").toInstant(),
-                row.getTimestamp("expires").toInstant());
+                row.getTimestamp("expires").toInstant(),
+                (Integer) row.getObject("applied_revision"),
+                row.getTimestamp("applied_at") == null
+                        ? null
+                        : row.getTimestamp("applied_at").toInstant());
     }
 }

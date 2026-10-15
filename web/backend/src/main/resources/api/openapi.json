@@ -620,6 +620,49 @@
         }
       }
     },
+    "/api/v1/editor/sessions/{id}/applied" : {
+      "post" : {
+        "operationId" : "reportApplied",
+        "summary" : "The server applied the session and keeps it open",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "security" : [ {
+          "bearer" : [ ]
+        } ],
+        "x-bearer" : "pull",
+        "requestBody" : {
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AppliedReport"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/assets/{version}/items" : {
       "get" : {
         "operationId" : "getItemAssets",
@@ -717,6 +760,21 @@
           }
         },
         "required" : [ "name", "areas" ]
+      },
+      "AppliedReport" : {
+        "type" : "object",
+        "properties" : {
+          "revision" : {
+            "type" : "integer"
+          },
+          "hashes" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "revision", "hashes" ]
       },
       "Catalog" : {
         "type" : "object",
@@ -904,6 +962,19 @@
         },
         "required" : [ "version", "items", "names" ]
       },
+      "LastApplied" : {
+        "type" : "object",
+        "properties" : {
+          "revision" : {
+            "type" : "integer"
+          },
+          "at" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "revision", "at" ]
+      },
       "LockInfo" : {
         "type" : "object",
         "properties" : {
@@ -1065,7 +1136,7 @@
       },
       "SessionState" : {
         "type" : "string",
-        "enum" : [ "EDITING", "SUBMITTED" ]
+        "enum" : [ "EDITING", "SUBMITTED", "APPLIED" ]
       },
       "SessionView" : {
         "type" : "object",
@@ -1078,6 +1149,9 @@
           },
           "revision" : {
             "type" : "integer"
+          },
+          "lastApplied" : {
+            "$ref" : "#/components/schemas/LastApplied"
           },
           "catalog" : {
             "type" : "string"
@@ -1153,7 +1227,7 @@
       },
       "StreamEventType" : {
         "type" : "string",
-        "enum" : [ "HELLO", "CHANGE", "LOCK", "UNLOCK", "PRESENCE", "SUBMITTED", "CLOSED" ]
+        "enum" : [ "HELLO", "CHANGE", "LOCK", "UNLOCK", "PRESENCE", "SUBMITTED", "APPLIED", "CLOSED" ]
       },
       "TypeInfo" : {
         "type" : "object",
