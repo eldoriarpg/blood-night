@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: plugin
-          path: core/build/libs/BloodNight-*.jar
+          path: plugin/core/build/libs/BloodNight-*.jar
 
   verify-frontend:
     runs-on: ubuntu-latest
