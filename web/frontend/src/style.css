@@ -94,6 +94,44 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+:root[data-theme='light'] {
+    --color-ground: #f7f2f1;
+    --color-surface: #fdfbfa;
+    --color-raised: #ffffff;
+    --color-hover: #efe6e4;
+    --color-selected: #f6dde0;
+    --color-line: #d9cac8;
+    --color-line-soft: #e9dfdd;
+
+    --color-ink: #23171a;
+    --color-ink-muted: #6a5553;
+    --color-ink-faint: #8a7472;
+
+    --color-accent-text: #b01c30;
+    --color-focus: #c8243a;
+
+    --color-held: #8a5a00;
+    --color-held-bg: #fcefd6;
+    --color-problem: #b3261e;
+    --color-problem-bg: #fde3e5;
+
+    --color-pin-exec: #4a3f41;
+    --color-pin-entity: #1f6fb0;
+    --color-pin-number: #2f8a43;
+    --color-pin-boolean: #c8243a;
+    --color-pin-text: #b0337f;
+    --color-pin-location: #9a7d00;
+    --color-pin-item: #6c45c4;
+    --color-pin-other: #6a5553;
+
+    --color-error: #b3261e;
+    --color-error-text: #b3261e;
+    --color-success: #2f7d3f;
+    --color-info: #8a5a00;
+
+    color-scheme: light;
+}
+
 body {
     margin: 0;
     color: var(--text);

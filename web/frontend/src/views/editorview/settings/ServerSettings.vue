@@ -5,6 +5,8 @@
  */
 <script setup lang="ts">
 import TabBar from '@/components/navigation/TabBar.vue'
+import DocsLink from '@/components/navigation/DocsLink.vue'
+import {sectionDocsLink} from '~/util/docsLinks'
 import PageHeader from '@/components/typography/PageHeader.vue'
 import Alert from '@/components/feedback/Alert.vue'
 import SettingsForm from '~/views/editorview/settings/SettingsForm.vue'
@@ -39,6 +41,9 @@ onBeforeUnmount(() => void locks.release(sectionName.value))
     <Alert v-if="heldBy" class="mt-3" variant="held">{{ t('editor.settings.heldBy', {name: heldBy}) }}</Alert>
     <Alert v-else-if="denied" class="mt-3" variant="held">{{ t('editor.permission.readOnly') }}</Alert>
     <TabBar v-model="tab" :tabs="tabs" class="mt-3"/>
+    <div v-if="sectionDocsLink(current.key, true)" class="pt-2">
+      <DocsLink :href="sectionDocsLink(current.key, true)!">{{ t('editor.docs.section') }}</DocsLink>
+    </div>
     <SettingsForm
         :definition="current.root === 'main' ? 'ConfigFile' : 'GlobalDrops'"
         :path="pointer('settings', current.root)"

@@ -42,7 +42,7 @@ public record EditorLegacy(
         for (World world : loadedWorlds) {
             var settings = result.worlds().get(world.getName());
             if (settings != null) {
-                worlds.put(world.getUID().toString(), new SettingsPayload.WorldPayload(world.getName(), settings));
+                worlds.put(world.getUID().toString(), SettingsPayload.WorldPayload.of(world, settings));
             }
         }
         Map<String, CustomMob> mobs = new TreeMap<>();

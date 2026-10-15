@@ -5,6 +5,7 @@
  */
 import type {ItemAsset} from '~/api/generated/schema'
 import type {EditorItem} from '~/api/generated/payload'
+import {withFallbacks} from '~/util/minimessage/translations'
 
 /** One entry of an item picker: a material, or an item of the payload shown with its material's icon. */
 export interface ItemChoice {
@@ -38,10 +39,10 @@ export function keyName(key: string): string {
 
 /**
  * @param text a MiniMessage text, e.g. `<red>Blood <bold>Blade`
- * @returns the plain text, e.g. `Blood Blade`
+ * @returns the plain text, e.g. `Blood Blade`, with texts in the player's language as their English fallback
  */
 export function plainText(text: string): string {
-    return text.replaceAll(/<[^<>]*>/g, '').trim()
+    return withFallbacks(text).replaceAll(/<[^<>]*>/g, '').trim()
 }
 
 /**

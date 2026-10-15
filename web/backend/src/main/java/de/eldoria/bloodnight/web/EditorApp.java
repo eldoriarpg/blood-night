@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
  * the editor saves work in progress. Everyone connected to a session's stream hears about changes, locks and who is
  * online.
  * <p>
- * Minecraft's item icons and names ({@link AssetRoutes}) are served from {@link ItemAssets}, without a token and
+ * Minecraft's item icons, names and sounds ({@link AssetRoutes}) are served from {@link ItemAssets}, without a token and
  * cacheable for good, so the editor's item pickers can show them.
  */
 final class EditorApp {
@@ -144,6 +144,8 @@ final class EditorApp {
             javalin.routes.ws(EditorRoutes.STREAM, this::stream);
             javalin.routes.get(AssetRoutes.ITEMS, this::items);
             javalin.routes.get(AssetRoutes.TEXTURE, this::texture);
+            javalin.routes.get(AssetRoutes.SOUNDS, this::sounds);
+            javalin.routes.get(AssetRoutes.SOUND, this::sound);
         });
     }
 
@@ -493,6 +495,35 @@ final class EditorApp {
             throw new NotFoundResponse(e.getMessage());
         } catch (ItemAssets.Unavailable e) {
             log.warn("Item assets of {} are unavailable", version, e);
+            throw new ServiceUnavailableResponse("Minecraft's assets cannot be fetched right now");
+        }
+    }
+
+    private void sounds(Context ctx) throws IOException {
+        String version = ctx.pathParam("version");
+        try {
+            Path index = assets.sounds(version);
+            ctx.header("Cache-Control", IMMUTABLE)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .result(Files.readAllBytes(index));
+        } catch (ItemAssets.UnknownVersion e) {
+            throw new NotFoundResponse(e.getMessage());
+        } catch (ItemAssets.Unavailable e) {
+            log.warn("Sounds of {} are unavailable", version, e);
+            throw new ServiceUnavailableResponse("Minecraft's assets cannot be fetched right now");
+        }
+    }
+
+    private void sound(Context ctx) throws IOException {
+        String name = ctx.pathParam("name");
+        if (!name.endsWith(".ogg")) throw new NotFoundResponse("No sound " + name);
+        String key = name.substring(0, name.length() - ".ogg".length());
+        try {
+            Path sound = assets.sound(ctx.pathParam("version"), key)
+                    .orElseThrow(() -> new NotFoundResponse("No sound " + key));
+            ctx.header("Cache-Control", IMMUTABLE).contentType("audio/ogg").result(Files.readAllBytes(sound));
+        } catch (ItemAssets.Unavailable e) {
+            log.warn("Sound {} is unavailable", key, e);
             throw new ServiceUnavailableResponse("Minecraft's assets cannot be fetched right now");
         }
     }

@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-/** A tab of a settings form: some properties of a settings object. */
+/** A tab of a settings form: some properties of a settings object, each a name or a path such as `deathActions/mob`. */
 export interface SettingsSection {
     key: string
     properties: string[]
@@ -20,7 +20,8 @@ export const WORLD_SECTIONS: readonly SettingsSection[] = [
     {key: 'mobs', properties: ['mobSettings']},
     {key: 'announcements', properties: ['announcement']},
     {key: 'sounds', properties: ['soundSettings']},
-    {key: 'death', properties: ['deathActions']},
+    {key: 'deathPlayers', properties: ['deathActions/player']},
+    {key: 'deathMobs', properties: ['deathActions/mob']},
     {key: 'drops', properties: ['worldDrops']},
     {key: 'atmosphere', properties: ['atmosphere']},
     {key: 'rules', properties: ['nightRules']},

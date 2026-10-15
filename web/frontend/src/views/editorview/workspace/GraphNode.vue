@@ -16,6 +16,7 @@ import NodeOutputs from '~/views/editorview/workspace/NodeOutputs.vue'
 import NodeField from '~/views/editorview/workspace/NodeField.vue'
 import {handles, isGrouped, portGroups, type ConfigView, type NodeView, type PortView} from '~/util/graph/graphView'
 import {channelsHex} from '~/util/graph/nodeEdits'
+import {caseSlots} from '~/util/graph/caseSlots'
 
 /**
  * A node drawn like a Blueprint node: a header coloured by what the node does, with a question mark explaining it,
@@ -25,7 +26,9 @@ import {channelsHex} from '~/util/graph/nodeEdits'
  * property of an entity, shows only its wired outputs, and a node with optional inputs, such as one setting
  * properties, only those that are wired or typed in. Ports of a node reading or changing a type with many properties
  * are drawn under the type that brings them, the node's own type first. A setting with the id of an execution
- * output, such as the value of a switch's case, is drawn beside that output instead of below the header. The body is slightly see-through, so wires running behind a
+ * output, such as the value of a switch's case, is drawn beside that output instead of below the header. Of the
+ * numbered cases of a switch or select only those up to the last in use are drawn (see {@link caseSlots}), with a
+ * button adding the next and one beside the last clearing it away. The body is slightly see-through, so wires running behind a
  * node can still be followed. A reroute is only a dot with a pin on either side.
  */
 const props = defineProps<{
@@ -47,12 +50,16 @@ const emit = defineEmits<{
 const {t} = useI18n()
 const names = useChoiceLabels()
 const expanded = ref(false)
+const added = ref<ReadonlySet<string>>(new Set())
+const slots = computed(() => caseSlots(props.data, added.value))
+const slotInputs = computed(() => props.data.inputs.filter(port => !slots.value.hidden.has(port.id)))
+const executions = computed(() => props.data.executions.filter(port => !slots.value.hidden.has(port.id)))
 
 const MANY = 6
 const crowded = computed(() => props.data.outputs.length > MANY)
 const outputs = computed(() => crowded.value && !expanded.value ? props.data.outputs.filter(port => port.connected) : props.data.outputs)
-const inputs = computed(() => expanded.value ? props.data.inputs : props.data.inputs.filter(port => !port.optional || port.connected || typed(port)))
-const hiddenInputs = computed(() => props.data.inputs.length - inputs.value.length)
+const inputs = computed(() => expanded.value ? slotInputs.value : slotInputs.value.filter(port => !port.optional || port.connected || typed(port) || slots.value.shown.includes(port.id)))
+const hiddenInputs = computed(() => slotInputs.value.length - inputs.value.length)
 const hiddenOutputs = computed(() => props.data.outputs.length - outputs.value.length)
 const hidden = computed(() => hiddenInputs.value + hiddenOutputs.value)
 const moreLabel = computed(() => {
@@ -76,6 +83,18 @@ const tone = computed(() => ({
   flow: 'bg-node-flow',
   macro: 'bg-node-macro',
 }[props.data.tone]))
+
+function addCase(): void {
+  const next = slots.value.next
+  if (next) added.value = new Set([...added.value, next])
+}
+
+function removeCase(port: string): void {
+  const at = slots.value.shown.indexOf(port)
+  added.value = new Set([...added.value].filter(id => !slots.value.shown.slice(at).includes(id)))
+  const field = besides.value.get(port)
+  if (field) emit('config', field.id, null)
+}
 
 function typed(port: PortView): boolean {
   return port.literal !== undefined && port.literal !== null && port.literal !== ''
@@ -117,7 +136,7 @@ function fieldLabels(field: ConfigView): Record<string, string> {
       class="w-max max-w-[36rem] rounded-node border bg-raised/85 text-xs text-ink"
   >
     <div :class="tone" class="flex items-center gap-2 rounded-t-node px-3 py-1.5">
-      <span class="text-[10px] uppercase tracking-wider text-ink/75">{{ t(`editor.graph.tones.${data.tone}`) }}</span>
+      <span class="text-[10px] uppercase tracking-wider text-white/75">{{ t(`editor.graph.tones.${data.tone}`) }}</span>
       <span class="min-w-0 truncate text-sm font-semibold text-white">{{ data.title }}</span>
       <CountBadge v-if="step !== undefined" :count="step" data-testid="step" small/>
       <span class="ml-auto flex shrink-0 items-center gap-1.5">
@@ -170,6 +189,14 @@ function fieldLabels(field: ConfigView): Record<string, string> {
               <Handle :id="handles.input(port.id)" :class="['pin-data', `pin-${port.pin}`, port.connected && 'pin-filled']" :position="Position.Left" type="target"/>
               <span class="min-w-16 truncate text-ink-muted">{{ port.name }}</span>
               <NodeField v-if="besides.get(port.id)" :field="besides.get(port.id)!" :read-only="readOnly" @save="value => emit('config', besides.get(port.id)!.id, value)"/>
+              <BareButton
+                  v-if="!readOnly && slots.removable === port.id"
+                  :aria-label="t('editor.graph.removeCase', {name: port.name})"
+                  class="nodrag text-ink-faint hover:text-problem"
+                  @click="removeCase(port.id)"
+              >
+                <AppIcon icon="xmark"/>
+              </BareButton>
               <div v-if="editsInline(port)" :class="port.pin === 'number' ? 'w-20' : 'w-28'" class="shrink-0">
                 <NodeValue
                     :format="port.format"
@@ -187,8 +214,24 @@ function fieldLabels(field: ConfigView): Record<string, string> {
           </PortTooltip>
         </template>
       </div>
-      <NodeOutputs :cases="besides" :executions="data.executions" :groups="outputGroups" :read-only="readOnly" @config="(field, value) => emit('config', field, value)"/>
+      <NodeOutputs
+          :cases="besides"
+          :executions="executions"
+          :groups="outputGroups"
+          :read-only="readOnly"
+          :removable="slots.removable"
+          @config="(field, value) => emit('config', field, value)"
+          @remove="removeCase"
+      />
     </div>
+    <BareButton
+        v-if="!readOnly && slots.next"
+        class="nodrag flex w-full items-center justify-center gap-1.5 border-t border-line px-3 py-1 text-ink-faint hover:text-ink"
+        @click="addCase"
+    >
+      <AppIcon icon="plus"/>
+      {{ t('editor.graph.addCase') }}
+    </BareButton>
     <div v-if="!data.known" class="border-t border-line px-3 py-1 text-ink-faint">{{ data.type }}</div>
     <div v-if="heldBy" class="border-t border-line px-3 py-1 text-held">{{ t('editor.graph.heldBy', {name: heldBy}) }}</div>
   </div>

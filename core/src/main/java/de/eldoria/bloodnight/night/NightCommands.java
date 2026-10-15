@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
 import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
+import de.eldoria.bloodnight.util.Commands;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -52,7 +53,7 @@ public final class NightCommands implements Listener {
 
     private void run(World world, List<String> commands) {
         for (String command : commands) {
-            String forWorld = command.replace("{world}", world.getName());
+            String forWorld = Commands.withoutSlash(command).replace("{world}", world.getName());
             if (!forWorld.contains("{player}")) {
                 server.dispatchCommand(server.getConsoleSender(), text.resolve(forWorld, null));
                 continue;

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BloodNight">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a0a10"/>
+      <stop offset="0.45" stop-color="#8c1626"/>
+      <stop offset="0.8" stop-color="#e0414f"/>
+      <stop offset="1" stop-color="#ff8b95"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.55" stop-color="#c8243a" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#c8243a" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="drop">
+      <path d="M32 3 C32 3 12 26 12 40 A20 20 0 0 0 52 40 C52 26 32 3 32 3 Z"/>
+    </clipPath>
+  </defs>
+  <circle cx="32" cy="33" r="30" fill="url(#glow)"/>
+  <g transform="translate(32 33) scale(0.84) translate(-32 -33)">
+  <path d="M32 3 C32 3 12 26 12 40 A20 20 0 0 0 52 40 C52 26 32 3 32 3 Z" fill="url(#sky)"/>
+  <g clip-path="url(#drop)">
+    <circle cx="27" cy="20" r="0.9" fill="#ffd0d4"/>
+    <circle cx="36" cy="25" r="0.7" fill="#ffd0d4" opacity="0.8"/>
+    <circle cx="22" cy="30" r="0.6" fill="#ffd0d4" opacity="0.7"/>
+    <circle cx="41" cy="33" r="0.5" fill="#ffd0d4" opacity="0.6"/>
+    <path d="M10 62 L10 47 L14 47 L16 41 L18 46 L20 38 L22.5 45 L25 43 L28 48 L31 46 L34 49 L37 44 L39 47 L42 37 L44.5 45 L47 42 L49 47 L54 47 L54 62 Z" fill="#1a0609"/>
+    <circle cx="29.2" cy="54" r="1.1" fill="#ff6b77"/>
+    <circle cx="34.8" cy="54" r="1.1" fill="#ff6b77"/>
+  </g>
+  <path d="M32 3 C32 3 12 26 12 40 A20 20 0 0 0 52 40 C52 26 32 3 32 3 Z" fill="none" stroke="#5e0c18" stroke-width="1.2"/>
+  <path d="M21 31 C23 25 27 19 30 14" fill="none" stroke="#ffd0d4" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/>
+  </g>
+</svg>

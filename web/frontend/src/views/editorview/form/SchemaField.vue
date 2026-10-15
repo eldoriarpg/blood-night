@@ -11,12 +11,17 @@ import NumberInput from '@/components/input/number/NumberInput.vue'
 import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
 import SubHeader from '@/components/typography/SubHeader.vue'
 import FieldList from '~/views/editorview/form/FieldList.vue'
+import FieldSounds from '~/views/editorview/form/FieldSounds.vue'
+import FieldSpecial from '~/views/editorview/form/FieldSpecial.vue'
+import {parentKey, specialField} from '~/util/settings/specialFields'
+import type {SoundEntry} from '~/api/generated/payload'
 import FieldMap from '~/views/editorview/form/FieldMap.vue'
 import FieldChoices from '~/views/editorview/form/FieldChoices.vue'
 import FieldTexts from '~/views/editorview/form/FieldTexts.vue'
 import FieldSuggestedTexts from '~/views/editorview/form/FieldSuggestedTexts.vue'
 import FieldJson from '~/views/editorview/form/FieldJson.vue'
 import SchemaForm from '~/views/editorview/form/SchemaForm.vue'
+import MutedText from '@/components/typography/MutedText.vue'
 import {fieldLabel} from '~/views/editorview/form/fieldLabel'
 import {fieldOptions} from '~/util/settings/fieldOptions'
 import type {Field} from '~/util/settings/schemaFields'
@@ -24,6 +29,7 @@ import {isItemField} from '~/util/session/itemEntries'
 import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
 import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
 import {attributeLabels, suggestionsFor} from '~/util/settings/serverSuggestions'
+import {biomeTagName, biomeWords} from '~/util/settings/biomeNames'
 
 /**
  * One field of a settings form, drawn by its kind; a change is saved as soon as it is made, or when a typed value
@@ -37,6 +43,8 @@ const props = defineProps<{
   field: Field
   value: unknown
   path: string
+  /** A line under the field saying what it does, where that depends on other settings or is not obvious. */
+  help?: string
   readOnly: boolean
 }>()
 
@@ -44,7 +52,25 @@ const changes = useEditorChanges()
 const session = useEditorSession()
 const {t, te} = useI18n()
 
-const label = computed(() => fieldLabel(props.field.key, t, te))
+const soundList = computed(() => props.field.kind === 'list' && props.field.item?.definition === 'SoundEntry')
+const parent = computed(() => parentKey(props.path))
+const NIGHT_COMMANDS: ReadonlySet<string> = new Set(['beginCommands', 'endCommands'])
+const COMMAND_LISTS: ReadonlySet<string> = new Set([...NIGHT_COMMANDS, 'deathCommands', 'respawnCommands'])
+const commandSuggestions = computed(() => props.field.key.endsWith('Commands') ? session.payload.value?.choices?.commands ?? [] : undefined)
+const special = computed(() => specialField(props.field, parent.value))
+const label = computed(() => {
+  if (soundList.value && te(`settings.soundLists.${props.field.key}`)) return t(`settings.soundLists.${props.field.key}`)
+  const inGroup = `settings.fieldsIn.${parent.value}.${props.field.key}`
+  return te(inGroup) ? t(inGroup) : fieldLabel(props.field.key, t, te)
+})
+const example = computed(() => te(`settings.examples.${props.field.key}`) ? t(`settings.examples.${props.field.key}`, {player: '{player}', world: '{world}'}) : undefined)
+const placeholders = computed(() => {
+  const each = NIGHT_COMMANDS.has(props.field.key)
+  return COMMAND_LISTS.has(props.field.key)
+    ? [{token: '{player}', meaning: t(each ? 'editor.placeholders.playerEach' : 'editor.placeholders.player')}, {token: '{world}', meaning: t('editor.placeholders.world')}]
+    : undefined
+})
+const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind) || special.value === 'dropWeights' || special.value === 'moonPhases' || special.value === 'phaseCycle' || special.value === 'curve' || special.value === 'worldMobs')
 const current = computed(() => props.value ?? props.field.defaultValue)
 const draft = ref<string | number | undefined>(undefined)
 const numberDraft = computed<number | undefined>({
@@ -60,10 +86,12 @@ const textDraft = computed<string | undefined>({
   },
 })
 const listValue = computed(() => Array.isArray(current.value) ? current.value as unknown[] : undefined)
+const soundsValue = computed(() => listValue.value as SoundEntry[] | undefined)
 const textsValue = computed(() => Array.isArray(current.value) ? current.value as string[] : undefined)
 const objectValue = computed(() => current.value !== null && typeof current.value === 'object' && !Array.isArray(current.value) ? current.value as Record<string, unknown> : undefined)
 const itemField = computed(() => props.field.kind === 'text' && isItemField(props.field.key))
-const itemChoices = useItemAssets().choices(true)
+const assets = useItemAssets()
+const itemChoices = assets.choices(true)
 const choiceValue = computed(() => typeof current.value === 'string' ? current.value : null)
 const choiceLabels = useChoiceLabels()
 const options = computed(() => fieldOptions(props.field, session.payload.value?.choices?.mobTypes ?? [], current.value))
@@ -79,6 +107,13 @@ const attributeOptions = computed(() => {
   return choiceValue.value && attributes.length > 0 && !attributes.includes(choiceValue.value) ? [choiceValue.value, ...attributes] : attributes
 })
 const suggestions = computed(() => props.field.kind === 'texts' ? suggestionsFor(props.field.key, session.payload.value) : null)
+const suggestionLabels = computed(() => props.field.key === 'biomes' ? Object.fromEntries((suggestions.value ?? []).map(key => [key, biomeName(key)])) : undefined)
+
+function biomeName(key: string): string {
+  const tag = biomeTagName(key)
+  if (tag) return t(`editor.biomes.${tag.kind}`, {name: tag.name})
+  return assets.entry('biome', key) ?? biomeWords(key)
+}
 
 watch(current, value => {
   draft.value = typeof value === 'number' || typeof value === 'string' ? value : undefined
@@ -92,37 +127,40 @@ function save(value: unknown): void {
 
 <template>
   <div class="py-3">
-    <ToggleSetting v-if="field.kind === 'boolean'" :disabled="readOnly" :label="label" :model-value="Boolean(current)" @update:model-value="save"/>
-    <LabelledField v-else-if="field.kind === 'integer'" v-slot="{id}" :label="label">
+    <FieldSpecial v-if="special" :field="field" :help="help" :label="label" :path="path" :read-only="readOnly" :special="special" :value="current" @save="save"/>
+    <ToggleSetting v-else-if="field.kind === 'boolean'" :disabled="readOnly" :hint="help" :label="label" :model-value="Boolean(current)" @update:model-value="save"/>
+    <LabelledField v-else-if="field.kind === 'integer'" v-slot="{id}" :help="help" :label="label">
       <NumberInput :id="id" v-model="numberDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
-    <LabelledField v-else-if="field.kind === 'number'" v-slot="{id}" :label="label">
+    <LabelledField v-else-if="field.kind === 'number'" v-slot="{id}" :help="help" :label="label">
       <DecimalInput :id="id" v-model="numberDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
-    <LabelledField v-else-if="itemField" :label="label">
+    <LabelledField v-else-if="itemField" :help="help" :label="label">
       <ItemPicker :choices="itemChoices" :label="label" :model-value="textDraft" :read-only="readOnly" clearable @update:model-value="save"/>
     </LabelledField>
-    <LabelledField v-else-if="mythicField" :label="label">
+    <LabelledField v-else-if="mythicField" :help="help" :label="label">
       <ChoicePicker :label="label" :model-value="choiceValue || undefined" :options="mythicOptions" :read-only="readOnly" clearable @update:model-value="save($event ?? '')"/>
     </LabelledField>
-    <LabelledField v-else-if="attributeOptions.length > 0" :label="label">
+    <LabelledField v-else-if="attributeOptions.length > 0" :help="help" :label="label">
       <ChoicePicker :label="label" :labels="attributeLabels(attributeOptions)" :model-value="choiceValue ?? undefined" :options="attributeOptions" :read-only="readOnly" @update:model-value="save"/>
     </LabelledField>
-    <LabelledField v-else-if="field.kind === 'text'" v-slot="{id}" :label="label">
+    <LabelledField v-else-if="field.kind === 'text'" v-slot="{id}" :help="help" :label="label">
       <TextInput :id="id" v-model="textDraft" :disabled="readOnly" @focusout="save(draft)"/>
     </LabelledField>
-    <LabelledField v-else-if="field.kind === 'choice'" :label="label">
+    <LabelledField v-else-if="field.kind === 'choice'" :help="help" :label="label">
       <ChoicePicker :label="label" :labels="optionLabels" :model-value="choiceValue ?? undefined" :options="options" :read-only="readOnly" @update:model-value="save"/>
     </LabelledField>
     <FieldChoices v-else-if="field.kind === 'choices'" :label="label" :labels="optionLabels" :options="options" :read-only="readOnly" :value="textsValue" @save="save"/>
-    <FieldSuggestedTexts v-else-if="suggestions" :label="label" :read-only="readOnly" :suggestions="suggestions" :value="textsValue" @save="save"/>
-    <FieldTexts v-else-if="field.kind === 'texts'" :label="label" :read-only="readOnly" :value="textsValue" @save="save"/>
+    <FieldSuggestedTexts v-else-if="suggestions" :label="label" :labels="suggestionLabels" :read-only="readOnly" :suggestions="suggestions" :value="textsValue" @save="save"/>
+    <FieldTexts v-else-if="field.kind === 'texts'" :example="example" :label="label" :placeholders="placeholders" :suggestions="commandSuggestions" :read-only="readOnly" :value="textsValue" @save="save"/>
     <div v-else-if="field.kind === 'group'" class="flex flex-col gap-1">
       <SubHeader>{{ label }}</SubHeader>
       <SchemaForm :fields="field.children" :path="path" :read-only="readOnly" :value="objectValue ?? {}"/>
     </div>
     <FieldMap v-else-if="field.kind === 'map' && field.item" :item="field.item" :label="label" :path="path" :read-only="readOnly" :value="objectValue" @save="save"/>
+    <FieldSounds v-else-if="soundList" :label="label" :read-only="readOnly" :value="soundsValue" @save="save"/>
     <FieldList v-else-if="field.kind === 'list' && field.item" :item="field.item" :label="label" :path="path" :read-only="readOnly" :value="listValue" @save="save"/>
     <FieldJson v-else :label="label" :read-only="readOnly" :value="current" @save="save"/>
+    <MutedText v-if="help && !inlineHelp" size="sm" tag="p">{{ help }}</MutedText>
   </div>
 </template>

@@ -16,6 +16,7 @@ import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
+import de.eldoria.bloodnight.util.Commands;
 import de.eldoria.bloodnight.util.Effects;
 import de.eldoria.bloodnight.util.MobTags;
 import net.kyori.adventure.key.Key;
@@ -148,7 +149,11 @@ public final class DeathActionHandler implements Listener {
         for (String command : commands) {
             server.dispatchCommand(
                     server.getConsoleSender(),
-                    text.resolve(command.replace("{player}", name).replace("{world}", world.getName()), player));
+                    text.resolve(
+                            Commands.withoutSlash(command)
+                                    .replace("{player}", name)
+                                    .replace("{world}", world.getName()),
+                            player));
         }
     }
 

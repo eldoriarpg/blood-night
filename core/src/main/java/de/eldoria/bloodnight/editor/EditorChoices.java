@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.mob.MobTypes;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.Registry;
@@ -35,6 +36,11 @@ import java.util.stream.Stream;
  * @param mythicTypes      the MythicMobs mobs a custom mob can spawn as, sorted; empty without MythicMobs
  * @param attributes       attribute keys a mob's attributes can change, sorted
  * @param biomes           biome keys and biome tags ({@code #minecraft:is_nether}) spawn rules can name, sorted
+ * @param effects          potion effect keys, sorted, e.g. {@code minecraft:darkness}
+ * @param gameRules        the game rules a world's blood night rules can set, by key, e.g.
+ *                         {@code minecraft:spawn_phantoms}
+ * @param commands         the server's commands by their name and aliases, without namespace or slash, sorted; the
+ *                         editor suggests them in command lists
  */
 public record EditorChoices(
         String minecraftVersion,
@@ -44,7 +50,16 @@ public record EditorChoices(
         List<String> mobTypes,
         List<String> mythicTypes,
         List<String> attributes,
-        List<String> biomes) {
+        List<String> biomes,
+        List<String> effects,
+        Map<String, GameRuleChoice> gameRules,
+        List<String> commands) {
+    /**
+     * @param type           {@code boolean} or {@code integer}, what the rule's value is
+     * @param translationKey the key of the rule's name in Minecraft's language files, e.g. {@code gamerule.doInsomnia}
+     */
+    public record GameRuleChoice(String type, String translationKey) {}
+
     /**
      * @return the choices of the running server
      */
@@ -71,7 +86,10 @@ public record EditorChoices(
                 MobTypes.all(),
                 Integrations.mythicMobTypes(),
                 keys(RegistryKey.ATTRIBUTE),
-                biomeKeys());
+                biomeKeys(),
+                keys(RegistryKey.MOB_EFFECT),
+                serverGameRules(),
+                serverCommands());
     }
 
     private static List<String> keys(RegistryKey<? extends Keyed> key) {
@@ -79,6 +97,22 @@ public record EditorChoices(
                 .map(entry -> entry.getKey().asString())
                 .sorted()
                 .toList();
+    }
+
+    private static List<String> serverCommands() {
+        return Bukkit.getCommandMap().getKnownCommands().keySet().stream()
+                .filter(name -> !name.contains(":"))
+                .sorted()
+                .toList();
+    }
+
+    private static Map<String, GameRuleChoice> serverGameRules() {
+        Map<String, GameRuleChoice> rules = new TreeMap<>();
+        for (GameRule<?> rule : RegistryAccess.registryAccess().getRegistry(RegistryKey.GAME_RULE)) {
+            String type = rule.getType() == Boolean.class ? "boolean" : "integer";
+            rules.put(rule.getKey().asString(), new GameRuleChoice(type, rule.translationKey()));
+        }
+        return rules;
     }
 
     private static List<String> biomeKeys() {

@@ -304,10 +304,26 @@ public final class LegacyConverter {
             }
             ObjectNode converted = out.addObject();
             converted.put("sound", key.get());
-            converted.set("pitches", MAPPER.valueToTree(sound.getOrDefault("pitch", List.of(1.0))));
-            converted.set("volumes", MAPPER.valueToTree(sound.getOrDefault("volume", List.of(1.0))));
+            converted.set("pitch", range(sound.get("pitch")));
+            converted.set("volume", range(sound.get("volume")));
         }
         return out;
+    }
+
+    /**
+     * The old plugin picked one of a list of values; the range runs from the lowest of them to the highest.
+     */
+    private static ObjectNode range(Object values) {
+        List<Double> numbers = values instanceof List<?> list
+                ? list.stream()
+                        .filter(Number.class::isInstance)
+                        .map(value -> ((Number) value).doubleValue())
+                        .toList()
+                : List.of();
+        ObjectNode range = MAPPER.createObjectNode();
+        range.put("min", numbers.stream().mapToDouble(Double::doubleValue).min().orElse(1.0));
+        range.put("max", numbers.stream().mapToDouble(Double::doubleValue).max().orElse(1.0));
+        return range;
     }
 
     private void deathActions(ObjectNode tree, Map<String, Object> old) {

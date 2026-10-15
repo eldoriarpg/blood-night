@@ -144,7 +144,7 @@ public record EditorPayload(
         for (World world : worlds) {
             settings.put(
                     world.getUID().toString(),
-                    new SettingsPayload.WorldPayload(world.getName(), configuration.worldConfig(world)));
+                    SettingsPayload.WorldPayload.of(world, configuration.worldConfig(world)));
         }
         return new SettingsPayload(configuration.main(), configuration.globalDrops(), settings);
     }

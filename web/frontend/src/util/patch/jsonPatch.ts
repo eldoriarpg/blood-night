@@ -14,16 +14,18 @@ export type PatchOperation =
     | {op: 'move' | 'copy', from: string, path: string}
 
 /**
- * Applies operations to a copy of a document, all or none, exactly as the editor service does, so a change looks
- * the same before and after the service accepted it.
+ * Applies operations to a document, all or none, exactly as the editor service does, so a change looks the same
+ * before and after the service accepted it. The document is left unchanged: only the objects and lists on the path of
+ * an operation are copied, everything else is shared with it. That keeps a change to one setting as cheap in a session
+ * with hundreds of mobs as in an empty one.
  *
  * @param document the document, left unchanged
  * @param operations the operations
- * @returns the patched copy
+ * @returns the patched document
  * @throws PatchError when an operation does not fit
  */
 export function applyPatch<T>(document: T, operations: readonly PatchOperation[]): T {
-    let result = jsonClone(document) as Json
+    let result = document as Json
     operations.forEach((operation, index) => {
         try {
             result = applyOne(result, operation)
@@ -58,30 +60,63 @@ function applyOne(document: Json, operation: PatchOperation): Json {
     }
 }
 
+/**
+ * @returns a copy of the document with the value added at the path, sharing what the path does not touch
+ */
 function add(document: Json, path: string[], value: Json): Json {
-    if (path.length === 0) return value
-    const parent = container(get(document, path.slice(0, -1)))
-    const key = path.at(-1) as string
-    if (Array.isArray(parent)) {
-        if (key === '-') parent.push(value)
-        else parent.splice(index(key, parent.length), 0, value)
-    } else {
-        parent[key] = value
-    }
-    return document
+    return along(document, path, (parent, key) => {
+        if (Array.isArray(parent)) {
+            const copy = [...parent]
+            if (key === '-') copy.push(value)
+            else copy.splice(index(key, parent.length), 0, value)
+            return copy
+        }
+        return {...parent, [key]: value}
+    }, value)
 }
 
+/**
+ * @returns a copy of the document without the value at the path, sharing what the path does not touch
+ */
 function remove(document: Json, path: string[]): Json {
     if (path.length === 0) throw new PatchError('Cannot remove the whole document')
-    const parent = container(get(document, path.slice(0, -1)))
-    const key = path.at(-1) as string
-    if (Array.isArray(parent)) {
-        parent.splice(index(key, parent.length - 1), 1)
-    } else {
+    return along(document, path, (parent, key) => {
+        if (Array.isArray(parent)) {
+            const copy = [...parent]
+            copy.splice(index(key, parent.length - 1), 1)
+            return copy
+        }
         if (!(key in parent)) throw new PatchError(`Nothing at ${key}`)
-        Reflect.deleteProperty(parent, key)
+        const copy = {...parent}
+        Reflect.deleteProperty(copy, key)
+        return copy
+    }, null)
+}
+
+/**
+ * Copies the objects and lists from the document down to the parent of the path's last key, where `change` makes the
+ * new parent.
+ *
+ * @param whole what the document becomes when the path is empty
+ */
+function along(
+    document: Json,
+    path: string[],
+    change: (parent: Json[] | {[key: string]: Json}, key: string) => Json,
+    whole: Json,
+): Json {
+    if (path.length === 0) return whole
+    const [key, ...rest] = path as [string, ...string[]]
+    const parent = container(document)
+    if (rest.length === 0) return change(parent, key)
+    const child = get(document, [key])
+    const changed = along(child, rest, change, whole)
+    if (Array.isArray(parent)) {
+        const copy = [...parent]
+        copy[index(key, parent.length - 1)] = changed
+        return copy
     }
-    return document
+    return {...parent, [key]: changed}
 }
 
 function get(document: Json, path: string[]): Json {

@@ -150,9 +150,9 @@ Settings for one world. Every world has its own file.
 | `soundSettings.channel` | `MASTER`, `MUSIC`, `RECORD`, `WEATHER`, `BLOCK`, `HOSTILE`, `NEUTRAL`, `PLAYER`, `AMBIENT`, `VOICE`, `UI` | `AMBIENT` |
 | `soundSettings.minInterval` | whole number | `10` |
 | `soundSettings.maxInterval` | whole number | `40` |
-| `soundSettings.begin` | list of map | `[{"pitches":[0.8,1],"sound":"minecraft:entity.lightning_bolt.thunder","volumes":[1]}]` |
-| `soundSettings.end` | list of map | `[{"pitches":[0.8,1],"sound":"minecraft:entity.lightning_bolt.thunder","volumes":[1]}]` |
-| `soundSettings.ambience` | list of map | `[{"pitches":[0.4,0.6,0.8,1,1.2,1.4,1.6],"sound":"minecraft:ambient.basalt_deltas.additions","volumes":[0.2,0.4,0.6,0.8,1]},{"pitches":[0.4,0.6,0.8,1,1.2,1.4,1.6],"sound":"minecraft:ambient.crimson_forest.additions","volumes":[0.2,0.4,0.6,0.8,1]},{"pitches":[0.4,0.6,0.8,1,1.2,1.4,1.6],"sound":"minecraft:ambient.nether_wastes.additions","volumes":[0.2,0.4,0.6,0.8,1]},{"pitches":[0.4,0.6,0.8,1,1.2,1.4,1.6],"sound":"minecraft:ambient.soul_sand_valley.additions","volumes":[0.2,0.4,0.6,0.8,1]}]` |
+| `soundSettings.begin` | list of map | `[{"pitch":{"max":1,"min":0.8},"sound":"minecraft:entity.lightning_bolt.thunder","volume":{"max":1,"min":1}}]` |
+| `soundSettings.end` | list of map | `[{"pitch":{"max":1,"min":0.8},"sound":"minecraft:entity.lightning_bolt.thunder","volume":{"max":1,"min":1}}]` |
+| `soundSettings.ambience` | list of map | `[{"pitch":{"max":1.6,"min":0.5},"sound":"minecraft:ambient.basalt_deltas.additions","volume":{"max":1,"min":0.2}},{"pitch":{"max":1.6,"min":0.5},"sound":"minecraft:ambient.crimson_forest.additions","volume":{"max":1,"min":0.2}},{"pitch":{"max":1.6,"min":0.5},"sound":"minecraft:ambient.nether_wastes.additions","volume":{"max":1,"min":0.2}},{"pitch":{"max":1.6,"min":0.5},"sound":"minecraft:ambient.soul_sand_valley.additions","volume":{"max":1,"min":0.2}}]` |
 | `deathActions.player.lightning.lightning` | true or false | `true` |
 | `deathActions.player.lightning.lightningChance` | whole number | `100` |
 | `deathActions.player.lightning.thunder` | true or false | `true` |
@@ -307,81 +307,51 @@ atmosphere:
   worldParticles: true
 soundSettings:
   ambience:
-    - pitches:
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-        - 1.2
-        - 1.4
-        - 1.6
+    - pitch:
+        max: 1.6
+        min: 0.5
       sound: minecraft:ambient.basalt_deltas.additions
-      volumes:
-        - 0.2
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-    - pitches:
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-        - 1.2
-        - 1.4
-        - 1.6
+      volume:
+        max: 1
+        min: 0.2
+    - pitch:
+        max: 1.6
+        min: 0.5
       sound: minecraft:ambient.crimson_forest.additions
-      volumes:
-        - 0.2
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-    - pitches:
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-        - 1.2
-        - 1.4
-        - 1.6
+      volume:
+        max: 1
+        min: 0.2
+    - pitch:
+        max: 1.6
+        min: 0.5
       sound: minecraft:ambient.nether_wastes.additions
-      volumes:
-        - 0.2
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-    - pitches:
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
-        - 1.2
-        - 1.4
-        - 1.6
+      volume:
+        max: 1
+        min: 0.2
+    - pitch:
+        max: 1.6
+        min: 0.5
       sound: minecraft:ambient.soul_sand_valley.additions
-      volumes:
-        - 0.2
-        - 0.4
-        - 0.6
-        - 0.8
-        - 1
+      volume:
+        max: 1
+        min: 0.2
   begin:
-    - pitches:
-        - 0.8
-        - 1
+    - pitch:
+        max: 1
+        min: 0.8
       sound: minecraft:entity.lightning_bolt.thunder
-      volumes:
-        - 1
+      volume:
+        max: 1
+        min: 1
   channel: AMBIENT
   end:
-    - pitches:
-        - 0.8
-        - 1
+    - pitch:
+        max: 1
+        min: 0.8
       sound: minecraft:entity.lightning_bolt.thunder
-      volumes:
-        - 1
+      volume:
+        max: 1
+        min: 1
   maxInterval: 40
   minInterval: 10
 deathActions:

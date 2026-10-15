@@ -25,7 +25,7 @@ defineProps<{
       @click="model = !model"
   >
     <span
-        :class="model ? 'translate-x-5 bg-accent-contrast text-accent' : 'translate-x-0.5 bg-ink-muted text-raised'"
+        :class="model ? 'translate-x-5.5 bg-accent-contrast text-accent' : 'translate-x-0.5 bg-ink-muted text-raised'"
         class="pointer-events-none inline-flex h-4.5 w-4.5 items-center justify-center rounded-full transition-transform duration-150"
     >
       <AppIcon :icon="model ? ['fas', 'check'] : ['fas', 'xmark']" class="h-2.5 w-2.5"/>

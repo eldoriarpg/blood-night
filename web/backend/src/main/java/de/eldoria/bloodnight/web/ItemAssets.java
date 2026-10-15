@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,11 +36,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Minecraft's item icons and names per version, fetched from Mojang once and kept in a cache directory.
+ * Minecraft's item icons and names and its sounds per version, fetched from Mojang once and kept in a cache directory.
  * <p>
  * The first request for a version reads Mojang's version manifest, downloads that version's client jar and its German
  * language file (both checked against the sha1 Mojang publishes), extracts the items with {@link ItemAssetExtractor}
- * and writes {@code <cache>/<version>/items.json} and the icons below {@code textures/}; the version's directory
+ * and writes {@code <cache>/<version>/items.json} and the icons below {@code textures/}, and the sounds of
+ * {@code sounds.json} with {@link SoundAssetExtractor} into {@code sounds.json}; the sounds themselves are fetched
+ * one by one when first played, into {@code sounds/}. The version's directory
  * appears in one move once complete. Requests arriving meanwhile wait for the same download. A failed download is
  * not remembered, so the next request tries again. Nothing from Mojang is stored outside the cache.
  */
@@ -47,6 +50,10 @@ final class ItemAssets {
     private static final Logger log = LoggerFactory.getLogger(ItemAssets.class);
     private static final Pattern VERSION = Pattern.compile("[0-9a-z][0-9a-z._-]{0,63}");
     private static final Pattern NAME = Pattern.compile("[a-z0-9_]{1,128}\\.png");
+    private static final Pattern SOUND_KEY = Pattern.compile("[a-z0-9_.]{1,128}");
+    private static final Pattern HASH = Pattern.compile("[0-9a-f]{40}");
+    private static final String SOUNDS = "sounds.json";
+    private static final String SOUND_FILES = "sound-files.json";
     private static final String GERMAN = "de_de";
     private final Path cache;
     private final HttpClient http;
@@ -107,9 +114,61 @@ final class ItemAssets {
      * @throws Unavailable    when it cannot be fetched now
      */
     Path items(String version) throws UnknownVersion, Unavailable {
+        return fetched(version).resolve("items.json");
+    }
+
+    /**
+     * @param version a Minecraft version, e.g. {@code 26.3}
+     * @return the version's {@code sounds.json}, fetched first if needed
+     * @throws UnknownVersion when the version is malformed or Mojang does not know it
+     * @throws Unavailable    when it cannot be fetched now
+     */
+    Path sounds(String version) throws UnknownVersion, Unavailable {
+        return fetched(version).resolve(SOUNDS);
+    }
+
+    /**
+     * Fetches a sound of a version's {@code sounds.json} from Mojang the first time it is asked for, checked against
+     * its hash, and keeps it.
+     *
+     * @param version a version whose sounds were fetched
+     * @param key     the sound's key, e.g. {@code entity.zombie.ambient}
+     * @return the sound as Ogg Vorbis, if the version has it and it is playable
+     * @throws Unavailable when it cannot be fetched now
+     */
+    Optional<Path> sound(String version, String key) throws Unavailable {
+        if (!VERSION.matcher(version).matches() || !SOUND_KEY.matcher(key).matches()) return Optional.empty();
+        Path files = cache.resolve(version).resolve(SOUND_FILES);
+        if (!Files.isRegularFile(files)) return Optional.empty();
+        try {
+            String hash = EditorApp.MAPPER.readTree(files.toFile()).path(key).asString("");
+            if (!HASH.matcher(hash).matches()) return Optional.empty();
+            Path folder = cache.resolve(version).resolve("sounds");
+            Path sound = folder.resolve(hash + ".ogg");
+            if (Files.isRegularFile(sound)) return Optional.of(sound);
+            byte[] body = verified(resource(hash), hash);
+            Files.createDirectories(folder);
+            Path part = Files.createTempFile(folder, hash, ".part");
+            Files.write(part, body);
+            Files.move(part, sound, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            return Optional.of(sound);
+        } catch (IOException e) {
+            throw new Unavailable("Could not fetch the sound " + key, e);
+        }
+    }
+
+    private URI resource(String hash) {
+        return resources.resolve(hash.substring(0, 2) + "/" + hash);
+    }
+
+    private static boolean complete(Path target) {
+        return Files.isRegularFile(target.resolve("items.json")) && Files.isRegularFile(target.resolve(SOUNDS));
+    }
+
+    private Path fetched(String version) throws UnknownVersion, Unavailable {
         if (!VERSION.matcher(version).matches()) throw new UnknownVersion(version);
-        Path index = cache.resolve(version).resolve("items.json");
-        if (Files.isRegularFile(index)) return index;
+        Path target = cache.resolve(version);
+        if (complete(target)) return target;
         CompletableFuture<Path> build = building.computeIfAbsent(
                 version,
                 key -> CompletableFuture.supplyAsync(() -> {
@@ -122,7 +181,7 @@ final class ItemAssets {
                     }
                 }));
         try {
-            return build.get().resolve("items.json");
+            return build.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new Unavailable("Interrupted while fetching " + version, e);
@@ -151,7 +210,7 @@ final class ItemAssets {
 
     private Path build(String version) throws IOException, UnknownVersion {
         Path target = cache.resolve(version);
-        if (Files.isRegularFile(target.resolve("items.json"))) return target;
+        if (complete(target)) return target;
         log.info("Fetching the item assets of Minecraft {}", version);
         JsonNode entry = null;
         for (JsonNode candidate : json(manifest).path("versions")) {
@@ -169,9 +228,7 @@ final class ItemAssets {
         JsonNode german = index.path("objects").path("minecraft/lang/" + GERMAN + ".json");
         if (german.path("hash").isString()) {
             String hash = german.path("hash").asString();
-            languages = Map.of(
-                    GERMAN,
-                    ItemAssetExtractor.language(verified(resources.resolve(hash.substring(0, 2) + "/" + hash), hash)));
+            languages = Map.of(GERMAN, ItemAssetExtractor.language(verified(resource(hash), hash)));
         }
         Files.createDirectories(cache);
         Path jar = Files.createTempFile(cache, "client", ".jar");
@@ -193,12 +250,27 @@ final class ItemAssets {
                     }
                 }
                 Files.write(staging.resolve("items.json"), EditorApp.MAPPER.writeValueAsBytes(extraction.index()));
+                Map<String, Map<String, String>> all = new LinkedHashMap<>();
+                all.put("en_us", ItemAssetExtractor.language(zip, "assets/minecraft/lang/en_us.json"));
+                all.putAll(languages);
+                JsonNode soundsFile = index.path("objects").path("minecraft/sounds.json");
+                String soundsHash = soundsFile.path("hash").asString("");
+                SoundAssetExtractor.Extraction sounds = SoundAssetExtractor.extract(
+                        version,
+                        HASH.matcher(soundsHash).matches()
+                                ? EditorApp.MAPPER.readTree(verified(resource(soundsHash), soundsHash))
+                                : EditorApp.MAPPER.createObjectNode(),
+                        index.path("objects"),
+                        all);
+                Files.write(staging.resolve(SOUNDS), EditorApp.MAPPER.writeValueAsBytes(sounds.index()));
+                Files.write(staging.resolve(SOUND_FILES), EditorApp.MAPPER.writeValueAsBytes(sounds.files()));
                 log.info(
                         "Cached {} items and {} icons of Minecraft {}",
                         extraction.index().items().size(),
                         extraction.textures().size(),
                         version);
             }
+            if (Files.exists(target)) delete(target);
             Files.move(staging, target, StandardCopyOption.ATOMIC_MOVE);
             return target;
         } finally {

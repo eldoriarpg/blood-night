@@ -5,23 +5,20 @@
  */
 package de.eldoria.bloodnight.configuration.elements.world.announcement;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
- * A sound by its key, played with one of its pitches and volumes, picked at random each time.
+ * A sound by its key, played with a pitch and a volume picked at random from their ranges each time.
  */
 public class SoundEntry {
     private String sound = "minecraft:entity.lightning_bolt.thunder";
-    private List<Float> pitches = List.of(1.0f);
-    private List<Float> volumes = List.of(1.0f);
+    private SoundRange pitch = new SoundRange();
+    private SoundRange volume = new SoundRange();
 
     SoundEntry() {}
 
-    SoundEntry(String sound, List<Float> pitches, List<Float> volumes) {
+    SoundEntry(String sound, SoundRange pitch, SoundRange volume) {
         this.sound = sound;
-        this.pitches = pitches;
-        this.volumes = volumes;
+        this.pitch = pitch;
+        this.volume = volume;
     }
 
     public String sound() {
@@ -29,20 +26,16 @@ public class SoundEntry {
     }
 
     /**
-     * @return one of the pitches, within what the client plays (0.5 to 2)
+     * @return a pitch from the range, within what the client plays (0.5 to 2)
      */
     public float pitch() {
-        return Math.clamp(pick(pitches), 0.5f, 2f);
+        return pitch.pick(0.5f, 2f);
     }
 
     /**
-     * @return one of the volumes, at least 0
+     * @return a volume from the range, 0 to 1; more would carry further, not play louder
      */
     public float volume() {
-        return Math.max(pick(volumes), 0f);
-    }
-
-    private static float pick(List<Float> values) {
-        return values.isEmpty() ? 1f : values.get(ThreadLocalRandom.current().nextInt(values.size()));
+        return volume.pick(0f, 1f);
     }
 }

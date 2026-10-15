@@ -12,10 +12,12 @@ import PresenceList from '~/views/editorview/PresenceList.vue'
 import {failure} from '~/api/editor'
 import {showToast} from '~/util/toast'
 import {EDITOR_AREAS, type EditorArea} from '~/views/editorview/editorArea'
+import {docsLink} from '~/util/docsLinks'
 import {changesSinceApply} from '~/util/session/lastApplied'
 
 /**
- * The editor's header: the brand, the areas as tabs (mobs with their problem count), who is online, whether
+ * The editor's header: the brand, the areas as tabs (mobs with their problem count), a link to the docs about the
+ * open area, who is online, whether
  * everything is saved, when the server last applied the session and what changed since, and marking the session as
  * done so the server can apply it, again after each apply.
  */
@@ -50,7 +52,7 @@ async function submit(): Promise<void> {
 <template>
   <header class="flex flex-wrap items-center gap-4 border-b border-line-soft bg-surface px-5">
     <div class="flex items-center gap-2 py-3">
-      <span aria-hidden="true" class="size-3 rounded-full bg-accent"/>
+      <img alt="" class="size-6" src="/logo.svg"/>
       <span class="font-heading text-lg font-bold">{{ t('app.name') }}</span>
     </div>
     <nav v-if="ready" :aria-label="t('editor.header.areas')" class="flex self-stretch gap-5" role="tablist">
@@ -68,6 +70,13 @@ async function submit(): Promise<void> {
       </BareButton>
     </nav>
     <div class="flex-1"/>
+    <a
+        :href="docsLink(area)"
+        class="text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+        data-testid="docs-link"
+        rel="noopener"
+        target="_blank"
+    >{{ t('editor.header.docs') }}</a>
     <template v-if="ready">
       <PresenceList :names="data.online" :you="data.you"/>
       <span class="text-sm text-ink-faint">

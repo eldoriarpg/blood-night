@@ -4,6 +4,8 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script setup lang="ts">
+import DocsLink from '@/components/navigation/DocsLink.vue'
+import {nodeDocsLink} from '~/util/docsLinks'
 import MutedIconButton from '@/components/button/MutedIconButton.vue'
 import ErrorButton from '@/components/button/ErrorButton.vue'
 import SectionLabel from '@/components/typography/SectionLabel.vue'
@@ -97,6 +99,7 @@ function remove(): void {
     <SubHeader>{{ title }}</SubHeader>
     <span class="font-mono text-xs text-ink-faint">{{ instance.type }} · {{ node }}</span>
     <MutedText v-if="definition?.description" size="sm" tag="p">{{ definition.description }}</MutedText>
+    <DocsLink v-if="definition?.category && definition.name" :href="nodeDocsLink(definition.category, definition.name)">{{ t('editor.docs.node') }}</DocsLink>
     <NodeValue
         v-for="port in literals"
         :key="`literal-${port.id}`"

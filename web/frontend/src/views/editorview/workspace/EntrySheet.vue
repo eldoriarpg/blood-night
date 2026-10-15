@@ -23,8 +23,9 @@ import type {WorkspaceEntry, WorkspaceKind} from '~/views/editorview/workspace/w
 /**
  * The settings of the open mob (attributes, movement, spawn rules, equipment, extension, drops) or macro (name, description,
  * category), and deleting it. Each part of a mob folds under its header and starts folded, so the sheet opens short;
- * which parts the reader opened is remembered by the browser, for every mob alike. Inline, it fills a column of its
- * own and has nothing to close.
+ * which parts the reader opened is remembered by the browser, for every mob alike. A mob that is a MythicMobs mob
+ * instead has no equipment or extension, since the plugin gives it neither. Inline, it fills a column of its own and
+ * has nothing to close.
  */
 const props = defineProps<{
   kind: WorkspaceKind
@@ -56,8 +57,14 @@ const value = computed(() => {
   return payload?.macros?.find(macro => macro.id === props.entry.id) as Record<string, unknown> | undefined
 })
 
+const mythic = computed(() => {
+  const type = (value.value?.attributes as {mythicType?: unknown} | undefined)?.mythicType
+  return typeof type === 'string' && type.trim() !== ''
+})
 const parts = computed(() => props.kind === 'mobs'
-  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'mobDrops'].map(key => ({key, fields: fieldsOf(document, definitionOf(key))}))
+  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'mobDrops']
+      .filter(key => !mythic.value || (key !== 'equipment' && key !== 'extension'))
+      .map(key => ({key, fields: fieldsOf(document, definitionOf(key))}))
   : [{key: 'macro', fields: fieldsOf(document, 'Macro').filter(field => field.key !== 'id' && field.key !== 'body')}])
 
 function definitionOf(key: string): string {
