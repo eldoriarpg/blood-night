@@ -115,13 +115,20 @@ const payload = {
     mobs: {
         speed_creeper: {
             id: 'speed_creeper',
-            attributes: {displayName: 'Speed Creeper', entityType: 'CREEPER', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+            attributes: {displayName: "<lang_or:bloodnight.mob.speed_creeper:'Speed Creeper'>", entityType: 'CREEPER', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
             behaviour: {nodes: {
                 tick: {type: 'mob.tick', executions: {next: ['ignite']}, editor: {x: 0, y: 0}},
                 ignite: {type: 'creeper.ignite', editor: {x: 420, y: 0}},
             }},
             extension: {type: 'NONE'},
             spawn: {weight: 10, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},
+        },
+        zz_dragon: {
+            id: 'zz_dragon',
+            attributes: {displayName: 'Blood Dragon', entityType: 'ENDER_DRAGON', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+            behaviour: {nodes: {}},
+            extension: {type: 'NONE'},
+            spawn: {weight: 0, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},
         },
         z_painter: {
             id: 'z_painter',
@@ -149,7 +156,7 @@ const payload = {
     items: {
         guard_helmet: {kind: 'REGISTERED', material: 'minecraft:iron_helmet', lore: ['<gray>Worn by the night watch'], enchantments: {'minecraft:protection': 2}},
     },
-    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], enchantments: ['minecraft:protection', 'minecraft:sharpness'], mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['minecraft:desert']},
+    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], enchantments: ['minecraft:protection', 'minecraft:sharpness'], mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['#minecraft:is_ocean', 'minecraft:desert'], effects: ['minecraft:darkness', 'minecraft:nausea'], gameRules: {'minecraft:spawn_phantoms': {type: 'boolean', translationKey: 'gamerule.doInsomnia'}, 'minecraft:max_entity_cramming': {type: 'integer', translationKey: 'gamerule.maxEntityCramming'}}, commands: ['home', 'spawn', 'tpa']},
     problems: {},
     macroProblems: {},
     configProblems: {},
@@ -157,9 +164,9 @@ const payload = {
         main: {announcements: {prefix: '[BN] '}, resourcePack: {offer: true}, setup: {done: false}},
         globalDrops: {},
         worlds: {
-            w1: {name: 'world', settings: {enabled: true, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
-            w2: {name: 'world_nether', settings: {enabled: true, nightSettings: {begin: 12000, end: 22000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
-            w3: {name: 'world_the_end', settings: {enabled: false, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
+            w1: {name: 'world', environment: 'NORMAL', dayCycle: true, settings: {enabled: true, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM', moonPhase: {}, phase: {}}, mobSettings: {}, soundSettings: {}, nightRules: {}, worldDrops: {}, atmosphere: {sky: true, heartbeat: true}}},
+            w2: {name: 'world_nether', environment: 'NETHER', dayCycle: false, settings: {enabled: true, nightSettings: {begin: 12000, end: 22000}, nightSelection: {type: 'RANDOM'}, mobSettings: {spawning: {}}, atmosphere: {sky: true, heartbeat: true}}},
+            w3: {name: 'world_the_end', environment: 'THE_END', dayCycle: false, settings: {enabled: false, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
         },
     },
     hashes: {},
@@ -221,8 +228,17 @@ export async function stageEditor(page: Page, holders: Record<string, string> = 
     }, names: {
         enchantment: {'minecraft:protection': {en_us: 'Protection', de_de: 'Schutz'}},
         entity_type: {'minecraft:creeper': {en_us: 'Creeper', de_de: 'Creeper'}, 'minecraft:zombie': {en_us: 'Zombie', de_de: 'Zombie'}},
+        effect: {'minecraft:darkness': {en_us: 'Darkness', de_de: 'Dunkelheit'}, 'minecraft:nausea': {en_us: 'Nausea', de_de: 'Übelkeit'}},
+        biome: {'minecraft:desert': {en_us: 'Desert', de_de: 'Wüste'}},
+        game_rule: {'minecraft:doInsomnia': {en_us: 'Spawn phantoms', de_de: 'Phantome erscheinen'}, 'minecraft:maxEntityCramming': {en_us: 'Entity cramming threshold', de_de: 'Gedrängegrenze'}},
     }}}))
     await page.route('**/api/v1/assets/26.3/textures/**', route => route.fulfill({contentType: 'image/png', body: PIXEL}))
+    await page.route('**/api/v1/assets/26.3/sounds', route => route.fulfill({json: {version: '26.3', sounds: {
+        'entity.lightning_bolt.thunder': {group: 'entity', subtitles: {en_us: 'Thunder roars', de_de: 'Donner grollt'}, playable: true},
+        'entity.zombie.ambient': {group: 'entity', subtitles: {en_us: 'Zombie groans', de_de: 'Zombie stöhnt'}, playable: true},
+        'ambient.basalt_deltas.additions': {group: 'ambient', subtitles: {}, playable: true},
+    }}}))
+    await page.route('**/api/v1/assets/26.3/sounds/*.ogg', route => route.fulfill({contentType: 'audio/ogg', body: Buffer.from('OggS')}))
     await page.route(`**/api/v1/editor/sessions/${SESSION}/changes`, async route => {
         const operations = (route.request().postDataJSON() as {operations: unknown[]}).operations
         changes.push(operations)

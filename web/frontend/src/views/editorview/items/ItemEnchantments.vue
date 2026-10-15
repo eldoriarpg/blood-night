@@ -5,7 +5,7 @@
  */
 <script setup lang="ts">
 import FieldLabel from '@/components/typography/FieldLabel.vue'
-import TextInput from '@/components/input/text/TextInput.vue'
+import SuggestInput from '@/components/input/text/SuggestInput.vue'
 import NumberInput from '@/components/input/number/NumberInput.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import MutedIconButton from '@/components/button/MutedIconButton.vue'
@@ -27,7 +27,10 @@ const newKey = ref('')
 
 const entries = computed(() => Object.entries(props.value).sort(([a], [b]) => a.localeCompare(b)))
 const known = computed(() => session.payload.value?.choices?.enchantments ?? [])
-const offered = computed(() => known.value.filter(key => props.value[key] === undefined))
+const offered = computed(() => known.value
+  .filter(key => props.value[key] === undefined)
+  .map(key => ({value: key, label: assets.enchantment(key)}))
+  .sort((a, b) => a.label.localeCompare(b.label)))
 
 function level(key: string, value: number | undefined): void {
   if (value === undefined || value < 1 || value === props.value[key]) return
@@ -63,11 +66,15 @@ function remove(key: string): void {
       <MutedIconButton v-if="!readOnly" :label="t('editor.form.removeKey', {key})" icon="xmark" @click="remove(key)"/>
     </div>
     <div v-if="!readOnly" class="flex items-center gap-2">
-      <TextInput v-model="newKey" :aria-label="t('editor.items.newEnchantment')" :placeholder="t('editor.items.newEnchantment')" class="font-mono" list="bn-enchantments" @keydown.enter.prevent="add"/>
+      <SuggestInput
+          v-model="newKey"
+          :aria-label="t('editor.items.newEnchantment')"
+          :placeholder="t('editor.items.newEnchantment')"
+          :suggestions="offered"
+          @enter="add"
+          @pick="add"
+      />
       <SecondaryButton compact @click="add">{{ t('editor.form.add') }}</SecondaryButton>
     </div>
-    <datalist id="bn-enchantments">
-      <option v-for="option in offered" :key="option" :value="option">{{ assets.enchantment(option) }}</option>
-    </datalist>
   </fieldset>
 </template>

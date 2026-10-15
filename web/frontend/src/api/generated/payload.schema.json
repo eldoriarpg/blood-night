@@ -663,9 +663,27 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "effects" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "gameRules" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/GameRuleChoice"
+          }
+        },
+        "commands" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes", "mythicTypes", "attributes", "biomes" ]
+      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -919,6 +937,18 @@
           "default" : [ ]
         }
       }
+    },
+    "GameRuleChoice" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string"
+        },
+        "translationKey" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "type", "translationKey" ]
     },
     "GlobalDrops" : {
       "type" : "object",
@@ -1823,19 +1853,36 @@
           "type" : "string",
           "default" : "minecraft:entity.lightning_bolt.thunder"
         },
-        "pitches" : {
-          "type" : "array",
-          "items" : {
-            "type" : "number"
-          },
-          "default" : [ 1.0 ]
+        "pitch" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/SoundRange"
+          } ],
+          "default" : {
+            "max" : 1.0,
+            "min" : 1.0
+          }
         },
-        "volumes" : {
-          "type" : "array",
-          "items" : {
-            "type" : "number"
-          },
-          "default" : [ 1.0 ]
+        "volume" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/SoundRange"
+          } ],
+          "default" : {
+            "max" : 1.0,
+            "min" : 1.0
+          }
+        }
+      }
+    },
+    "SoundRange" : {
+      "type" : "object",
+      "properties" : {
+        "min" : {
+          "type" : "number",
+          "default" : 1.0
+        },
+        "max" : {
+          "type" : "number",
+          "default" : 1.0
         }
       }
     },
@@ -1862,9 +1909,15 @@
             "$ref" : "#/$defs/SoundEntry"
           },
           "default" : [ {
-            "pitches" : [ 0.8, 1.0 ],
+            "pitch" : {
+              "max" : 1.0,
+              "min" : 0.8
+            },
             "sound" : "minecraft:entity.lightning_bolt.thunder",
-            "volumes" : [ 1.0 ]
+            "volume" : {
+              "max" : 1.0,
+              "min" : 1.0
+            }
           } ]
         },
         "end" : {
@@ -1873,9 +1926,15 @@
             "$ref" : "#/$defs/SoundEntry"
           },
           "default" : [ {
-            "pitches" : [ 0.8, 1.0 ],
+            "pitch" : {
+              "max" : 1.0,
+              "min" : 0.8
+            },
             "sound" : "minecraft:entity.lightning_bolt.thunder",
-            "volumes" : [ 1.0 ]
+            "volume" : {
+              "max" : 1.0,
+              "min" : 1.0
+            }
           } ]
         },
         "ambience" : {
@@ -1884,21 +1943,45 @@
             "$ref" : "#/$defs/SoundEntry"
           },
           "default" : [ {
-            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "pitch" : {
+              "max" : 1.6,
+              "min" : 0.5
+            },
             "sound" : "minecraft:ambient.basalt_deltas.additions",
-            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            "volume" : {
+              "max" : 1.0,
+              "min" : 0.2
+            }
           }, {
-            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "pitch" : {
+              "max" : 1.6,
+              "min" : 0.5
+            },
             "sound" : "minecraft:ambient.crimson_forest.additions",
-            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            "volume" : {
+              "max" : 1.0,
+              "min" : 0.2
+            }
           }, {
-            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "pitch" : {
+              "max" : 1.6,
+              "min" : 0.5
+            },
             "sound" : "minecraft:ambient.nether_wastes.additions",
-            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            "volume" : {
+              "max" : 1.0,
+              "min" : 0.2
+            }
           }, {
-            "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+            "pitch" : {
+              "max" : 1.6,
+              "min" : 0.5
+            },
             "sound" : "minecraft:ambient.soul_sand_valley.additions",
-            "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+            "volume" : {
+              "max" : 1.0,
+              "min" : 0.2
+            }
           } ]
         }
       }
@@ -2207,11 +2290,17 @@
         "name" : {
           "type" : "string"
         },
+        "environment" : {
+          "type" : "string"
+        },
+        "dayCycle" : {
+          "type" : "boolean"
+        },
         "settings" : {
           "$ref" : "#/$defs/WorldSettings"
         }
       },
-      "required" : [ "name", "settings" ]
+      "required" : [ "name", "environment", "dayCycle", "settings" ]
     },
     "WorldSettings" : {
       "type" : "object",
@@ -2366,32 +2455,68 @@
           } ],
           "default" : {
             "ambience" : [ {
-              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "pitch" : {
+                "max" : 1.6,
+                "min" : 0.5
+              },
               "sound" : "minecraft:ambient.basalt_deltas.additions",
-              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+              "volume" : {
+                "max" : 1.0,
+                "min" : 0.2
+              }
             }, {
-              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "pitch" : {
+                "max" : 1.6,
+                "min" : 0.5
+              },
               "sound" : "minecraft:ambient.crimson_forest.additions",
-              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+              "volume" : {
+                "max" : 1.0,
+                "min" : 0.2
+              }
             }, {
-              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "pitch" : {
+                "max" : 1.6,
+                "min" : 0.5
+              },
               "sound" : "minecraft:ambient.nether_wastes.additions",
-              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+              "volume" : {
+                "max" : 1.0,
+                "min" : 0.2
+              }
             }, {
-              "pitches" : [ 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6 ],
+              "pitch" : {
+                "max" : 1.6,
+                "min" : 0.5
+              },
               "sound" : "minecraft:ambient.soul_sand_valley.additions",
-              "volumes" : [ 0.2, 0.4, 0.6, 0.8, 1.0 ]
+              "volume" : {
+                "max" : 1.0,
+                "min" : 0.2
+              }
             } ],
             "begin" : [ {
-              "pitches" : [ 0.8, 1.0 ],
+              "pitch" : {
+                "max" : 1.0,
+                "min" : 0.8
+              },
               "sound" : "minecraft:entity.lightning_bolt.thunder",
-              "volumes" : [ 1.0 ]
+              "volume" : {
+                "max" : 1.0,
+                "min" : 1.0
+              }
             } ],
             "channel" : "AMBIENT",
             "end" : [ {
-              "pitches" : [ 0.8, 1.0 ],
+              "pitch" : {
+                "max" : 1.0,
+                "min" : 0.8
+              },
               "sound" : "minecraft:entity.lightning_bolt.thunder",
-              "volumes" : [ 1.0 ]
+              "volume" : {
+                "max" : 1.0,
+                "min" : 1.0
+              }
             } ],
             "maxInterval" : 40,
             "minInterval" : 10

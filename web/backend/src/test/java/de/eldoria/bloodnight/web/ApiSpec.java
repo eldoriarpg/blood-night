@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.web;
 import de.eldoria.bloodnight.schema.JsonSchemas;
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.assets.ItemIndex;
+import de.eldoria.bloodnight.web.api.assets.SoundIndex;
 import de.eldoria.bloodnight.web.api.editor.AddParticipant;
 import de.eldoria.bloodnight.web.api.editor.AppliedReport;
 import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
@@ -212,7 +213,17 @@ final class ApiSpec {
                     null,
                     200,
                     ItemIndex.class),
-            new Operation("get", AssetRoutes.TEXTURE, "getItemTexture", "An item icon as PNG", null, null, 200, null));
+            new Operation("get", AssetRoutes.TEXTURE, "getItemTexture", "An item icon as PNG", null, null, 200, null),
+            new Operation(
+                    "get",
+                    AssetRoutes.SOUNDS,
+                    "getSoundAssets",
+                    "Every sound of a Minecraft version with its subtitles",
+                    null,
+                    null,
+                    200,
+                    SoundIndex.class),
+            new Operation("get", AssetRoutes.SOUND, "getSound", "A sound as Ogg Vorbis", null, null, 200, null));
 
     private ApiSpec() {}
 

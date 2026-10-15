@@ -4,7 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 import axios from 'axios'
-import type {ItemIndex} from '~/api/generated/schema'
+import type {ItemIndex, SoundIndex} from '~/api/generated/schema'
 
 const BASE = '/api/v1/assets'
 
@@ -26,4 +26,23 @@ export function itemIndex(version: string): Promise<ItemIndex> {
  */
 export function textureUrl(version: string, texture: string): string {
     return `${BASE}/${encodeURIComponent(version)}/textures/${texture}.png`
+}
+
+/**
+ * Every sound of a Minecraft version with its subtitles. Like {@link itemIndex}, the first request may take a while.
+ *
+ * @param version the Minecraft version, e.g. `26.3`
+ * @returns the sounds
+ */
+export function soundIndex(version: string): Promise<SoundIndex> {
+    return axios.get<SoundIndex>(`${BASE}/${encodeURIComponent(version)}/sounds`, {timeout: 120000}).then(response => response.data)
+}
+
+/**
+ * @param version the Minecraft version
+ * @param key a sound's key without namespace, e.g. `entity.zombie.ambient`
+ * @returns the URL of the sound as Ogg Vorbis
+ */
+export function soundUrl(version: string, key: string): string {
+    return `${BASE}/${encodeURIComponent(version)}/sounds/${encodeURIComponent(key)}.ogg`
 }

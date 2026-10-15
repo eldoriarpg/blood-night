@@ -4,8 +4,65 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 
+import {readdirSync, statSync} from 'node:fs'
+import {resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import type {Plugin} from 'vite'
+
+/** Where the sources are, which Nuxt's watcher names files relative to. */
+const SRC = fileURLToPath(new URL('./src/', import.meta.url))
+
 /** Where the backend answers while developing, unless the environment names another address. */
 const BACKEND_URL = process.env.NUXT_BACKEND_URL || 'http://localhost:8080'
+
+/**
+ * Whether file changes are found by polling, which a container needs: changes made on the host do not reach its file
+ * events. Both watchers are told, Nuxt's (locale files, pages) and Vite's (components), since current chokidar no
+ * longer reads `CHOKIDAR_USEPOLLING` on its own.
+ */
+const POLLING = process.env.CHOKIDAR_USEPOLLING === 'true'
+
+/** Where the dev server tells the latest change to any locale file, see `plugins/localeReload.client.ts`. */
+const LOCALE_VERSION = '/__locale-version'
+
+function localeVersion(): number {
+  const folder = resolve(SRC, 'i18n')
+  return Math.max(0, ...readdirSync(folder).map(name => statSync(resolve(folder, name)).mtimeMs))
+}
+
+/**
+ * Keeps locale files fresh. A request for a locale file that changed since the last request drops Vite's copy first,
+ * and the time of the latest change is served for the page to reload itself by (see `plugins/localeReload.client.ts`).
+ * The messages are not swapped in place, and in a container the file watchers report locale changes too unreliably to
+ * push a reload.
+ */
+function freshLocales(): Plugin {
+  const seen = new Map<string, number>()
+  return {
+    name: 'bloodnight:fresh-locales',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (request.url?.split('?')[0]?.endsWith(LOCALE_VERSION)) {
+          response.setHeader('Content-Type', 'text/plain')
+          response.setHeader('Cache-Control', 'no-store')
+          response.end(String(localeVersion()))
+          return
+        }
+        const name = /\/i18n\/([a-z-]+\.ts)(\?|$)/.exec(request.url ?? '')?.[1]
+        if (name) {
+          const file = resolve(SRC, 'i18n', name)
+          const changed = statSync(file, {throwIfNoEntry: false})?.mtimeMs
+          if (changed !== undefined && seen.get(file) !== changed) {
+            seen.set(file, changed)
+            for (const module of server.moduleGraph.getModulesByFile(file) ?? []) server.moduleGraph.invalidateModule(module)
+          }
+        }
+        next()
+      })
+    },
+  }
+}
 
 /**
  * The web editor's frontend.
@@ -80,6 +137,7 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    plugins: [freshLocales()],
     build: {
       sourcemap: false,
     },
@@ -96,10 +154,15 @@ export default defineNuxtConfig({
     },
     server: {
       allowedHosts: true,
+      watch: POLLING ? {usePolling: true, interval: 300} : undefined,
       proxy: {
         '/api': {target: BACKEND_URL, changeOrigin: true, ws: true},
       },
     },
+  },
+
+  watchers: {
+    chokidar: POLLING ? {usePolling: true, interval: 300} : {},
   },
 
   hooks: {

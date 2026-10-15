@@ -16,6 +16,8 @@ export interface Field {
     defaultValue: unknown
     /** For a choice or a set of choices: the enum's definition name, e.g. `SpawnReason`. */
     enumName: string | undefined
+    /** For a group or a list's item: the definition it is, e.g. `SoundEntry`, so a form can draw it its own way. */
+    definition: string | undefined
 }
 
 interface Schema {
@@ -57,7 +59,10 @@ function properties(document: SchemaDocument, schema: Schema, depth: number): Fi
 
 function field(document: SchemaDocument, key: string, schema: Schema, depth: number): Field {
     const resolved = resolve(document, schema)
-    const base: Field = {key, kind: 'any', options: [], children: [], item: undefined, defaultValue: schema.default ?? resolved.default, enumName: undefined}
+    const base: Field = {
+        key, kind: 'any', options: [], children: [], item: undefined, defaultValue: schema.default ?? resolved.default,
+        enumName: undefined, definition: definitionName(schema),
+    }
     if (depth > DEPTH) return base
     if (resolved.enum) return {...base, kind: 'choice', options: resolved.enum, enumName: definitionName(schema)}
     switch (resolved.type) {
@@ -80,11 +85,26 @@ function array(document: SchemaDocument, base: Field, schema: Schema, depth: num
 }
 
 function object(document: SchemaDocument, base: Field, schema: Schema, depth: number): Field {
-    if (schema.properties) return {...base, kind: 'group', children: properties(document, schema, depth + 1)}
+    if (schema.properties) return {...base, kind: 'group', children: withDefaults(properties(document, schema, depth + 1), base.defaultValue)}
     if (typeof schema.additionalProperties === 'object') {
         return {...base, kind: 'map', item: field(document, 'value', schema.additionalProperties, depth + 1)}
     }
     return base
+}
+
+/**
+ * The defaults of a group's fields that their own schema lacks, taken from the group's default, e.g. a record whose
+ * defaults are only known as the default of the property holding it.
+ */
+function withDefaults(fields: Field[], defaults: unknown): Field[] {
+    if (defaults === null || typeof defaults !== 'object' || Array.isArray(defaults)) return fields
+    const values = defaults as Record<string, unknown>
+    return fields.map(field => {
+        const value = field.defaultValue === undefined ? values[field.key] : field.defaultValue
+        return value === field.defaultValue && field.kind !== 'group'
+            ? field
+            : {...field, defaultValue: value, children: field.kind === 'group' ? withDefaults(field.children, value) : field.children}
+    })
 }
 
 function definitionName(schema: Schema): string | undefined {

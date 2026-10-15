@@ -31,6 +31,8 @@ const props = defineProps<{
   clearable?: boolean
   /** The small variant drawn inside graph nodes. */
   compact?: boolean
+  /** What the field says while nothing is picked, e.g. what picking does. */
+  placeholder?: string
 }>()
 
 const {t} = useI18n()
@@ -89,7 +91,7 @@ function clear(): void {
           v-bind="triggerAttrs"
           @click="toggle"
       >
-        <span class="min-w-0 flex-1 truncate">{{ model === undefined ? t('editor.choicePicker.none') : nameOf(model) }}</span>
+        <span class="min-w-0 flex-1 truncate">{{ model === undefined ? placeholder ?? t('editor.choicePicker.none') : nameOf(model) }}</span>
         <span v-if="model !== undefined && !compact && searchable" class="truncate font-mono text-xs text-ink-faint">{{ model }}</span>
         <AppIcon :class="compact ? 'text-[10px]' : 'text-xs'" aria-hidden="true" class="shrink-0 text-ink-faint" icon="chevron-down"/>
       </BareButton>

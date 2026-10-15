@@ -61,12 +61,11 @@ test('editing a world setting saves a revision', async ({page}) => {
     await page.getByRole('tab', {name: 'Settings'}).click()
     await page.getByRole('tab', {name: 'Night', exact: true}).click()
 
-    const begin = page.getByLabel('Night begins (ticks after sunrise)')
-    await begin.fill('12500')
-    await begin.blur()
+    await page.getByRole('slider', {name: 'Night begins at'}).focus()
+    await page.keyboard.press('ArrowLeft')
 
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
-    expect(stage.changes).toEqual([[{op: 'add', path: '/settings/worlds/w1/settings/nightSettings/begin', value: 12500}]])
+    expect(stage.changes).toEqual([[{op: 'add', path: '/settings/worlds/w1/settings/nightSettings/begin', value: 12750}]])
 })
 
 /** A world another participant holds is read only and cannot be picked as a copy target. */
@@ -107,7 +106,7 @@ test('an item takes a name and an enchantment', async ({page}) => {
     await name.blur()
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
     await page.getByLabel('Enchantment, e.g. minecraft:sharpness').fill('minecraft:sharpness')
-    await page.getByRole('button', {name: 'Add', exact: true}).click()
+    await page.getByRole('group').getByRole('button', {name: 'Add', exact: true}).click()
 
     await expect(page.getByText('Saved, revision 2')).toBeVisible()
     expect(stage.changes).toEqual([
@@ -225,7 +224,7 @@ test('nodes are arranged and their positions saved', async ({page}) => {
 /** Dragging on the empty canvas selects the nodes in a box; it does not move the view. */
 test('a drag on the canvas selects nodes', async ({page}) => {
     const stage = await stageEditor(page)
-    await page.goto(stage.link)
+    await openGraph(page, stage.link)
     const ignite = page.locator('.vue-flow__node[data-id="ignite"]')
     const box = await settledBox(ignite)
 
@@ -433,10 +432,16 @@ test('a switch matches texts typed beside its cases', async ({page}) => {
         {op: 'remove', path: '/mobs/z_painter/behaviour/nodes/pick/config/case_0'},
     ])
 
+    await expect(node.getByRole('textbox', {name: 'Case 2'})).toHaveCount(0)
+    await node.getByRole('button', {name: 'Add case'}).click()
     await node.getByRole('textbox', {name: 'Case 2'}).fill('fire')
     await node.getByRole('textbox', {name: 'Case 2'}).press('Enter')
     await expect(page.getByText('Saved, revision 2')).toBeVisible()
     expect(stage.changes[1]).toContainEqual({op: 'add', path: '/mobs/z_painter/behaviour/nodes/pick/config/case_1', value: 'fire'})
+
+    await node.getByRole('button', {name: 'Remove Case 2'}).click()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+    await expect(node.getByRole('textbox', {name: 'Case 2'})).toHaveCount(0)
 })
 
 /** Naming an existing variable on Get Variable takes over the type that variable holds. */
@@ -622,7 +627,7 @@ test('the setup wizard sends everything as one change', async ({page}) => {
     await expect(page.getByRole('button', {name: 'speed_creeper'})).toBeVisible()
 })
 
-/** The read-only preview lays out a graph without positions for itself and saves nothing. */
+/** The read-only preview lays out a graph without positions for itself, drags the view without Space and saves nothing. */
 test('the preview arranges a graph without positions', async ({page}) => {
     const stage = await stageEditor(page, {}, true)
     await page.goto(stage.link)
@@ -633,6 +638,15 @@ test('the preview arranges a graph without positions', async ({page}) => {
         const [first, second] = [await tick.boundingBox(), await ignite.boundingBox()]
         return first !== null && second !== null && first.x + first.width <= second.x
     }).toBe(true)
+
+    const before = await settledBox(tick)
+    const pane = await page.locator('.vue-flow__pane').boundingBox()
+    if (!pane) throw new Error('no pane')
+    await page.mouse.move(pane.x + 20, pane.y + 20)
+    await page.mouse.down()
+    await page.mouse.move(pane.x + 120, pane.y + 60, {steps: 10})
+    await page.mouse.up()
+    await expect.poll(async () => ((await tick.boundingBox())?.x ?? 0) - before.x).toBeGreaterThan(20)
     expect(stage.changes).toEqual([])
 })
 
@@ -644,4 +658,384 @@ test('mob attributes show only the values that are used', async ({page}) => {
     await page.getByRole('button', {name: 'Attributes'}).click()
     await expect(page.getByText('Health from').first()).toBeVisible()
     await expect(page.getByText('Health', {exact: true})).toHaveCount(0)
+})
+
+/** A settings page longer than the window scrolls, in a world and on the server. */
+test.describe('long settings', () => {
+    test.use({viewport: {width: 1280, height: 640}})
+
+    test('scroll in world and server settings', async ({page}) => {
+        const stage = await stageEditor(page)
+        await page.goto(stage.link)
+        await page.getByRole('tab', {name: 'Settings'}).click()
+        await page.getByRole('tab', {name: 'Night', exact: true}).click()
+        const scrolled = async () => page.locator('main.overflow-y-auto').evaluate(main => main.scrollTop)
+
+        await page.mouse.move(800, 400)
+        await page.mouse.wheel(0, 600)
+        await expect.poll(scrolled).toBeGreaterThan(0)
+
+        await page.setViewportSize({width: 1280, height: 360})
+        await page.getByRole('tab', {name: 'Server settings'}).click()
+        await page.mouse.move(800, 300)
+        await page.mouse.wheel(0, 600)
+        await expect.poll(scrolled).toBeGreaterThan(0)
+    })
+})
+
+/** Blocked commands are a list: entries are added with Enter or the button and removed with their own button. */
+test('commands are added and removed one by one', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.getByRole('tab', {name: 'Night', exact: true}).click()
+    const field = page.getByLabel('Commands blocked during blood nights', {exact: true})
+    await field.fill('home')
+    await field.press('Enter')
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    await field.fill('spawn')
+    await field.locator('../..').getByRole('button', {name: 'Add', exact: true}).click()
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    await page.getByRole('button', {name: 'Remove entry 1'}).last().click()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+
+    const path = '/settings/worlds/w1/settings/nightSettings/blockedCommands'
+    expect(stage.changes).toEqual([
+        [{op: 'add', path, value: ['home']}],
+        [{op: 'add', path, value: ['home', 'spawn']}],
+        [{op: 'add', path, value: ['spawn']}],
+    ])
+})
+
+/** A sound is picked by what it sounds like, played, and tuned with sliders; the ambience pause is one range. */
+test('sounds are picked by ear and tuned with sliders', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.getByRole('tab', {name: 'Sounds', exact: true}).click()
+
+    const begin = page.getByRole('group', {name: 'When a blood night begins'})
+    await expect(begin.getByRole('button', {name: 'Sound 1'})).toContainText('Thunder roars')
+
+    await begin.getByRole('button', {name: 'Sound 1'}).click()
+    await page.getByPlaceholder('Search by what you hear, e.g. thunder or zombie').fill('zombie')
+    await page.getByRole('option', {name: /Zombie groans/}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    const path = '/settings/worlds/w1/settings/soundSettings/begin'
+    expect(stage.changes[0]).toEqual([{op: 'add', path, value: [
+        {sound: 'minecraft:entity.zombie.ambient', pitch: {min: 0.8, max: 1}, volume: {min: 1, max: 1}},
+    ]}])
+
+    await begin.getByRole('slider', {name: 'Highest pitch'}).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'add', path, value: [
+        {sound: 'minecraft:entity.zombie.ambient', pitch: {min: 0.8, max: 1.05}, volume: {min: 1, max: 1}},
+    ]}])
+
+    const played = page.waitForRequest('**/api/v1/assets/26.3/sounds/entity.zombie.ambient.ogg')
+    await begin.getByRole('button', {name: 'Play as players may hear it'}).click()
+    await played
+
+    await page.getByRole('slider', {name: 'Shortest pause'}).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+    expect(stage.changes[2]).toEqual([
+        {op: 'add', path: '/settings/worlds/w1/settings/soundSettings/minInterval', value: 11},
+        {op: 'add', path: '/settings/worlds/w1/settings/soundSettings/maxInterval', value: 40},
+    ])
+})
+
+/** World settings show what matters for the world's kind; times, effects, rules and dragons are picked, not typed. */
+test.describe('settings an everyday user can fill in', () => {
+    test.use({viewport: {width: 1280, height: 1400}})
+
+    test('night times are a clock, and the Nether has no night times or night selection', async ({page}) => {
+        const stage = await stageEditor(page)
+        await page.goto(stage.link)
+        await page.getByRole('tab', {name: 'Settings'}).click()
+        await page.locator('main').getByRole('tab', {name: 'Night', exact: true}).click()
+        await expect(page.getByText('19:00')).toBeVisible()
+        await page.getByRole('slider', {name: 'Night begins at'}).focus()
+        await page.keyboard.press('ArrowRight')
+        await expect(page.getByText('19:15')).toBeVisible()
+        await expect(page.getByText('Saved, revision 1')).toBeVisible()
+        expect(stage.changes[0]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSettings/begin', value: 13250}])
+        await expect(page.getByText('A new chance every (minutes)')).toHaveCount(0)
+
+        await page.getByRole('button', {name: /world_nether/}).click()
+        await expect(page.locator('main').getByRole('tab', {name: 'Night selection'})).toHaveCount(0)
+        await page.locator('main').getByRole('tab', {name: 'Night', exact: true}).click()
+        await expect(page.getByRole('slider', {name: 'Night begins at'})).toHaveCount(0)
+        await expect(page.getByText('A new chance every (minutes)')).toBeVisible()
+        await expect(page.getByText('A dragon fight is a blood night')).toHaveCount(0)
+    })
+
+    test('the End picks its dragon from the mobs based on the Ender Dragon', async ({page}) => {
+        const stage = await stageEditor(page)
+        await page.goto(stage.link)
+        await page.getByRole('tab', {name: 'Settings'}).click()
+        await page.getByRole('button', {name: /world_the_end/}).click()
+        await page.getByRole('switch', {name: 'Blood nights in this world'}).click()
+        await page.locator('main').getByRole('tab', {name: 'Night', exact: true}).click()
+        await page.getByRole('button', {name: 'Mob the dragon becomes'}).click()
+        await expect(page.getByRole('option')).toHaveText(['Blood Dragon'])
+    })
+
+    test('effects, game rules and drop weights are picked by name', async ({page}) => {
+        const stage = await stageEditor(page)
+        await page.goto(stage.link)
+        await page.getByRole('tab', {name: 'Settings'}).click()
+
+        await page.locator('main').getByRole('tab', {name: 'World rules'}).click()
+        await page.getByRole('button', {name: 'Add a game rule'}).click()
+        await page.getByRole('option', {name: 'Spawn phantoms'}).click()
+        await expect(page.getByText('Saved, revision 1')).toBeVisible()
+        expect(stage.changes[0]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightRules/gameRules', value: {'minecraft:spawn_phantoms': 'true'}}])
+
+        await page.getByRole('switch', {name: 'Change the monster spawn limit'}).click()
+        await expect(page.getByText('Saved, revision 2')).toBeVisible()
+        expect(stage.changes[1]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightRules/monsterSpawnLimit', value: 1}])
+
+        await page.locator('main').getByRole('tab', {name: 'Drops'}).click()
+        await expect(page.getByText('60 % of the time')).toBeVisible()
+        await page.getByRole('button', {name: 'Add a number of drops'}).click()
+        await expect(page.getByText('Saved, revision 3')).toBeVisible()
+        expect(stage.changes[2]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/worldDrops/weights', value: {1: 90, 2: 50, 3: 10, 4: 10}}])
+
+        await page.getByRole('button', {name: 'Remove 2 drops'}).click()
+        await expect(page.getByText('Saved, revision 4')).toBeVisible()
+        await page.getByRole('button', {name: 'Add a number of drops'}).click()
+        await expect(page.getByText('Saved, revision 5')).toBeVisible()
+        expect(stage.changes[4]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/worldDrops/weights', value: {1: 90, 2: 10, 3: 10, 4: 10}}])
+    })
+})
+
+/** Command lists suggest the server's commands in the editor's own list, picked with the keyboard. */
+test('the server\'s commands are suggested while typing', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.locator('main').getByRole('tab', {name: 'Night', exact: true}).click()
+
+    const field = page.getByLabel('Commands blocked during blood nights', {exact: true})
+    await field.fill('ho')
+    await expect(page.getByRole('option', {name: 'home'})).toBeVisible()
+    await expect(page.getByRole('option', {name: 'spawn'})).toHaveCount(0)
+    await field.press('ArrowDown')
+    await field.press('Enter')
+    await field.press('Enter')
+
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSettings/blockedCommands', value: ['home']}])
+})
+
+/** The moon phase selection lists every phase with its picture and a slider, and saves all of them together. */
+test('every moon phase gets its own chance', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.locator('main').getByRole('tab', {name: 'Night selection'}).click()
+    await page.getByRole('button', {name: 'Type'}).click()
+    await page.getByRole('option', {name: 'Moon phase', exact: true}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+
+    await expect(page.getByRole('slider')).toHaveCount(8)
+    await page.getByRole('slider', {name: 'Full moon'}).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSelection/moonPhase/probabilities', value: {
+        FULL_MOON: 5, WANING_GIBBOUS: 10, LAST_QUARTER: 20, WANING_CRESCENT: 40, NEW_MOON: 100, WAXING_CRESCENT: 40, FIRST_QUARTER: 20, WAXING_GIBBOUS: 10,
+    }}])
+})
+
+/** The phase cycle is an equalizer: nights are added with a button and each bar is pulled up or down. */
+test('the phase cycle is set like an equalizer', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.locator('main').getByRole('tab', {name: 'Night selection'}).click()
+    await page.getByRole('button', {name: 'Type'}).click()
+    await page.getByRole('option', {name: 'Phase cycle', exact: true}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+
+    await expect(page.getByRole('slider')).toHaveCount(3)
+    await page.getByRole('button', {name: 'One night more'}).click()
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSelection/phase/probabilities', value: [50, 50, 50, 50]}])
+
+    const last = page.getByRole('slider', {name: 'Night 4'})
+    const box = await last.boundingBox()
+    if (!box) throw new Error('no bar')
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height - 4)
+    await page.mouse.down()
+    await page.mouse.move(box.x + box.width / 2, box.y - box.height * 0.6, {steps: 5})
+    await page.mouse.up()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+    expect(stage.changes[2]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSelection/phase/probabilities', value: [50, 50, 50, 80]}])
+
+    await last.focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(page.getByText('Saved, revision 4')).toBeVisible()
+    expect(stage.changes[3]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSelection/phase/probabilities', value: [50, 50, 50, 75]}])
+
+    const nights = page.getByRole('spinbutton', {name: 'Nights in the cycle'})
+    await nights.fill('6')
+    await nights.press('Enter')
+    await expect(page.getByText('Saved, revision 5')).toBeVisible()
+    await expect(page.getByRole('slider', {name: /^Night \d+$/})).toHaveCount(6)
+})
+
+/** The curve shows a graph of the chance per night that follows its sliders. */
+test('the curve draws its chances', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.locator('main').getByRole('tab', {name: 'Night selection'}).click()
+    await page.getByRole('button', {name: 'Type'}).click()
+    await page.getByRole('option', {name: 'Curve', exact: true}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+
+    const graph = page.getByRole('figure', {name: 'Chance of a blood night per night'})
+    await expect(graph.getByTitle('Night 6: 80 %')).toBeVisible()
+    await page.getByRole('slider', {name: 'Chance halfway through'}).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightSelection/curve', value: {min: 20, max: 85, period: 10}}])
+    await expect(graph.getByTitle('Night 6: 85 %')).toBeVisible()
+})
+
+/** Range handles that meet can be pulled apart either way, by mouse or keys, from whichever handle is on top. */
+test('range handles that meet can be pulled apart either way', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.getByRole('tab', {name: 'Sounds', exact: true}).click()
+
+    const begin = page.getByRole('group', {name: 'When a blood night begins'})
+    const track = await begin.getByRole('slider', {name: 'Quietest volume'}).boundingBox()
+    if (!track) throw new Error('no volume slider')
+    const y = track.y + track.height / 2
+    await page.mouse.move(track.x + track.width - 8, y)
+    await page.mouse.down()
+    await page.mouse.move(track.x + track.width / 2, y, {steps: 5})
+    await page.mouse.up()
+
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    const [change] = stage.changes[0] ?? []
+    const [entry] = (change as {value: {volume: {min: number, max: number}}[]}).value
+    expect(entry?.volume.max).toBe(1)
+    expect(entry?.volume.min).toBeLessThan(0.7)
+
+    const pitch = begin.getByRole('slider', {name: 'Highest pitch'})
+    await pitch.focus()
+    for (let step = 0; step < 4; step++) await page.keyboard.press('ArrowLeft')
+    await begin.getByRole('slider', {name: 'Deepest pitch'}).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(begin.getByRole('slider', {name: 'Deepest pitch'})).toHaveValue('0.8')
+    await expect(pitch).toHaveValue('0.85')
+    await pitch.focus()
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('ArrowLeft')
+    await expect(begin.getByRole('slider', {name: 'Deepest pitch'})).toHaveValue('0.75')
+    await expect(pitch).toHaveValue('0.8')
+})
+
+/** MiniMessage is typed with Tab completion and a quick reference that stays open while typing, and the item shows its tooltip. */
+test('item names and lore are typed with help and previewed', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Items'}).click()
+    await page.getByRole('navigation', {name: 'Items'}).getByRole('button', {name: /guard_helmet/}).click()
+
+    const tooltip = page.getByRole('figure', {name: 'In game'})
+    await expect(tooltip).toContainText('Iron Helmet')
+    await expect(tooltip).toContainText('Worn by the night watch')
+
+    const name = page.getByLabel('Name', {exact: true})
+    await name.fill('<re')
+    await expect(page.getByText('Tab completes: red')).toBeVisible()
+    await name.press('Tab')
+    await expect(name).toHaveValue('<red>')
+    await name.pressSequentially('Guard')
+    await expect(tooltip).toContainText('Guard')
+
+    await page.getByRole('button', {name: 'MiniMessage quick reference'}).first().click()
+    const help = page.getByRole('dialog', {name: 'Colours and styles'})
+    await expect(help).toBeVisible()
+    await name.press('End')
+    await name.pressSequentially(' Helmet')
+    await expect(help).toBeVisible()
+    await help.getByRole('button', {name: '<bold>'}).click()
+    await expect(name).toHaveValue('<red>Guard Helmet<bold>')
+    await expect(help).not.toContainText('editor.')
+})
+
+/** Command lists offer the placeholders the plugin fills in. */
+test('commands get placeholders with a click', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.locator('main').getByRole('tab', {name: 'Player deaths'}).click()
+    const field = page.getByLabel('Commands on death', {exact: true})
+    await field.fill('say')
+    await page.getByRole('button', {name: 'Insert {player}'}).first().click()
+    await expect(field).toHaveValue('say {player}')
+    await expect(page.locator('main').getByRole('tab', {name: 'Enemy deaths'})).toBeVisible()
+})
+
+/** A default mob's name in each player's language reads as its English name until one is written. */
+test('a translated mob name reads as a name', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    const sheet = page.getByRole('complementary', {name: 'Mob settings'})
+    await sheet.getByRole('button', {name: 'Attributes'}).click()
+    await expect(sheet.getByText('Each player sees this name in their own language.')).toBeVisible()
+    await expect(sheet).not.toContainText('lang_or')
+    await expect(sheet.getByText(/^On: this mob only takes the place/)).toBeVisible()
+    await expect(sheet).not.toContainText('MythicMobs')
+
+    await sheet.getByRole('button', {name: 'Write my own name'}).click()
+    const name = sheet.getByLabel('Display name', {exact: true})
+    await expect(name).toHaveValue('Speed Creeper')
+    await name.fill('<red>Speedy')
+    await name.blur()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/mobs/speed_creeper/attributes/displayName', value: '<red>Speedy'}])
+})
+
+/** Biomes are picked by name and biome tags read as groups of biomes. */
+test('biomes and biome groups are picked by name', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    const sheet = page.getByRole('complementary', {name: 'Mob settings'})
+    await sheet.getByRole('button', {name: 'Spawn rules'}).click()
+    const field = sheet.getByLabel('Biomes', {exact: true})
+    await field.click()
+    await expect(page.getByRole('option', {name: /All ocean biomes/})).toBeVisible()
+    await page.getByRole('option', {name: /Desert/}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/mobs/speed_creeper/spawn/conditions/biomes', value: ['minecraft:desert']}])
+    await expect(sheet.getByRole('listitem').filter({hasText: 'Desert'})).toContainText('minecraft:desert')
+})
+
+/** A world switches mobs off and warns about mobs that never spawn by themselves in its kind of world. */
+test('a world picks its mobs and warns about ones that cannot spawn there', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Settings'}).click()
+    await page.getByRole('button', {name: /world_nether/}).click()
+    await page.locator('main').getByRole('tab', {name: 'Mobs', exact: true}).click()
+
+    await expect(page.getByText(/No .* spawns by itself in the Nether/).first()).toBeVisible()
+    await expect(page.getByRole('region', {name: 'CREEPER'}).or(page.getByRole('region', {name: 'Creeper'}))).toContainText('Speed Creeper')
+    await page.getByRole('switch', {name: 'Speed Creeper spawns in this world'}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/settings/worlds/w2/settings/mobSettings/spawning/mobs', value: {speed_creeper: 0}}])
+    await expect(page.getByRole('spinbutton', {name: 'Weight of Speed Creeper in this world'})).toHaveCount(0)
+
+    await page.getByRole('button', {name: 'Switch those off'}).click()
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    await expect(page.getByRole('button', {name: 'Switch those off'})).toHaveCount(0)
+    expect(Object.values((stage.changes[1]?.[0] as {value: Record<string, number>}).value).every(weight => weight === 0)).toBe(true)
 })

@@ -34,6 +34,7 @@ import java.util.zip.ZipOutputStream;
 final class MojangFixture implements AutoCloseable {
     static final byte[] SWORD_PNG = {(byte) 0x89, 'P', 'N', 'G', 1};
     static final byte[] STONE_PNG = {(byte) 0x89, 'P', 'N', 'G', 2};
+    static final byte[] ZOMBIE_OGG = {'O', 'g', 'g', 'S', 1};
     private final HttpServer server;
     private final Map<String, byte[]> files = new ConcurrentHashMap<>();
     private final AtomicInteger jarDownloads = new AtomicInteger();
@@ -59,12 +60,21 @@ final class MojangFixture implements AutoCloseable {
         server.start();
         byte[] jar = jar();
         byte[] german = """
-                {"item.minecraft.diamond_sword":"Diamantschwert","block.minecraft.stone":"Stein","item.minecraft.compass":"Kompass","enchantment.minecraft.sharpness":"Schärfe","entity.minecraft.creeper":"Creeper"}""".getBytes(StandardCharsets.UTF_8);
+                {"item.minecraft.diamond_sword":"Diamantschwert","block.minecraft.stone":"Stein","item.minecraft.compass":"Kompass","enchantment.minecraft.sharpness":"Schärfe","entity.minecraft.creeper":"Creeper","subtitles.entity.zombie.ambient":"Zombie stöhnt"}""".getBytes(StandardCharsets.UTF_8);
         String germanHash = sha1(german);
         files.put("/resources/" + germanHash.substring(0, 2) + "/" + germanHash, german);
         files.put("/client.jar", jar);
+        byte[] sounds = """
+                {"entity.zombie.ambient":{"subtitle":"subtitles.entity.zombie.ambient","sounds":["mob/zombie/say1",{"name":"mob/zombie/say2","weight":2}]},
+                 "music.game":{"sounds":[{"name":"music.menu","type":"event"}]},
+                 "ambient.cave":{"sounds":[{"name":"ambient/cave/cave1"}]}}""".getBytes(StandardCharsets.UTF_8);
+        String soundsHash = sha1(sounds);
+        files.put("/resources/" + soundsHash.substring(0, 2) + "/" + soundsHash, sounds);
+        String zombieHash = sha1(ZOMBIE_OGG);
+        files.put("/resources/" + zombieHash.substring(0, 2) + "/" + zombieHash, ZOMBIE_OGG);
         byte[] index = """
-                {"objects":{"minecraft/lang/de_de.json":{"hash":"%s","size":%d}}}""".formatted(germanHash, german.length).getBytes(StandardCharsets.UTF_8);
+                {"objects":{"minecraft/lang/de_de.json":{"hash":"%s","size":%d},"minecraft/sounds.json":{"hash":"%s","size":%d},"minecraft/sounds/mob/zombie/say1.ogg":{"hash":"%s","size":5}}}""".formatted(germanHash, german.length, soundsHash, sounds.length, zombieHash)
+                .getBytes(StandardCharsets.UTF_8);
         files.put("/index.json", index);
         byte[] meta = """
                 {"downloads":{"client":{"url":"%s","sha1":"%s"}},"assetIndex":{"url":"%s","sha1":"%s"}}""".formatted(url("/client.jar"), sha1(jar), url("/index.json"), sha1(index))
@@ -126,7 +136,7 @@ final class MojangFixture implements AutoCloseable {
         entries.put("assets/minecraft/textures/item/diamond_sword.png", SWORD_PNG);
         entries.put("assets/minecraft/textures/block/stone.png", STONE_PNG);
         entries.put("assets/minecraft/lang/en_us.json", text("""
-                {"item.minecraft.diamond_sword":"Diamond Sword","block.minecraft.stone":"Stone","item.minecraft.compass":"Compass","block.minecraft.chest":"Chest","enchantment.minecraft.sharpness":"Sharpness","enchantment.minecraft.sharpness.desc":"More damage","entity.minecraft.creeper":"Creeper","biome.minecraft.plains":"Plains"}"""));
+                {"item.minecraft.diamond_sword":"Diamond Sword","block.minecraft.stone":"Stone","item.minecraft.compass":"Compass","block.minecraft.chest":"Chest","enchantment.minecraft.sharpness":"Sharpness","enchantment.minecraft.sharpness.desc":"More damage","entity.minecraft.creeper":"Creeper","biome.minecraft.plains":"Plains","subtitles.entity.zombie.ambient":"Zombie groans"}"""));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (ZipOutputStream zip = new ZipOutputStream(out)) {
             for (var entry : entries.entrySet()) {

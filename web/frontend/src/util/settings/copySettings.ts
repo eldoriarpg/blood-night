@@ -10,7 +10,7 @@ import {WORLD_SECTIONS} from '~/util/settings/settingsSections'
 
 /**
  * The operations copying sections of one world's settings onto other worlds: each chosen section's properties are
- * replaced in every target, one change for all of them.
+ * replaced in every target, one change for all of them. A property given as a path is replaced where the path leads.
  *
  * @param settings the settings of the payload
  * @param from the source world's UID
@@ -21,10 +21,16 @@ import {WORLD_SECTIONS} from '~/util/settings/settingsSections'
 export function copyOperations(settings: SettingsPayload, from: string, targets: readonly string[], sections: readonly string[]): PatchOperation[] {
     const source = settings.worlds?.[from]?.settings as Record<string, unknown> | undefined
     if (!source) return []
-    const properties = WORLD_SECTIONS.filter(section => sections.includes(section.key)).flatMap(section => section.properties)
+    const properties = WORLD_SECTIONS.filter(section => sections.includes(section.key))
+        .flatMap(section => section.properties)
+        .map(property => ({segments: property.split('/'), value: valueAt(source, property.split('/'))}))
+        .filter(property => property.value !== undefined)
     return targets
         .filter(target => target !== from && settings.worlds?.[target])
         .flatMap(target => properties
-            .filter(property => source[property] !== undefined)
-            .map(property => ({op: 'add', path: pointer('settings', 'worlds', target, 'settings', property), value: jsonClone(source[property])}) as PatchOperation))
+            .map(property => ({op: 'add', path: pointer('settings', 'worlds', target, 'settings', ...property.segments), value: jsonClone(property.value)}) as PatchOperation))
+}
+
+function valueAt(source: Record<string, unknown>, segments: readonly string[]): unknown {
+    return segments.reduce<unknown>((value, segment) => value !== null && typeof value === 'object' ? (value as Record<string, unknown>)[segment] : undefined, source)
 }

@@ -67,7 +67,12 @@ class EditorPayloadTest {
                         List.of("CREEPER"),
                         List.of("SkeletalKnight"),
                         List.of("minecraft:max_health"),
-                        List.of("minecraft:desert")),
+                        List.of("minecraft:desert"),
+                        List.of("minecraft:darkness"),
+                        Map.of(
+                                "minecraft:spawn_phantoms",
+                                new EditorChoices.GameRuleChoice("boolean", "gamerule.doInsomnia")),
+                        List.of("home", "spawn")),
                 Map.of("mobs.yml", "abc"),
                 EditorStore.empty(),
                 false,

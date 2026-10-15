@@ -17,6 +17,7 @@ import CopySettingsDialog from '~/views/editorview/settings/CopySettingsDialog.v
 import {section} from '~/util/session/sections'
 import {pointer} from '~/util/patch/jsonPointer'
 import {WORLD_SECTIONS} from '~/util/settings/settingsSections'
+import {WORLD_KIND, worldSectionShows, type WorldKind} from '~/util/settings/worldKind'
 
 /**
  * A world's settings: the worlds in a sidebar, the picked world's sections as tabs, and copying its settings to other
@@ -32,12 +33,21 @@ const copying = ref(false)
 const copySections = ref<string[]>([])
 
 const worlds = computed(() => Object.entries(session.payload.value?.settings?.worlds ?? {})
-  .map(([uid, world]) => ({uid, name: world.name, enabled: (world.settings as {enabled?: boolean} | undefined)?.enabled !== false}))
+  .map(([uid, world]) => ({
+    uid,
+    name: world.name,
+    enabled: (world.settings as {enabled?: boolean} | undefined)?.enabled !== false,
+    kind: {dayCycle: world.dayCycle !== false, environment: world.environment ?? 'NORMAL'},
+  }))
   .sort((a, b) => a.name.localeCompare(b.name)))
 const world = computed(() => worlds.value.find(candidate => candidate.uid === picked.value) ?? worlds.value[0])
 const heldBy = computed(() => world.value ? locks.heldByOther(section.world(world.value.uid)) : null)
 const denied = computed(() => !locks.mayChange(world.value ? section.world(world.value.uid) : ''))
-const sections = computed(() => world.value?.enabled === false ? WORLD_SECTIONS.slice(0, 1) : WORLD_SECTIONS)
+const kind = computed<WorldKind | undefined>(() => world.value?.kind)
+provide(WORLD_KIND, kind)
+const sections = computed(() => world.value?.enabled === false
+  ? WORLD_SECTIONS.slice(0, 1)
+  : WORLD_SECTIONS.filter(entry => worldSectionShows(entry.key, kind.value)))
 const tabs = computed(() => sections.value.map(entry => ({key: entry.key, label: t(`editor.settings.sections.${entry.key}`)})))
 const current = computed(() => sections.value.find(entry => entry.key === tab.value) ?? sections.value[0])
 const value = computed(() => world.value ? session.payload.value?.settings?.worlds?.[world.value.uid]?.settings as Record<string, unknown> | undefined : undefined)
@@ -58,8 +68,8 @@ function copy(sections: string[]): void {
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-wrap">
-    <nav :aria-label="t('editor.settings.worlds')" class="flex w-60 shrink-0 flex-col gap-1 border-r border-line-soft bg-surface p-3">
+  <div class="flex min-h-0 flex-1">
+    <nav :aria-label="t('editor.settings.worlds')" class="flex w-60 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line-soft bg-surface p-3">
       <SectionLabel class="px-2 pb-1">{{ t('editor.settings.worlds') }}</SectionLabel>
       <BareButton
           v-for="entry in worlds"
@@ -75,7 +85,7 @@ function copy(sections: string[]): void {
         <InfoBadge v-if="locks.heldByOther(`settings/worlds/${entry.uid}`)">{{ locks.heldByOther(`settings/worlds/${entry.uid}`) }}</InfoBadge>
       </BareButton>
     </nav>
-    <main v-if="world && current" class="min-w-0 flex-[999_1_40rem] overflow-y-auto px-6 py-5">
+    <main v-if="world && current" class="min-w-0 flex-1 overflow-y-auto px-6 py-5">
       <div class="flex flex-wrap items-center gap-3">
         <PageHeader class="flex-1 font-mono">{{ world.name }}</PageHeader>
         <SecondaryButton icon="copy" @click="copy(WORLD_SECTIONS.map(entry => entry.key))">{{ t('editor.copy.open') }}</SecondaryButton>

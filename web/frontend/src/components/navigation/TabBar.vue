@@ -11,9 +11,8 @@ import BareButton from '@/components/button/BareButton.vue'
  * One entry of a tab list: the value it selects and what it says.
  *
  * <p>The list is a `tablist` of `tab`s with a roving tabindex, and the arrow keys, Home and End
- * select as they move. The rule under it belongs to the outer element and the scrolling to the
- * inner one, which keeps a horizontal scroller from growing a vertical scrollbar: the active tab's
- * border, pulled down a pixel onto the rule, is enough to make Chrome show one otherwise.
+ * select as they move. Tabs that do not fit wrap onto another line rather than scroll out of sight,
+ * where nobody would look for them. The rule under the list belongs to the outer element.
  */
 interface Tab {
   key: string
@@ -73,7 +72,7 @@ function onKeydown(event: KeyboardEvent, index: number) {
 
 <template>
   <div class="border-b border-line">
-    <div class="-mb-px flex gap-2 overflow-x-auto overflow-y-hidden" role="tablist">
+    <div class="-mb-px flex flex-wrap gap-x-2" role="tablist">
       <BareButton
           v-for="(tab, index) in tabs"
           :key="tab.key"

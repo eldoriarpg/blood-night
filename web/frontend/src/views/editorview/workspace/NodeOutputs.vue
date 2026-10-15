@@ -7,11 +7,14 @@
 import {Handle, Position} from '@vue-flow/core'
 import PortTooltip from '~/views/editorview/workspace/PortTooltip.vue'
 import NodeField from '~/views/editorview/workspace/NodeField.vue'
+import BareButton from '@/components/button/BareButton.vue'
+import AppIcon from '@/components/display/AppIcon.vue'
 import {handles, type ConfigView, type ExecutionView, type PortGroup} from '~/util/graph/graphView'
 
 /**
  * The right column of a drawn node: its execution outputs, each with the setting of the same id beside it, such as the
- * value a switch's case matches, then its data outputs under their group headers.
+ * value a switch's case matches, and a button clearing a case away where it may be, then its data outputs under their
+ * group headers.
  */
 const props = defineProps<{
   executions: readonly ExecutionView[]
@@ -19,17 +22,30 @@ const props = defineProps<{
   cases: ReadonlyMap<string, ConfigView>
   groups: readonly PortGroup[]
   readOnly: boolean
+  /** The execution output whose case can be cleared away. */
+  removable?: string
 }>()
 
 const emit = defineEmits<{
   config: [field: string, value: unknown]
+  remove: [port: string]
 }>()
+
+const {t} = useI18n()
 
 </script>
 
 <template>
   <div class="flex min-w-0 flex-col items-end gap-1.5">
     <div v-for="port in executions" :key="port.id" class="relative flex min-h-4 items-center gap-1.5 pr-4">
+      <BareButton
+          v-if="!readOnly && props.removable === port.id"
+          :aria-label="t('editor.graph.removeCase', {name: port.name})"
+          class="nodrag text-ink-faint hover:text-problem"
+          @click="emit('remove', port.id)"
+      >
+        <AppIcon icon="xmark"/>
+      </BareButton>
       <span class="text-ink-muted">{{ port.name }}</span>
       <NodeField v-if="props.cases.get(port.id)" :field="props.cases.get(port.id)!" :label="port.name" :read-only="readOnly" @save="value => emit('config', props.cases.get(port.id)!.id, value)"/>
       <Handle :id="handles.execOut(port.id)" :class="['pin-exec', port.connected && 'pin-filled']" :position="Position.Right" type="source"/>

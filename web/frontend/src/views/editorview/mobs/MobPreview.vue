@@ -40,6 +40,7 @@ const catalog = computed(() => session.catalog.value ? withRoutines(session.cata
         :in-macro="false"
         :macros="session.payload.value?.macros ?? []"
         :problem-count="0"
+        preview
         read-only
     />
     <div class="absolute right-4 top-4"><PrimaryButton icon="pen" @click="emit('edit')">{{ t('editor.mobs.edit') }}</PrimaryButton></div>

@@ -39,9 +39,28 @@ describe('applyPatch', () => {
         expect(applyPatch(document, [{op: 'replace', path: '/a/b', value: reactive({c: 2})}])).toEqual({a: {b: {c: 2}}})
     })
 
+    it('copies only what the path touches, and shares the rest', () => {
+        const mobs = {creeper: {graph: [1, 2, 3]}}
+        const document = {mobs, settings: {worlds: {w1: {enabled: true}, w2: {enabled: true}}}, list: [{a: 1}, {b: 2}]}
+        const patched = applyPatch(document, [
+            {op: 'replace', path: '/settings/worlds/w1/enabled', value: false},
+            {op: 'replace', path: '/list/1/b', value: 3},
+        ])
+
+        expect(patched.settings.worlds.w1.enabled).toBe(false)
+        expect(document.settings.worlds.w1.enabled).toBe(true)
+        expect(patched.mobs).toBe(mobs)
+        expect(patched.settings.worlds.w2).toBe(document.settings.worlds.w2)
+        expect(patched.list[0]).toBe(document.list[0])
+        expect(patched.list).toEqual([{a: 1}, {b: 3}])
+        expect(document.list[1]).toEqual({b: 2})
+    })
+
     it('leaves the document unchanged', () => {
         const document = {a: 1}
         expect(() => applyPatch(document, [{op: 'add', path: '/b', value: 2}, {op: 'remove', path: '/c'}])).toThrow()
+        expect(document).toEqual({a: 1})
+        applyPatch(document, [{op: 'add', path: '/b', value: 2}, {op: 'remove', path: '/a'}])
         expect(document).toEqual({a: 1})
     })
 })

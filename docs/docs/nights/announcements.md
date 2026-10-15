@@ -96,6 +96,9 @@ Set `introDialog: false` to switch it off in a world.
 
 ## Sounds
 
+In the web editor you pick a sound by what it sounds like, like "Thunder roars" or "Zombie groans", and you can play
+it right there. In the file, sounds look like this:
+
 ```yaml
 soundSettings:
   channel: AMBIENT
@@ -103,22 +106,23 @@ soundSettings:
   maxInterval: 40
   begin:
     - sound: minecraft:entity.lightning_bolt.thunder
-      pitches: [0.8, 1.0]
-      volumes: [1.0]
+      pitch: {min: 0.8, max: 1.0}
+      volume: {min: 1.0, max: 1.0}
   end:
     - sound: minecraft:entity.lightning_bolt.thunder
-      pitches: [0.8, 1.0]
-      volumes: [1.0]
+      pitch: {min: 0.8, max: 1.0}
+      volume: {min: 1.0, max: 1.0}
   ambience:
     - sound: minecraft:ambient.crimson_forest.additions
-      pitches: [0.4, 0.8, 1.2, 1.6]
-      volumes: [0.2, 0.6, 1.0]
+      pitch: {min: 0.5, max: 1.6}
+      volume: {min: 0.2, max: 1.0}
 ```
 
 - `begin` plays when the blood night begins, `end` when it ends.
 - `ambience` sounds play during the night, every `minInterval` to `maxInterval` seconds, for each player.
-- Each time a sound plays, BloodNight picks one pitch and one volume from the lists. That makes it sound less
-  repetitive.
+- `pitch` makes a sound deeper or higher: `1` is normal, `0.5` is the deepest, `2` the highest. `volume` goes from
+  `0` (silent) to `1` (normal). Each time a sound plays, BloodNight picks a pitch and a volume between `min` and
+  `max`. That makes it sound less repetitive. Set `min` and `max` to the same number to keep it the same every time.
 - `channel` is the sound slider in the player's settings: `AMBIENT`, `HOSTILE`, `MASTER` and so on.
 
 Sounds are named like in the `/playsound` command.

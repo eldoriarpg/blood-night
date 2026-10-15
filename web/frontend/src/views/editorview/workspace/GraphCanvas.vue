@@ -30,7 +30,7 @@ import type {PatchOperation} from '~/util/patch/jsonPatch'
  * A wire let go on the empty canvas opens a picker of the nodes that can take it, and the node picked is added there,
  * wired; a double click on the empty canvas opens the same picker with every node, so nodes can be added without the
  * palette. A double click on a node opens its details. Dragging on the empty canvas selects the nodes in a box; holding
- * Space drags the view instead. Every node keeps the position saved with it: a graph opened without any is arranged
+ * Space drags the view instead. A preview drags the view without Space. Every node keeps the position saved with it: a graph opened without any is arranged
  * (see {@link arrange}) and saved, or while read only just shown arranged; unplaced nodes of a placed graph are saved
  * where they are shown, so moving one node never moves another. Arrange lays the whole graph out again. Read only while someone else holds the graph's
  * section. The play button of a node starting a chain lights up the nodes and wires it reaches, one after another in
@@ -47,9 +47,14 @@ const props = defineProps<{
   /** The graph's graph-wide types, such as the mob's own entity type for Self. */
   bindings: GraphBindings
   readOnly: boolean
+  /** A preview only looked at, never edited, whose view is dragged without Space; fixed for the canvas's life. */
+  preview?: boolean
   heldBy: string | null
   problemCount: number
 }>()
+
+const panOnDrag = props.preview === true
+const selectionKey = props.preview ? null : true
 
 const emit = defineEmits<{
   inspect: [node: string | null]
@@ -366,10 +371,10 @@ defineExpose({add})
         :nodes="nodes"
         :nodes-connectable="!readOnly"
         :nodes-draggable="!readOnly"
-        :pan-on-drag="false"
+        :pan-on-drag="panOnDrag"
         :snap-grid="[GRID, GRID]"
         :snap-to-grid="!freely"
-        :selection-key-code="true"
+        :selection-key-code="selectionKey"
         pan-activation-key-code="Space"
         :zoom-on-double-click="false"
         :style="grid"
