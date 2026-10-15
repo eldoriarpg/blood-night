@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.announce.Messages;
 import de.eldoria.bloodnight.api.BloodNightService;
 import de.eldoria.bloodnight.atmosphere.BloodPack;
 import de.eldoria.bloodnight.atmosphere.Haunting;
+import de.eldoria.bloodnight.atmosphere.Omens;
 import de.eldoria.bloodnight.atmosphere.PackMerge;
 import de.eldoria.bloodnight.atmosphere.TimelineGroup;
 import de.eldoria.bloodnight.atmosphere.Timelines;
@@ -62,6 +63,7 @@ import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightSkipGuard;
 import de.eldoria.bloodnight.night.NightStretch;
 import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.Prediction;
 import de.eldoria.bloodnight.rules.CommandBlocker;
 import de.eldoria.bloodnight.rules.CreeperGuard;
 import de.eldoria.bloodnight.rules.DeathActionHandler;
@@ -395,6 +397,16 @@ public final class BloodNight extends JavaPlugin {
                         configuration.worldConfig(world).nightRules()),
                 Timelines.silently(getServer()));
         plugins.registerEvents(timelines, this);
+        Omens omens = new Omens(
+                getServer(),
+                world -> configuration.worldConfig(world).enabled()
+                        ? selector.next(world, 1).map(Prediction::ticksUntil).orElse(-1L)
+                        : -1L,
+                world -> configuration.worldConfig(world).atmosphere(),
+                timelines,
+                tasks::entityNow,
+                RANDOM,
+                Omens::runTo);
         haunting = new Haunting(
                 getServer(),
                 bloodNights,
@@ -413,6 +425,7 @@ public final class BloodNight extends JavaPlugin {
         tasks.global(() -> timelines.restore(getServer().getWorlds()));
         tasks.global(() -> worldRules.restoreLeftovers(getServer().getWorlds()));
         tasks.globalTimer(Haunting.STEP, haunting::tick);
+        tasks.globalTimer(Omens.STEP, omens::tick);
         tasks.globalTimer(NightGear.STEP, nightGear::tick);
         tasks.globalTimer(20, announcer::tick);
         UpdateNotice updates = new UpdateNotice(

@@ -66,7 +66,7 @@ public final class Timelines implements Listener {
         World world = event.getWorld();
         Set<TimelineGroup> lit = started(world);
         for (TimelineGroup group : groups.apply(world)) {
-            if (group.dawn()) continue;
+            if (group.start() != TimelineGroup.Start.NIGHT) continue;
             lit.add(group);
             clock(world, group, 0);
         }
@@ -77,14 +77,28 @@ public final class Timelines implements Listener {
         World world = event.getWorld();
         Set<TimelineGroup> lit = started(world);
         for (TimelineGroup group : Set.copyOf(lit)) {
-            if (group.dawn()) continue;
+            if (group.start() != TimelineGroup.Start.NIGHT) continue;
             lit.remove(group);
             clock(world, group, TimelineGroup.FADE_OUT);
         }
         for (TimelineGroup group : groups.apply(world)) {
-            if (!group.dawn()) continue;
+            if (group.start() != TimelineGroup.Start.DAWN) continue;
             lit.add(group);
             clock(world, group, 0);
+        }
+    }
+
+    /**
+     * Starts the omen groups a world has switched on, for a blood night about to begin.
+     *
+     * @param elapsed how many ticks of the omen have passed already, 0 when it starts on time
+     */
+    public void omen(World world, long elapsed) {
+        Set<TimelineGroup> lit = started(world);
+        for (TimelineGroup group : groups.apply(world)) {
+            if (group.start() != TimelineGroup.Start.OMEN) continue;
+            lit.add(group);
+            clock(world, group, Math.clamp(elapsed, 0, TimelineGroup.OMEN_TICKS));
         }
     }
 
@@ -96,7 +110,7 @@ public final class Timelines implements Listener {
         for (World world : worlds) {
             Set<TimelineGroup> on = nights.running(world).isPresent() ? groups.apply(world) : Set.of();
             for (TimelineGroup group : TimelineGroup.values()) {
-                boolean full = on.contains(group) && !group.dawn();
+                boolean full = on.contains(group) && group.start() == TimelineGroup.Start.NIGHT;
                 if (full) started(world).add(group);
                 clock(world, group, full ? TimelineGroup.FULL : group.rest());
                 command(world, group, "resume");

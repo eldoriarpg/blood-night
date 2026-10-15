@@ -17,9 +17,12 @@ const float MistGlowStrength = 0.55;
 const vec3 MistGlow = vec3(0.8, 0.16, 0.13);
 const vec3 BloodWater = vec3(1.8, 0.12, 0.1);
 const vec3 Luminance = vec3(0.3, 0.59, 0.11);
+const float BloodFogBlueOverGreen = 1.3;
 
 float blood_fog() {
-    return clamp((FogColor.r - 3.0 * max(FogColor.g, FogColor.b)) * 10.0, 0.0, 1.0);
+    float red = clamp((FogColor.r - 3.0 * max(FogColor.g, FogColor.b)) * 6.0, 0.0, 1.0);
+    float signature = clamp((FogColor.b / (FogColor.g + 0.001) - BloodFogBlueOverGreen) * 5.0, 0.0, 1.0);
+    return red * signature;
 }
 
 float mist_hash(vec3 cell) {

@@ -99,7 +99,8 @@ class TimelinesTest extends AtmosphereTest {
                         TimelineGroup.DARKNESS,
                         TimelineGroup.WORLD_PARTICLES,
                         TimelineGroup.MONSTERS_DONT_BURN,
-                        TimelineGroup.RAIDS_DENIED),
+                        TimelineGroup.RAIDS_DENIED,
+                        TimelineGroup.OMEN),
                 TimelineGroup.of(atmosphere, rules));
     }
 
@@ -120,7 +121,7 @@ class TimelinesTest extends AtmosphereTest {
                 assertEquals(0, first.path("ticks").asInt(), where);
                 assertEquals(group.rest(), last.path("ticks").asInt(), where);
                 assertEquals(first.path("value"), last.path("value"), where);
-                if (!group.dawn()) {
+                if (group.start() == TimelineGroup.Start.NIGHT) {
                     assertNotEquals(first.path("value"), value(keyframes, TimelineGroup.FULL), where);
                     assertNotEquals(first.path("value"), value(keyframes, TimelineGroup.FADE_OUT), where);
                 }

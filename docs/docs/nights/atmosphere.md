@@ -22,6 +22,9 @@ atmosphere:
   thickFog: false
   darkness: false
   worldParticles: true
+  omen: true
+  omenSounds: true
+  restlessAnimals: true
   vignette: true
   darknessPulses: true
   rain: false
@@ -62,6 +65,18 @@ The data pack can do a few more things for the whole world. Each one is its own 
 
 With `worldParticles` on, the `particles` around each player (see below) are not sent. Switch it off to use your own
 particles instead.
+
+## Before a blood night
+
+Players can feel a blood night coming. In the last minute or so before it begins:
+
+| Setting | What happens | At first |
+|---|---|---|
+| `omen` | The sunset glows deep red, the clouds and the sky turn a little red, and the first ash starts to fall. It flows into the red sky when the night begins. | on |
+| `omenSounds` | Each player hears a bell or a wolf far away now and then. | on |
+| `restlessAnimals` | Animals near players run away from them. Tamed animals stay calm. | on |
+
+BloodNight knows in advance which nights will be blood nights, so this only happens before a real one.
 
 ## For each player
 

@@ -882,6 +882,9 @@ export interface AtmosphereSettings {
   thickFog?: boolean;
   darkness?: boolean;
   worldParticles?: boolean;
+  omen?: boolean;
+  omenSounds?: boolean;
+  restlessAnimals?: boolean;
   vignette?: boolean;
   darknessPulses?: boolean;
   rain?: boolean;

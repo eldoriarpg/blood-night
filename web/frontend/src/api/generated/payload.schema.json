@@ -105,6 +105,18 @@
           "type" : "boolean",
           "default" : true
         },
+        "omen" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "omenSounds" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "restlessAnimals" : {
+          "type" : "boolean",
+          "default" : true
+        },
         "vignette" : {
           "type" : "boolean",
           "default" : true
@@ -2324,6 +2336,8 @@
             "heartbeat" : true,
             "heartbeatLoudestWithin" : 5.0,
             "heartbeatRange" : 30.0,
+            "omen" : true,
+            "omenSounds" : true,
             "particles" : [ {
               "particle" : "minecraft:ash",
               "perSecond" : 12
@@ -2333,6 +2347,7 @@
             } ],
             "rain" : false,
             "redDawn" : true,
+            "restlessAnimals" : true,
             "scares" : {
               "chancePerMinute" : 10,
               "enabled" : false,

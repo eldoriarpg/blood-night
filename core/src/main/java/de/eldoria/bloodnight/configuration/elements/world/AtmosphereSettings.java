@@ -18,7 +18,9 @@ import java.util.List;
  * and hides the stars, so the night looks overcast without rain. Also through the data pack: {@code redDawn} colours the
  * sunrise after the night red, {@code thickFog} closes the fog in over the night, {@code darkness} darkens the night
  * and lets more monsters spawn, and {@code worldParticles} lets the client draw ash and spores in the world, in place
- * of {@code particles}. The rest happens for each player on their own client
+ * of {@code particles}. Before a blood night, {@code omen} turns the sunset deep red and lets the first ash fall,
+ * {@code omenSounds} rings distant bells and howls, and {@code restlessAnimals} makes animals near players bolt. The
+ * rest happens for each player on their own client
  * and ends with the night: a red screen edge, short darkness pulses, rain (off by default), particles around
  * the camera, a heartbeat, the resource pack's screen effect and, when switched on, scares.
  */
@@ -28,6 +30,9 @@ public class AtmosphereSettings {
     private boolean thickFog = false;
     private boolean darkness = false;
     private boolean worldParticles = true;
+    private boolean omen = true;
+    private boolean omenSounds = true;
+    private boolean restlessAnimals = true;
     private boolean vignette = true;
     private boolean darknessPulses = true;
     private boolean rain = false;
@@ -72,6 +77,27 @@ public class AtmosphereSettings {
      */
     public boolean worldParticles() {
         return worldParticles;
+    }
+
+    /**
+     * @return whether the sunset before a blood night glows deep red, with the first ash falling
+     */
+    public boolean omen() {
+        return omen;
+    }
+
+    /**
+     * @return whether players hear distant bells and howls before a blood night
+     */
+    public boolean omenSounds() {
+        return omenSounds;
+    }
+
+    /**
+     * @return whether animals near players bolt before a blood night
+     */
+    public boolean restlessAnimals() {
+        return restlessAnimals;
     }
 
     /**

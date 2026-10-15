@@ -133,6 +133,9 @@ Settings for one world. Every world has its own file.
 | `atmosphere.thickFog` | true or false | `false` |
 | `atmosphere.darkness` | true or false | `false` |
 | `atmosphere.worldParticles` | true or false | `true` |
+| `atmosphere.omen` | true or false | `true` |
+| `atmosphere.omenSounds` | true or false | `true` |
+| `atmosphere.restlessAnimals` | true or false | `true` |
 | `atmosphere.vignette` | true or false | `true` |
 | `atmosphere.darknessPulses` | true or false | `true` |
 | `atmosphere.rain` | true or false | `false` |
@@ -280,6 +283,8 @@ atmosphere:
   heartbeat: true
   heartbeatLoudestWithin: 5
   heartbeatRange: 30
+  omen: true
+  omenSounds: true
   particles:
     - particle: minecraft:ash
       perSecond: 12
@@ -287,6 +292,7 @@ atmosphere:
       perSecond: 4
   rain: false
   redDawn: true
+  restlessAnimals: true
   scares:
     chancePerMinute: 10
     enabled: false
