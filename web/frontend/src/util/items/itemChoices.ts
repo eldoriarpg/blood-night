@@ -6,6 +6,7 @@
 import type {ItemAsset} from '~/api/generated/schema'
 import type {EditorItem} from '~/api/generated/payload'
 import {withFallbacks} from '~/util/minimessage/translations'
+import {searchTexts} from '~/util/search/textMatch'
 
 /** One entry of an item picker: a material, or an item of the payload shown with its material's icon. */
 export interface ItemChoice {
@@ -135,18 +136,14 @@ export function itemChoices(
 }
 
 /**
- * The choices matching a search: every word of it must be found in the choice's key, name, type, lore or
- * enchantments, so `sword sharp` finds a sharpened sword. Names starting with the search come first.
+ * The choices matching a search: every word of it must be found in the choice's name, English name, key, type, lore or
+ * enchantments, inside them or abbreviating them (see {@link searchTexts}), so `sword sharp` finds a sharpened sword
+ * and `ds` or `dsword` a diamond sword. Names starting with the search come first.
  *
  * @param choices the choices
  * @param query what was typed
  * @returns the matching choices
  */
 export function searchChoices(choices: readonly ItemChoice[], query: string): ItemChoice[] {
-    const needle = query.trim().toLowerCase()
-    if (needle === '') return [...choices]
-    const words = needle.split(/\s+/)
-    const matches = choices.filter(choice => words.every(word => choice.terms.some(term => term.includes(word))))
-    const starts = (choice: ItemChoice) => choice.name.toLowerCase().startsWith(needle) || choice.english.toLowerCase().startsWith(needle)
-    return [...matches.filter(starts), ...matches.filter(choice => !starts(choice))]
+    return searchTexts(choices, choice => [choice.name, choice.english, ...choice.terms], query, 2)
 }
