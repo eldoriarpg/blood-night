@@ -4,11 +4,21 @@
   "pack" : "newer",
   "names" : {
     "de" : "Sporen-Sumpfskelett",
-    "en" : "Spore Bogged"
+    "en" : "Spore Bogged",
+    "es" : "Esqueleto pantanoso de esporas",
+    "fr" : "Embourbé à spores",
+    "ms" : "Bogged Spora",
+    "tr" : "Sporlu Bataklık İskeleti",
+    "zh" : "孢子沼骸"
   },
   "descriptions" : {
     "de" : "Seine Pfeile vergiften dich und machen dich schwindelig. Hinterlässt beim Tod eine Giftwolke.",
-    "en" : "Its arrows poison you and make you dizzy. Leaves a poison cloud when it dies."
+    "en" : "Its arrows poison you and make you dizzy. Leaves a poison cloud when it dies.",
+    "es" : "Sus flechas te envenenan y te marean. Deja una nube venenosa al morir.",
+    "fr" : "Ses flèches t'empoisonnent et te donnent le tournis. Laisse un nuage de poison en mourant.",
+    "ms" : "Anak panahnya meracuni anda dan membuat anda pening. Meninggalkan awan racun apabila ia mati.",
+    "tr" : "Okları seni zehirler ve başını döndürür. Ölünce bir zehir bulutu bırakır.",
+    "zh" : "它的箭会让你中毒和反胃。死亡时留下一团毒云。"
   },
   "requires" : [ ],
   "mob" : {

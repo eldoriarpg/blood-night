@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.announce.Texts;
 import de.eldoria.bloodnight.atmosphere.PackMerge;
 import net.strokkur.commands.DefaultExecutes;
 import net.strokkur.commands.Executes;
@@ -47,10 +48,14 @@ final class PackCommand {
             Path plugins = plugin.getDataFolder().toPath().toAbsolutePath().getParent();
             for (PackMerge.Target target : plugin.packTargets()) {
                 pack.install(plugins, target);
-                Replies.send(sender, "pack.merged", arg("plugin", target.plugin()), arg("reload", target.reload()));
+                Replies.send(
+                        sender,
+                        "pack.merged",
+                        arg("plugin", target.plugin()),
+                        arg("reload", Texts.command(target.reload())));
             }
         } catch (IOException | UncheckedIOException e) {
-            Replies.send(sender, "pack.failed", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "pack.failed", arg("reason", String.valueOf(e.getMessage())));
         }
     }
 }

@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Wither Wizard",
-    "de": "Withermagier"
+    "de": "Withermagier",
+    "es": "Mago del Wither",
+    "fr": "Sorcier wither",
+    "ms": "Ahli Sihir Wither",
+    "tr": "Wither Büyücüsü",
+    "zh": "凋灵巫师"
   },
   "descriptions": {
     "en": "Throws three wither skulls in a row, then rests for 8 seconds. Below half health it heals once.",
-    "de": "Wirft drei Wither-Schädel hintereinander und ruht dann 8 Sekunden. Unter halber Gesundheit heilt er sich einmal."
+    "de": "Wirft drei Wither-Schädel hintereinander und ruht dann 8 Sekunden. Unter halber Gesundheit heilt er sich einmal.",
+    "es": "Lanza tres cráneos de Wither seguidos y luego descansa 8 segundos. Por debajo de la mitad de su salud se cura una vez.",
+    "fr": "Lance trois crânes de wither à la suite, puis se repose 8 secondes. Sous la moitié de sa vie, il se soigne une fois.",
+    "ms": "Melontar tiga tengkorak wither berturut-turut, kemudian berehat selama 8 saat. Apabila nyawanya di bawah separuh, ia pulih sekali.",
+    "tr": "Arka arkaya üç wither kafatası fırlatır, sonra 8 saniye dinlenir. Canı yarının altına düşünce bir kez iyileşir.",
+    "zh": "连续扔出三个凋灵之首，然后休息 8 秒。生命值低于一半时会治疗自己一次。"
   },
   "requires": []
 }

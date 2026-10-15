@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.updates;
 
+import de.eldoria.bloodnight.announce.Texts;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -35,6 +36,7 @@ class UpdateNoticeTest {
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();
+        Texts.create(MockBukkit.createMockPlugin(), "[BN]", "en_US");
         Logger logger = Logger.getAnonymousLogger();
         logger.setUseParentHandlers(false);
         logger.addHandler(new Handler() {
@@ -73,7 +75,7 @@ class UpdateNoticeTest {
         assertEquals(1, console.size());
         PlayerMock admin = join(true);
         assertEquals(
-                "BloodNight 1.1.0 is out. You run 1.0.0. Download it",
+                "[BN] BloodNight 1.1.0 is out. You run 1.0.0. Download it",
                 PlainTextComponentSerializer.plainText().serialize(admin.nextComponentMessage()));
         assertNull(join(false).nextComponentMessage());
     }

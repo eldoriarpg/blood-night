@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.advancements.BloodAdvancements;
 import de.eldoria.bloodnight.announce.Announcer;
 import de.eldoria.bloodnight.announce.IntroDialog;
 import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.announce.Texts;
 import de.eldoria.bloodnight.api.BloodNightService;
 import de.eldoria.bloodnight.atmosphere.BloodPack;
 import de.eldoria.bloodnight.atmosphere.Haunting;
@@ -24,6 +25,7 @@ import de.eldoria.bloodnight.command.BloodNightCommandBrigadier;
 import de.eldoria.bloodnight.command.MobIds;
 import de.eldoria.bloodnight.command.StoreIds;
 import de.eldoria.bloodnight.configuration.Configuration;
+import de.eldoria.bloodnight.configuration.elements.Announcements;
 import de.eldoria.bloodnight.debug.DebugReport;
 import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.enchantments.BloodEnchantments;
@@ -182,6 +184,9 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         tasks = new Tasks(this);
         moveLegacyAside();
         configuration = new Configuration(this);
+        Announcements announcements = configuration.main().announcements();
+        Texts.create(
+                this, announcements.prefix(), announcements.fallbackLocale().name());
         var platform = BloodNightPlatform.create(
                 CompileClasspath.discover(getClassLoader()),
                 Documentation.NONE,
@@ -326,7 +331,7 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                         coordinator,
                         tasks),
                 this);
-        messages.register(configuration.main().announcements().fallbackLocale());
+        messages.register(configuration.main().announcements().fallbackLocale().name());
         registerMobNames();
         StoreNotice storeNotice =
                 new StoreNotice(mobStore, () -> configuration.mobs().all());
@@ -726,5 +731,16 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
      */
     public Messages messages() {
         return messages;
+    }
+
+    /**
+     * Reads the text files again and applies the announcement settings to them: the prefix of chat messages and the
+     * fallback language.
+     */
+    public void applyTextSettings() {
+        Announcements announcements = configuration.main().announcements();
+        messages.fallback(announcements.fallbackLocale().name());
+        Texts.create(
+                this, announcements.prefix(), announcements.fallbackLocale().name());
     }
 }

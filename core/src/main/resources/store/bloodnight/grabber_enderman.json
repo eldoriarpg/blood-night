@@ -4,11 +4,21 @@
   "pack" : "end",
   "names" : {
     "de" : "Greifer-Enderman",
-    "en" : "Grabber Enderman"
+    "en" : "Grabber Enderman",
+    "es" : "Enderman agarrador",
+    "fr" : "Enderman ravisseur",
+    "ms" : "Enderman Penyambar",
+    "tr" : "Kapıcı Enderman",
+    "zh" : "抓取末影人"
   },
   "descriptions" : {
     "de" : "Packt alle 10 Sekunden Mobs in seiner Nähe und setzt sie vor dir ab.",
-    "en" : "Every 10 seconds it grabs mobs around it and puts them down in front of you."
+    "en" : "Every 10 seconds it grabs mobs around it and puts them down in front of you.",
+    "es" : "Cada 10 segundos agarra a las criaturas que tiene cerca y las deja delante de ti.",
+    "fr" : "Toutes les 10 secondes, il attrape les créatures autour de lui et les pose devant toi.",
+    "ms" : "Setiap 10 saat ia menyambar mob di sekelilingnya dan meletakkannya di hadapan anda.",
+    "tr" : "Her 10 saniyede bir çevresindeki yaratıkları yakalar ve önüne bırakır.",
+    "zh" : "每 10 秒抓起周围的生物，放到你面前。"
   },
   "requires" : [ ],
   "mob" : {

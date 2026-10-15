@@ -2,11 +2,21 @@
   "pack": "newer",
   "names": {
     "en": "Storm Breeze",
-    "de": "Sturmböe"
+    "de": "Sturmböe",
+    "es": "Breeze de tormenta",
+    "fr": "Brise de tempête",
+    "ms": "Breeze Ribut",
+    "tr": "Fırtına Esintisi",
+    "zh": "风暴旋风人"
   },
   "descriptions": {
     "en": "Fires three wind charges at you every 6 seconds.",
-    "de": "Schießt alle 6 Sekunden drei Windkugeln auf dich."
+    "de": "Schießt alle 6 Sekunden drei Windkugeln auf dich.",
+    "es": "Te dispara tres cargas de viento cada 6 segundos.",
+    "fr": "Te tire trois charges de vent dessus toutes les 6 secondes.",
+    "ms": "Menembak tiga cas angin ke arah anda setiap 6 saat.",
+    "tr": "Her 6 saniyede bir sana üç rüzgâr yükü fırlatır.",
+    "zh": "每 6 秒向你发射三颗风弹。"
   },
   "requires": []
 }

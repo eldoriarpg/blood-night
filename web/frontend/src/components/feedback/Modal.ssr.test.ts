@@ -19,7 +19,7 @@ describe('Modal on the server', () => {
         const app = createSSRApp({
             render: () => [h('p', 'Seite'), h(Modal, {modelValue: open}, () => 'Inhalt')],
         })
-        app.use(createI18n({legacy: false, locale: 'en', messages: {en: {}, de: {}}}))
+        app.use(createI18n({legacy: false, locale: 'en', messages: {en: {}, de: {}, es: {}, fr: {}, ms: {}, tr: {}, zh: {}}}))
 
         const html = await renderToString(app)
 

@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Knight Zombie",
-    "de": "Ritterzombie"
+    "de": "Ritterzombie",
+    "es": "Zombi caballero",
+    "fr": "Zombie chevalier",
+    "ms": "Zombi Kesatria",
+    "tr": "Şövalye Zombi",
+    "zh": "骑士僵尸"
   },
   "descriptions": {
     "en": "Wears chainmail and a golden axe. Every 8 seconds it raises a shield for 2 seconds and blocks hits from the front: hit it from behind. Every 10 seconds it growls and dashes at you.",
-    "de": "Trägt Kettenrüstung und eine Goldaxt. Alle 8 Sekunden hebt es 2 Sekunden lang einen Schild und blockt Schläge von vorn: Triff es von hinten. Alle 10 Sekunden knurrt es und stürmt auf dich zu."
+    "de": "Trägt Kettenrüstung und eine Goldaxt. Alle 8 Sekunden hebt es 2 Sekunden lang einen Schild und blockt Schläge von vorn: Triff es von hinten. Alle 10 Sekunden knurrt es und stürmt auf dich zu.",
+    "es": "Lleva cota de malla y un hacha de oro. Cada 8 segundos levanta un escudo durante 2 segundos y bloquea los golpes de frente: golpéalo por la espalda. Cada 10 segundos gruñe y embiste contra ti.",
+    "fr": "Porte une cotte de mailles et une hache en or. Toutes les 8 secondes, il lève un bouclier pendant 2 secondes et bloque les coups de face : frappe-le par derrière. Toutes les 10 secondes, il grogne et fonce sur toi.",
+    "ms": "Memakai perisai rantai dan kapak emas. Setiap 8 saat ia mengangkat perisai selama 2 saat dan menyekat pukulan dari hadapan: pukul ia dari belakang. Setiap 10 saat ia menggeram dan meluru ke arah anda.",
+    "tr": "Zincir zırh ve altın balta taşır. Her 8 saniyede bir 2 saniyeliğine kalkan kaldırır ve önden gelen vuruşları engeller: arkadan vur. Her 10 saniyede bir hırlar ve üstüne atılır.",
+    "zh": "穿着锁链盔甲，拿着金斧。每 8 秒举起盾牌 2 秒，挡住来自正面的攻击：从背后打它。每 10 秒它会低吼一声并冲向你。"
   },
   "requires": []
 }

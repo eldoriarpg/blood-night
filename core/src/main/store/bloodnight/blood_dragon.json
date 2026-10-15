@@ -2,11 +2,21 @@
   "pack": "end",
   "names": {
     "en": "Blood Dragon",
-    "de": "Blutdrache"
+    "de": "Blutdrache",
+    "es": "Dragón de Sangre",
+    "fr": "Dragon de sang",
+    "ms": "Blood Dragon",
+    "tr": "Kan Ejderhası",
+    "zh": "血龙"
   },
   "descriptions": {
     "en": "The ender dragon of a dragon fight during a Blood Eclipse. Never spawns by chance.",
-    "de": "Der Enderdrache eines Drachenkampfs während einer Blutfinsternis. Erscheint nie zufällig."
+    "de": "Der Enderdrache eines Drachenkampfs während einer Blutfinsternis. Erscheint nie zufällig.",
+    "es": "El dragón del End de una lucha contra el dragón durante un Eclipse de Sangre. Nunca aparece por azar.",
+    "fr": "L'Ender Dragon d'un combat de dragon pendant une Éclipse de sang. N'apparaît jamais par hasard.",
+    "ms": "Naga ender dalam pertarungan naga semasa Blood Eclipse. Tidak pernah muncul secara rawak.",
+    "tr": "Kan Tutulması sırasındaki bir ejderha savaşının Ender Ejderhası. Asla rastgele doğmaz.",
+    "zh": "血蚀期间龙战中的末影龙。从不随机生成。"
   },
   "requires": []
 }

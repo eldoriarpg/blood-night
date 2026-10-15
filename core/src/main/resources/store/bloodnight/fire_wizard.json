@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Feuermagier",
-    "en" : "Fire Wizard"
+    "en" : "Fire Wizard",
+    "es" : "Mago de fuego",
+    "fr" : "Sorcier de feu",
+    "ms" : "Ahli Sihir Api",
+    "tr" : "Ateş Büyücüsü",
+    "zh" : "火焰巫师"
   },
   "descriptions" : {
     "de" : "Um ihn tropft Lava, und eine Sekunde später wirft er einen großen Feuerball, alle 5 Sekunden. Schlag den Feuerball zurück: Er macht dem Magier dreifachen Schaden.",
-    "en" : "Lava drips around it, and a second later it throws a large fireball, every 5 seconds. Hit the fireball back: it deals triple damage to the wizard."
+    "en" : "Lava drips around it, and a second later it throws a large fireball, every 5 seconds. Hit the fireball back: it deals triple damage to the wizard.",
+    "es" : "Gotea lava a su alrededor y, un segundo después, lanza una gran bola de fuego, cada 5 segundos. Devuélvele la bola de fuego de un golpe: le hace el triple de daño al mago.",
+    "fr" : "De la lave goutte autour de lui, et une seconde plus tard il lance une grosse boule de feu, toutes les 5 secondes. Renvoie la boule de feu : elle inflige le triple de dégâts au sorcier.",
+    "ms" : "Lava menitis di sekelilingnya, dan sesaat kemudian ia melontar bebola api besar, setiap 5 saat. Pukul bebola api itu kembali: ia memberikan kerosakan tiga kali ganda kepada ahli sihir itu.",
+    "tr" : "Her 5 saniyede bir çevresine lav damlar ve bir saniye sonra büyük bir ateş topu fırlatır. Ateş topunu geri vur: büyücüye üç kat hasar verir.",
+    "zh" : "每 5 秒，它周围会滴下熔岩，一秒后它会扔出一个大火球。把火球打回去：它对巫师造成三倍伤害。"
   },
   "requires" : [ ],
   "mob" : {

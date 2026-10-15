@@ -27,16 +27,45 @@ announcements:
 
 | Key | What it does |
 |---|---|
-| `prefix` | Text in front of chat messages. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html). |
+| `prefix` | Text in front of every chat message of BloodNight, command answers included. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html). Titles and the action bar have no prefix. |
 | `reach` | Who hears that a blood night begins or ends: `SERVER` (everyone), `WORLD` (players in that world) or `NONE`. |
 | `method` | How they see it: `CHAT`, `TITLE`, `SUBTITLE` or `ACTION_BAR`. |
 | `personalMethod` | How a single player sees messages meant for them, like "you entered a world with a blood night". |
-| `fallbackLocale` | The language for players whose language BloodNight does not have. |
+| `fallbackLocale` | The language for players whose language BloodNight does not have: `en_US`, `de_DE`, `es_ES`, `fr_FR`, `ms_MY`, `tr_TR` or `zh_CN`. |
 
 ### Languages
 
 Every player reads the messages in the language of their game client. BloodNight knows English, German, Spanish,
-Malay, Turkish and Chinese.
+French, Malay, Turkish and Chinese. A player with Austrian German gets German, a player with Canadian French gets
+French. Players with any other language get the `fallbackLocale`.
+
+### Changing the texts
+
+BloodNight writes its texts into `plugins/BloodNight/messages/`, one file per language:
+`messages_en_US.properties`, `messages_de_DE.properties` and so on. Change a line there and run `/bloodnight reload`.
+
+When BloodNight gets new texts in an update, it adds them to these files. Your changes stay.
+
+Each line is a key and a text in [MiniMessage](https://docs.advntr.dev/minimessage/format.html):
+
+```properties
+bloodnight.night.begin=<error>A blood night has begun in <accent><world></accent>.
+```
+
+Words in angle brackets like `<world>` are filled in by BloodNight. Keep them. The texts use BloodNight's own styles,
+so every message looks alike:
+
+| Style | Looks like |
+|---|---|
+| `<accent>` | Gold. For names and numbers. |
+| `<muted>` | Dark gray. For side notes. |
+| `<success>` | Green. Something worked. |
+| `<warn>` | Yellow. Something to look at. |
+| `<error>` | Red. Something went wrong. |
+| `<cmd:'/bloodnight setup'>` | A command. A click puts it into the chat. |
+| `<url:'https://example.com'>a link</url>` | A link. A click opens it. |
+
+You can use every other MiniMessage tag too, like `<red>` or `<bold>`.
 
 ## Boss bar
 

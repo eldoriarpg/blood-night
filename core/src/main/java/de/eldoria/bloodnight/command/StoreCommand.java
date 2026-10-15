@@ -71,7 +71,7 @@ final class StoreCommand {
                         "store.entry",
                         arg("id", entry.id()),
                         arg("name", text(sender, entry.mobPackage().names(), entry.id())),
-                        arg("state", Replies.text("store.state." + state(mob))),
+                        arg("state", Replies.text(sender, "store.state." + state(mob))),
                         arg("description", text(sender, entry.mobPackage().descriptions(), "")));
             }
         });

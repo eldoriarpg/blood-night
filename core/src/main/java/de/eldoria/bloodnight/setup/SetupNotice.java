@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.setup;
 
-import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.announce.Texts;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +36,6 @@ public final class SetupNotice implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (done.getAsBoolean() || !player.hasPermission(PERMISSION)) return;
-        player.sendMessage(Messages.message(PENDING));
+        Texts.sender().sendMessage(player, PENDING);
     }
 }

@@ -9,17 +9,20 @@ import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
+import de.eldoria.bloodnight.web.api.Language;
 import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Builds the plugin's own store at build time: the mobs of {@link DefaultMobs}, each joined with its hand-written
@@ -29,7 +32,9 @@ import java.util.TreeMap;
  * {@link PackTexts}).
  */
 public final class StoreGenerator {
-    private static final Map<String, String> PACK_LANGUAGES = Map.of("en", "en_us", "de", "de_de");
+    private static final Map<String, String> PACK_LANGUAGES = Arrays.stream(Language.values())
+            .collect(Collectors.toMap(
+                    Language::language, Language::minecraft, (first, second) -> first, LinkedHashMap::new));
 
     private StoreGenerator() {}
 

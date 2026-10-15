@@ -485,6 +485,7 @@ export default {
                 PLAY_BOSS_MUSIC: 'Bossmusik spielen',
                 CREATE_WORLD_FOG: 'Weltnebel erzeugen',
             },
+            Language: {en_US: 'English', de_DE: 'Deutsch', es_ES: 'Español', fr_FR: 'Français', ms_MY: 'Bahasa Melayu', tr_TR: 'Türkçe', zh_CN: '简体中文'},
             LengthMode: {NORMAL: 'Normal', EXTENDED: 'Verlängert', RANGE: 'Innerhalb einer Spanne'},
             Method: {CHAT: 'Chat', TITLE: 'Titel', SUBTITLE: 'Untertitel', ACTION_BAR: 'Aktionsleiste'},
             NightEnd: {REMOVE: 'Entfernen', KEEP: 'So behalten', REVERT: 'Zum normalen Mob machen'},

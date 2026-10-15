@@ -57,16 +57,17 @@ final class NightCommand {
                 sender,
                 plugin.bloodNights().running(world).isPresent() ? "night.running" : "night.not_running",
                 arg("world", world.getName()),
-                arg("selection", selection(world)));
+                arg("selection", selection(sender, world)));
         Replies.send(
                 sender,
                 "night.coming",
                 arg("night", coming),
                 arg("probability", plugin.selector().probability(world, coming)));
-        sender.sendMessage(plugin.selector()
+        plugin.selector()
                 .next(world, HORIZON)
-                .map(prediction -> describe(coming, prediction))
-                .orElseGet(() -> Replies.text("night.none", arg("nights", HORIZON))));
+                .ifPresentOrElse(
+                        prediction -> tellNext(sender, coming, prediction),
+                        () -> Replies.send(sender, "night.none", arg("nights", HORIZON)));
     }
 
     @Executes("force")
@@ -107,7 +108,7 @@ final class NightCommand {
         });
     }
 
-    private Component selection(World world) {
+    private Component selection(CommandSender sender, World world) {
         var settings = plugin.configuration().worldConfig(world).nightSettings();
         if (!world.isFixedTime()) {
             return Component.text(plugin.configuration()
@@ -117,15 +118,20 @@ final class NightCommand {
                     .name());
         }
         return Replies.text(
+                sender,
                 "night.timed",
                 arg("every", settings.timed().everyMinutes()),
                 arg("length", settings.timed().lengthMinutes()));
     }
 
-    private static Component describe(long coming, Prediction prediction) {
-        if (prediction.ticksUntil() == 0) return Replies.text("night.now");
+    private static void tellNext(CommandSender sender, long coming, Prediction prediction) {
+        if (prediction.ticksUntil() == 0) {
+            Replies.send(sender, "night.now");
+            return;
+        }
         long nights = prediction.night() - coming;
-        return Replies.text(
+        Replies.send(
+                sender,
                 prediction.forced() ? "night.next_forced" : "night.next",
                 arg("night", prediction.night()),
                 arg("after", nights),

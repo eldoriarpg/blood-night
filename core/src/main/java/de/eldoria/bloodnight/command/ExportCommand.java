@@ -47,7 +47,7 @@ final class ExportCommand {
             Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(plugin.catalog()));
             Replies.send(sender, "export.written", arg("directory", directory));
         } catch (IOException e) {
-            Replies.send(sender, "export.failed", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "export.failed", arg("reason", String.valueOf(e.getMessage())));
         }
     }
 }

@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Giftiger Creeper",
-    "en" : "Toxic Creeper"
+    "en" : "Toxic Creeper",
+    "es" : "Creeper tóxico",
+    "fr" : "Creeper toxique",
+    "ms" : "Creeper Toksik",
+    "tr" : "Zehirli Creeper",
+    "zh" : "剧毒苦力怕"
   },
   "descriptions" : {
     "de" : "Hinterlässt beim Laufen kleine Giftwolken und eine starke Giftwolke, wenn er explodiert.",
-    "en" : "Leaves small poison clouds as it walks and a strong poison cloud when it explodes."
+    "en" : "Leaves small poison clouds as it walks and a strong poison cloud when it explodes.",
+    "es" : "Deja pequeñas nubes venenosas al caminar y una nube venenosa fuerte al explotar.",
+    "fr" : "Laisse de petits nuages de poison en marchant et un puissant nuage de poison quand il explose.",
+    "ms" : "Meninggalkan awan racun kecil semasa berjalan dan awan racun yang kuat apabila ia meletup.",
+    "tr" : "Yürürken küçük zehir bulutları, patlayınca güçlü bir zehir bulutu bırakır.",
+    "zh" : "行走时留下小团毒云，爆炸时留下一团强力毒云。"
   },
   "requires" : [ ],
   "mob" : {

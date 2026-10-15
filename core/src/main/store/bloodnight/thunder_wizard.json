@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Thunder Wizard",
-    "de": "Donnermagier"
+    "de": "Donnermagier",
+    "es": "Mago del trueno",
+    "fr": "Sorcier du tonnerre",
+    "ms": "Ahli Sihir Guruh",
+    "tr": "Gök Gürültüsü Büyücüsü",
+    "zh": "雷电巫师"
   },
   "descriptions": {
     "en": "Marks where you stand with a red ring three times in a row. When a ring is full, lightning strikes there: keep moving.",
-    "de": "Markiert dreimal hintereinander, wo du stehst, mit einem roten Ring. Ist ein Ring voll, schlägt dort ein Blitz ein: Bleib in Bewegung."
+    "de": "Markiert dreimal hintereinander, wo du stehst, mit einem roten Ring. Ist ein Ring voll, schlägt dort ein Blitz ein: Bleib in Bewegung.",
+    "es": "Marca donde estás con un anillo rojo tres veces seguidas. Cuando un anillo se llena, cae un rayo allí: no dejes de moverte.",
+    "fr": "Marque l'endroit où tu te tiens d'un anneau rouge, trois fois de suite. Quand un anneau est plein, la foudre y tombe : reste en mouvement.",
+    "ms": "Menandakan tempat anda berdiri dengan gelang merah tiga kali berturut-turut. Apabila gelang itu penuh, petir menyambar di situ: terus bergerak.",
+    "tr": "Durduğun yeri üst üste üç kez kırmızı bir halkayla işaretler. Halka dolunca oraya yıldırım düşer: hareket etmeye devam et.",
+    "zh": "连续三次用红圈标记你所站的位置。红圈填满时，闪电会劈在那里：保持移动。"
   },
   "requires": []
 }

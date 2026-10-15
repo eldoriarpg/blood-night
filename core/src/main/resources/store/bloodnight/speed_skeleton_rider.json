@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Flinker Skelettreiter",
-    "en" : "Speed Skeleton Rider"
+    "en" : "Speed Skeleton Rider",
+    "es" : "Jinete esqueleto veloz",
+    "fr" : "Cavalier squelette rapide",
+    "ms" : "Penunggang Rangka Laju",
+    "tr" : "Hızlı İskelet Binicisi",
+    "zh" : "疾速骷髅骑士"
   },
   "descriptions" : {
     "de" : "Eine schnelle Spinne mit einem Skelett auf dem Rücken. Kommst du nah, springt sie weg, damit das Skelett schießen kann.",
-    "en" : "A fast spider with a skeleton on its back. When you get close, it leaps away so the skeleton can shoot."
+    "en" : "A fast spider with a skeleton on its back. When you get close, it leaps away so the skeleton can shoot.",
+    "es" : "Una araña rápida con un esqueleto a la espalda. Cuando te acercas, se aleja de un salto para que el esqueleto pueda disparar.",
+    "fr" : "Une araignée rapide avec un squelette sur le dos. Quand tu t'approches, elle s'éloigne d'un bond pour que le squelette puisse tirer.",
+    "ms" : "Labah-labah laju dengan rangka di belakangnya. Apabila anda menghampiri, ia melompat menjauh supaya rangka itu boleh menembak.",
+    "tr" : "Sırtında bir iskelet taşıyan hızlı bir örümcek. Yaklaşınca iskelet ateş edebilsin diye uzağa sıçrar.",
+    "zh" : "背上驮着骷髅的快速蜘蛛。你靠近时，它会跳开，让骷髅射击。"
   },
   "requires" : [ ],
   "mob" : {

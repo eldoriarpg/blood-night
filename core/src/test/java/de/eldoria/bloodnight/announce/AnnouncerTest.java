@@ -16,7 +16,7 @@ import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.World;
 import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,6 +63,7 @@ class AnnouncerTest {
                 selector, candidate -> candidate.equals(world), server.getPluginManager(), Logger.getLogger("test"));
         reach("SERVER");
         var plugin = MockBukkit.createMockPlugin();
+        Texts.create(plugin, "<dark_red>[BN]</dark_red>", "en_US");
         announcer = new Announcer(
                 server,
                 nights,
@@ -100,21 +100,16 @@ class AnnouncerTest {
         return player;
     }
 
-    private static String key(Component component) {
+    private static String plain(Component component) {
         assertNotNull(component);
-        TranslatableComponent translatable = assertInstanceOf(
-                TranslatableComponent.class,
-                component.children().isEmpty()
-                        ? component
-                        : component.children().getLast());
-        return translatable.key();
+        return PlainTextComponentSerializer.plainText().serialize(component);
     }
 
     @Test
     void beginAndEndAreAnnouncedWithBarEffectAndSounds() {
         PlayerMock player = player(world);
         at(13_000);
-        assertEquals(NightKind.NIGHT.key("begin"), key(player.nextComponentMessage()));
+        assertEquals("[BN] A blood night has begun in world.", plain(player.nextComponentMessage()));
         assertTrue(player.activeBossBars().iterator().hasNext());
         assertNotNull(player.getPotionEffect(PotionEffectType.DARKNESS));
         assertFalse(player.getHeardSounds().isEmpty());
@@ -122,7 +117,7 @@ class AnnouncerTest {
         assertEquals(0.5f, player.activeBossBars().iterator().next().progress());
         player.removePotionEffect(PotionEffectType.DARKNESS);
         at(23_000);
-        assertEquals(NightKind.NIGHT.key("end"), key(player.nextComponentMessage()));
+        assertEquals("[BN] The blood night in world is over.", plain(player.nextComponentMessage()));
         assertFalse(player.activeBossBars().iterator().hasNext());
         assertNotNull(player.getPotionEffect(PotionEffectType.DARKNESS));
     }
@@ -133,7 +128,7 @@ class AnnouncerTest {
         PlayerMock inside = player(world);
         PlayerMock outside = player(other);
         at(13_000);
-        assertEquals(NightKind.NIGHT.key("begin"), key(inside.nextComponentMessage()));
+        assertEquals("[BN] A blood night has begun in world.", plain(inside.nextComponentMessage()));
         assertNull(outside.nextComponentMessage());
         assertFalse(outside.activeBossBars().iterator().hasNext());
     }
@@ -144,10 +139,10 @@ class AnnouncerTest {
         PlayerMock player = player(other);
         at(13_000);
         player.teleport(world.getSpawnLocation());
-        assertEquals(NightKind.NIGHT.key("joined"), key(player.nextActionBar()));
+        assertEquals("You entered a world with a running blood night.", plain(player.nextActionBar()));
         assertTrue(player.activeBossBars().iterator().hasNext());
         player.teleport(other.getSpawnLocation());
-        assertEquals(NightKind.NIGHT.key("left"), key(player.nextActionBar()));
+        assertEquals("You left the world with the running blood night.", plain(player.nextActionBar()));
         assertFalse(player.activeBossBars().iterator().hasNext());
     }
 

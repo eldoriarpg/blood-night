@@ -2,11 +2,21 @@
   "pack": "newer",
   "names": {
     "en": "Swarm Silverfish",
-    "de": "Schwarm-Silberfischchen"
+    "de": "Schwarm-Silberfischchen",
+    "es": "Lepisma de enjambre",
+    "fr": "Poisson d'argent d'essaim",
+    "ms": "Kawanan Ikan Perak",
+    "tr": "Sürü Gümüşçünü",
+    "zh": "蜂拥蠹虫"
   },
   "descriptions": {
     "en": "Fast. When you hit it, every silverfish nearby comes for you.",
-    "de": "Schnell. Wenn du es triffst, kommen alle Silberfischchen in der Nähe zu dir."
+    "de": "Schnell. Wenn du es triffst, kommen alle Silberfischchen in der Nähe zu dir.",
+    "es": "Rápida. Cuando la golpeas, todas las lepismas cercanas van a por ti.",
+    "fr": "Rapide. Quand tu le frappes, tous les poissons d'argent proches viennent vers toi.",
+    "ms": "Laju. Apabila anda memukulnya, setiap ikan perak berdekatan datang menyerang anda.",
+    "tr": "Hızlıdır. Ona vurunca yakındaki bütün gümüşçünler sana gelir.",
+    "zh": "速度快。击中它后，附近所有蠹虫都会冲向你。"
   },
   "requires": []
 }

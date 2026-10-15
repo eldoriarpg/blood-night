@@ -63,7 +63,7 @@ final class ItemCommand {
         plugin.configuration().replaceItems(items);
         Component copyable = Component.text(id, NamedTextColor.GOLD)
                 .clickEvent(ClickEvent.copyToClipboard(id))
-                .hoverEvent(Replies.text("item.copy"));
+                .hoverEvent(Replies.text(sender, "item.copy"));
         Replies.send(sender, "item.registered", arg("id", copyable));
     }
 

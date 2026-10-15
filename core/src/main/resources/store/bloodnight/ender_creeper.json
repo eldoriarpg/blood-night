@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Ender-Creeper",
-    "en" : "Ender Creeper"
+    "en" : "Ender Creeper",
+    "es" : "Creeper de Ender",
+    "fr" : "Creeper de l'Ender",
+    "ms" : "Creeper Ender",
+    "tr" : "Ender Creeper",
+    "zh" : "末影苦力怕"
   },
   "descriptions" : {
     "de" : "Teleportiert sich zu dir, wenn du weit weg bist. Eine lila Säule zeigt eine Sekunde vorher, wo.",
-    "en" : "Teleports close to you when you are far away. A purple pillar shows where, a second before."
+    "en" : "Teleports close to you when you are far away. A purple pillar shows where, a second before.",
+    "es" : "Se teletransporta cerca de ti cuando estás lejos. Un pilar morado muestra dónde, un segundo antes.",
+    "fr" : "Se téléporte près de toi quand tu es loin. Un pilier violet montre où, une seconde avant.",
+    "ms" : "Berteleport dekat dengan anda apabila anda jauh. Satu tiang ungu menunjukkan tempatnya, sesaat sebelumnya.",
+    "tr" : "Uzaktaysan yanına ışınlanır. Bir saniye önce mor bir sütun nereye geleceğini gösterir.",
+    "zh" : "你离得远时，它会传送到你身边。传送前一秒，一道紫色光柱会显示它的落点。"
   },
   "requires" : [ ],
   "mob" : {

@@ -4,11 +4,21 @@
   "pack" : "newer",
   "names" : {
     "de" : "Meuchelspinne",
-    "en" : "Assassin Spider"
+    "en" : "Assassin Spider",
+    "es" : "Araña asesina",
+    "fr" : "Araignée assassine",
+    "ms" : "Labah-labah Pembunuh",
+    "tr" : "Suikastçı Örümcek",
+    "zh" : "刺客蜘蛛"
   },
   "descriptions" : {
     "de" : "Springt dich aus bis zu 16 Blöcken Entfernung an, auch hoch in Bäume. Unter dir springt es erst zurück, um von der Seite anzuspringen. Nimmt keinen Fallschaden.",
-    "en" : "Leaps onto you from up to 16 blocks away, even up into trees. Below you, it hops back first to leap from the side. Takes no fall damage."
+    "en" : "Leaps onto you from up to 16 blocks away, even up into trees. Below you, it hops back first to leap from the side. Takes no fall damage.",
+    "es" : "Salta sobre ti desde hasta 16 bloques de distancia, incluso hasta lo alto de los árboles. Si está debajo de ti, primero salta hacia atrás para atacarte de lado. No recibe daño por caída.",
+    "fr" : "Te saute dessus jusqu'à 16 blocs de distance, même en haut des arbres. Quand tu es au-dessus d'elle, elle recule d'abord pour bondir de côté. Ne subit pas de dégâts de chute.",
+    "ms" : "Menerkam anda dari jarak sehingga 16 blok, malah sehingga ke atas pokok. Jika anda berada di bawahnya, ia melompat ke belakang dahulu untuk menerkam dari sisi. Tidak menerima kerosakan jatuh.",
+    "tr" : "16 bloğa kadar uzaktan, ağaçların üstüne bile, üzerine atlar. Senin altındaysa önce geri sıçrar ve yandan atlar. Düşme hasarı almaz.",
+    "zh" : "从最远 16 格外扑向你，甚至能扑上树。你在它上方时，它会先后跳，再从侧面扑过来。不受摔落伤害。"
   },
   "requires" : [ ],
   "mob" : {

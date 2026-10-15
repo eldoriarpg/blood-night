@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Fire Phantom",
-    "de": "Feuerphantom"
+    "de": "Feuerphantom",
+    "es": "Phantom de fuego",
+    "fr": "Phantom de feu",
+    "ms": "Fantom Api",
+    "tr": "Ateş Fantomu",
+    "zh": "火焰幻翼"
   },
   "descriptions": {
     "en": "Carries a blaze and drops a small fireball on you every 6 seconds.",
-    "de": "Trägt eine Lohe und lässt alle 6 Sekunden einen kleinen Feuerball auf dich fallen."
+    "de": "Trägt eine Lohe und lässt alle 6 Sekunden einen kleinen Feuerball auf dich fallen.",
+    "es": "Lleva un blaze y te suelta una pequeña bola de fuego cada 6 segundos.",
+    "fr": "Porte un blaze et te lâche une petite boule de feu dessus toutes les 6 secondes.",
+    "ms": "Membawa blaze dan menjatuhkan bebola api kecil ke atas anda setiap 6 saat.",
+    "tr": "Bir blaze taşır ve her 6 saniyede bir üstüne küçük bir ateş topu bırakır.",
+    "zh": "带着一只烈焰人，每 6 秒向你投下一个小火球。"
   },
   "requires": []
 }

@@ -4,11 +4,21 @@
   "pack" : "classic",
   "names" : {
     "de" : "Nervöser geladener Creeper",
-    "en" : "Nervous Powered Creeper"
+    "en" : "Nervous Powered Creeper",
+    "es" : "Creeper cargado nervioso",
+    "fr" : "Creeper chargé nerveux",
+    "ms" : "Creeper Bercas Gelisah",
+    "tr" : "Gergin Yüklü Creeper",
+    "zh" : "紧张的闪电苦力怕"
   },
   "descriptions" : {
     "de" : "Geladen, schnell und explodiert fast sofort.",
-    "en" : "Charged, fast and explodes almost at once."
+    "en" : "Charged, fast and explodes almost at once.",
+    "es" : "Cargado, rápido y explota casi al instante.",
+    "fr" : "Chargé, rapide, et explose presque aussitôt.",
+    "ms" : "Bercas, laju dan meletup hampir serta-merta.",
+    "tr" : "Yüklü, hızlı ve neredeyse anında patlar.",
+    "zh" : "带电、速度快，几乎立刻爆炸。"
   },
   "requires" : [ ],
   "mob" : {

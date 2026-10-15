@@ -118,6 +118,11 @@ export default defineNuxtConfig({
     locales: [
       {code: 'en', language: 'en', file: 'en.ts'},
       {code: 'de', language: 'de', file: 'de.ts'},
+      {code: 'es', language: 'es', file: 'es.ts'},
+      {code: 'fr', language: 'fr', file: 'fr.ts'},
+      {code: 'ms', language: 'ms', file: 'ms.ts'},
+      {code: 'tr', language: 'tr', file: 'tr.ts'},
+      {code: 'zh', language: 'zh-CN', file: 'zh.ts'},
     ],
   },
 

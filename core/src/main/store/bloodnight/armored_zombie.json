@@ -2,11 +2,21 @@
   "pack": "classic",
   "names": {
     "en": "Armored Zombie",
-    "de": "Gepanzerter Zombie"
+    "de": "Gepanzerter Zombie",
+    "es": "Zombi acorazado",
+    "fr": "Zombie blindé",
+    "ms": "Zombi Berperisai",
+    "tr": "Zırhlı Zombi",
+    "zh": "装甲僵尸"
   },
   "descriptions": {
     "en": "Wears full diamond armour. Your hits can knock pieces off. Without armour it gets faster.",
-    "de": "Trägt eine volle Diamantrüstung. Deine Schläge können Teile abschlagen. Ohne Rüstung wird es schneller."
+    "de": "Trägt eine volle Diamantrüstung. Deine Schläge können Teile abschlagen. Ohne Rüstung wird es schneller.",
+    "es": "Lleva una armadura completa de diamante. Tus golpes pueden arrancarle piezas. Sin armadura se vuelve más rápido.",
+    "fr": "Porte une armure complète en diamant. Tes coups peuvent en arracher des pièces. Sans armure, il devient plus rapide.",
+    "ms": "Memakai perisai berlian penuh. Pukulan anda boleh menanggalkan kepingannya. Tanpa perisai ia menjadi lebih laju.",
+    "tr": "Tam elmas zırh giyer. Vuruşların zırh parçalarını düşürebilir. Zırhı gidince hızlanır.",
+    "zh": "穿着全套钻石盔甲。你的攻击能打掉它的盔甲部件。没有盔甲后它会变快。"
   },
   "requires": []
 }

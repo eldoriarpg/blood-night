@@ -5,14 +5,16 @@
  */
 package de.eldoria.bloodnight.command;
 
-import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.announce.Texts;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.TranslatableComponent;
-import net.kyori.adventure.text.minimessage.translation.Argument;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.command.CommandSender;
 
 /**
- * Command replies, translated for each sender: texts under {@code bloodnight.command.} in the message bundles.
+ * Command replies in the sender's language, with the plugin's prefix: texts under {@code bloodnight.command.} in the
+ * message files.
  */
 final class Replies {
     private static final String PREFIX = "bloodnight.command.";
@@ -23,30 +25,30 @@ final class Replies {
      * Sends a reply.
      *
      * @param key       the text's key below {@code bloodnight.command.}, e.g. {@code reload.compiling}
-     * @param arguments the text's arguments, see {@link #arg}
+     * @param arguments the text's placeholders, see {@link #arg}
      */
-    static void send(CommandSender sender, String key, ComponentLike... arguments) {
-        sender.sendMessage(text(key, arguments));
+    static void send(CommandSender sender, String key, TagResolver... arguments) {
+        Texts.sender().sendMessage(sender, PREFIX + key, arguments);
     }
 
     /**
-     * @return a reply text, e.g. to put into another one
+     * @return a reply text in the receiver's language, without the prefix, e.g. to put into another one
      */
-    static TranslatableComponent text(String key, ComponentLike... arguments) {
-        return Messages.message(PREFIX + key, arguments);
+    static Component text(CommandSender receiver, String key, TagResolver... arguments) {
+        return Texts.render(receiver, PREFIX + key, arguments);
     }
 
     /**
-     * @return an argument filled in as plain text
+     * @return a placeholder filled in as plain text, never read as MiniMessage
      */
-    static ComponentLike arg(String name, Object value) {
-        return Argument.string(name, String.valueOf(value));
+    static TagResolver arg(String name, Object value) {
+        return Placeholder.unparsed(name, String.valueOf(value));
     }
 
     /**
-     * @return an argument filled in as a component
+     * @return a placeholder filled in as a component
      */
-    static ComponentLike arg(String name, ComponentLike value) {
-        return Argument.component(name, value);
+    static TagResolver arg(String name, ComponentLike value) {
+        return Placeholder.component(name, value);
     }
 }

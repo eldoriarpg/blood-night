@@ -5,31 +5,61 @@
     "id" : "classic",
     "names" : {
       "de" : "Klassisch",
-      "en" : "Classic"
+      "en" : "Classic",
+      "es" : "Clásico",
+      "fr" : "Classique",
+      "ms" : "Klasik",
+      "tr" : "Klasik",
+      "zh" : "经典"
     },
     "descriptions" : {
       "de" : "Die Mobs, die BloodNight schon immer hatte.",
-      "en" : "The mobs BloodNight always had."
+      "en" : "The mobs BloodNight always had.",
+      "es" : "Las criaturas que BloodNight siempre ha tenido.",
+      "fr" : "Les créatures que BloodNight a toujours eues.",
+      "ms" : "Mob yang sentiasa ada dalam BloodNight.",
+      "tr" : "BloodNight eklentisinde hep olan yaratıklar.",
+      "zh" : "BloodNight 一直以来的生物。"
     }
   }, {
     "id" : "newer",
     "names" : {
       "de" : "Neuere Mobs",
-      "en" : "Newer mobs"
+      "en" : "Newer mobs",
+      "es" : "Criaturas nuevas",
+      "fr" : "Créatures récentes",
+      "ms" : "Mob baharu",
+      "tr" : "Yeni yaratıklar",
+      "zh" : "较新的生物"
     },
     "descriptions" : {
       "de" : "Mobs für Böen, Sumpfskelette, Plünderer, Ertrunkene, Silberfischchen, eine springende Spinne und ein Phantom, das dich davonträgt.",
-      "en" : "Mobs for breezes, bogged, pillagers, drowned, silverfish, a leaping spider and a phantom that carries you off."
+      "en" : "Mobs for breezes, bogged, pillagers, drowned, silverfish, a leaping spider and a phantom that carries you off.",
+      "es" : "Criaturas para breezes, esqueletos pantanosos, saqueadores, ahogados, lepismas, una araña que salta y un phantom que te lleva por los aires.",
+      "fr" : "Des créatures pour les brises, les embourbés, les pillards, les noyés, les poissons d'argent, une araignée qui bondit et un phantom qui t'emporte.",
+      "ms" : "Mob untuk breeze, bogged, pillager, drowned, ikan perak, labah-labah yang menerkam dan fantom yang membawa anda pergi.",
+      "tr" : "Esintiler, bataklık iskeletleri, yağmacılar, boğulmuşlar ve gümüşçünler için yaratıklar, ayrıca atlayan bir örümcek ve seni alıp götüren bir fantom.",
+      "zh" : "旋风人、沼骸、掠夺者、溺尸、蠹虫的特殊生物，一只会扑人的蜘蛛，以及一只会把你带走的幻翼。"
     }
   }, {
     "id" : "end",
     "names" : {
       "de" : "Das Ende",
-      "en" : "The End"
+      "en" : "The End",
+      "es" : "El End",
+      "fr" : "L'End",
+      "ms" : "The End",
+      "tr" : "End",
+      "zh" : "末地"
     },
     "descriptions" : {
       "de" : "Endermen, die dich schleudern, bedrängen und sprengen, und der Blutdrache für Drachenkämpfe.",
-      "en" : "Endermen that launch, grab and blow you up, and the Blood Dragon for dragon fights."
+      "en" : "Endermen that launch, grab and blow you up, and the Blood Dragon for dragon fights.",
+      "es" : "Endermen que te lanzan, te agarran y te hacen volar por los aires, y el Dragón de Sangre para las luchas contra el dragón.",
+      "fr" : "Des Endermen qui te catapultent, t'attrapent et te font exploser, et le Dragon de sang pour les combats de dragon.",
+      "ms" : "Enderman yang melontar, menyambar dan meletupkan anda, dan Blood Dragon untuk pertarungan naga.",
+      "tr" : "Seni fırlatan, yakalayan ve havaya uçuran Endermanlar, ayrıca ejderha savaşları için Kan Ejderhası.",
+      "zh" : "会把你抛起、抓住和炸飞的末影人，以及用于龙战的血龙。"
     }
   } ],
   "entries" : [ "armored_zombie", "knight_zombie", "invisible_zombie", "speed_zombie", "invisible_skeleton", "magic_skeleton", "speed_creeper", "toxic_creeper", "unstable_creeper", "nervous_powered_creeper", "ender_creeper", "ghost_creeper", "fearful_enderman", "toxic_enderman", "fearful_phantom", "fire_phantom", "phantom_soul", "carrier_phantom", "fire_wizard", "thunder_wizard", "wither_wizard", "blaze_rider", "speed_skeleton_rider", "wither_skeleton_rider", "toxic_slime", "storm_breeze", "spore_bogged", "volley_pillager", "tide_drowned", "swarm_silverfish", "assassin_spider", "launcher_enderman", "grabber_enderman", "fuse_enderman", "blood_dragon" ]

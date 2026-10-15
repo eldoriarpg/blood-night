@@ -4,11 +4,21 @@
   "pack" : "end",
   "names" : {
     "de" : "Schleuder-Enderman",
-    "en" : "Launcher Enderman"
+    "en" : "Launcher Enderman",
+    "es" : "Enderman lanzador",
+    "fr" : "Enderman catapulteur",
+    "ms" : "Enderman Pelontar",
+    "tr" : "Fırlatıcı Enderman",
+    "zh" : "投掷末影人"
   },
   "descriptions" : {
     "de" : "Packt dich. Schleich innerhalb einer Sekunde, sonst trägt er dich bis zu 20 Blöcke in die Luft und lässt los.",
-    "en" : "Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go."
+    "en" : "Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go.",
+    "es" : "Te agarra. Agáchate en menos de un segundo o te subirá hasta 20 bloques por los aires y te soltará.",
+    "fr" : "T'attrape. Accroupis-toi en moins d'une seconde, sinon il t'emporte jusqu'à 20 blocs dans les airs et te lâche.",
+    "ms" : "Menyambar anda. Menyelinap dalam masa sesaat, atau ia membawa anda sehingga 20 blok ke udara dan melepaskan anda.",
+    "tr" : "Seni yakalar. Bir saniye içinde eğil, yoksa seni 20 bloğa kadar havaya taşır ve bırakır.",
+    "zh" : "抓住你。一秒内潜行，否则它会把你带到最高 20 格的空中然后松手。"
   },
   "requires" : [ ],
   "mob" : {

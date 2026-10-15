@@ -27,7 +27,9 @@ dependencies {
     api(project(":web-api"))
     api(project(":bukkit-nodes"))
     api(project(":graph-editor-payload"))
-    api(libs.bundles.eldoria.utilities)
+    api(libs.bundles.eldoria.utilities) {
+        exclude(group = "net.kyori")
+    }
     api(libs.bundles.jackson.full)
     api(libs.jackson.bukkit.paper)
     api(libs.ocular)

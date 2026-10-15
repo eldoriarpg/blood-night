@@ -14,7 +14,6 @@ import io.papermc.paper.registry.data.dialog.DialogBase;
 import io.papermc.paper.registry.data.dialog.body.DialogBody;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -27,7 +26,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -66,27 +64,27 @@ public final class IntroDialog implements Listener {
      * Shows the dialog in the player's language.
      */
     public static void show(Player player) {
-        player.showDialog(dialog(player.locale()));
+        player.showDialog(dialog(player));
     }
 
     /**
-     * @return the dialog with every text in the language
+     * @return the dialog with every text in the player's language
      */
-    static Dialog dialog(Locale locale) {
+    static Dialog dialog(Player player) {
         List<DialogBody> body = PARAGRAPHS.stream()
-                .map(paragraph -> (DialogBody) DialogBody.plainMessage(text(paragraph, locale)))
+                .map(paragraph -> (DialogBody) DialogBody.plainMessage(text(paragraph, player)))
                 .toList();
         return Dialog.create(factory -> factory.empty()
-                .base(DialogBase.builder(text("title", locale))
+                .base(DialogBase.builder(text("title", player))
                         .body(body)
                         .canCloseWithEscape(true)
                         .build())
                 .type(DialogType.notice(
-                        ActionButton.builder(text("ready", locale)).build())));
+                        ActionButton.builder(text("ready", player)).build())));
     }
 
-    private static Component text(String name, Locale locale) {
-        return GlobalTranslator.render(Messages.message("bloodnight.intro." + name), locale);
+    private static Component text(String name, Player player) {
+        return Texts.render(player, "bloodnight.intro." + name);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

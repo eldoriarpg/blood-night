@@ -57,7 +57,7 @@ final class ConvertCommand {
         try {
             result = convert(plugin);
         } catch (IOException | RuntimeException e) {
-            Replies.send(sender, "convert.failed", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "convert.failed", arg("reason", String.valueOf(e.getMessage())));
             return;
         }
         Replies.send(
@@ -83,7 +83,7 @@ final class ConvertCommand {
             Replies.send(sender, "convert.done", arg("backup", backup));
             ReloadCommand.reload(plugin, sender);
         } catch (IOException e) {
-            Replies.send(sender, "convert.failed", arg("error", String.valueOf(e.getMessage())));
+            Replies.send(sender, "convert.failed", arg("reason", String.valueOf(e.getMessage())));
         }
     }
 

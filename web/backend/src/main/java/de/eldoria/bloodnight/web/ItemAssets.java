@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.api.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.jackson.databind.JsonNode;
@@ -23,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,13 +40,13 @@ import java.util.zip.ZipFile;
 /**
  * Minecraft's item icons and names and its sounds per version, fetched from Mojang once and kept in a cache directory.
  * <p>
- * The first request for a version reads Mojang's version manifest, downloads that version's client jar and its German
- * language file (both checked against the sha1 Mojang publishes), extracts the items with {@link ItemAssetExtractor}
- * and writes {@code <cache>/<version>/items.json} and the icons below {@code textures/}, and the sounds of
- * {@code sounds.json} with {@link SoundAssetExtractor} into {@code sounds.json}; the sounds themselves are fetched
- * one by one when first played, into {@code sounds/}. The version's directory
- * appears in one move once complete. Requests arriving meanwhile wait for the same download. A failed download is
- * not remembered, so the next request tries again. Nothing from Mojang is stored outside the cache.
+ * The first request for a version reads Mojang's version manifest, downloads that version's client jar and the
+ * language files of every {@link Language} BloodNight ships (each checked against the sha1 Mojang publishes),
+ * extracts the items with {@link ItemAssetExtractor} and writes {@code <cache>/<version>/items.json} and the icons
+ * below {@code textures/}, and the sounds of {@code sounds.json} with {@link SoundAssetExtractor} into
+ * {@code sounds.json}; the sounds themselves are fetched one by one when first played, into {@code sounds/}. The
+ * version's directory appears in one move once complete. Requests arriving meanwhile wait for the same download. A
+ * failed download is not remembered, so the next request tries again. Nothing from Mojang is stored outside the cache.
  */
 final class ItemAssets {
     private static final Logger log = LoggerFactory.getLogger(ItemAssets.class);
@@ -54,7 +56,6 @@ final class ItemAssets {
     private static final Pattern HASH = Pattern.compile("[0-9a-f]{40}");
     private static final String SOUNDS = "sounds.json";
     private static final String SOUND_FILES = "sound-files.json";
-    private static final String GERMAN = "de_de";
     private final Path cache;
     private final HttpClient http;
     private final URI manifest;
@@ -224,11 +225,13 @@ final class ItemAssets {
         JsonNode index = EditorApp.MAPPER.readTree(verified(
                 URI.create(assetIndex.path("url").asString()),
                 assetIndex.path("sha1").asString()));
-        Map<String, Map<String, String>> languages = Map.of();
-        JsonNode german = index.path("objects").path("minecraft/lang/" + GERMAN + ".json");
-        if (german.path("hash").isString()) {
-            String hash = german.path("hash").asString();
-            languages = Map.of(GERMAN, ItemAssetExtractor.language(verified(resource(hash), hash)));
+        Map<String, Map<String, String>> languages = new HashMap<>();
+        for (Language language : Language.values()) {
+            if (language == Language.en_US) continue;
+            JsonNode file = index.path("objects").path("minecraft/lang/" + language.minecraft() + ".json");
+            if (!file.path("hash").isString()) continue;
+            String hash = file.path("hash").asString();
+            languages.put(language.minecraft(), ItemAssetExtractor.language(verified(resource(hash), hash)));
         }
         Files.createDirectories(cache);
         Path jar = Files.createTempFile(cache, "client", ".jar");

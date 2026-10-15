@@ -2,11 +2,21 @@
   "pack": "end",
   "names": {
     "en": "Fuse Enderman",
-    "de": "Zünder-Enderman"
+    "de": "Zünder-Enderman",
+    "es": "Enderman detonador",
+    "fr": "Enderman artificier",
+    "ms": "Enderman Sumbu",
+    "tr": "Fitil Enderman",
+    "zh": "引信末影人"
   },
   "descriptions": {
     "en": "Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks.",
-    "de": "Legt alle 6 Sekunden brennendes TNT neben dich. Es verletzt, zerstört aber keine Blöcke."
+    "de": "Legt alle 6 Sekunden brennendes TNT neben dich. Es verletzt, zerstört aber keine Blöcke.",
+    "es": "Deja dinamita encendida a tu lado cada 6 segundos. Hace daño, pero no rompe bloques.",
+    "fr": "Pose de la TNT allumée à côté de toi toutes les 6 secondes. Elle blesse, mais ne casse aucun bloc.",
+    "ms": "Meletakkan TNT yang menyala di sebelah anda setiap 6 saat. Ia mencederakan tetapi tidak memecahkan blok.",
+    "tr": "Her 6 saniyede bir yanına yanan bir TNT koyar. Canını yakar ama blok kırmaz.",
+    "zh": "每 6 秒在你身边放下点燃的 TNT。会造成伤害，但不会破坏方块。"
   },
   "requires": []
 }

@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.rules;
 
-import de.eldoria.bloodnight.announce.Messages;
+import de.eldoria.bloodnight.announce.Texts;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
@@ -32,6 +32,7 @@ import java.util.function.Function;
  */
 public final class CommandBlocker implements Listener {
     public static final String BYPASS = "bloodnight.bypass.commands";
+    static final String BLOCKED = "bloodnight.command.blocked";
     private final BloodNights nights;
     private final CommandMap commands;
     private final Function<World, List<String>> blocked;
@@ -59,7 +60,7 @@ public final class CommandBlocker implements Listener {
         if (!regions.allows(player.getLocation(), RegionFlag.BLOCKED_COMMANDS)) return;
         if (!isBlocked(event.getMessage(), blocked.apply(world))) return;
         event.setCancelled(true);
-        player.sendMessage(Messages.message(Messages.COMMAND_BLOCKED));
+        Texts.sender().sendMessage(player, BLOCKED);
     }
 
     /**
