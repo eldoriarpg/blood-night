@@ -5,14 +5,26 @@
  */
 package de.eldoria.bloodnight.configuration.elements;
 
+import dev.chojo.ocular.override.Env;
+import dev.chojo.ocular.override.Overwrite;
+import dev.chojo.ocular.override.Prop;
+
 /**
- * The BloodNight resource pack offered to players when they join: the red screen effect of blood nights. Players who
- * decline still get everything else.
+ * The BloodNight resource pack offered to players when they join: the red screen effect, red rain and red mist of
+ * blood nights, and the names of mobs, enchantments and advancements in the player's language. Players who decline
+ * still get everything else. The system property {@code bloodnight.resourcepack.url} or the environment variable
+ * {@code BLOODNIGHT_RESOURCEPACK_URL} replace the configured URL, e.g. for a local test server.
  */
 public class ResourcePackSettings {
     private boolean offer = true;
     private boolean mergeIntoPackPlugins = true;
+
+    @Overwrite(
+            prop = @Prop("bloodnight.resourcepack.url"),
+            env = @Env("BLOODNIGHT_RESOURCEPACK_URL"),
+            description = "Where the resource pack is downloaded from")
     private String url = "https://bloodnight.docs.eldoria.de/pack/bloodnight.zip";
+
     private boolean required = false;
     private String prompt = "<red>BloodNight would like to show its blood nights with a few extra effects.";
 

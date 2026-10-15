@@ -1,4 +1,16 @@
 {
+  "advancements.bloodnight.blood_dragon.description" : "Slay the Blood Dragon",
+  "advancements.bloodnight.blood_dragon.title" : "Dragon's Blood",
+  "advancements.bloodnight.collector.description" : "Kill every special mob of the store once",
+  "advancements.bloodnight.collector.title" : "Bestiary",
+  "advancements.bloodnight.night_ward.description" : "Wear armor with Night Ward V",
+  "advancements.bloodnight.night_ward.title" : "Warded",
+  "advancements.bloodnight.root.description" : "The sky turns red and the monsters grow strong",
+  "advancements.bloodnight.root.title" : "Blood Night",
+  "advancements.bloodnight.slayer.description" : "Kill 10 special mobs in one blood night",
+  "advancements.bloodnight.slayer.title" : "Night Slayer",
+  "advancements.bloodnight.survive.description" : "Live through a blood night",
+  "advancements.bloodnight.survive.title" : "Still Breathing",
   "bloodnight.mob.armored_zombie" : "Armored Zombie",
   "bloodnight.mob.assassin_spider" : "Assassin Spider",
   "bloodnight.mob.blaze_rider" : "Blaze Rider",
@@ -33,5 +45,15 @@
   "bloodnight.mob.unstable_creeper" : "Unstable Creeper",
   "bloodnight.mob.volley_pillager" : "Volley Pillager",
   "bloodnight.mob.wither_skeleton_rider" : "Wither Skeleton Rider",
-  "bloodnight.mob.wither_wizard" : "Wither Wizard"
+  "bloodnight.mob.wither_wizard" : "Wither Wizard",
+  "enchantment.bloodnight.blood_bane" : "Blood Bane",
+  "enchantment.bloodnight.blood_moon_curse" : "Curse of the Blood Moon",
+  "enchantment.bloodnight.blood_vision" : "Blood Vision",
+  "enchantment.bloodnight.blood_walker" : "Blood Walker",
+  "enchantment.bloodnight.bloodthirst" : "Bloodthirst",
+  "enchantment.bloodnight.dawnbringer" : "Dawnbringer",
+  "enchantment.bloodnight.hunters_mark" : "Hunter's Mark",
+  "enchantment.bloodnight.night_ward" : "Night Ward",
+  "enchantment.bloodnight.steady_heart" : "Steady Heart",
+  "item.bloodnight.blood_touched" : "Blood touched"
 }

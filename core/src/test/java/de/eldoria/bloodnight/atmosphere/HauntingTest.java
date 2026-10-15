@@ -10,10 +10,7 @@ import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Location;
 import org.bukkit.WeatherType;
 import org.bukkit.WorldBorder;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +29,8 @@ class HauntingTest extends AtmosphereTest {
     private Haunting haunting;
     private PlayerMock player;
     private boolean steady;
+    private int pulses;
+    private boolean dark;
 
     @BeforeEach
     void setUp() {
@@ -42,7 +41,11 @@ class HauntingTest extends AtmosphereTest {
                 new Tasks(plugin),
                 HauntingTest::border,
                 RegionRules.NONE,
-                ignored -> steady);
+                ignored -> steady,
+                (ignored, darken) -> {
+                    if (darken) pulses++;
+                    dark = darken;
+                });
         server.getPluginManager().registerEvents(haunting, plugin);
         player = new BorderedPlayer(server);
         server.addPlayer(player);
@@ -82,25 +85,23 @@ class HauntingTest extends AtmosphereTest {
     }
 
     @Test
-    void theClientIsToldWhenADarknessPulseIsOver() {
+    void aDarknessPulseBrightensAgainAfterTwoSeconds() {
         bloodNight();
-        BorderedPlayer bordered = (BorderedPlayer) player;
-        while (bordered.pulses == 0) haunting.tick();
-        assertTrue(bordered.dark);
+        while (pulses == 0) haunting.tick();
+        assertTrue(dark);
 
-        for (int i = 0; i < 40 / Haunting.STEP; i++) haunting.tick();
-        assertFalse(bordered.dark);
+        for (int i = 0; i < Haunting.PULSE_TICKS / Haunting.STEP; i++) haunting.tick();
+        assertFalse(dark);
     }
 
     @Test
     void leavingTheNightEndsARunningPulse() {
         bloodNight();
-        BorderedPlayer bordered = (BorderedPlayer) player;
-        while (bordered.pulses == 0) haunting.tick();
+        while (pulses == 0) haunting.tick();
 
         day();
         haunting.tick();
-        assertFalse(bordered.dark);
+        assertFalse(dark);
     }
 
     @Test
@@ -140,20 +141,6 @@ class HauntingTest extends AtmosphereTest {
      */
     private static final class BorderedPlayer extends PlayerMock {
         private @Nullable WorldBorder border;
-        private int pulses;
-        private boolean dark;
-
-        @Override
-        public void sendPotionEffectChange(LivingEntity entity, PotionEffect effect) {
-            if (!effect.getType().equals(PotionEffectType.DARKNESS)) return;
-            pulses++;
-            dark = true;
-        }
-
-        @Override
-        public void sendPotionEffectChangeRemove(LivingEntity entity, PotionEffectType type) {
-            if (type.equals(PotionEffectType.DARKNESS)) dark = false;
-        }
 
         private BorderedPlayer(ServerMock server) {
             super(server, "Haunted");

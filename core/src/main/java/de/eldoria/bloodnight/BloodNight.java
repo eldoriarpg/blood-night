@@ -402,7 +402,8 @@ public final class BloodNight extends JavaPlugin {
                 tasks,
                 getServer()::createWorldBorder,
                 regions,
-                player -> BloodEnchantments.wears(player, BloodEnchantments.STEADY_HEART));
+                player -> BloodEnchantments.wears(player, BloodEnchantments.STEADY_HEART),
+                announcer::darken);
         plugins.registerEvents(haunting, this);
         mergePack();
         bloodPack = new BloodPack(() -> configuration.main().resourcePack(), tasks, getLogger(), () -> !packTargets()

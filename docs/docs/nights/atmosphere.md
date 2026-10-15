@@ -68,7 +68,7 @@ particles instead.
 | Setting | What the player gets |
 |---|---|
 | `vignette` | The edge of the screen glows red. |
-| `darknessPulses` | Every minute or so the screen goes dark for a moment. |
+| `darknessPulses` | Every minute or so the world grows dark for a moment and slowly brightens again. This works through the blood night's [boss bar](announcements.md), so it needs the bar switched on. |
 | `rain` | It rains for them, even if the weather is clear. Off by default. |
 | `heartbeat` | They hear a heartbeat when a monster is within `heartbeatRange` blocks (30). Far away it is slow and faint. The closer the monster gets, the faster and louder it beats, up to its loudest within `heartbeatLoudestWithin` blocks (5). Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. Armor with [Night Ward](../mobs/drops-and-items.md#the-blood-night-reward) calms twice as much. |
 | `particles` | Ash and spores drift around them. Add or remove particles as you like. Only used with `worldParticles: false`. |
@@ -90,7 +90,12 @@ Every minute, each player has a chance of `chancePerMinute` percent to get one o
 ## The resource pack
 
 BloodNight offers players a small resource pack when they join. With it, the screen turns a little red during a blood
-night and the edges grow dark. Players can say no, and they still get everything else.
+night and the edges grow dark. Rain turns red during a blood night too, and patches of red mist drift slowly through
+the world. Players can say no, and they still get everything else.
+
+The red rain and the mist need the red sky (`sky: true`): the pack sees that the fog is blood red and only then
+colours the rain and draws the mist. For this it replaces a few of the game's shaders: the ones for blocks, mobs and
+particles. Shader mods such as Iris use their own shaders, so players with them see normal rain and no mist.
 
 The screen effect needs Minecraft 26.3 or newer on the server. On older servers it simply does not show.
 
@@ -107,7 +112,7 @@ resourcePack:
 | Key | What it does |
 |---|---|
 | `offer` | Whether players are asked to load the pack. |
-| `url` | Where the pack is downloaded from. The default always has the newest pack. |
+| `url` | Where the pack is downloaded from. The default always has the newest pack. The environment variable `BLOODNIGHT_RESOURCEPACK_URL` or the Java option `-Dbloodnight.resourcepack.url=...` win over the file. |
 | `required` | With `true`, players who say no can't play on the server. |
 | `prompt` | The message shown with the question. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html). |
 

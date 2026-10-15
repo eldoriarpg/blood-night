@@ -118,6 +118,9 @@ paper {
 }
 
 val devEditor = providers.environmentVariable("BLOODNIGHT_EDITOR_URL").orElse("http://localhost:8080").get()
+val devPack = providers.environmentVariable("BLOODNIGHT_RESOURCEPACK_URL")
+    .orElse("http://localhost:8765/bloodnight.zip")
+    .get()
 
 tasks {
     processResources {
@@ -158,7 +161,15 @@ tasks {
 
     runServer {
         minecraftVersion("26.3")
-        jvmArgs("-Dcom.mojang.eula.agree=true", "-Dbloodnight.editor.url=$devEditor")
+        jvmArgs(
+            "-Dcom.mojang.eula.agree=true",
+            "-Dbloodnight.editor.url=$devEditor",
+            "-Dbloodnight.resourcepack.url=$devPack")
+        downloadPlugins {
+            modrinth("essentialsx", "2.22.0")
+            modrinth("fastasyncworldedit", "2.16.1")
+            modrinth("worldguard", "7.0.19")
+        }
     }
 
     register<JavaExec>("generatePayloadSchema") {
@@ -174,5 +185,8 @@ tasks {
 runPaper.folia.registerTask {
     minecraftVersion("26.2")
     runDirectory = layout.projectDirectory.dir("run-folia")
-    jvmArgs("-Dcom.mojang.eula.agree=true", "-Dbloodnight.editor.url=$devEditor")
+    jvmArgs(
+        "-Dcom.mojang.eula.agree=true",
+        "-Dbloodnight.editor.url=$devEditor",
+        "-Dbloodnight.resourcepack.url=$devPack")
 }

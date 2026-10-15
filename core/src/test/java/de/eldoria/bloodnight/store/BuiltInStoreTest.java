@@ -38,7 +38,11 @@ class BuiltInStoreTest {
     @Test
     void theCommittedStoreIsCurrent() throws IOException {
         StoreGenerator.generate(
-                ROOT.resolve(StoreGeneratorCli.DESCRIPTIONS), out.resolve("store"), out.resolve("lang"));
+                ROOT.resolve(StoreGeneratorCli.DESCRIPTIONS),
+                out.resolve("store"),
+                out.resolve("lang"),
+                ROOT.resolve(StoreGeneratorCli.DATAPACK),
+                ROOT.resolve(StoreGeneratorCli.TEXTS));
 
         assertSame(out.resolve("store"), ROOT.resolve(StoreGeneratorCli.STORE));
         assertSame(out.resolve("lang"), ROOT.resolve(StoreGeneratorCli.LANG));
