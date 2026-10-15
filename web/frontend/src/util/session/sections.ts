@@ -18,9 +18,9 @@ const READ_ONLY: ReadonlySet<string> = new Set(['choices', 'hashes', 'catalog', 
 export const section = {
     mob: (id: string) => `mobs/${id}`,
     item: (id: string) => `items/${id}`,
+    lootTable: (id: string) => `lootTables/${id}`,
     macro: (id: string) => `macros/${id}`,
     main: 'settings/main',
-    globalDrops: 'settings/globalDrops',
     world: (uid: string) => `settings/worlds/${uid}`,
 }
 
@@ -54,10 +54,10 @@ function sectionAt(document: unknown, path: string[], operation: PatchOperation)
     if (READ_ONLY.has(root)) throw new PatchError(`${root} cannot be changed in the editor`)
     if (root === 'mobs') return second === undefined ? undefined : section.mob(second)
     if (root === 'items') return second === undefined ? undefined : section.item(second)
+    if (root === 'lootTables') return second === undefined ? undefined : section.lootTable(second)
     if (root === 'macros') return second === undefined ? undefined : section.macro(macroId(document, path, operation))
     if (root === 'settings') {
         if (second === 'main') return section.main
-        if (second === 'globalDrops') return section.globalDrops
         if (second === 'worlds') return third === undefined ? undefined : section.world(third)
         return undefined
     }

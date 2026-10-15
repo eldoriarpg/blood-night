@@ -32,7 +32,8 @@ BloodNight shares mobs in its own format. A store is a folder with an `index.jso
   "names": {"en": "Speed Zombie", "de": "Flinker Zombie"},
   "descriptions": {"en": "Very fast.", "de": "Sehr schnell."},
   "requires": [],
-  "mob": { "id": "speed_zombie", "attributes": { ... }, "behaviour": { ... } }
+  "mob": { "id": "speed_zombie", "attributes": { ... }, "behaviour": { ... }, "loot": { "tables": ["speed_zombie"] } },
+  "lootTables": { "speed_zombie": { "name": "Speed Zombie", "entries": [ ... ] } }
 }
 ```
 
@@ -40,6 +41,9 @@ BloodNight shares mobs in its own format. A store is a folder with an `index.jso
 - `names` and `descriptions` hold one text per language.
 - `requires` lists plugins the mob needs, like `MythicMobs`.
 - `mob` is the whole mob, as it would stand in `mobs.yml`. Its `id` is the same as the package's.
+- `lootTables` holds the [loot tables](../mobs/loot-tables.md) the mob gives itself, as they would stand in
+  `loot_tables.yml`. Installing the mob adds the ones the server does not have yet. A table the server already has
+  stays as it is, and updates never change tables.
 
 The easiest way to make one: build the mob in the web editor, then copy it from `mobs.yml`.
 

@@ -17,7 +17,9 @@ import type {Field} from '~/util/settings/schemaFields'
  *     <li>`mob`: a mob of the session, picked by name</li>
  *     <li>`mobMap`: values by mob, the mobs picked by name</li>
  *     <li>`worldMobs`: which mobs spawn in a world, and their weight there</li>
- *     <li>`dropWeights`: weights by number of drops</li>
+ *     <li>`dropWeights`: weights by number of drops, which a mob or world may leave to the next broader level</li>
+ *     <li>`lootTables`: the loot tables a mob, world or the server assigns, picked by name</li>
+ *     <li>`experience`: how experience changes, or left to the next broader level</li>
  *     <li>`gameRules`: game rule values by rule, the rules picked by name</li>
  *     <li>`miniMessage`: a MiniMessage text, with a preview</li>
  *     <li>`moonPhases`: a chance for every phase of the moon</li>
@@ -26,7 +28,7 @@ import type {Field} from '~/util/settings/schemaFields'
  *     <li>`mobName`: a mob's name per language with one style</li>
  * </ul>
  */
-export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName'
+export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'lootTables' | 'experience' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName'
 
 const PERCENT: ReadonlySet<string> = new Set(['chance', 'chancePerMinute', 'lightningChance', 'thunderChance', 'loseExperienceChance', 'loseInventoryChance', 'probability', 'spawnPercentage'])
 const MINI_MESSAGE: ReadonlySet<string> = new Set(['title', 'prompt', 'prefix', 'displayName'])
@@ -51,19 +53,31 @@ export function specialField(field: Field, parent: string | undefined): SpecialF
             return undefined
         case 'map':
             if (parent === 'moonPhase' && field.key === 'probabilities') return 'moonPhases'
-            if (field.key === 'weights') return 'dropWeights'
+            if (field.key === 'slots') return 'dropWeights'
             if (field.key === 'gameRules') return 'gameRules'
             if (parent === 'spawning' && field.key === 'mobs') return 'worldMobs'
             if (field.key === 'overrides') return 'mobMap'
             return undefined
+        case 'texts':
+            return field.key === 'tables' && (parent === 'loot' || parent === 'ordinary') ? 'lootTables' : undefined
         case 'group':
             if (field.definition === 'MobName') return 'mobName'
+            if (field.definition === 'Experience') return 'experience'
             return parent === 'nightSelection' && field.key === 'curve' ? 'curve' : undefined
         case 'any':
             return parent === 'phase' && field.key === 'probabilities' ? 'phaseCycle' : undefined
         default:
             return undefined
     }
+}
+
+/**
+ * @param path an object's JSON pointer, e.g. `/mobs/zombie/loot`
+ * @returns the key its fields' labels and help are looked up under: its own key, or `mobLoot` for a mob's loot, which
+ *     reads differently from a world's or the server's
+ */
+export function groupKey(path: string): string | undefined {
+    return /^\/mobs\/[^/]+\/loot$/.test(path) ? 'mobLoot' : path.split('/').at(-1)
 }
 
 /**

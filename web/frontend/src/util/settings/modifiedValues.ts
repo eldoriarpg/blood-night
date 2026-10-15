@@ -54,7 +54,6 @@ interface ShowRule {
 }
 
 const blank = (value: unknown): boolean => typeof value !== 'string' || value.trim() === ''
-const listed = (value: unknown, entry: string): boolean => Array.isArray(value) && value.includes(entry)
 
 /** The settings that only matter while others have certain values, see each class's documentation in the plugin. */
 const SHOW_RULES: readonly ShowRule[] = [
@@ -83,9 +82,7 @@ const SHOW_RULES: readonly ShowRule[] = [
     },
     {fields: ['url', 'required', 'prompt'], reads: ['offer'], shows: read => read('offer') !== false},
     {fields: ['markerKeys'], reads: ['wrap', 'rules'], shows: read => !(read('wrap') === true && read('rules') === true)},
-    {fields: ['weights'], reads: ['weightsScope', 'vanillaLoot'], shows: read => read('weightsScope') === 'MOB'},
-    {fields: ['dropList'], reads: ['dropTables', 'vanillaLoot'], shows: read => listed(read('dropTables'), 'MOB')},
-    {fields: ['xpModifier', 'xpValue'], reads: ['xpScope', 'vanillaLoot'], shows: read => read('xpScope') === 'MOB'},
+    {fields: ['replaceSame'], reads: ['inherit'], shows: read => read('inherit') !== false},
     {fields: ['minInterval', 'maxInterval'], reads: ['ambience'], shows: read => !Array.isArray(read('ambience')) || (read('ambience') as unknown[]).length > 0},
 ]
 

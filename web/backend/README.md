@@ -26,7 +26,7 @@ restored as a new revision. A revision is only written on top of the revision it
 retried on the newer state (up to ten times) instead of overwriting each other.
 
 The payload is divided into sections: `mobs/<id>`, `macros/<id>`, `items/<id>`, `settings/main`,
-`settings/globalDrops` and `settings/worlds/<uid>`. A change may only touch sections that are free or held by its
+`lootTables/<id>` and `settings/worlds/<uid>`. A change may only touch sections that are free or held by its
 sender; touching a free section takes it, and a section held by someone else answers `423 Locked`. A change above
 section level (the whole payload, or e.g. `/mobs` itself) needs every section free of others, which is why whole
 saves and restores do. The server's own parts (`choices`, `hashes`, `catalog` and the problem lists) cannot be changed.

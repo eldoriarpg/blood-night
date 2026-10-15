@@ -126,7 +126,7 @@ class ConfigurationTest {
     void installedMobsKeepTheirLogicThroughTheFile() {
         MobStore store = new MobStore(BuiltInStore.load());
         List<CustomMob> installed =
-                store.install(List.of(), BuiltInStore.CLASSIC).mobs();
+                store.install(List.of(), Set.of(), BuiltInStore.CLASSIC).mobs();
         new Configuration(plugin.getDataFolder().toPath(), getClass().getClassLoader()).replaceMobs(installed);
 
         Configuration reread =

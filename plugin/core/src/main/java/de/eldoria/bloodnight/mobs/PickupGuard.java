@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.configuration.elements.world.VanillaDrops;
+import de.eldoria.bloodnight.loot.OrdinaryLoot;
 import org.bukkit.World;
 import org.bukkit.entity.Enemy;
 import org.bukkit.event.EventHandler;
@@ -21,22 +21,22 @@ import java.util.function.Predicate;
  */
 public final class PickupGuard implements Listener {
     private final Predicate<World> bloodNight;
-    private final Function<World, VanillaDrops> drops;
+    private final Function<World, OrdinaryLoot> loot;
 
     /**
      * @param bloodNight whether a blood night runs in a world
-     * @param drops      the vanilla drop settings of a world
+     * @param loot       the ordinary enemy loot settings of a world
      */
-    public PickupGuard(Predicate<World> bloodNight, Function<World, VanillaDrops> drops) {
+    public PickupGuard(Predicate<World> bloodNight, Function<World, OrdinaryLoot> loot) {
         this.bloodNight = bloodNight;
-        this.drops = drops;
+        this.loot = loot;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Enemy)) return;
         World world = event.getEntity().getWorld();
-        VanillaDrops settings = drops.apply(world);
+        OrdinaryLoot settings = loot.apply(world);
         if (settings.lootMultiplier() > 1 && bloodNight.test(world)) event.setCancelled(true);
     }
 }

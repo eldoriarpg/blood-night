@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.configuration;
 
-import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.graph.model.Macro;
@@ -45,11 +45,11 @@ import java.util.stream.Stream;
 /**
  * All configuration files of the plugin.
  * <p>
- * Files holding what users wrote (mobs, items, macros) use strict keys: a file that cannot be read is never replaced
+ * Files holding what users wrote (mobs, items, macros, loot tables) use strict keys: a file that cannot be read is never replaced
  * by a default. It is reported in {@link #problems()}, treated as empty and left untouched until it reads again on a
  * later {@link #reload()}. Keys are reloaded one by one, so a broken file does not stop the others from reloading.
  * <p>
- * Settings files (the main configuration, global drops, worlds) are written back once read, so options added by a
+ * Settings files (the main configuration, worlds) are written back once read, so options added by a
  * newer version appear in existing files with their defaults. User data files are never written back.
  * <p>
  * Listeners read the configuration from every region thread on Folia. A file is read once and kept until the next
@@ -65,9 +65,9 @@ public class Configuration {
             .name("items")
             .strict()
             .build();
-    public static final Key<GlobalDrops> GLOBAL_DROPS = Key.builder(
-                    Path.of("global_drops.yml"), GlobalDrops::defaultDrops)
-            .name("Global Drops")
+    public static final Key<LootTables> LOOT_TABLES = Key.builder(Path.of("loot_tables.yml"), LootTables::new)
+            .name("loot tables")
+            .strict()
             .build();
     public static final Key<MacroFile> MACROS = Key.builder(Path.of("macros.yml"), MacroFile::new)
             .name("macros")
@@ -75,7 +75,7 @@ public class Configuration {
             .build();
     private static final Key<ConfigFile> MAIN =
             Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
-    private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS);
+    private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS, LOOT_TABLES);
 
     public static final String MISSING = "missing";
     private static final DateTimeFormatter BACKUP_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
@@ -146,7 +146,7 @@ public class Configuration {
     public synchronized Path backup() throws IOException {
         Path base = configurations.base();
         Path target = base.resolve("backups").resolve(BACKUP_TIME.format(LocalDateTime.now()));
-        for (String file : List.of("config.yml", "global_drops.yml", "mobs.yml", "items.yml", "macros.yml", "worlds")) {
+        for (String file : List.of("config.yml", "mobs.yml", "items.yml", "macros.yml", "loot_tables.yml", "worlds")) {
             Path source = base.resolve(file);
             if (!Files.exists(source)) continue;
             try (Stream<Path> files = Files.walk(source)) {
@@ -162,7 +162,7 @@ public class Configuration {
 
     /**
      * Hashes the files an editor session replaces, to tell later whether they changed: {@code config.yml},
-     * {@code global_drops.yml}, {@code mobs.yml}, {@code items.yml}, {@code macros.yml} and the files of the given
+     * {@code mobs.yml}, {@code items.yml}, {@code macros.yml}, {@code loot_tables.yml} and the files of the given
      * worlds.
      *
      * @param worlds the worlds whose settings are covered
@@ -171,7 +171,7 @@ public class Configuration {
     public synchronized Map<String, String> fileHashes(Collection<? extends World> worlds) throws IOException {
         Path base = configurations.base();
         List<String> files =
-                new ArrayList<>(List.of("config.yml", "global_drops.yml", "mobs.yml", "items.yml", "macros.yml"));
+                new ArrayList<>(List.of("config.yml", "mobs.yml", "items.yml", "macros.yml", "loot_tables.yml"));
         worlds.forEach(world -> files.add("worlds/" + world.getUID() + ".yml"));
         Map<String, String> hashes = new TreeMap<>();
         for (String file : files) {
@@ -220,10 +220,10 @@ public class Configuration {
     }
 
     /**
-     * Replaces the global drops and writes {@code global_drops.yml}.
+     * Replaces the loot tables and writes {@code loot_tables.yml}.
      */
-    public void replaceGlobalDrops(GlobalDrops drops) {
-        replace(GLOBAL_DROPS, drops);
+    public void replaceLootTables(LootTables tables) {
+        replace(LOOT_TABLES, tables);
     }
 
     /**
@@ -253,8 +253,8 @@ public class Configuration {
         return cached(MACROS, () -> userData(MACROS, MacroFile::new));
     }
 
-    public GlobalDrops globalDrops() {
-        return cached(GLOBAL_DROPS, () -> settings(GLOBAL_DROPS));
+    public LootTables lootTables() {
+        return cached(LOOT_TABLES, () -> userData(LOOT_TABLES, LootTables::new));
     }
 
     /**
@@ -266,7 +266,6 @@ public class Configuration {
         problems.clear();
         completed.clear();
         if (configurations.loaded(MAIN)) configurations.reload(MAIN);
-        if (configurations.loaded(GLOBAL_DROPS)) configurations.reload(GLOBAL_DROPS);
         worlds.stream().filter(configurations::loaded).forEach(configurations::reload);
         for (Key<?> key : USER_DATA) {
             if (!configurations.loaded(key)) continue;

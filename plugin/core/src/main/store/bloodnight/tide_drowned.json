@@ -18,5 +18,63 @@
     "tr": "Sen sudayken her 3 saniyede bir üç dişli mızrak fırlatır.",
     "zh": "你在水中时，每 3 秒扔出一把三叉戟。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "tide_drowned": {
+        "name": "Tide Drowned",
+        "entries": [
+          {
+            "item": "minecraft:prismarine_shard",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:prismarine_crystals",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:copper_ingot",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:nautilus_shell",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

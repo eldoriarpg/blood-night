@@ -7,6 +7,8 @@ package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
 import de.eldoria.bloodnight.api.event.SettingsChangeCause;
+import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
 import de.eldoria.bloodnight.store.MobStore;
@@ -85,8 +87,10 @@ final class StoreCommand {
                 Replies.send(sender, "store.unknown", arg("id", packOrEntry));
                 return;
             }
-            MobStore.Change change =
-                    store().install(plugin.configuration().mobs().all(), packOrEntry);
+            MobStore.Change change = store().install(
+                            plugin.configuration().mobs().all(),
+                            plugin.configuration().lootTables().tables().keySet(),
+                            packOrEntry);
             change.skipped().forEach(id -> Replies.send(sender, "store.taken", arg("id", id)));
             apply(sender, change, "store.installed");
         });
@@ -118,6 +122,12 @@ final class StoreCommand {
             return;
         }
         plugin.configuration().replaceMobs(change.mobs());
+        if (!change.tables().isEmpty()) {
+            Map<String, LootTable> tables =
+                    new HashMap<>(plugin.configuration().lootTables().tables());
+            tables.putAll(change.tables());
+            plugin.configuration().replaceLootTables(new LootTables(tables));
+        }
         Replies.send(sender, done, arg("mobs", String.join(", ", change.done())));
         ReloadCommand.reload(plugin, sender, SettingsChangeCause.STORE);
     }

@@ -8,8 +8,10 @@ package de.eldoria.bloodnight.editor;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.configuration.ConfigFile;
-import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.loot.LootAmount;
+import de.eldoria.bloodnight.loot.LootEntry;
+import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.Macro;
@@ -40,6 +42,13 @@ class EditorResultTest {
         CustomMob mob = Mobs.zombie(
                 "test",
                 Graph.builder().node("tick", NodeInstance.of("mob.tick")).build());
+        LootTable gems = new LootTable(
+                "Gems",
+                List.of(new LootEntry(
+                        "minecraft:diamond",
+                        2,
+                        new LootAmount(LootAmount.AmountMode.CHOICES, 1, 1, Map.of(2, 1, 5, 3)),
+                        true)));
         WorldSettings world = EditorPayload.MAPPER.readValue(
                 "{\"enabled\":false,\"nightSettings\":{\"begin\":12000}}", WorldSettings.class);
         EditorPayload payload = new EditorPayload(
@@ -47,12 +56,12 @@ class EditorResultTest {
                 Map.of("test", mob),
                 List.of(Macro.of("burst", Graph.builder().build())),
                 Map.of(),
+                Map.of("gems", gems),
                 Behaviours.empty().problems(),
                 Map.of(),
                 Map.of(),
                 new SettingsPayload(
                         new ConfigFile(),
-                        GlobalDrops.defaultDrops(),
                         Map.of("uid", new SettingsPayload.WorldPayload("world", "NORMAL", true, world))),
                 new EditorChoices(
                         "26.3",
@@ -78,6 +87,7 @@ class EditorResultTest {
         assertEquals(mob, result.mobs().get("test"));
         assertEquals(Map.of("mobs.yml", "abc"), result.hashes());
         assertEquals("burst", result.macros().getFirst().id());
+        assertEquals(Map.of("gems", gems), result.lootTables());
         WorldSettings back = result.settings().worlds().get("uid").settings();
         assertEquals(false, back.enabled());
         assertEquals(12000, back.nightSettings().begin());

@@ -315,19 +315,17 @@
         }
       }
     },
-    "mobDrops" : {
-      "weightsScope" : "GLOBAL",
-      "weights" : {
-        "1" : 90,
-        "2" : 50,
-        "3" : 10
+    "loot" : {
+      "tables" : [ "blood_dragon" ],
+      "slots" : {
+        "2" : 1,
+        "3" : 2,
+        "4" : 1
       },
-      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
-      "dropList" : [ ],
-      "xpScope" : "GLOBAL",
-      "xpModifier" : "MULTIPLY",
-      "xpValue" : 4.0,
-      "vanillaLoot" : "KEEP"
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null
     },
     "extension" : {
       "type" : "NONE",
@@ -356,6 +354,65 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    }
+  },
+  "lootTables" : {
+    "blood_dragon" : {
+      "name" : "Blood Dragon",
+      "entries" : [ {
+        "item" : "minecraft:diamond",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 5,
+          "choices" : { }
+        },
+        "repeatable" : false
+      }, {
+        "item" : "minecraft:emerald",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 4,
+          "max" : 10,
+          "choices" : { }
+        },
+        "repeatable" : false
+      }, {
+        "item" : "minecraft:experience_bottle",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "CHOICES",
+          "min" : 1,
+          "max" : 1,
+          "choices" : {
+            "8" : 3,
+            "16" : 1
+          }
+        },
+        "repeatable" : false
+      }, {
+        "item" : "minecraft:netherite_scrap",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 2,
+          "choices" : { }
+        },
+        "repeatable" : false
+      }, {
+        "item" : "minecraft:enchanted_golden_apple",
+        "weight" : 1,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false
+      } ]
     }
   }
 }

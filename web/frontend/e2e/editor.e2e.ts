@@ -115,6 +115,51 @@ test('an item takes a name and an enchantment', async ({page}) => {
     ])
 })
 
+/** Only a part a mob has no settings for offers to set it up; a filled part keeps its settings. */
+test('only unset parts of a mob offer to be set up', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    for (const part of ['Spawn rules', 'Equipment', 'Extension', 'Loot']) await page.getByRole('button', {name: part, exact: true}).click()
+
+    await expect(page.getByRole('button', {name: 'Set up'})).toHaveCount(1)
+    await page.getByRole('button', {name: 'Set up'}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes).toEqual([[{op: 'add', path: '/mobs/speed_creeper/equipment', value: {}}]])
+})
+
+/** A loot table is made by name, gets an item, shows its chances and rolls; its uses lead to where it is given. */
+test('a loot table is made, filled, previewed and followed to its uses', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Loot'}).click()
+    await expect(page.getByRole('heading', {name: 'Zombie scraps'})).toBeVisible()
+    await expect(page.getByRole('button', {name: 'World world'})).toBeVisible()
+
+    await page.getByRole('button', {name: 'New loot table'}).click()
+    const dialog = page.getByRole('dialog')
+    await dialog.getByLabel('Name').fill('Knight Gear')
+    await expect(dialog.getByText('Mobs, worlds and the server refer to it as knight_gear.')).toBeVisible()
+    await dialog.getByRole('button', {name: 'Create'}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/lootTables/knight_gear', value: {name: 'Knight Gear', entries: []}}])
+
+    await page.getByRole('button', {name: 'Add an item'}).click()
+    const picker = page.getByRole('dialog', {name: 'Add an item'})
+    await picker.getByLabel('Search by name, type, lore or enchantment').fill('golden axe')
+    await picker.getByLabel('Search by name, type, lore or enchantment').press('Enter')
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'add', path: '/lootTables/knight_gear/entries/-', value: {item: 'minecraft:golden_axe', weight: 10, amount: {mode: 'RANGE', min: 1, max: 1, choices: {}}, repeatable: false}}])
+
+    await expect(page.getByText('100 % of picks')).toBeVisible()
+    await page.getByRole('button', {name: 'Roll one pick'}).click()
+    await expect(page.getByText('1 × Golden Axe')).toBeVisible()
+
+    await page.getByRole('button', {name: 'Zombie scraps'}).click()
+    await page.getByRole('button', {name: 'World world'}).click()
+    await expect(page.locator('main').getByRole('tab', {name: 'Loot', selected: true})).toBeVisible()
+    await expect(page.locator('main').getByRole('button', {name: 'Zombie scraps', exact: true})).toBeVisible()
+})
+
 /** A new item is made from a material and gets its own section. */
 test('an item is created from a material', async ({page}) => {
     const stage = await stageEditor(page)
@@ -595,11 +640,14 @@ test('a mob is installed from the store', async ({page}) => {
     await page.getByRole('button', {name: 'Install', exact: true}).click()
 
     await expect.poll(() => stage.changes.length).toBe(1)
-    expect(stage.changes[0]).toEqual([expect.objectContaining({
-        op: 'add',
-        path: '/mobs/night_hound',
-        value: expect.objectContaining({origin: {store: 'bloodnight', entry: 'night_hound', hash: 'h1'}}),
-    })])
+    expect(stage.changes[0]).toEqual([
+        expect.objectContaining({
+            op: 'add',
+            path: '/mobs/night_hound',
+            value: expect.objectContaining({origin: {store: 'bloodnight', entry: 'night_hound', hash: 'h1'}}),
+        }),
+        {op: 'add', path: '/lootTables/night_hound', value: {name: 'Night Hound', entries: []}},
+    ])
     await expect(page.getByText('Installed')).toBeVisible()
 })
 
@@ -782,7 +830,7 @@ test.describe('settings an everyday user can fill in', () => {
         await expect(page.getByRole('listbox').getByRole('option')).toHaveText(['Blood Dragon'])
     })
 
-    test('effects, game rules and drop weights are picked by name', async ({page}) => {
+    test('effects, game rules and how many drop are picked by name', async ({page}) => {
         const stage = await stageEditor(page)
         await page.goto(stage.link)
         await page.getByRole('tab', {name: 'Settings'}).click()
@@ -797,17 +845,20 @@ test.describe('settings an everyday user can fill in', () => {
         await expect(page.getByText('Saved, revision 2')).toBeVisible()
         expect(stage.changes[1]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/nightRules/monsterSpawnLimit', value: 1}])
 
-        await page.locator('main').getByRole('tab', {name: 'Drops'}).click()
-        await expect(page.getByText('60 % of the time')).toBeVisible()
-        await page.getByRole('button', {name: 'Add a number of drops'}).click()
+        await page.locator('main').getByRole('tab', {name: 'Loot'}).click()
+        await expect(page.getByText('As the server').first()).toBeVisible()
+        await page.getByRole('button', {name: 'Set its own'}).first().click()
         await expect(page.getByText('Saved, revision 3')).toBeVisible()
-        expect(stage.changes[2]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/worldDrops/weights', value: {1: 90, 2: 50, 3: 10, 4: 10}}])
+        expect(stage.changes[2]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/loot/slots', value: {1: 1}}])
 
-        await page.getByRole('button', {name: 'Remove 2 drops'}).click()
+        await page.getByRole('button', {name: 'Add a number'}).first().click()
         await expect(page.getByText('Saved, revision 4')).toBeVisible()
-        await page.getByRole('button', {name: 'Add a number of drops'}).click()
+        expect(stage.changes[3]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/loot/slots', value: {0: 10, 1: 1}}])
+        await expect(page.getByText('Nothing')).toBeVisible()
+
+        await page.getByRole('button', {name: 'Use the broader setting'}).first().click()
         await expect(page.getByText('Saved, revision 5')).toBeVisible()
-        expect(stage.changes[4]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/worldDrops/weights', value: {1: 90, 2: 10, 3: 10, 4: 10}}])
+        expect(stage.changes[4]).toEqual([{op: 'remove', path: '/settings/worlds/w1/settings/loot/slots'}])
     })
 })
 

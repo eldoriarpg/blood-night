@@ -13,7 +13,7 @@ describe('editor areas', () => {
         expect(areaOf('items/abc')).toBe('ITEMS')
         expect(areaOf('settings/worlds/1234')).toBe('WORLDS')
         expect(areaOf('settings/main')).toBe('SERVER')
-        expect(areaOf('settings/globalDrops')).toBe('DROPS')
+        expect(areaOf('lootTables/gems')).toBe('LOOT')
         expect(areaOf('choices')).toBeNull()
     })
 

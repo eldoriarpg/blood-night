@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
 import de.eldoria.bloodnight.store.MobStore;
@@ -57,6 +58,7 @@ public record EditorStore(List<StorePack> packs, List<Offer> offers, Map<String,
      * @param requires     plugins it needs
      * @param hash         the hash of its logic; an installed mob with another origin hash is outdated
      * @param mob          the mob as it installs, with its origin
+     * @param lootTables   the loot tables the mob assigns, by id; installing adds those the session lacks
      */
     public record Offer(
             String id,
@@ -65,7 +67,8 @@ public record EditorStore(List<StorePack> packs, List<Offer> offers, Map<String,
             Map<String, String> descriptions,
             List<String> requires,
             String hash,
-            CustomMob mob) {
+            CustomMob mob,
+            Map<String, LootTable> lootTables) {
         static Offer of(StoreEntry entry, String store) {
             var mobPackage = entry.mobPackage();
             return new Offer(
@@ -75,7 +78,8 @@ public record EditorStore(List<StorePack> packs, List<Offer> offers, Map<String,
                     mobPackage.descriptions(),
                     mobPackage.requires(),
                     entry.hash(),
-                    entry.mob().withOrigin(new MobOrigin(store, entry.id(), entry.hash())));
+                    entry.mob().withOrigin(new MobOrigin(store, entry.id(), entry.hash())),
+                    mobPackage.lootTables());
         }
     }
 }

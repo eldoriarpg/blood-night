@@ -68,7 +68,7 @@ class MobSelectorTest {
                         ValueModifier.DEFAULT,
                         2),
                 zombie.behaviour(),
-                zombie.mobDrops(),
+                zombie.loot(),
                 zombie.extension(),
                 zombie.spawn());
         List<CustomMob> both = List.of(zombie, husk);

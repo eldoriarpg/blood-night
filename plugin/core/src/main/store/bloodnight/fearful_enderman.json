@@ -18,5 +18,41 @@
     "tr": "En yakındaki oyuncuya gelir. Her 12 saniyede bir çığlık atar: bir saniye içinde başka yere bak, yoksa kör olursun. Vuruşları da seni kör eder.",
     "zh": "冲向最近的玩家。每 12 秒尖叫一次：一秒内移开视线，否则你会失明。它的攻击也会让你失明。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "fearful_enderman": {
+        "name": "Fearful Enderman",
+        "entries": [
+          {
+            "item": "minecraft:ender_pearl",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:ender_eye",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

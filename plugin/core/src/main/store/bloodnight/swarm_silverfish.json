@@ -18,5 +18,40 @@
     "tr": "Hızlıdır. Ona vurunca yakındaki bütün gümüşçünler sana gelir.",
     "zh": "速度快。击中它后，附近所有蠹虫都会冲向你。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 4,
+      "1": 1
+    },
+    "tables": {
+      "swarm_silverfish": {
+        "name": "Swarm Silverfish",
+        "entries": [
+          {
+            "item": "minecraft:stone",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:iron_nugget",
+            "weight": 3,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

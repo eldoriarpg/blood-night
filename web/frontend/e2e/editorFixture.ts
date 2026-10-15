@@ -121,6 +121,7 @@ const payload = {
                 ignite: {type: 'creeper.ignite', editor: {x: 420, y: 0}},
             }},
             extension: {type: 'NONE'},
+            loot: {tables: ['zombie_scraps'], slots: {0: 1, 1: 3}, inherit: true, replaceSame: true, vanillaLoot: 'KEEP', experience: null},
             spawn: {weight: 10, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},
         },
         zz_dragon: {
@@ -153,6 +154,9 @@ const payload = {
         },
     },
     macros: [],
+    lootTables: {
+        zombie_scraps: {name: 'Zombie scraps', entries: [{item: 'minecraft:iron_helmet', weight: 10, amount: {mode: 'RANGE', min: 1, max: 1, choices: {}}, repeatable: false}]},
+    },
     items: {
         guard_helmet: {kind: 'REGISTERED', material: 'minecraft:iron_helmet', lore: ['<gray>Worn by the night watch'], enchantments: {'minecraft:protection': 2}},
     },
@@ -161,10 +165,12 @@ const payload = {
     macroProblems: {},
     configProblems: {},
     settings: {
-        main: {announcements: {prefix: '[BN] '}, resourcePack: {offer: true}, setup: {done: false}},
-        globalDrops: {},
+        main: {
+            announcements: {prefix: '[BN] '}, resourcePack: {offer: true}, setup: {done: false},
+            loot: {tables: [], slots: {1: 90, 2: 50, 3: 10}, ordinary: {tables: [], slots: {1: 1}}, experience: {modifier: 'MULTIPLY', value: 4}},
+        },
         worlds: {
-            w1: {name: 'world', environment: 'NORMAL', dayCycle: true, settings: {enabled: true, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM', moonPhase: {}, phase: {}}, mobSettings: {}, soundSettings: {}, nightRules: {}, worldDrops: {}, atmosphere: {sky: true, heartbeat: true}}},
+            w1: {name: 'world', environment: 'NORMAL', dayCycle: true, settings: {enabled: true, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM', moonPhase: {}, phase: {}}, mobSettings: {}, soundSettings: {}, nightRules: {}, loot: {tables: ['zombie_scraps'], slots: null, inherit: true, replaceSame: false, experience: null, rewardLoot: true, ordinary: {enabled: true, lootMultiplier: 2, tables: [], slots: null, xpModifier: 'MULTIPLY', xpValue: 2, excludedTypes: [], excludedReasons: []}}, atmosphere: {sky: true, heartbeat: true}}},
             w2: {name: 'world_nether', environment: 'NETHER', dayCycle: false, settings: {enabled: true, nightSettings: {begin: 12000, end: 22000}, nightSelection: {type: 'RANDOM'}, mobSettings: {spawning: {}}, atmosphere: {sky: true, heartbeat: true}}},
             w3: {name: 'world_the_end', environment: 'THE_END', dayCycle: false, settings: {enabled: false, nightSettings: {begin: 13000, end: 23000}, nightSelection: {type: 'RANDOM'}, mobSettings: {}, atmosphere: {sky: true, heartbeat: true}}},
         },
@@ -182,6 +188,7 @@ const payload = {
                 spawn: {weight: 10, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},
                 origin: {store: 'bloodnight', entry: 'night_hound', hash: 'h1'},
             },
+            lootTables: {night_hound: {name: 'Night Hound', entries: []}},
         }],
         states: {},
     },
@@ -218,7 +225,7 @@ export async function stageEditor(page: Page, holders: Record<string, string> = 
         },
     }
     await page.route(`**/api/v1/editor/sessions/${SESSION}`, route => route.fulfill({json: {
-        id: SESSION, state: 'EDITING', revision, lastApplied: null, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'DROPS'], expires: '2026-10-20T00:00:00Z',
+        id: SESSION, state: 'EDITING', revision, lastApplied: null, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'LOOT'], expires: '2026-10-20T00:00:00Z',
     }}))
     await page.route('**/api/v1/editor/catalogs/e2e', route => route.fulfill({json: catalog}))
     await page.route(`**/api/v1/editor/sessions/${SESSION}/locks`, route => route.fulfill({status: 204}))

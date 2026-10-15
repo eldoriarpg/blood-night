@@ -31,10 +31,10 @@ export function offerState(offer: Offer, payload: EditorPayload): OfferState {
 /**
  * @param offer a mob the store offers
  * @param payload the session's payload
- * @returns the operations installing it
+ * @returns the operations installing it, with the loot tables it brings that the session lacks
  */
 export function installOffer(offer: Offer, payload: EditorPayload): PatchOperation[] {
-    return addMob(payload, offer.mob)
+    return [...addMob(payload, offer.mob), ...addTables([offer], payload)]
 }
 
 /**
@@ -44,7 +44,27 @@ export function installOffer(offer: Offer, payload: EditorPayload): PatchOperati
  */
 export function installOffers(offers: readonly Offer[], payload: EditorPayload): PatchOperation[] {
     const head: PatchOperation[] = payload.mobs ? [] : [{op: 'add', path: '/mobs', value: {}}]
-    return [...head, ...offers.map(offer => ({op: 'add', path: pointer('mobs', offer.id), value: offer.mob}) as PatchOperation)]
+    return [
+        ...head,
+        ...offers.map(offer => ({op: 'add', path: pointer('mobs', offer.id), value: offer.mob}) as PatchOperation),
+        ...addTables(offers, payload),
+    ]
+}
+
+/**
+ * @returns the operations adding the loot tables the offers bring and the session has none of that id, each once;
+ *     a table the session has stays as it is
+ */
+function addTables(offers: readonly Offer[], payload: EditorPayload): PatchOperation[] {
+    const missing = new Map<string, unknown>()
+    for (const offer of offers) {
+        for (const [id, table] of Object.entries(offer.lootTables ?? {})) {
+            if (!payload.lootTables?.[id] && !missing.has(id)) missing.set(id, table)
+        }
+    }
+    if (missing.size === 0) return []
+    const head: PatchOperation[] = payload.lootTables ? [] : [{op: 'add', path: '/lootTables', value: {}}]
+    return [...head, ...[...missing].map(([id, table]) => ({op: 'add', path: pointer('lootTables', id), value: table}) as PatchOperation)]
 }
 
 /**

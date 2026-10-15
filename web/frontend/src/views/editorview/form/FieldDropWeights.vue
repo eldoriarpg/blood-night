@@ -8,22 +8,27 @@ import FieldLabel from '@/components/typography/FieldLabel.vue'
 import NumberInput from '@/components/input/number/NumberInput.vue'
 import MutedIconButton from '@/components/button/MutedIconButton.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
+import ButtonRow from '@/components/button/ButtonRow.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 
 /**
- * How many drops fall: a row per number of drops with its weight, and the chance that weight gives, so "1 drop: 90,
- * 2 drops: 50" reads as 64 % and 36 %. A row is added for the smallest number of drops not listed yet and removed with its button; a
- * weight is saved once it is left.
+ * How many loot table entries drop: a row per number with its weight, and the chance that weight gives, so "1 item:
+ * 90, 2 items: 50" reads as 64 % and 36 %, and "Nothing" leaves a kill without table loot. A row is added for the
+ * smallest number not listed yet and removed with its button; a weight is saved once it is left. Where a broader level
+ * can decide instead, a mob's or a world's, the field says whose count applies while it is unset, and can be set or
+ * handed back.
  */
 const props = defineProps<{
   label: string
-  value: Record<string, unknown> | undefined
+  value: Record<string, unknown> | null | undefined
   help?: string
   readOnly: boolean
+  /** Whose count applies while this one is unset, e.g. "As the world or the server"; none where it is always set. */
+  inherited?: string
 }>()
 
 const emit = defineEmits<{
-  save: [value: Record<string, number>]
+  save: [value: Record<string, number> | undefined]
 }>()
 
 const {t} = useI18n()
@@ -45,7 +50,7 @@ function save(): void {
 
 function add(): void {
   const taken = new Set(drafts.value.map(entry => entry.count))
-  let next = 1
+  let next = 0
   while (taken.has(next)) next++
   drafts.value.push({count: next, weight: 10})
   drafts.value.sort((a, b) => a.count - b.count)
@@ -56,20 +61,39 @@ function remove(index: number): void {
   drafts.value.splice(index, 1)
   save()
 }
+
+function own(): void {
+  drafts.value = [{count: 1, weight: 1}]
+  save()
+}
+
+const unset = computed(() => props.inherited !== undefined && (props.value === null || props.value === undefined))
+
+function countLabel(count: number): string {
+  if (count === 0) return t('editor.dropWeights.nothing')
+  return count === 1 ? t('editor.dropWeights.oneDrop') : t('editor.dropWeights.drops', {count})
+}
 </script>
 
 <template>
   <fieldset class="flex flex-col gap-2">
     <legend><FieldLabel>{{ label }}</FieldLabel></legend>
-    <div v-for="(entry, index) in drafts" :key="entry.count" class="flex items-center gap-3">
-      <span class="w-24 shrink-0 text-sm">{{ entry.count === 1 ? t('editor.dropWeights.oneDrop') : t('editor.dropWeights.drops', {count: entry.count}) }}</span>
-      <div class="w-28 shrink-0">
+    <div v-if="unset" class="flex items-center gap-3">
+      <span class="text-sm text-ink-muted">{{ inherited }}</span>
+      <SecondaryButton v-if="!readOnly" compact @click="own">{{ t('editor.dropWeights.own') }}</SecondaryButton>
+    </div>
+    <div v-for="(entry, index) in unset ? [] : drafts" :key="entry.count" class="flex items-center gap-3">
+      <span class="w-20 shrink-0 text-sm">{{ countLabel(entry.count) }}</span>
+      <div class="w-20 shrink-0">
         <NumberInput v-model="entry.weight" :aria-label="t('editor.dropWeights.weight', {count: entry.count})" :disabled="readOnly" @focusout="save"/>
       </div>
-      <span class="text-sm text-ink-muted">{{ t('editor.dropWeights.share', {percent: share(entry.weight)}) }}</span>
+      <span class="whitespace-nowrap text-sm text-ink-muted">{{ t('editor.dropWeights.share', {percent: share(entry.weight)}) }}</span>
       <MutedIconButton v-if="!readOnly" :label="t('editor.dropWeights.remove', {count: entry.count})" class="ml-auto" hover="error" icon="xmark" @click="remove(index)"/>
     </div>
     <MutedText v-if="help" size="sm" tag="p">{{ help }}</MutedText>
-    <div v-if="!readOnly"><SecondaryButton compact icon="plus" @click="add">{{ t('editor.dropWeights.add') }}</SecondaryButton></div>
+    <ButtonRow v-if="!readOnly && !unset">
+      <SecondaryButton compact icon="plus" @click="add">{{ t('editor.dropWeights.add') }}</SecondaryButton>
+      <SecondaryButton v-if="inherited !== undefined" compact @click="emit('save', undefined)">{{ t('editor.dropWeights.inherit') }}</SecondaryButton>
+    </ButtonRow>
   </fieldset>
 </template>

@@ -18,5 +18,63 @@
     "tr": "Okları her zaman bu sırayla yavaşlık, güçsüzlük, zehir ve mide bulantısı getirir. Üstündeki toz sıradakini gösterir.",
     "zh": "它的箭依次带来缓慢、虚弱、中毒和反胃，顺序总是如此。它身上的尘雾显示下一个效果。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "magic_skeleton": {
+        "name": "Magic Skeleton",
+        "entries": [
+          {
+            "item": "minecraft:bone",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:lapis_lazuli",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 6,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:amethyst_shard",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:experience_bottle",
+            "weight": 2,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

@@ -16,12 +16,14 @@ import SectionLabel from '@/components/typography/SectionLabel.vue'
 import SubHeader from '@/components/typography/SubHeader.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import SchemaForm from '~/views/editorview/form/SchemaForm.vue'
+import MobLootPreview from '~/views/editorview/loot/MobLootPreview.vue'
 import schema from '~/api/generated/payload.schema.json'
 import {fieldsOf, type SchemaDocument} from '~/util/settings/schemaFields'
 import type {WorkspaceEntry, WorkspaceKind} from '~/views/editorview/workspace/workspaceEntries'
 
 /**
- * The settings of the open mob (attributes, movement, spawn rules, equipment, extension, drops) or macro (name, description,
+ * The settings of the open mob (attributes, movement, spawn rules, equipment, extension, loot with a preview of what it
+ * drops) or macro (name, description,
  * category), and deleting it. Each part of a mob folds under its header and starts folded, so the sheet opens short;
  * which parts the reader opened is remembered by the browser, for every mob alike. A mob that is a MythicMobs mob
  * instead has no equipment or extension, since the plugin gives it neither. Inline, it fills a column of its own and
@@ -62,13 +64,13 @@ const mythic = computed(() => {
   return typeof type === 'string' && type.trim() !== ''
 })
 const parts = computed(() => props.kind === 'mobs'
-  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'mobDrops']
+  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'loot']
       .filter(key => !mythic.value || (key !== 'equipment' && key !== 'extension'))
       .map(key => ({key, fields: fieldsOf(document, definitionOf(key))}))
   : [{key: 'macro', fields: fieldsOf(document, 'Macro').filter(field => field.key !== 'id' && field.key !== 'body')}])
 
 function definitionOf(key: string): string {
-  return {attributes: 'Attributes', spawn: 'SpawnRules', equipment: 'Equipment', extension: 'Extension', mobDrops: 'MobDrops', movement: 'Movement'}[key] ?? key
+  return {attributes: 'Attributes', spawn: 'SpawnRules', equipment: 'Equipment', extension: 'Extension', loot: 'MobLoot', movement: 'Movement'}[key] ?? key
 }
 
 function partValue(key: string): Record<string, unknown> | undefined {
@@ -136,6 +138,7 @@ function remove(): void {
       <template v-if="part.key === 'macro' || opened.has(part.key)">
         <SchemaForm v-if="part.key === 'macro' || partValue(part.key)" :fields="part.fields" :path="partPath(part.key)" :read-only="readOnly" :value="partValue(part.key)"/>
         <div v-else-if="!readOnly" class="py-2"><SecondaryButton compact @click="create(part.key)">{{ t('editor.sheet.set') }}</SecondaryButton></div>
+        <MobLootPreview v-if="part.key === 'loot' && partValue(part.key)" :mob-id="entry.id"/>
       </template>
     </section>
     <div v-if="!readOnly" class="pt-2"><ErrorButton compact icon="trash" @click="confirming = true">{{ t(`editor.sheet.delete.${kind}`) }}</ErrorButton></div>

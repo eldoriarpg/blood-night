@@ -59,7 +59,7 @@ class MobOutfitterTest {
                         ValueModifier.DEFAULT,
                         1),
                 plain.behaviour(),
-                plain.mobDrops(),
+                plain.loot(),
                 new Extension(ExtensionType.RIDER, EntityType.SPIDER, null),
                 plain.spawn());
         LivingEntity zombie = (LivingEntity) world.spawnEntity(world.getSpawnLocation(), EntityType.ZOMBIE);

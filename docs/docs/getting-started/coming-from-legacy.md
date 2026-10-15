@@ -37,7 +37,7 @@ Did you already delete the old folder? Put a backup of it into `plugins/BloodNig
 | Night selection, with all six types and their values | `nightSelection` |
 | Night begin and end, skipping, length, commands | `nightSettings` |
 | Damage and health multipliers, phantoms, spawn chance, mob names | `mobSettings` |
-| Vanilla drops and experience | `worldDrops` |
+| Vanilla drops and experience | `loot.ordinary` and `loot.experience` in the world file |
 | Sounds | `soundSettings` |
 | Death actions | `deathActions` |
 
@@ -49,7 +49,9 @@ installed from there. In worlds where it was off, it gets the weight 0, so it do
 If a world had its own name, health or damage for a mob, that world keeps it as an
 [override](../mobs/custom-mobs.md#different-in-one-world).
 
-Drops become registered items. A mob's drops come from the first world that has some for it.
+Drops become registered items and [loot tables](../mobs/loot-tables.md). A world's drops become the table
+`legacy_<world name>`, a mob's drops the table `legacy_<mob id>`. The old drop amount becomes how many drop. A mob's
+drops come from the first world that has some for it.
 
 ## What is lost
 

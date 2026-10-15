@@ -13,9 +13,11 @@ import de.eldoria.bloodnight.configuration.elements.ResourcePackSettings;
 import de.eldoria.bloodnight.configuration.elements.SetupSettings;
 import de.eldoria.bloodnight.configuration.elements.StoreSettings;
 import de.eldoria.bloodnight.configuration.elements.UpdateSettings;
+import de.eldoria.bloodnight.loot.ServerLoot;
 
 /**
- * The server-wide settings in {@code config.yml}; everything about nights and mobs is set per world.
+ * The server-wide settings in {@code config.yml}; everything about nights and mobs is set per world, loot has a server
+ * level too.
  */
 public class ConfigFile {
     private Announcements announcements = new Announcements();
@@ -27,6 +29,7 @@ public class ConfigFile {
     private ForeignMobSettings foreignMobs = new ForeignMobSettings();
     private SetupSettings setup = new SetupSettings();
     private boolean advancements = true;
+    private ServerLoot loot = ServerLoot.defaults();
 
     /**
      * @return how blood nights are announced
@@ -80,6 +83,13 @@ public class ConfigFile {
     /**
      * @return whether the first-run setup was finished
      */
+    /**
+     * @return the server's loot: tables, how many drop and experience, where no world or mob says otherwise
+     */
+    public ServerLoot loot() {
+        return loot;
+    }
+
     public SetupSettings setup() {
         return setup;
     }

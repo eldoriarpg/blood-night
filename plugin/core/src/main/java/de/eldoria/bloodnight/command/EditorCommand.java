@@ -16,6 +16,7 @@ import de.eldoria.bloodnight.editor.EditorResult;
 import de.eldoria.bloodnight.editor.EditorSessionFile;
 import de.eldoria.bloodnight.editor.SettingsPayload;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
@@ -317,10 +318,10 @@ final class EditorCommand {
         plugin.configuration().replaceMobs(result.mobs().values());
         plugin.configuration().replaceMacros(result.macros());
         plugin.configuration().replaceItems(EditorItems.apply(items, result.items()));
+        plugin.configuration().replaceLootTables(new LootTables(result.lootTables()));
         SettingsPayload settings = result.settings();
         if (settings != null) {
             plugin.configuration().replaceMain(settings.main());
-            plugin.configuration().replaceGlobalDrops(settings.globalDrops());
             settings.worlds().forEach((uid, world) -> {
                 World target = worlds.get(uid);
                 if (target != null) plugin.configuration().replaceWorld(target, world.settings());

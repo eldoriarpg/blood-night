@@ -18,5 +18,52 @@
     "tr": "Bir blaze taşır ve her 6 saniyede bir üstüne küçük bir ateş topu bırakır.",
     "zh": "带着一只烈焰人，每 6 秒向你投下一个小火球。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "fire_phantom": {
+        "name": "Fire Phantom",
+        "entries": [
+          {
+            "item": "minecraft:phantom_membrane",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:blaze_powder",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:fire_charge",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

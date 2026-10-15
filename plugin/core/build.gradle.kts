@@ -104,7 +104,7 @@ paper {
             "items" to "the registered items",
             "worlds" to "the settings of the worlds",
             "server" to "the server-wide settings",
-            "drops" to "the global drops",
+            "loot" to "the loot tables",
         )
         areas.forEach { (area, what) ->
             register("bloodnight.editor.$area") {

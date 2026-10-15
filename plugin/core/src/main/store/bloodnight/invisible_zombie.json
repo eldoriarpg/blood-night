@@ -18,5 +18,52 @@
     "tr": "Görünmezdir ama ayaklarında hafif bir toz görünür. Ona vurunca 10 saniye görünür olur.",
     "zh": "隐形，但脚下会显出淡淡的尘雾。击中它后，它会现身 10 秒。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "invisible_zombie": {
+        "name": "Invisible Zombie",
+        "entries": [
+          {
+            "item": "minecraft:rotten_flesh",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:glowstone_dust",
+            "weight": 3,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:fermented_spider_eye",
+            "weight": 3,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

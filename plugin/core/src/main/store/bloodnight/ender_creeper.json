@@ -18,5 +18,52 @@
     "tr": "Uzaktaysan yanına ışınlanır. Bir saniye önce mor bir sütun nereye geleceğini gösterir.",
     "zh": "你离得远时，它会传送到你身边。传送前一秒，一道紫色光柱会显示它的落点。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "ender_creeper": {
+        "name": "Ender Creeper",
+        "entries": [
+          {
+            "item": "minecraft:gunpowder",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:ender_pearl",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 2,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:ender_eye",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

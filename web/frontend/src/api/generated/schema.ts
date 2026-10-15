@@ -349,7 +349,7 @@ export interface components {
             payload: unknown;
         };
         /** @enum {string} */
-        EditorArea: "MOBS" | "MACROS" | "ITEMS" | "WORLDS" | "SERVER" | "DROPS";
+        EditorArea: "MOBS" | "MACROS" | "ITEMS" | "WORLDS" | "SERVER" | "LOOT";
         ErrorBody: {
             details?: {
                 [key: string]: string;
@@ -1175,8 +1175,8 @@ export interface operations {
 }
 
 export const EditorArea = {
-    DROPS: "DROPS",
     ITEMS: "ITEMS",
+    LOOT: "LOOT",
     MACROS: "MACROS",
     MOBS: "MOBS",
     SERVER: "SERVER",

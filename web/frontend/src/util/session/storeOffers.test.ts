@@ -34,6 +34,14 @@ describe('store offers', () => {
         ])
     })
 
+    it('brings the offer\'s loot tables the session lacks and keeps its own', () => {
+        const withTables = {...offer, lootTables: {speed_zombie: {name: 'Speed Zombie', entries: []}, bones: {name: 'Bones', entries: []}}} as unknown as Offer
+        const own = {...payload([]), lootTables: {bones: {name: 'Mine', entries: []}}} as unknown as EditorPayload
+        expect(installOffer(withTables, own).map(operation => operation.path)).toEqual(['/mobs/speed_zombie', '/lootTables/speed_zombie'])
+        expect(installOffers([withTables, withTables], payload([])).map(operation => operation.path))
+            .toEqual(['/mobs/speed_zombie', '/mobs/speed_zombie', '/lootTables', '/lootTables/speed_zombie', '/lootTables/bones'])
+    })
+
     it('picks the editor language, then English', () => {
         expect(localized({en: 'Speed Zombie', de: 'Flinker Zombie'}, 'de', 'x')).toBe('Flinker Zombie')
         expect(localized({en: 'Speed Zombie'}, 'fr', 'x')).toBe('Speed Zombie')

@@ -18,5 +18,63 @@
     "tr": "Zincir zırh ve altın balta taşır. Her 8 saniyede bir 2 saniyeliğine kalkan kaldırır ve önden gelen vuruşları engeller: arkadan vur. Her 10 saniyede bir hırlar ve üstüne atılır.",
     "zh": "穿着锁链盔甲，拿着金斧。每 8 秒举起盾牌 2 秒，挡住来自正面的攻击：从背后打它。每 10 秒它会低吼一声并冲向你。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "knight_zombie": {
+        "name": "Knight Zombie",
+        "entries": [
+          {
+            "item": "minecraft:gold_nugget",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 6,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:iron_ingot",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:iron_sword",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:shield",
+            "weight": 1,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

@@ -44,6 +44,12 @@ Settings for the whole server.
 | `foreignMobs.markerKeys` | list of text | `[]` |
 | `setup.done` | true or false | `false` |
 | `advancements` | true or false | `true` |
+| `loot.tables` | list of text |  |
+| `loot.slots` | map |  |
+| `loot.ordinary.tables` | list of text |  |
+| `loot.ordinary.slots` | map |  |
+| `loot.experience.modifier` | `DEFAULT`, `MULTIPLY`, `VALUE` |  |
+| `loot.experience.value` | number |  |
 
 The whole file with its defaults:
 
@@ -77,6 +83,19 @@ foreignMobs:
 setup:
   done: false
 advancements: true
+loot:
+  tables: []
+  slots:
+    "1": 90
+    "2": 50
+    "3": 10
+  ordinary:
+    tables: []
+    slots:
+      "1": 1
+  experience:
+    modifier: MULTIPLY
+    value: 4
 ```
 
 ## worlds/&lt;world id&gt;.yml
@@ -178,21 +197,21 @@ Settings for one world. Every world has its own file.
 | `deathActions.mob.shockwave.range` | number | `10` |
 | `deathActions.mob.shockwave.minSeconds` | number | `0.1` |
 | `deathActions.mob.shockwave.effects` | list of map | `[{"effect":"minecraft:nausea","seconds":5}]` |
-| `worldDrops.weightsScope` | `GLOBAL`, `WORLD`, `MOB` |  |
-| `worldDrops.weights` | map |  |
-| `worldDrops.dropTables` | list of `GLOBAL`, `WORLD`, `MOB` |  |
-| `worldDrops.dropList` | list of map |  |
-| `worldDrops.xpScope` | `GLOBAL`, `WORLD`, `MOB` |  |
-| `worldDrops.xpModifier` | `DEFAULT`, `MULTIPLY`, `VALUE` |  |
-| `worldDrops.xpValue` | number |  |
-| `worldDrops.vanilla.enabled` | true or false |  |
-| `worldDrops.vanilla.lootMultiplier` | number |  |
-| `worldDrops.vanilla.extraDrops` | true or false |  |
-| `worldDrops.vanilla.xpModifier` | `DEFAULT`, `MULTIPLY`, `VALUE` |  |
-| `worldDrops.vanilla.xpValue` | number |  |
-| `worldDrops.vanilla.excludedTypes` | list of `ACACIA_BOAT`, `ACACIA_CHEST_BOAT`, `ALLAY`, `AREA_EFFECT_CLOUD`, `ARMADILLO`, `ARMOR_STAND`, `ARROW`, `AXOLOTL`, `BAMBOO_CHEST_RAFT`, `BAMBOO_RAFT`, `BAT`, `BEE`, `BIRCH_BOAT`, `BIRCH_CHEST_BOAT`, `BLAZE`, `BLOCK_DISPLAY`, `BOGGED`, `BREEZE`, `BREEZE_WIND_CHARGE`, `CAMEL`, `CAMEL_HUSK`, `CAT`, `CAVE_SPIDER`, `CHERRY_BOAT`, `CHERRY_CHEST_BOAT`, `CHEST_MINECART`, `CHICKEN`, `COD`, `COMMAND_BLOCK_MINECART`, `COPPER_GOLEM`, `COW`, `CREAKING`, `CREEPER`, `DARK_OAK_BOAT`, `DARK_OAK_CHEST_BOAT`, `DOLPHIN`, `DONKEY`, `DRAGON_FIREBALL`, `DROWNED`, `EGG`, `ELDER_GUARDIAN`, `END_CRYSTAL`, `ENDER_DRAGON`, `ENDER_PEARL`, `ENDERMAN`, `ENDERMITE`, `EVOKER`, `EVOKER_FANGS`, `EXPERIENCE_BOTTLE`, `EXPERIENCE_ORB`, `EYE_OF_ENDER`, `FALLING_BLOCK`, `FIREBALL`, `FIREWORK_ROCKET`, `FISHING_BOBBER`, `FOX`, `FROG`, `FURNACE_MINECART`, `GHAST`, `GIANT`, `GLOW_ITEM_FRAME`, `GLOW_SQUID`, `GOAT`, `GUARDIAN`, `HAPPY_GHAST`, `HOGLIN`, `HOPPER_MINECART`, `HORSE`, `HUSK`, `ILLUSIONER`, `INTERACTION`, `IRON_GOLEM`, `ITEM`, `ITEM_DISPLAY`, `ITEM_FRAME`, `JUNGLE_BOAT`, `JUNGLE_CHEST_BOAT`, `LEASH_KNOT`, `LIGHTNING_BOLT`, `LINGERING_POTION`, `LLAMA`, `LLAMA_SPIT`, `MAGMA_CUBE`, `MANGROVE_BOAT`, `MANGROVE_CHEST_BOAT`, `MANNEQUIN`, `MARKER`, `MINECART`, `MOOSHROOM`, `MULE`, `NAUTILUS`, `OAK_BOAT`, `OAK_CHEST_BOAT`, `OCELOT`, `OMINOUS_ITEM_SPAWNER`, `PAINTING`, `PALE_OAK_BOAT`, `PALE_OAK_CHEST_BOAT`, `PANDA`, `PARCHED`, `PARROT`, `PHANTOM`, `PIG`, `PIGLIN`, `PIGLIN_BRUTE`, `PILLAGER`, `PLAYER`, `POLAR_BEAR`, `PUFFERFISH`, `RABBIT`, `RAVAGER`, `SALMON`, `SHEEP`, `SHULKER`, `SHULKER_BULLET`, `SILVERFISH`, `SKELETON`, `SKELETON_HORSE`, `SLIME`, `SMALL_FIREBALL`, `SNIFFER`, `SNOW_GOLEM`, `SNOWBALL`, `SPAWNER_MINECART`, `SPECTRAL_ARROW`, `SPIDER`, `SPLASH_POTION`, `SPRUCE_BOAT`, `SPRUCE_CHEST_BOAT`, `SQUID`, `STRAY`, `STRIDER`, `SULFUR_CUBE`, `TADPOLE`, `TEXT_DISPLAY`, `TNT`, `TNT_MINECART`, `TRADER_LLAMA`, `TRIDENT`, `TROPICAL_FISH`, `TURTLE`, `VEX`, `VILLAGER`, `VINDICATOR`, `WANDERING_TRADER`, `WARDEN`, `WIND_CHARGE`, `WITCH`, `WITHER`, `WITHER_SKELETON`, `WITHER_SKULL`, `WOLF`, `ZOGLIN`, `ZOMBIE`, `ZOMBIE_HORSE`, `ZOMBIE_NAUTILUS`, `ZOMBIE_VILLAGER`, `ZOMBIFIED_PIGLIN`, `UNKNOWN` |  |
-| `worldDrops.vanilla.excludedReasons` | list of `NATURAL`, `JOCKEY`, `CHUNK_GEN`, `SPAWNER`, `TRIAL_SPAWNER`, `EGG`, `SPAWNER_EGG`, `LIGHTNING`, `BUILD_SNOWMAN`, `BUILD_IRONGOLEM`, `BUILD_COPPERGOLEM`, `BUILD_WITHER`, `VILLAGE_DEFENSE`, `VILLAGE_INVASION`, `BREEDING`, `SLIME_SPLIT`, `REINFORCEMENTS`, `NETHER_PORTAL`, `DISPENSE_EGG`, `INFECTION`, `CURED`, `OCELOT_BABY`, `SILVERFISH_BLOCK`, `MOUNT`, `TRAP`, `ENDER_PEARL`, `SHOULDER_ENTITY`, `DROWNED`, `SHEARED`, `EXPLOSION`, `RAID`, `PATROL`, `BEEHIVE`, `PIGLIN_ZOMBIFIED`, `SPELL`, `FROZEN`, `METAMORPHOSIS`, `DUPLICATION`, `COMMAND`, `ENCHANTMENT`, `OMINOUS_ITEM_SPAWNER`, `BUCKET`, `POTION_EFFECT`, `REANIMATE`, `REHYDRATION`, `CUSTOM`, `DEFAULT` |  |
-| `worldDrops.rewardLoot` | true or false |  |
+| `loot.tables` | list of text |  |
+| `loot.slots` | map |  |
+| `loot.inherit` | true or false |  |
+| `loot.replaceSame` | true or false |  |
+| `loot.experience.modifier` | `DEFAULT`, `MULTIPLY`, `VALUE` |  |
+| `loot.experience.value` | number |  |
+| `loot.rewardLoot` | true or false |  |
+| `loot.ordinary.enabled` | true or false |  |
+| `loot.ordinary.lootMultiplier` | number |  |
+| `loot.ordinary.tables` | list of text |  |
+| `loot.ordinary.slots` | map |  |
+| `loot.ordinary.xpModifier` | `DEFAULT`, `MULTIPLY`, `VALUE` |  |
+| `loot.ordinary.xpValue` | number |  |
+| `loot.ordinary.excludedTypes` | list of `ACACIA_BOAT`, `ACACIA_CHEST_BOAT`, `ALLAY`, `AREA_EFFECT_CLOUD`, `ARMADILLO`, `ARMOR_STAND`, `ARROW`, `AXOLOTL`, `BAMBOO_CHEST_RAFT`, `BAMBOO_RAFT`, `BAT`, `BEE`, `BIRCH_BOAT`, `BIRCH_CHEST_BOAT`, `BLAZE`, `BLOCK_DISPLAY`, `BOGGED`, `BREEZE`, `BREEZE_WIND_CHARGE`, `CAMEL`, `CAMEL_HUSK`, `CAT`, `CAVE_SPIDER`, `CHERRY_BOAT`, `CHERRY_CHEST_BOAT`, `CHEST_MINECART`, `CHICKEN`, `COD`, `COMMAND_BLOCK_MINECART`, `COPPER_GOLEM`, `COW`, `CREAKING`, `CREEPER`, `DARK_OAK_BOAT`, `DARK_OAK_CHEST_BOAT`, `DOLPHIN`, `DONKEY`, `DRAGON_FIREBALL`, `DROWNED`, `EGG`, `ELDER_GUARDIAN`, `END_CRYSTAL`, `ENDER_DRAGON`, `ENDER_PEARL`, `ENDERMAN`, `ENDERMITE`, `EVOKER`, `EVOKER_FANGS`, `EXPERIENCE_BOTTLE`, `EXPERIENCE_ORB`, `EYE_OF_ENDER`, `FALLING_BLOCK`, `FIREBALL`, `FIREWORK_ROCKET`, `FISHING_BOBBER`, `FOX`, `FROG`, `FURNACE_MINECART`, `GHAST`, `GIANT`, `GLOW_ITEM_FRAME`, `GLOW_SQUID`, `GOAT`, `GUARDIAN`, `HAPPY_GHAST`, `HOGLIN`, `HOPPER_MINECART`, `HORSE`, `HUSK`, `ILLUSIONER`, `INTERACTION`, `IRON_GOLEM`, `ITEM`, `ITEM_DISPLAY`, `ITEM_FRAME`, `JUNGLE_BOAT`, `JUNGLE_CHEST_BOAT`, `LEASH_KNOT`, `LIGHTNING_BOLT`, `LINGERING_POTION`, `LLAMA`, `LLAMA_SPIT`, `MAGMA_CUBE`, `MANGROVE_BOAT`, `MANGROVE_CHEST_BOAT`, `MANNEQUIN`, `MARKER`, `MINECART`, `MOOSHROOM`, `MULE`, `NAUTILUS`, `OAK_BOAT`, `OAK_CHEST_BOAT`, `OCELOT`, `OMINOUS_ITEM_SPAWNER`, `PAINTING`, `PALE_OAK_BOAT`, `PALE_OAK_CHEST_BOAT`, `PANDA`, `PARCHED`, `PARROT`, `PHANTOM`, `PIG`, `PIGLIN`, `PIGLIN_BRUTE`, `PILLAGER`, `PLAYER`, `POLAR_BEAR`, `PUFFERFISH`, `RABBIT`, `RAVAGER`, `SALMON`, `SHEEP`, `SHULKER`, `SHULKER_BULLET`, `SILVERFISH`, `SKELETON`, `SKELETON_HORSE`, `SLIME`, `SMALL_FIREBALL`, `SNIFFER`, `SNOW_GOLEM`, `SNOWBALL`, `SPAWNER_MINECART`, `SPECTRAL_ARROW`, `SPIDER`, `SPLASH_POTION`, `SPRUCE_BOAT`, `SPRUCE_CHEST_BOAT`, `SQUID`, `STRAY`, `STRIDER`, `SULFUR_CUBE`, `TADPOLE`, `TEXT_DISPLAY`, `TNT`, `TNT_MINECART`, `TRADER_LLAMA`, `TRIDENT`, `TROPICAL_FISH`, `TURTLE`, `VEX`, `VILLAGER`, `VINDICATOR`, `WANDERING_TRADER`, `WARDEN`, `WIND_CHARGE`, `WITCH`, `WITHER`, `WITHER_SKELETON`, `WITHER_SKULL`, `WOLF`, `ZOGLIN`, `ZOMBIE`, `ZOMBIE_HORSE`, `ZOMBIE_NAUTILUS`, `ZOMBIE_VILLAGER`, `ZOMBIFIED_PIGLIN`, `UNKNOWN` |  |
+| `loot.ordinary.excludedReasons` | list of `NATURAL`, `JOCKEY`, `CHUNK_GEN`, `SPAWNER`, `TRIAL_SPAWNER`, `EGG`, `SPAWNER_EGG`, `LIGHTNING`, `BUILD_SNOWMAN`, `BUILD_IRONGOLEM`, `BUILD_COPPERGOLEM`, `BUILD_WITHER`, `VILLAGE_DEFENSE`, `VILLAGE_INVASION`, `BREEDING`, `SLIME_SPLIT`, `REINFORCEMENTS`, `NETHER_PORTAL`, `DISPENSE_EGG`, `INFECTION`, `CURED`, `OCELOT_BABY`, `SILVERFISH_BLOCK`, `MOUNT`, `TRAP`, `ENDER_PEARL`, `SHOULDER_ENTITY`, `DROWNED`, `SHEARED`, `EXPLOSION`, `RAID`, `PATROL`, `BEEHIVE`, `PIGLIN_ZOMBIFIED`, `SPELL`, `FROZEN`, `METAMORPHOSIS`, `DUPLICATION`, `COMMAND`, `ENCHANTMENT`, `OMINOUS_ITEM_SPAWNER`, `BUCKET`, `POTION_EFFECT`, `REANIMATE`, `REHYDRATION`, `CUSTOM`, `DEFAULT` |  |
 | `nightRules.difficulty` | `UNCHANGED`, `PEACEFUL`, `EASY`, `NORMAL`, `HARD` | `UNCHANGED` |
 | `nightRules.monsterSpawnLimit` | whole number | `-1` |
 | `nightRules.monsterTicksPerSpawn` | whole number | `-1` |
@@ -392,23 +411,18 @@ deathActions:
       minSeconds: 0.1
       power: 10
       range: 10
-worldDrops:
-  weightsScope: GLOBAL
-  weights:
-    "1": 90
-    "2": 50
-    "3": 10
-  dropTables:
-    - GLOBAL
-    - WORLD
-  dropList: []
-  xpScope: GLOBAL
-  xpModifier: MULTIPLY
-  xpValue: 4
-  vanilla:
+loot:
+  tables: []
+  slots: null
+  inherit: true
+  replaceSame: false
+  experience: null
+  rewardLoot: true
+  ordinary:
     enabled: true
     lootMultiplier: 2
-    extraDrops: false
+    tables: []
+    slots: null
     xpModifier: MULTIPLY
     xpValue: 2
     excludedTypes: []
@@ -416,7 +430,6 @@ worldDrops:
       - SPAWNER
       - TRIAL_SPAWNER
       - NETHER_PORTAL
-  rewardLoot: true
 nightRules:
   creakingsWake: true
   difficulty: UNCHANGED
@@ -427,21 +440,4 @@ nightRules:
   phantomsOnlyAtBloodNights: false
   raids: UNCHANGED
   weather: UNCHANGED
-```
-
-## global_drops.yml
-
-Drops every world can use.
-
-| Key | Type | Default |
-|---|---|---|
-| `weights` | map |  |
-| `drops` | list of map |  |
-| `xpModifier` | `DEFAULT`, `MULTIPLY`, `VALUE` |  |
-| `xpValue` | number |  |
-
-The whole file with its defaults:
-
-```yaml
-{}
 ```

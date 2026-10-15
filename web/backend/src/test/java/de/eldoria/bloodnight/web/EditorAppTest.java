@@ -59,7 +59,7 @@ class EditorAppTest {
     private static String base;
     private final HttpClient client = HttpClient.newHttpClient();
 
-    private static final String ALL_AREAS = "[\"MOBS\",\"MACROS\",\"ITEMS\",\"WORLDS\",\"SERVER\",\"DROPS\"]";
+    private static final String ALL_AREAS = "[\"MOBS\",\"MACROS\",\"ITEMS\",\"WORLDS\",\"SERVER\",\"LOOT\"]";
 
     @BeforeAll
     static void start() throws SQLException, IOException {

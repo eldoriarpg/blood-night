@@ -8,7 +8,7 @@ import {describe, expect, it} from 'vitest'
 import {sectionsOf} from '~/util/session/sections'
 import {PatchError} from '~/util/patch/jsonPointer'
 
-const payload = {mobs: {a: {id: 'a'}}, macros: [{id: 'burst'}, {id: 'jump'}], settings: {main: {}, globalDrops: {}, worlds: {w: {}}}, items: {}}
+const payload = {mobs: {a: {id: 'a'}}, macros: [{id: 'burst'}, {id: 'jump'}], settings: {main: {}, worlds: {w: {}}}, items: {}, lootTables: {gems: {}}}
 
 describe('sectionsOf', () => {
     it('names the touched sections', () => {
@@ -17,6 +17,7 @@ describe('sectionsOf', () => {
         expect([...sectionsOf(payload, [{op: 'add', path: '/macros/-', value: {id: 'dash'}}]).sections]).toEqual(['macros/dash'])
         expect([...sectionsOf(payload, [{op: 'add', path: '/settings/worlds/w/x', value: 1}]).sections]).toEqual(['settings/worlds/w'])
         expect([...sectionsOf(payload, [{op: 'add', path: '/items/x', value: {}}]).sections]).toEqual(['items/x'])
+        expect([...sectionsOf(payload, [{op: 'remove', path: '/lootTables/gems'}]).sections]).toEqual(['lootTables/gems'])
         expect(sectionsOf(payload, [{op: 'replace', path: '', value: {}}]).everything).toBe(true)
     })
 

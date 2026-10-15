@@ -22,24 +22,20 @@ export const WORLD_SECTIONS: readonly SettingsSection[] = [
     {key: 'sounds', properties: ['soundSettings']},
     {key: 'deathPlayers', properties: ['deathActions/player']},
     {key: 'deathMobs', properties: ['deathActions/mob']},
-    {key: 'drops', properties: ['worldDrops']},
+    {key: 'loot', properties: ['loot']},
     {key: 'atmosphere', properties: ['atmosphere']},
     {key: 'rules', properties: ['nightRules']},
 ]
 
-/** A tab of the server settings: a part of the settings payload and some of its properties, or all of it. */
-export interface ServerSection {
-    key: string
-    root: 'main' | 'globalDrops'
-    properties: string[] | undefined
-}
+/** A tab of the server settings: some properties of `config.yml`. */
+export type ServerSection = SettingsSection
 
 /** The tabs of the server settings. */
 export const SERVER_SECTIONS: readonly ServerSection[] = [
-    {key: 'messages', root: 'main', properties: ['announcements']},
-    {key: 'editor', root: 'main', properties: ['editor']},
-    {key: 'resourcePack', root: 'main', properties: ['resourcePack']},
-    {key: 'plugins', root: 'main', properties: ['placeholders', 'foreignMobs']},
-    {key: 'updates', root: 'main', properties: ['updates']},
-    {key: 'drops', root: 'globalDrops', properties: undefined},
+    {key: 'messages', properties: ['announcements']},
+    {key: 'editor', properties: ['editor']},
+    {key: 'resourcePack', properties: ['resourcePack']},
+    {key: 'plugins', properties: ['placeholders', 'foreignMobs']},
+    {key: 'updates', properties: ['updates']},
+    {key: 'loot', properties: ['loot']},
 ]

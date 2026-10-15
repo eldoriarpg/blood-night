@@ -81,6 +81,7 @@ final class ConvertCommand {
             });
             plugin.configuration().replaceMobs(result.mobs());
             plugin.configuration().replaceItems(result.items());
+            plugin.configuration().replaceLootTables(result.loot());
             Replies.send(sender, "convert.done", arg("backup", backup));
             ReloadCommand.reload(plugin, sender, SettingsChangeCause.CONVERT);
         } catch (IOException e) {
@@ -107,7 +108,8 @@ final class ConvertCommand {
                         plugin.configuration().main(),
                         loadedWorlds(plugin),
                         plugin.configuration().mobs().all(),
-                        plugin.configuration().items());
+                        plugin.configuration().items(),
+                        plugin.configuration().lootTables());
     }
 
     private static Map<String, WorldSettings> loadedWorlds(BloodNight plugin) {

@@ -275,14 +275,17 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         plugins.registerEvents(
                 new DropHandler(
                         id -> configuration.mobs().get(id),
-                        world -> configuration.worldConfig(world).worldDrops(),
-                        () -> configuration.globalDrops(),
+                        world -> configuration.worldConfig(world).loot(),
+                        () -> configuration.main().loot(),
+                        id -> configuration.lootTables().get(id),
                         id -> configuration.items().item(id),
                         world -> bloodNights.running(world).isPresent(),
                         foreign,
                         RANDOM,
                         regions,
-                        RewardLoot::rollFor),
+                        RewardLoot::rollFor,
+                        plugins::callEvent,
+                        getLogger()),
                 this);
         plugins.registerEvents(new EnchantmentEffects(bloodNights, BloodEnchantments::level, tasks::entityNow), this);
         plugins.registerEvents(
@@ -299,7 +302,7 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         plugins.registerEvents(
                 new PickupGuard(
                         world -> bloodNights.running(world).isPresent(),
-                        world -> configuration.worldConfig(world).worldDrops().vanilla()),
+                        world -> configuration.worldConfig(world).loot().ordinary()),
                 this);
         if (!Tasks.regionised()) {
             getServer().getWorlds().forEach(world -> world.getLivingEntities().forEach(coordinator::attach));

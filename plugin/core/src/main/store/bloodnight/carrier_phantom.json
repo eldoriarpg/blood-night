@@ -18,5 +18,41 @@
     "tr": "Seni yakalar, 20 blok yukarı taşır ve bırakır. Yakalamasını durdurmak için gelirken ona vur ya da kurtulmak için beş kez eğil.",
     "zh": "抓住你，把你带到 20 格高处再扔下。在它飞来时击中它可以阻止抓取，或者按五次潜行挣脱。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "carrier_phantom": {
+        "name": "Carrier Phantom",
+        "entries": [
+          {
+            "item": "minecraft:phantom_membrane",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 3,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:feather",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

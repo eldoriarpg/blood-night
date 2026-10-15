@@ -18,5 +18,52 @@
     "tr": "Görünmezdir ama her atıştan sonra bir saniye görünür. Okları parlar.",
     "zh": "隐形，但每次射击后会现身一秒。它的箭会发光。"
   },
-  "requires": []
+  "requires": [],
+  "loot": {
+    "slots": {
+      "0": 2,
+      "1": 5,
+      "2": 2
+    },
+    "tables": {
+      "invisible_skeleton": {
+        "name": "Invisible Skeleton",
+        "entries": [
+          {
+            "item": "minecraft:bone",
+            "weight": 10,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": true
+          },
+          {
+            "item": "minecraft:arrow",
+            "weight": 8,
+            "amount": {
+              "mode": "RANGE",
+              "min": 4,
+              "max": 12,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:glowstone_dust",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 4,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
 }

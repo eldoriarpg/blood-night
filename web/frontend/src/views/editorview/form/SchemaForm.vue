@@ -10,6 +10,7 @@ import type {Field} from '~/util/settings/schemaFields'
 import {shownFields} from '~/util/settings/modifiedValues'
 import {WORLD_KIND, worldShows} from '~/util/settings/worldKind'
 import {fieldHelpKey} from '~/util/settings/fieldHelp'
+import {groupKey} from '~/util/settings/specialFields'
 
 /**
  * A form for an object of the payload, one field per property its schema names, without the settings that do not
@@ -39,7 +40,7 @@ function number(key: string): number {
 }
 
 function help(field: Field): string | undefined {
-  const inGroup = `settings.helpIn.${props.path.split('/').at(-1)}.${field.key}`
+  const inGroup = `settings.helpIn.${groupKey(props.path)}.${field.key}`
   if (te(inGroup)) return t(inGroup)
   const key = fieldHelpKey(field, props.fields, props.value)
   return key && te(key) ? t(key) : undefined

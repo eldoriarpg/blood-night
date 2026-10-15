@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  * What a debug report on Lyna tells about BloodNight beyond the server and the log: the worlds and their blood nights,
  * the installed mobs and their problems, the plugins it works with and the editor, and checks of its own setup.
  * <p>
- * The report carries {@code config.yml}, {@code global_drops.yml} and the world files. The mob, item and macro files
+ * The report carries {@code config.yml}, {@code loot_tables.yml} and the world files. The mob, item and macro files
  * stay home, since graphs are large and the editor shows them, and so does {@code editor-session.json}, which holds a
  * session's token.
  */
@@ -161,7 +161,7 @@ public final class DebugReport implements DebugDataProvider {
     private static List<Path> settingsFiles(Plugin plugin) {
         Path folder = dataFolder(plugin);
         List<Path> files = new ArrayList<>();
-        for (String name : List.of("config.yml", "global_drops.yml")) {
+        for (String name : List.of("config.yml", "loot_tables.yml")) {
             Path file = folder.resolve(name);
             if (Files.isRegularFile(file)) files.add(file);
         }

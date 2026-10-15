@@ -5,9 +5,12 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import de.eldoria.bloodnight.loot.LootEntry;
+import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.ServerLoot;
+import de.eldoria.bloodnight.loot.WorldLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.MobTypes;
-import de.eldoria.bloodnight.mob.meta.Drop;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -25,8 +28,9 @@ import java.util.function.Predicate;
 
 /**
  * Checks a result from the editor against the server before it is applied: each mob is stored under its own id, mobs
- * and their extensions are entity types a mob can be ({@link MobTypes}), mobs only use registered items or item
- * materials, and the files it replaces did not change since the session opened.
+ * and their extensions are entity types a mob can be ({@link MobTypes}), mobs and loot tables only use registered items
+ * or item materials, mobs, worlds and the server only assign loot tables the result holds, and the files it replaces
+ * did not change since the session opened.
  * Worlds the server does not know are reported separately; they are skipped.
  */
 public final class EditorChecks {
@@ -54,12 +58,49 @@ public final class EditorChecks {
                         .formatted(mob.id(), extension.name()));
             }
             for (String item : usedItems(mob)) {
-                if (!items.test(item) && !result.items().containsKey(item) && !isMaterial(item)) {
+                if (!knows(result, items, item)) {
                     problems.add("Mob %s uses unknown item %s".formatted(mob.id(), item));
                 }
             }
+            unknownTables(result, mob.loot().tables())
+                    .forEach(table -> problems.add("Mob %s uses unknown loot table %s".formatted(mob.id(), table)));
+        }
+        for (Map.Entry<String, LootTable> table : result.lootTables().entrySet()) {
+            table.getValue().entries().stream()
+                    .map(LootEntry::item)
+                    .distinct()
+                    .filter(item -> !knows(result, items, item))
+                    .forEach(
+                            item -> problems.add("Loot table %s uses unknown item %s".formatted(table.getKey(), item)));
+        }
+        SettingsPayload settings = result.settings();
+        if (settings != null) {
+            ServerLoot server = settings.main().loot();
+            List<String> assigned = new ArrayList<>(server.tables());
+            assigned.addAll(server.ordinary().tables());
+            unknownTables(result, assigned)
+                    .forEach(table -> problems.add("The server uses unknown loot table %s".formatted(table)));
+            settings.worlds().values().forEach(world -> {
+                WorldLoot loot = world.settings().loot();
+                List<String> tables = new ArrayList<>(loot.tables());
+                tables.addAll(loot.ordinary().tables());
+                unknownTables(result, tables)
+                        .forEach(table ->
+                                problems.add("World %s uses unknown loot table %s".formatted(world.name(), table)));
+            });
         }
         return problems;
+    }
+
+    private static boolean knows(EditorResult result, Predicate<String> items, String item) {
+        return items.test(item) || result.items().containsKey(item) || isMaterial(item);
+    }
+
+    private static List<String> unknownTables(EditorResult result, List<String> tables) {
+        return tables.stream()
+                .distinct()
+                .filter(table -> !result.lootTables().containsKey(table))
+                .toList();
     }
 
     /**
@@ -119,8 +160,6 @@ public final class EditorChecks {
     private static List<String> usedItems(CustomMob mob) {
         List<String> items = new ArrayList<>(slots(mob.equipment()));
         items.addAll(slots(mob.extension().equipment()));
-        if (mob.mobDrops() != null)
-            mob.mobDrops().dropList().stream().map(Drop::itemId).forEach(items::add);
         return items.stream().filter(Objects::nonNull).distinct().toList();
     }
 

@@ -16,6 +16,10 @@
         }
       }
     },
+    "AmountMode" : {
+      "type" : "string",
+      "enum" : [ "RANGE", "CHOICES" ]
+    },
     "AnnouncementSettings" : {
       "type" : "object",
       "properties" : {
@@ -401,6 +405,29 @@
         "advancements" : {
           "type" : "boolean",
           "default" : true
+        },
+        "loot" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ServerLoot"
+          } ],
+          "default" : {
+            "tables" : [ ],
+            "slots" : {
+              "1" : 90,
+              "2" : 50,
+              "3" : 10
+            },
+            "ordinary" : {
+              "tables" : [ ],
+              "slots" : {
+                "1" : 1
+              }
+            },
+            "experience" : {
+              "modifier" : "MULTIPLY",
+              "value" : 4.0
+            }
+          }
         }
       }
     },
@@ -430,10 +457,6 @@
           "type" : "string"
         }
       }
-    },
-    "ConfigurationScope" : {
-      "type" : "string",
-      "enum" : [ "GLOBAL", "WORLD", "MOB" ]
     },
     "CreeperSettings" : {
       "type" : "object",
@@ -480,8 +503,8 @@
         "behaviour" : {
           "$ref" : "#/$defs/Graph"
         },
-        "mobDrops" : {
-          "$ref" : "#/$defs/MobDrops"
+        "loot" : {
+          "$ref" : "#/$defs/MobLoot"
         },
         "extension" : {
           "$ref" : "#/$defs/Extension"
@@ -496,7 +519,7 @@
           "$ref" : "#/$defs/Movement"
         }
       },
-      "required" : [ "id", "attributes", "behaviour", "mobDrops", "extension", "spawn", "movement" ]
+      "required" : [ "id", "attributes", "behaviour", "loot", "extension", "spawn", "movement" ]
     },
     "DeathActionSettings" : {
       "type" : "object",
@@ -591,21 +614,6 @@
     "DifficultyChange" : {
       "type" : "string",
       "enum" : [ "UNCHANGED", "PEACEFUL", "EASY", "NORMAL", "HARD" ]
-    },
-    "Drop" : {
-      "type" : "object",
-      "properties" : {
-        "itemId" : {
-          "type" : "string"
-        },
-        "amount" : {
-          "type" : "integer"
-        },
-        "weight" : {
-          "type" : "integer"
-        }
-      },
-      "required" : [ "itemId", "amount", "weight" ]
     },
     "Edge" : {
       "type" : "object",
@@ -772,6 +780,12 @@
             "$ref" : "#/$defs/EditorItem"
           }
         },
+        "lootTables" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/LootTable"
+          }
+        },
         "problems" : {
           "type" : "object",
           "additionalProperties" : {
@@ -818,7 +832,7 @@
           "$ref" : "#/$defs/EditorLegacy"
         }
       },
-      "required" : [ "catalog", "mobs", "macros", "items", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
+      "required" : [ "catalog", "mobs", "macros", "items", "lootTables", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
     },
     "EditorSettings" : {
       "type" : "object",
@@ -898,6 +912,18 @@
         }
       }
     },
+    "Experience" : {
+      "type" : "object",
+      "properties" : {
+        "modifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "value" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "modifier", "value" ]
+    },
     "Extension" : {
       "type" : "object",
       "properties" : {
@@ -952,30 +978,6 @@
         }
       },
       "required" : [ "type", "translationKey" ]
-    },
-    "GlobalDrops" : {
-      "type" : "object",
-      "properties" : {
-        "weights" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "integer"
-          }
-        },
-        "drops" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/Drop"
-          }
-        },
-        "xpModifier" : {
-          "$ref" : "#/$defs/ValueModifier"
-        },
-        "xpValue" : {
-          "type" : "number"
-        }
-      },
-      "required" : [ "weights", "drops", "xpModifier", "xpValue" ]
     },
     "Graph" : {
       "type" : "object",
@@ -1059,6 +1061,60 @@
         }
       }
     },
+    "LootAmount" : {
+      "type" : "object",
+      "properties" : {
+        "mode" : {
+          "$ref" : "#/$defs/AmountMode"
+        },
+        "min" : {
+          "type" : "integer"
+        },
+        "max" : {
+          "type" : "integer"
+        },
+        "choices" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "required" : [ "mode", "min", "max", "choices" ]
+    },
+    "LootEntry" : {
+      "type" : "object",
+      "properties" : {
+        "item" : {
+          "type" : "string"
+        },
+        "weight" : {
+          "type" : "integer"
+        },
+        "amount" : {
+          "$ref" : "#/$defs/LootAmount"
+        },
+        "repeatable" : {
+          "type" : "boolean"
+        }
+      },
+      "required" : [ "item", "weight", "amount", "repeatable" ]
+    },
+    "LootTable" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "entries" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/LootEntry"
+          }
+        }
+      },
+      "required" : [ "name", "entries" ]
+    },
     "Macro" : {
       "type" : "object",
       "properties" : {
@@ -1096,44 +1152,35 @@
       "type" : "string",
       "enum" : [ "CHAT", "TITLE", "SUBTITLE", "ACTION_BAR" ]
     },
-    "MobDrops" : {
+    "MobLoot" : {
       "type" : "object",
       "properties" : {
-        "weightsScope" : {
-          "$ref" : "#/$defs/ConfigurationScope"
+        "tables" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         },
-        "weights" : {
+        "slots" : {
           "type" : "object",
           "additionalProperties" : {
             "type" : "integer"
           }
         },
-        "dropTables" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/ConfigurationScope"
-          }
+        "inherit" : {
+          "type" : "boolean"
         },
-        "dropList" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/Drop"
-          }
-        },
-        "xpScope" : {
-          "$ref" : "#/$defs/ConfigurationScope"
-        },
-        "xpModifier" : {
-          "$ref" : "#/$defs/ValueModifier"
-        },
-        "xpValue" : {
-          "type" : "number"
+        "replaceSame" : {
+          "type" : "boolean"
         },
         "vanillaLoot" : {
           "$ref" : "#/$defs/VanillaLoot"
+        },
+        "experience" : {
+          "$ref" : "#/$defs/Experience"
         }
       },
-      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue", "vanillaLoot" ]
+      "required" : [ "tables", "inherit", "replaceSame", "vanillaLoot" ]
     },
     "MobName" : {
       "type" : "object",
@@ -1616,13 +1663,81 @@
         },
         "mob" : {
           "$ref" : "#/$defs/CustomMob"
+        },
+        "lootTables" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/LootTable"
+          }
         }
       },
-      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob" ]
+      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob", "lootTables" ]
     },
     "Operation" : {
       "type" : "string",
       "enum" : [ "ADD_NUMBER", "ADD_SCALAR", "MULTIPLY_SCALAR_1" ]
+    },
+    "Ordinary" : {
+      "type" : "object",
+      "properties" : {
+        "tables" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "slots" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        }
+      },
+      "required" : [ "tables" ]
+    },
+    "OrdinaryLoot" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean"
+        },
+        "lootMultiplier" : {
+          "type" : "number"
+        },
+        "tables" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "slots" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        },
+        "xpModifier" : {
+          "$ref" : "#/$defs/ValueModifier"
+        },
+        "xpValue" : {
+          "type" : "number"
+        },
+        "excludedTypes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/EntityType"
+          },
+          "uniqueItems" : true
+        },
+        "excludedReasons" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/SpawnReason"
+          },
+          "uniqueItems" : true
+        }
+      },
+      "required" : [ "enabled", "lootMultiplier", "tables", "xpModifier", "xpValue", "excludedTypes", "excludedReasons" ]
     },
     "Overlay" : {
       "type" : "string",
@@ -1810,14 +1925,35 @@
         }
       }
     },
+    "ServerLoot" : {
+      "type" : "object",
+      "properties" : {
+        "tables" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "slots" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        },
+        "ordinary" : {
+          "$ref" : "#/$defs/Ordinary"
+        },
+        "experience" : {
+          "$ref" : "#/$defs/Experience"
+        }
+      },
+      "required" : [ "tables", "ordinary", "experience" ]
+    },
     "SettingsPayload" : {
       "type" : "object",
       "properties" : {
         "main" : {
           "$ref" : "#/$defs/ConfigFile"
-        },
-        "globalDrops" : {
-          "$ref" : "#/$defs/GlobalDrops"
         },
         "worlds" : {
           "type" : "object",
@@ -1826,7 +1962,7 @@
           }
         }
       },
-      "required" : [ "main", "globalDrops", "worlds" ]
+      "required" : [ "main", "worlds" ]
     },
     "SetupSettings" : {
       "type" : "object",
@@ -2225,41 +2361,6 @@
       "type" : "string",
       "enum" : [ "DEFAULT", "MULTIPLY", "VALUE" ]
     },
-    "VanillaDrops" : {
-      "type" : "object",
-      "properties" : {
-        "enabled" : {
-          "type" : "boolean"
-        },
-        "lootMultiplier" : {
-          "type" : "number"
-        },
-        "extraDrops" : {
-          "type" : "boolean"
-        },
-        "xpModifier" : {
-          "$ref" : "#/$defs/ValueModifier"
-        },
-        "xpValue" : {
-          "type" : "number"
-        },
-        "excludedTypes" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/EntityType"
-          },
-          "uniqueItems" : true
-        },
-        "excludedReasons" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/SpawnReason"
-          },
-          "uniqueItems" : true
-        }
-      },
-      "required" : [ "enabled", "lootMultiplier", "extraDrops", "xpModifier", "xpValue", "excludedTypes", "excludedReasons" ]
-    },
     "VanillaLoot" : {
       "type" : "string",
       "enum" : [ "KEEP", "MULTIPLY", "CLEAR" ]
@@ -2268,47 +2369,38 @@
       "type" : "string",
       "enum" : [ "UNCHANGED", "CLEAR", "RAIN", "THUNDER" ]
     },
-    "WorldDrops" : {
+    "WorldLoot" : {
       "type" : "object",
       "properties" : {
-        "weightsScope" : {
-          "$ref" : "#/$defs/ConfigurationScope"
+        "tables" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         },
-        "weights" : {
+        "slots" : {
           "type" : "object",
           "additionalProperties" : {
             "type" : "integer"
           }
         },
-        "dropTables" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/ConfigurationScope"
-          }
+        "inherit" : {
+          "type" : "boolean"
         },
-        "dropList" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/$defs/Drop"
-          }
+        "replaceSame" : {
+          "type" : "boolean"
         },
-        "xpScope" : {
-          "$ref" : "#/$defs/ConfigurationScope"
-        },
-        "xpModifier" : {
-          "$ref" : "#/$defs/ValueModifier"
-        },
-        "xpValue" : {
-          "type" : "number"
-        },
-        "vanilla" : {
-          "$ref" : "#/$defs/VanillaDrops"
+        "experience" : {
+          "$ref" : "#/$defs/Experience"
         },
         "rewardLoot" : {
           "type" : "boolean"
+        },
+        "ordinary" : {
+          "$ref" : "#/$defs/OrdinaryLoot"
         }
       },
-      "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue", "vanilla", "rewardLoot" ]
+      "required" : [ "tables", "inherit", "replaceSame", "rewardLoot", "ordinary" ]
     },
     "WorldPayload" : {
       "type" : "object",
@@ -2599,32 +2691,27 @@
             }
           }
         },
-        "worldDrops" : {
+        "loot" : {
           "allOf" : [ {
-            "$ref" : "#/$defs/WorldDrops"
+            "$ref" : "#/$defs/WorldLoot"
           } ],
           "default" : {
-            "weightsScope" : "GLOBAL",
-            "weights" : {
-              "1" : 90,
-              "2" : 50,
-              "3" : 10
-            },
-            "dropTables" : [ "GLOBAL", "WORLD" ],
-            "dropList" : [ ],
-            "xpScope" : "GLOBAL",
-            "xpModifier" : "MULTIPLY",
-            "xpValue" : 4.0,
-            "vanilla" : {
+            "tables" : [ ],
+            "slots" : null,
+            "inherit" : true,
+            "replaceSame" : false,
+            "experience" : null,
+            "rewardLoot" : true,
+            "ordinary" : {
               "enabled" : true,
               "lootMultiplier" : 2.0,
-              "extraDrops" : false,
+              "tables" : [ ],
+              "slots" : null,
               "xpModifier" : "MULTIPLY",
               "xpValue" : 2.0,
               "excludedTypes" : [ ],
               "excludedReasons" : [ "SPAWNER", "TRIAL_SPAWNER", "NETHER_PORTAL" ]
-            },
-            "rewardLoot" : true
+            }
           }
         },
         "nightRules" : {

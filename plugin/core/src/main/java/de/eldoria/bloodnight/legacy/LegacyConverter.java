@@ -6,15 +6,17 @@
 package de.eldoria.bloodnight.legacy;
 
 import de.eldoria.bloodnight.configuration.ConfigFile;
-import de.eldoria.bloodnight.configuration.elements.ConfigurationScope;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeOverride;
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.loot.LootAmount;
+import de.eldoria.bloodnight.loot.LootEntry;
+import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.LootTables;
+import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
-import de.eldoria.bloodnight.mob.meta.Drop;
-import de.eldoria.bloodnight.mob.meta.MobDrops;
 import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.mob.meta.VanillaLoot;
@@ -48,7 +50,9 @@ import java.util.regex.Pattern;
  * <p>
  * Old mobs are named by their class ({@code SpeedCreeper}); in snake case they are the ids of the store's mobs, which
  * are installed untouched so they keep getting updates. A world where an old mob was off gives it weight 0; a world
- * with its own name, health or damage for it gets an {@link AttributeOverride}. Drops become registered items.
+ * with its own name, health or damage for it gets an {@link AttributeOverride}. Drop items become registered items;
+ * a world's drops become the loot table {@code legacy_<world>} and a mob's {@code legacy_<mob>}, each entry repeatable
+ * with its old stack amount, assigned with the old drop amount as equally likely slot counts.
  */
 public final class LegacyConverter {
     private static final Pattern LEADING_TAG = Pattern.compile("^<(#[0-9a-fA-F]{6}|[a-z_]+)>");
@@ -70,6 +74,7 @@ public final class LegacyConverter {
     private final List<String> notes = new ArrayList<>();
     private String nameLanguage = MobName.ENGLISH;
     private ItemRegistry registry;
+    private Map<String, LootTable> tables = new LinkedHashMap<>();
 
     /**
      * @param legacy the old settings
@@ -101,11 +106,17 @@ public final class LegacyConverter {
      * @param worlds the current settings of the loaded worlds, by world name
      * @param mobs   the current mobs
      * @param items  the current registered items
+     * @param loot   the current loot tables
      * @return the converted settings and what could not be taken over
      */
     public Result convert(
-            ConfigFile main, Map<String, WorldSettings> worlds, Collection<CustomMob> mobs, ItemRegistry items) {
+            ConfigFile main,
+            Map<String, WorldSettings> worlds,
+            Collection<CustomMob> mobs,
+            ItemRegistry items,
+            LootTables loot) {
         notes.clear();
+        tables = new LinkedHashMap<>(loot.tables());
         registry =
                 new ItemRegistry(new LinkedHashMap<>(items.registrations()), new LinkedHashMap<>(items.definitions()));
         Map<String, Object> general = legacy.general();
@@ -122,7 +133,12 @@ public final class LegacyConverter {
         });
         mobDrops(installed);
         return new Result(
-                convertedMain, convertedWorlds, List.copyOf(installed.values()), registry, List.copyOf(notes));
+                convertedMain,
+                convertedWorlds,
+                List.copyOf(installed.values()),
+                registry,
+                new LootTables(tables),
+                List.copyOf(notes));
     }
 
     private ConfigFile server(ConfigFile main, Map<String, Object> general) {
@@ -179,8 +195,9 @@ public final class LegacyConverter {
         copy(mobs, "healthMultiplier", tree, "mobSettings.healthMultiplier");
         copy(mobs, "forcePhantoms", tree, "mobSettings.forcePhantoms");
         copy(mobs, "spawnPercentage", tree, "mobSettings.spawning.spawnPercentage");
-        vanilla(tree, mobs, String.valueOf(old.get("world")));
-        worldDrops(tree, mobs);
+        String world = String.valueOf(old.get("world"));
+        vanilla(tree, mobs, world);
+        worldLoot(tree, mobs, world);
         sounds(tree, Legacy.map(old.get("soundSettings")));
         deathActions(tree, Legacy.map(old.get("deathActionSettings")));
         mobTypes(tree, mobs, installed);
@@ -192,12 +209,12 @@ public final class LegacyConverter {
             union(tree, "mobSettings.spawning.ignoredReasons", List.of("SPAWNER", "TRIAL_SPAWNER"));
         }
         if (Boolean.TRUE.equals(general.get("spawnerDropSuppression"))) {
-            union(tree, "worldDrops.vanilla.excludedReasons", List.of("SPAWNER", "TRIAL_SPAWNER"));
+            union(tree, "loot.ordinary.excludedReasons", List.of("SPAWNER", "TRIAL_SPAWNER"));
         }
         List<String> noIncrease = Legacy.list(general.get("noVanillaDropIncrease")).stream()
                 .map(String::valueOf)
                 .toList();
-        union(tree, "worldDrops.vanilla.excludedTypes", noIncrease);
+        union(tree, "loot.ordinary.excludedTypes", noIncrease);
     }
 
     private void nightSelection(ObjectNode tree, Map<String, Object> old) {
@@ -244,27 +261,12 @@ public final class LegacyConverter {
     }
 
     private void vanilla(ObjectNode tree, Map<String, Object> mobs, String world) {
-        copy(mobs, "experienceMultiplier", tree, "worldDrops.vanilla.xpValue");
-        if (mobs.containsKey("experienceMultiplier")) set(tree, "worldDrops.vanilla.xpModifier", text("MULTIPLY"));
+        copy(mobs, "experienceMultiplier", tree, "loot.ordinary.xpValue");
+        if (mobs.containsKey("experienceMultiplier")) set(tree, "loot.ordinary.xpModifier", text("MULTIPLY"));
         Map<String, Object> vanilla = Legacy.map(mobs.get("vanillaMobSettings"));
-        copy(vanilla, "dropMultiplier", tree, "worldDrops.vanilla.lootMultiplier");
-        switch (String.valueOf(vanilla.get("vanillaDropMode"))) {
-            case "COMBINE" ->
-                set(
-                        tree,
-                        "worldDrops.vanilla.extraDrops",
-                        MAPPER.getNodeFactory().booleanNode(true));
-            case "CUSTOM" -> {
-                set(
-                        tree,
-                        "worldDrops.vanilla.lootMultiplier",
-                        MAPPER.getNodeFactory().numberNode(0));
-                set(
-                        tree,
-                        "worldDrops.vanilla.extraDrops",
-                        MAPPER.getNodeFactory().booleanNode(true));
-            }
-            default -> {}
+        copy(vanilla, "dropMultiplier", tree, "loot.ordinary.lootMultiplier");
+        if ("CUSTOM".equals(String.valueOf(vanilla.get("vanillaDropMode")))) {
+            set(tree, "loot.ordinary.lootMultiplier", MAPPER.getNodeFactory().numberNode(0));
         }
         for (String multiplier : List.of("damageMultiplier", "healthMultiplier")) {
             Object own = vanilla.get(multiplier);
@@ -275,17 +277,36 @@ public final class LegacyConverter {
         }
     }
 
-    private void worldDrops(ObjectNode tree, Map<String, Object> mobs) {
+    /**
+     * Turns the world's drops into its loot table, assigned to special mobs and, where the old drop mode added the
+     * drops to vanilla loot or replaced it, to ordinary monsters as well.
+     */
+    private void worldLoot(ObjectNode tree, Map<String, Object> mobs, String world) {
         if (mobs.containsKey("experienceMultiplier")) {
-            set(tree, "worldDrops.xpScope", text("WORLD"));
-            set(tree, "worldDrops.xpModifier", text("MULTIPLY"));
-            copy(mobs, "experienceMultiplier", tree, "worldDrops.xpValue");
+            set(tree, "loot.experience.modifier", text("MULTIPLY"));
+            copy(mobs, "experienceMultiplier", tree, "loot.experience.value");
         }
-        List<Drop> drops = drops(mobs.get("drops"));
-        if (drops.isEmpty()) return;
-        set(tree, "worldDrops.dropList", MAPPER.valueToTree(drops));
-        set(tree, "worldDrops.weightsScope", text("WORLD"));
-        set(tree, "worldDrops.weights", MAPPER.valueToTree(weights((int) number(mobs.get("dropAmount"), 1))));
+        List<LootEntry> entries = entries(mobs.get("drops"));
+        if (entries.isEmpty()) return;
+        String table = table(world, entries);
+        JsonNode assigned = MAPPER.valueToTree(List.of(table));
+        JsonNode slots = MAPPER.valueToTree(slots((int) number(mobs.get("dropAmount"), 1)));
+        set(tree, "loot.tables", assigned);
+        set(tree, "loot.slots", slots);
+        String mode = String.valueOf(Legacy.map(mobs.get("vanillaMobSettings")).get("vanillaDropMode"));
+        if (mode.equals("COMBINE") || mode.equals("CUSTOM")) {
+            set(tree, "loot.ordinary.tables", assigned);
+            set(tree, "loot.ordinary.slots", slots);
+        }
+    }
+
+    /**
+     * @return the id of the new table {@code legacy_<owner>} holding the entries
+     */
+    private String table(String owner, List<LootEntry> entries) {
+        String id = "legacy_" + owner.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]", "_");
+        tables.put(id, new LootTable("Legacy " + owner, entries));
+        return id;
     }
 
     private void sounds(ObjectNode tree, Map<String, Object> old) {
@@ -402,7 +423,9 @@ public final class LegacyConverter {
                 notes.add("The old mob %s is not in the store and was left out".formatted(id));
                 continue;
             }
-            current = store.install(current, id).mobs();
+            MobStore.Change change = store.install(current, tables.keySet(), id);
+            current = change.mobs();
+            change.tables().forEach(tables::putIfAbsent);
         }
         known.removeAll(active);
         known.forEach(id -> notes.add("The old mob %s was off in every world and was not installed".formatted(id)));
@@ -470,39 +493,24 @@ public final class LegacyConverter {
             for (Map<String, Object> old : oldMobs(mobs)) {
                 String id = id(String.valueOf(old.get("mobName")));
                 CustomMob mob = installed.get(id);
-                List<Drop> drops = drops(old.get("drops"));
-                if (mob == null || drops.isEmpty()) continue;
+                List<LootEntry> entries = entries(old.get("drops"));
+                if (mob == null || entries.isEmpty()) continue;
                 if (!done.add(id)) {
                     notes.add("%s: the drops of %s were left out, another world's are used".formatted(world, id));
                     continue;
                 }
                 int amount = (int) number(old.get("dropAmount"), -1);
                 boolean own = Boolean.TRUE.equals(old.get("overrideDefaultDrops"));
-                MobDrops current = mob.mobDrops();
+                MobLoot current = mob.loot();
                 installed.put(
                         id,
-                        new CustomMob(
-                                mob.id(),
-                                mob.equipment(),
-                                mob.attributes(),
-                                mob.behaviour(),
-                                new MobDrops(
-                                        amount > 0 ? ConfigurationScope.MOB : ConfigurationScope.WORLD,
-                                        amount > 0 ? weights(amount) : current.weights(),
-                                        own
-                                                ? List.of(ConfigurationScope.MOB)
-                                                : List.of(
-                                                        ConfigurationScope.GLOBAL,
-                                                        ConfigurationScope.WORLD,
-                                                        ConfigurationScope.MOB),
-                                        drops,
-                                        current.xpScope(),
-                                        current.xpModifier(),
-                                        current.xpValue(),
-                                        current.vanillaLoot()),
-                                mob.extension(),
-                                mob.spawn(),
-                                mob.origin()));
+                        mob.withLoot(new MobLoot(
+                                List.of(table(id, entries)),
+                                amount > 0 ? slots(amount) : current.slots(),
+                                !own,
+                                current.replaceSame(),
+                                current.vanillaLoot(),
+                                current.experience())));
             }
         });
         if (!natural.isEmpty() && !natural.containsValue(true)) {
@@ -513,30 +521,15 @@ public final class LegacyConverter {
         }
     }
 
-    private static CustomMob withVanillaLoot(CustomMob mob, VanillaLoot loot) {
-        MobDrops drops = mob.mobDrops();
-        return new CustomMob(
-                mob.id(),
-                mob.equipment(),
-                mob.attributes(),
-                mob.behaviour(),
-                new MobDrops(
-                        drops.weightsScope(),
-                        drops.weights(),
-                        drops.dropTables(),
-                        drops.dropList(),
-                        drops.xpScope(),
-                        drops.xpModifier(),
-                        drops.xpValue(),
-                        loot),
-                mob.extension(),
-                mob.spawn(),
-                mob.origin());
+    private static CustomMob withVanillaLoot(CustomMob mob, VanillaLoot vanillaLoot) {
+        MobLoot loot = mob.loot();
+        return mob.withLoot(new MobLoot(
+                loot.tables(), loot.slots(), loot.inherit(), loot.replaceSame(), vanillaLoot, loot.experience()));
     }
 
-    private List<Drop> drops(@Nullable Object entries) {
-        List<Drop> drops = new ArrayList<>();
-        for (Object entry : Legacy.list(entries)) {
+    private List<LootEntry> entries(@Nullable Object drops) {
+        List<LootEntry> entries = new ArrayList<>();
+        for (Object entry : Legacy.list(drops)) {
             Map<String, Object> drop = Legacy.map(entry);
             Optional<ItemStack> item = items.apply(drop.get("item"));
             if (item.isEmpty()) {
@@ -544,9 +537,13 @@ public final class LegacyConverter {
                 continue;
             }
             String id = registry.register(item.get());
-            drops.add(new Drop(id, item.get().getAmount(), (int) number(drop.get("weight"), 1)));
+            entries.add(new LootEntry(
+                    id,
+                    (int) number(drop.get("weight"), 1),
+                    LootAmount.exactly(item.get().getAmount()),
+                    true));
         }
-        return drops;
+        return entries;
     }
 
     private static List<Map<String, Object>> oldMobs(Map<String, Object> mobs) {
@@ -565,10 +562,10 @@ public final class LegacyConverter {
         return mobName.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase(Locale.ROOT);
     }
 
-    private static Map<Integer, Integer> weights(int amount) {
-        Map<Integer, Integer> weights = new LinkedHashMap<>();
-        for (int count = 1; count <= Math.max(amount, 1); count++) weights.put(count, 1);
-        return weights;
+    private static Map<Integer, Integer> slots(int amount) {
+        Map<Integer, Integer> slots = new LinkedHashMap<>();
+        for (int count = 1; count <= Math.max(amount, 1); count++) slots.put(count, 1);
+        return slots;
     }
 
     private static ValueModifier modifier(@Nullable Object value) {
@@ -632,6 +629,7 @@ public final class LegacyConverter {
      * @param worlds the settings of the converted worlds, by world name
      * @param mobs   every mob afterwards
      * @param items  every registered item afterwards
+     * @param loot   every loot table afterwards
      * @param notes  what could not be taken over, or not as it was
      */
     public record Result(
@@ -639,5 +637,6 @@ public final class LegacyConverter {
             Map<String, WorldSettings> worlds,
             List<CustomMob> mobs,
             ItemRegistry items,
+            LootTables loot,
             List<String> notes) {}
 }

@@ -6,20 +6,18 @@
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.configuration.ConfigFile;
-import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import org.bukkit.World;
 
 import java.util.Map;
 
 /**
- * The settings the editor edits: the server-wide settings, the global drops and every world's settings.
+ * The settings the editor edits: the server-wide settings and every world's settings.
  *
- * @param main        {@code config.yml}
- * @param globalDrops {@code global_drops.yml}
- * @param worlds      each world's settings by the world's UID
+ * @param main   {@code config.yml}
+ * @param worlds each world's settings by the world's UID
  */
-public record SettingsPayload(ConfigFile main, GlobalDrops globalDrops, Map<String, WorldPayload> worlds) {
+public record SettingsPayload(ConfigFile main, Map<String, WorldPayload> worlds) {
     /**
      * @param name        the world's name, for display
      * @param environment its kind, {@code NORMAL}, {@code NETHER}, {@code THE_END} or {@code CUSTOM}; the editor offers

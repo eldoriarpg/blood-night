@@ -343,19 +343,17 @@
         }
       }
     },
-    "mobDrops" : {
-      "weightsScope" : "GLOBAL",
-      "weights" : {
-        "1" : 90,
-        "2" : 50,
-        "3" : 10
+    "loot" : {
+      "tables" : [ "blaze_rider" ],
+      "slots" : {
+        "0" : 2,
+        "1" : 5,
+        "2" : 2
       },
-      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
-      "dropList" : [ ],
-      "xpScope" : "GLOBAL",
-      "xpModifier" : "MULTIPLY",
-      "xpValue" : 4.0,
-      "vanillaLoot" : "KEEP"
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null
     },
     "extension" : {
       "type" : "CARRIER",
@@ -384,6 +382,42 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    }
+  },
+  "lootTables" : {
+    "blaze_rider" : {
+      "name" : "Blaze Rider",
+      "entries" : [ {
+        "item" : "minecraft:blaze_powder",
+        "weight" : 8,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 4,
+          "choices" : { }
+        },
+        "repeatable" : true
+      }, {
+        "item" : "minecraft:blaze_rod",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 2,
+          "choices" : { }
+        },
+        "repeatable" : false
+      }, {
+        "item" : "minecraft:magma_cream",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false
+      } ]
     }
   }
 }
