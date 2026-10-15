@@ -30,7 +30,7 @@ newer to start Gradle (Gradle downloads JDK 25 for the build itself), Node.js 24
 `fe-e2e-install` once. `./toolchain.sh help` lists everything; the main ones:
 
 - `./toolchain.sh verify`: what CI checks, Java and frontend.
-- `./toolchain.sh be-server`: Paper test server with the plugin in `core/run/`.
+- `./toolchain.sh be-server`: Paper test server with the plugin in `plugin/core/run/`.
 - `./toolchain.sh docker-up`: database, web backend on port 8080 and frontend on port 4000.
 - `./toolchain.sh fe-dev`: frontend dev server on port 4000, against the backend on port 8080.
 - `./toolchain.sh api-types`: regenerates the payload schema, the API description and the frontend types after a

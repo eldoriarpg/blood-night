@@ -5,7 +5,7 @@
  */
 
 /**
- * Zips the resource pack in ../resourcepack into static/pack/bloodnight.zip, so the site serves it. Entries are sorted
+ * Zips the resource pack in ../plugin/resourcepack into static/pack/bloodnight.zip, so the site serves it. Entries are sorted
  * and dated alike, so the same pack always gives the same file and the same hash.
  */
 import {mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
@@ -14,7 +14,7 @@ import {fileURLToPath} from 'node:url'
 import {zipSync} from 'fflate'
 
 const docs = dirname(dirname(fileURLToPath(import.meta.url)))
-const source = join(dirname(docs), 'resourcepack')
+const source = join(dirname(docs), 'plugin', 'resourcepack')
 const target = join(docs, 'static', 'pack', 'bloodnight.zip')
 const date = new Date('2020-01-01T00:00:00Z')
 

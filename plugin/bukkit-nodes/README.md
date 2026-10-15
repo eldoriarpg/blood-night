@@ -5,8 +5,8 @@ platform by adding Bukkit nodes, Bukkit types and the triggers that call a mob's
 
 ## Overview
 
-The graph modules ([graph-model](../graph-model/README.md), [graph-compiler](../graph-compiler/README.md),
-[graph-std](../graph-std/README.md)) know nothing about Minecraft. This module supplies everything Bukkit-specific
+The graph modules ([graph-model](../../graph/model/README.md), [graph-compiler](../../graph/compiler/README.md),
+[graph-std](../../graph/std/README.md)) know nothing about Minecraft. This module supplies everything Bukkit-specific
 and assembles it in `BloodNightPlatform.create(classpath)`, a `GraphPlatform` that compiles graphs into classes
 implementing `CompiledBehaviour` from [api](../api/README.md), each constructed with a `MobContext`.
 
@@ -81,7 +81,7 @@ build, see [catalog](../catalog/README.md).
 
 ## Dependencies
 
-Depends on: [api](../api/README.md) and [graph-std](../graph-std/README.md) (both exposed as `api`), the Paper API
+Depends on: [api](../api/README.md) and [graph-std](../../graph/std/README.md) (both exposed as `api`), the Paper API
 (`compileOnly`); tests use MockBukkit.
 
 Used by: [catalog](../catalog/README.md) and [core](../core/README.md).

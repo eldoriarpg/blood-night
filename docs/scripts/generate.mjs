@@ -19,9 +19,9 @@ const target = join(docs, 'docs', 'reference')
 const check = process.argv.includes('--check')
 
 const sources = {
-  catalog: join(root, 'catalog', 'build', 'catalog', 'catalog.json'),
+  catalog: join(root, 'plugin', 'catalog', 'build', 'catalog', 'catalog.json'),
   schema: join(root, 'web', 'frontend', 'src', 'api', 'generated', 'payload.schema.json'),
-  descriptor: join(root, 'core', 'build', 'generated', 'plugin-yml', 'Paper', 'paper-plugin.yml'),
+  descriptor: join(root, 'plugin', 'core', 'build', 'generated', 'plugin-yml', 'Paper', 'paper-plugin.yml'),
 }
 
 const generatedNote = '{/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}'

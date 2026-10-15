@@ -7,7 +7,7 @@ or BloodNight.
 ## Overview
 
 Each standard node is a public constant of `StandardNodes`, defined with the building blocks of
-[graph-compiler](../graph-compiler/README.md). `StandardNodes.all()` returns the whole set, and `StdNodes` holds the
+[graph-compiler](../compiler/README.md). `StandardNodes.all()` returns the whole set, and `StdNodes` holds the
 type id of each one, so graphs built in code do not spell ids by hand.
 
 | Category | Nodes |
@@ -82,14 +82,14 @@ To add a standard node:
 4. Cover its behaviour in `StandardNodesTest`; `Harness` compiles and runs small graphs and records the values they
    produce.
 5. The node changes the editor catalog, so update the snapshot of
-   [graph-editor-payload](../graph-editor-payload/README.md).
+   [graph-editor-payload](../editor-payload/README.md).
 
 ## Dependencies
 
-Depends on: [graph-compiler](../graph-compiler/README.md) (`api`).
+Depends on: [graph-compiler](../compiler/README.md) (`api`).
 
 Used by: `bukkit-nodes` (which adds the Paper nodes on top), and the tests of
-[graph-editor-payload](../graph-editor-payload/README.md).
+[graph-editor-payload](../editor-payload/README.md).
 
 ## Building and testing
 

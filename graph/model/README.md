@@ -7,7 +7,7 @@ compiler dependency; every other graph module builds on it.
 
 A graph is a map of node instances by id. A node instance only says which node type it is and how it is wired; what
 the node does is defined elsewhere, by the node definition registered under that type in
-[graph-compiler](../graph-compiler/README.md).
+[graph-compiler](../compiler/README.md).
 
 A node instance (`NodeInstance`) has:
 
@@ -65,14 +65,14 @@ Graph again = GraphJson.read(json);
 ```
 
 These builders check nothing against a platform. To have node types, ports and config fields checked as they are
-named, use `Graphs` in [graph-compiler](../graph-compiler/README.md).
+named, use `Graphs` in [graph-compiler](../compiler/README.md).
 
 ## Dependencies
 
 Depends on: Jackson 3 databind and annotations (exposed as `api`), JSpecify (from the `bloodnight.library`
 convention plugin).
 
-Used by: [graph-compiler](../graph-compiler/README.md) directly, and through it by every module that compiles or
+Used by: [graph-compiler](../compiler/README.md) directly, and through it by every module that compiles or
 edits graphs.
 
 ## Building and testing

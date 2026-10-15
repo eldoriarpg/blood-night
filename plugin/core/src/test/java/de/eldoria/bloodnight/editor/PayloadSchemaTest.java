@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PayloadSchemaTest {
-    private static final Path COMMITTED = Path.of("..").resolve(PayloadSchema.PATH);
+    private static final Path COMMITTED = Path.of("../..").resolve(PayloadSchema.PATH);
 
     @Test
     void theCommittedSchemaIsCurrent() throws IOException {

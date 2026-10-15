@@ -28,14 +28,14 @@ web editor that several players can use at the same time.
 
 | Module | Path | What |
 |---|---|---|
-| `:graph-model` | [`graph-model`](graph-model/README.md) | Graphs, nodes, edges, macros (Bukkit-free) |
-| `:graph-compiler` | [`graph-compiler`](graph-compiler/README.md) | Compiles graphs to Java |
-| `:graph-std` | [`graph-std`](graph-std/README.md) | Standard nodes |
-| `:graph-editor-payload` | [`graph-editor-payload`](graph-editor-payload/README.md) | The catalog the editor draws nodes from |
-| `:bukkit-nodes` | [`bukkit-nodes`](bukkit-nodes/README.md) | Paper nodes and triggers |
-| `:catalog` | [`catalog`](catalog/README.md) | Bundled catalog |
-| `:api` | [`api`](api/README.md) | Plugin API (events) |
-| `:core` | [`core`](core/README.md) | The plugin |
+| `:graph-model` | [`graph/model`](graph/model/README.md) | Graphs, nodes, edges, macros (Bukkit-free) |
+| `:graph-compiler` | [`graph/compiler`](graph/compiler/README.md) | Compiles graphs to Java |
+| `:graph-std` | [`graph/std`](graph/std/README.md) | Standard nodes |
+| `:graph-editor-payload` | [`graph/editor-payload`](graph/editor-payload/README.md) | The catalog the editor draws nodes from |
+| `:bukkit-nodes` | [`plugin/bukkit-nodes`](plugin/bukkit-nodes/README.md) | Paper nodes and triggers |
+| `:catalog` | [`plugin/catalog`](plugin/catalog/README.md) | Bundled catalog |
+| `:api` | [`plugin/api`](plugin/api/README.md) | Plugin API (events) |
+| `:core` | [`plugin/core`](plugin/core/README.md) | The plugin |
 | `:web-api` | [`web/api`](web/api/README.md) | Contract between plugin, web backend and frontend |
 | `:web-backend` | [`web/backend`](web/backend/README.md) | The editor service |
 | `:json-schema` | [`tools/json-schema`](tools/json-schema/README.md) | Writes JSON Schemas for the generated files |
@@ -55,7 +55,7 @@ direnv allow                    # once, with Nix
 ./toolchain.sh fe-install       # frontend dependencies; without Nix also fe-e2e-install for the test browsers
 ./toolchain.sh help             # every command
 ./toolchain.sh verify           # what CI checks: Java build and tests, frontend tests, lint, build
-./toolchain.sh be-server        # Paper test server with the plugin in core/run/
+./toolchain.sh be-server        # Paper test server with the plugin in plugin/core/run/
 ./toolchain.sh docker-up   # database, backend on :8080, frontend on :4000
 ./toolchain.sh fe-dev           # frontend dev server on :4000 against the backend on :8080
 ```

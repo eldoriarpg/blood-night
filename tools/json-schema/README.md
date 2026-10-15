@@ -61,7 +61,7 @@ The mapper is only used to write the default values of class fields as the confi
 
 - Depends on: Jackson databind and annotations (exposed as `api`), JSpecify through the library convention.
 - Used by (test scope only):
-  - [core](../../core/README.md): `PayloadSchema`, run by `./gradlew :core:generatePayloadSchema`, writes
+  - [core](../../plugin/core/README.md): `PayloadSchema`, run by `./gradlew :core:generatePayloadSchema`, writes
     `web/frontend/src/api/generated/payload.schema.json` from the editor payload and the catalog.
   - [web-backend](../../web/backend/README.md): `ApiSpec`, run by `./gradlew :web-backend:generateApiSpec`, writes the
     schemas of `web/backend/src/main/resources/api/openapi.json` from the [web-api](../../web/api/README.md) records.

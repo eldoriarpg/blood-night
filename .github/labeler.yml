@@ -12,27 +12,27 @@
 "a:api":
   - changed-files:
       - any-glob-to-any-file:
-          - "api/src/main/**"
+          - "plugin/api/src/main/**"
 "a:graph":
   - changed-files:
       - any-glob-to-any-file:
-          - "graph-model/src/main/**"
-          - "graph-compiler/src/main/**"
-          - "graph-std/src/main/**"
+          - "graph/model/src/main/**"
+          - "graph/compiler/src/main/**"
+          - "graph/std/src/main/**"
 "a:nodes":
   - changed-files:
       - any-glob-to-any-file:
-          - "bukkit-nodes/src/main/**"
+          - "plugin/bukkit-nodes/src/main/**"
 "a:core":
   - changed-files:
       - any-glob-to-any-file:
-          - "core/src/main/**"
-          - "resourcepack/**"
+          - "plugin/core/src/main/**"
+          - "plugin/resourcepack/**"
 "a:editor":
   - changed-files:
       - any-glob-to-any-file:
-          - "graph-editor-payload/**"
-          - "catalog/**"
+          - "graph/editor-payload/**"
+          - "plugin/catalog/**"
           - "web/**"
           - ".docker/**"
 "a:build":

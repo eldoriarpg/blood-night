@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class BuiltInStoreTest {
-    private static final Path ROOT = Path.of("..");
+    private static final Path ROOT = Path.of("../..");
 
     @TempDir
     Path out;

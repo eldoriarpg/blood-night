@@ -143,7 +143,7 @@ tasks {
     processResources {
         dependsOn(":catalog:generateCatalog")
         from(project(":catalog").layout.buildDirectory.file("catalog/catalog.json"))
-        from(rootProject.layout.projectDirectory.dir("resourcepack")) {
+        from(rootProject.layout.projectDirectory.dir("plugin/resourcepack")) {
             into("resourcepack")
         }
     }

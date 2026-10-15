@@ -151,10 +151,10 @@ unknown version answers `404`.
 
 ## Dependencies
 
-- Depends on: [web-api](../api/README.md) (the contract), [graph-editor-payload](../../graph-editor-payload/README.md)
+- Depends on: [web-api](../api/README.md) (the contract), [graph-editor-payload](../../graph/editor-payload/README.md)
   (reading catalogs), Javalin, SADU, the PostgreSQL driver, Jackson; Logback at runtime.
 - Tests also use [json-schema](../../tools/json-schema/README.md) and Testcontainers.
-- Used by: no Gradle module. [core](../../core/README.md) talks to it over HTTP, the [frontend](../frontend/README.md)
+- Used by: no Gradle module. [core](../../plugin/core/README.md) talks to it over HTTP, the [frontend](../frontend/README.md)
   over HTTP and WebSocket, with types generated from the OpenAPI description.
 
 ## Building and testing

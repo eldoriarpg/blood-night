@@ -52,8 +52,8 @@ MockBukkit catches up.
 | Plugin | Modules |
 |---|---|
 | `bloodnight.java` | [web-backend](../web/backend/README.md) (an application, not a library) |
-| `bloodnight.library` | [graph-model](../graph-model/README.md), [graph-compiler](../graph-compiler/README.md), [graph-std](../graph-std/README.md), [graph-editor-payload](../graph-editor-payload/README.md), [web-api](../web/api/README.md), [json-schema](../tools/json-schema/README.md) |
-| `bloodnight.paper` | [api](../api/README.md), [bukkit-nodes](../bukkit-nodes/README.md), [catalog](../catalog/README.md), [core](../core/README.md) |
+| `bloodnight.library` | [graph-model](../graph/model/README.md), [graph-compiler](../graph/compiler/README.md), [graph-std](../graph/std/README.md), [graph-editor-payload](../graph/editor-payload/README.md), [web-api](../web/api/README.md), [json-schema](../tools/json-schema/README.md) |
+| `bloodnight.paper` | [api](../plugin/api/README.md), [bukkit-nodes](../plugin/bukkit-nodes/README.md), [catalog](../plugin/catalog/README.md), [core](../plugin/core/README.md) |
 
 Modules add their own plugins on top where needed, for example `application` in web-backend or Shadow and the Paper
 plugin tooling in core. The root `build.gradle.kts` only declares the Shadow plugin without applying it.

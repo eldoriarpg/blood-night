@@ -25,9 +25,9 @@ Backend (Gradle)
   be-format-check       Checks the formatting without changing anything
   be-spotbugs           SpotBugs over every module
   be-snapshot           Rewrites the catalog snapshot test after an intended change to nodes; review its diff
-  be-jar                Builds the plugin jar (core/build/libs)
-  be-server             Starts the Paper test server with the plugin (core/run)
-  be-folia              Starts a Folia test server with the plugin (core/run-folia)
+  be-jar                Builds the plugin jar (plugin/core/build/libs)
+  be-server             Starts the Paper test server with the plugin (plugin/core/run)
+  be-folia              Starts a Folia test server with the plugin (plugin/core/run-folia)
   be-backend            Runs the web backend from source (needs a database, see docker-db); item assets are cached
                         in web/backend/build/asset-cache unless ASSET_CACHE says otherwise
 

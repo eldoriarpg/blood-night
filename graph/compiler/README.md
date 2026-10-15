@@ -1,6 +1,6 @@
 # Graph Compiler
 
-`:graph-compiler`: turns [graph-model](../graph-model/README.md) graphs into Java classes, compiled and loaded at
+`:graph-compiler`: turns [graph-model](../model/README.md) graphs into Java classes, compiled and loaded at
 runtime. It also defines what a node type is, so every node set (standard nodes, Paper nodes) is written against this
 module.
 
@@ -123,13 +123,13 @@ To add a node type, build a `NodeDescriptor` with `NodeDescriptor.builder(id, ki
 the matching definition record. Node ids are dotted lower-case paths (`math.add`), port and field ids single
 segments (`result`); the category defaults to the first id segment and names are derived from ids. Mark a node
 `stateful()` when evaluating it changes state, so its code is never moved. See
-[graph-std](../graph-std/README.md) for many small examples.
+[graph-std](../std/README.md) for many small examples.
 
 ## Dependencies
 
-Depends on: [graph-model](../graph-model/README.md) and JavaPoet (both `api`), ECJ (implementation).
+Depends on: [graph-model](../model/README.md) and JavaPoet (both `api`), ECJ (implementation).
 
-Used by: [graph-std](../graph-std/README.md) and [graph-editor-payload](../graph-editor-payload/README.md), and
+Used by: [graph-std](../std/README.md) and [graph-editor-payload](../editor-payload/README.md), and
 through them by `bukkit-nodes`, `catalog`, `core` and `web-backend`.
 
 ## Building and testing

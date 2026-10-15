@@ -6,7 +6,7 @@
 web/frontend/e2e/results
 web/frontend/e2e/report
 web/frontend/coverage
-core/run
+plugin/core/run
 .concept
 .git
 .idea

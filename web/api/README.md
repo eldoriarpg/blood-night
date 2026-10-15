@@ -58,7 +58,7 @@ as `Authorization: Bearer <token>`; the stream takes the participant token as th
 ## Dependencies
 
 - Depends on: Jackson databind and annotations (exposed as `api`), JSpecify through the library convention.
-- Used by: [web-backend](../backend/README.md) (serves the routes) and [core](../../core/README.md) (the plugin's
+- Used by: [web-backend](../backend/README.md) (serves the routes) and [core](../../plugin/core/README.md) (the plugin's
   editor client, which calls them). The [frontend](../frontend/README.md) sees these types only through the generated
   OpenAPI description.
 

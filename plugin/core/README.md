@@ -35,7 +35,7 @@ listeners and timers, and compiles every mob's behaviour in the background.
 - **Announcements.** Begin and end messages (chat, title, subtitle or action bar), a boss bar, begin effects, sounds
   and ambience. Texts are MiniMessage in `src/main/resources/messages/<language>.properties` (en, de, es, ms, tr,
   zh), rendered in each player's client language.
-- **Editor.** The plugin opens a session on the editor service (see [web/backend](../web/backend/README.md)), uploads
+- **Editor.** The plugin opens a session on the editor service (see [web/backend](../../web/backend/README.md)), uploads
   the catalog and a payload of mobs, macros, items and settings, and later pulls the result back and applies it.
 
 ## Layout
@@ -123,11 +123,11 @@ Settings of worlds the server does not know are skipped.
 
 ## Dependencies
 
-Depends on: [api](../api/README.md), [web/api](../web/api/README.md), [bukkit-nodes](../bukkit-nodes/README.md) and
-[graph-editor-payload](../graph-editor-payload/README.md); Eldoria utilities, Jackson 3 with jackson-bukkit, Ocular
+Depends on: [api](../api/README.md), [web/api](../../web/api/README.md), [bukkit-nodes](../bukkit-nodes/README.md) and
+[graph-editor-payload](../../graph/editor-payload/README.md); Eldoria utilities, Jackson 3 with jackson-bukkit, Ocular
 (configuration files), StrokkCommands (annotation processor). The generated catalog of
 [catalog](../catalog/README.md) is bundled as `/catalog.json`. Tests also use
-[tools/json-schema](../tools/json-schema/README.md) and MockBukkit.
+[tools/json-schema](../../tools/json-schema/README.md) and MockBukkit.
 
 Used by: no other module; it is the deliverable. The shadow jar relocates its libraries below
 `de.eldoria.bloodnight.libs`.
@@ -135,8 +135,8 @@ Used by: no other module; it is the deliverable. The shadow jar relocates its li
 ## Building and testing
 
 ```sh
-./toolchain.sh be-jar                          # plugin jar into core/build/libs
-./toolchain.sh be-server                       # Paper 26.3 test server in core/run with the plugin
+./toolchain.sh be-jar                          # plugin jar into plugin/core/build/libs
+./toolchain.sh be-server                       # Paper 26.3 test server in plugin/core/run with the plugin
 ./toolchain.sh be-test1 core '*Configuration*' # tests matching a pattern
 ./toolchain.sh be-format                       # formatting and license headers
 ./toolchain.sh api-types                       # regenerate the payload schema and the frontend types

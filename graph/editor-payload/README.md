@@ -7,7 +7,7 @@ palettes, ports, typed-in values and connection rules from the catalog without k
 ## Overview
 
 `CatalogGenerator.generate(platform)` turns a `GraphPlatform` from
-[graph-compiler](../graph-compiler/README.md) into a `Catalog`:
+[graph-compiler](../compiler/README.md) into a `Catalog`:
 
 - `format`: version of the catalog structure (`Catalog.FORMAT`, currently 1).
 - `version`: the first 16 hex characters of a SHA-256 over the content, so user data can name the catalog it was
@@ -61,7 +61,7 @@ Changing a descriptor, a node set or a record in this module changes what the ed
 
 ## Dependencies
 
-Depends on: [graph-compiler](../graph-compiler/README.md) (`api`); [graph-std](../graph-std/README.md) for tests
+Depends on: [graph-compiler](../compiler/README.md) (`api`); [graph-std](../std/README.md) for tests
 only.
 
 Used by: `core` (`api`), `catalog` and `web-backend`.

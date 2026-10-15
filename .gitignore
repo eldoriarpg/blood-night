@@ -108,9 +108,9 @@ gradle-app.setting
 
 .concept/
 
-/core/run/
+/plugin/core/run/
 
 .direnv/
 /test-results/
-/core/run-folia/
+/plugin/core/run-folia/
 .kotlin/

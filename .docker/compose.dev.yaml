@@ -28,13 +28,13 @@ services:
       - gradle-project:/home/gradle/project/.gradle
       - gradle-buildsrc:/home/gradle/project/buildSrc/.gradle
       - gradle-build-buildSrc:/home/gradle/project/buildSrc/build
-      - gradle-build-graph-model:/home/gradle/project/graph-model/build
-      - gradle-build-graph-compiler:/home/gradle/project/graph-compiler/build
-      - gradle-build-graph-std:/home/gradle/project/graph-std/build
-      - gradle-build-graph-editor-payload:/home/gradle/project/graph-editor-payload/build
-      - gradle-build-bukkit-nodes:/home/gradle/project/bukkit-nodes/build
-      - gradle-build-catalog:/home/gradle/project/catalog/build
-      - gradle-build-core:/home/gradle/project/core/build
+      - gradle-build-graph-model:/home/gradle/project/graph/model/build
+      - gradle-build-graph-compiler:/home/gradle/project/graph/compiler/build
+      - gradle-build-graph-std:/home/gradle/project/graph/std/build
+      - gradle-build-graph-editor-payload:/home/gradle/project/graph/editor-payload/build
+      - gradle-build-bukkit-nodes:/home/gradle/project/plugin/bukkit-nodes/build
+      - gradle-build-catalog:/home/gradle/project/plugin/catalog/build
+      - gradle-build-core:/home/gradle/project/plugin/core/build
       - gradle-build-api:/home/gradle/project/api/build
       - gradle-build-web-api:/home/gradle/project/web/api/build
       - gradle-build-web-backend:/home/gradle/project/web/backend/build
