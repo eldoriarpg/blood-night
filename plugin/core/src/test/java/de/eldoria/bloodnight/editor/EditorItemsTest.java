@@ -40,8 +40,8 @@ class EditorItemsTest {
         stored.setAmount(1);
         stored.editMeta(meta -> meta.setCustomModelData(7));
         ItemRegistry current = new ItemRegistry(Map.of("abc", stored), null);
-        EditorItem edit =
-                new EditorItem(ItemKind.REGISTERED, "minecraft:stick", "<red>Edge", List.of("<gray>Sharp"), Map.of());
+        EditorItem edit = new EditorItem(
+                ItemKind.REGISTERED, "minecraft:stick", "<red>Edge", List.of("<gray>Sharp"), Map.of(), 64);
 
         ItemRegistry applied = EditorItems.apply(current, Map.of("abc", edit));
 
@@ -55,7 +55,8 @@ class EditorItemsTest {
 
     @Test
     void itemsMadeInTheEditorBecomeDefinitions() {
-        EditorItem sword = new EditorItem(ItemKind.DEFINED, "minecraft:golden_axe", "<gold>Axe", List.of(), Map.of());
+        EditorItem sword =
+                new EditorItem(ItemKind.DEFINED, "minecraft:golden_axe", "<gold>Axe", List.of(), Map.of(), null);
         ItemRegistry applied = EditorItems.apply(new ItemRegistry(), Map.of("knight_axe", sword));
 
         assertEquals(

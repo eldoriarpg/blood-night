@@ -151,6 +151,7 @@ test('a loot table is made, filled, previewed and followed to its uses', async (
     expect(stage.changes[1]).toEqual([{op: 'add', path: '/lootTables/knight_gear/entries/-', value: {item: 'minecraft:golden_axe', weight: 10, amount: {mode: 'RANGE', min: 1, max: 1, choices: {}}, repeatable: false}}])
 
     await expect(page.getByText('100 % of picks')).toBeVisible()
+    await expect(page.getByText('Always one: this item does not stack.').last()).toBeVisible()
     await page.getByRole('button', {name: 'Roll one pick'}).click()
     await expect(page.getByText('1 × Golden Axe')).toBeVisible()
 

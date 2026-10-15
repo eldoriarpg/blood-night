@@ -12,6 +12,7 @@ import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
 import LootAmountField from '~/views/editorview/loot/LootAmountField.vue'
 import type {LootAmount, LootEntry} from '~/api/generated/payload'
 import type {ItemChoice} from '~/util/items/itemChoices'
+import {stackSize, withinStack} from '~/util/loot/lootTables'
 
 /**
  * One entry of a loot table: its item, its weight with the chance that gives it to fill a slot, how many drop, and
@@ -31,6 +32,8 @@ const emit = defineEmits<{
 }>()
 
 const {t} = useI18n()
+const session = useEditorSession()
+const size = computed(() => stackSize(props.entry.item, session.payload.value))
 const weight = ref<number | undefined>(undefined)
 
 watch(() => props.entry.weight, value => {
@@ -43,7 +46,7 @@ function save(change: Partial<LootEntry>): void {
 }
 
 function saveItem(item: string | undefined): void {
-  if (item) save({item})
+  if (item) save({item, amount: withinStack(props.entry.amount, stackSize(item, session.payload.value))})
 }
 
 function saveWeight(): void {
@@ -63,7 +66,7 @@ function saveWeight(): void {
       <span class="pb-2 text-sm text-ink-muted">{{ t('editor.loot.share', {percent: Math.round(share * 100)}) }}</span>
       <MutedIconButton v-if="!readOnly" :label="t('editor.loot.removeEntry')" class="mb-1 ml-auto" hover="error" icon="trash" @click="emit('remove')"/>
     </div>
-    <LootAmountField :read-only="readOnly" :value="entry.amount" @save="(amount: LootAmount) => save({amount})"/>
+    <LootAmountField :read-only="readOnly" :stack-size="size" :value="entry.amount" @save="(amount: LootAmount) => save({amount})"/>
     <ToggleSetting :disabled="readOnly" :hint="t('editor.loot.repeatableHint')" :label="t('editor.loot.repeatable')" :model-value="entry.repeatable" @update:model-value="repeatable => save({repeatable})"/>
   </li>
 </template>

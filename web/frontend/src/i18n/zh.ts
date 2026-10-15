@@ -883,6 +883,9 @@ export default {
                 weightOf: '{amount} 的权重',
                 remove: '移除 {amount}',
                 add: '添加数量',
+                single: '始终为一个：此物品不可堆叠。',
+                tooMany: '超过一组（{size}）。',
+                cap: '降到 {size}',
             },
             asBroader: {
                 mob: '同世界或服务器',

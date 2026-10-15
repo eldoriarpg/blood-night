@@ -30,6 +30,7 @@ import java.util.stream.Stream;
  *
  * @param minecraftVersion the server's Minecraft version, e.g. {@code 26.3}
  * @param materials        material keys, sorted
+ * @param stackSizes       how many of a material fit in one stack, by key, for the materials that do not stack to 64
  * @param enchantments     enchantment keys, sorted
  * @param entityClasses    the Bukkit interface of each entity type, by type name, e.g. {@code CREEPER} to
  *                         {@code org.bukkit.entity.Creeper}; the editor types Self and Extension of a mob by it
@@ -47,6 +48,7 @@ import java.util.stream.Stream;
 public record EditorChoices(
         String minecraftVersion,
         List<String> materials,
+        Map<String, Integer> stackSizes,
         List<String> enchantments,
         Map<String, String> entityClasses,
         List<String> mobTypes,
@@ -72,6 +74,12 @@ public record EditorChoices(
                 .map(material -> material.getKey().asString())
                 .sorted()
                 .toList();
+        Map<String, Integer> stackSizes = new TreeMap<>();
+        for (Material material : Material.values()) {
+            if (!material.isLegacy() && material.isItem() && !material.isAir() && material.getMaxStackSize() != 64) {
+                stackSizes.put(material.getKey().asString(), material.getMaxStackSize());
+            }
+        }
         List<String> enchantments = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
                 .map(enchantment -> enchantment.getKey().asString())
                 .sorted()
@@ -84,6 +92,7 @@ public record EditorChoices(
         return new EditorChoices(
                 Bukkit.getMinecraftVersion(),
                 materials,
+                stackSizes,
                 enchantments,
                 entityClasses,
                 MobTypes.all(),

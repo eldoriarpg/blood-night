@@ -24,9 +24,16 @@ import java.util.Objects;
  * @param name         the name, MiniMessage; none for the material's own name
  * @param lore         the lore lines, MiniMessage
  * @param enchantments enchantment levels by the enchantment's key
+ * @param stackSize    how many fit in one stack, for an item registered from the game, which may differ from its
+ *                     material's; none for an item made in the editor, which stacks like its material
  */
 public record EditorItem(
-        ItemKind kind, String material, @Nullable String name, List<String> lore, Map<String, Integer> enchantments) {
+        ItemKind kind,
+        String material,
+        @Nullable String name,
+        List<String> lore,
+        Map<String, Integer> enchantments,
+        @Nullable Integer stackSize) {
     public EditorItem {
         lore = List.copyOf(lore);
         enchantments = Map.copyOf(enchantments);
@@ -38,13 +45,15 @@ public record EditorItem(
             @JsonProperty("material") String material,
             @JsonProperty("name") @Nullable String name,
             @JsonProperty("lore") @Nullable List<String> lore,
-            @JsonProperty("enchantments") @Nullable Map<String, Integer> enchantments) {
+            @JsonProperty("enchantments") @Nullable Map<String, Integer> enchantments,
+            @JsonProperty("stackSize") @Nullable Integer stackSize) {
         return new EditorItem(
                 Objects.requireNonNullElse(kind, ItemKind.DEFINED),
                 material,
                 name,
                 Objects.requireNonNullElse(lore, List.of()),
-                Objects.requireNonNullElse(enchantments, Map.of()));
+                Objects.requireNonNullElse(enchantments, Map.of()),
+                stackSize);
     }
 
     /**
@@ -57,7 +66,8 @@ public record EditorItem(
                 item.getType().getKey().asString(),
                 ItemTexts.name(item),
                 ItemTexts.lore(item),
-                ItemTexts.enchantments(item));
+                ItemTexts.enchantments(item),
+                item.getMaxStackSize());
     }
 
     /**
@@ -70,7 +80,8 @@ public record EditorItem(
                 definition.material(),
                 definition.name(),
                 definition.lore(),
-                definition.enchantments());
+                definition.enchantments(),
+                null);
     }
 
     /**
