@@ -190,8 +190,8 @@
     "AttributeOverride" : {
       "type" : "object",
       "properties" : {
-        "displayName" : {
-          "type" : "string"
+        "name" : {
+          "$ref" : "#/$defs/MobName"
         },
         "healthModifier" : {
           "$ref" : "#/$defs/ValueModifier"
@@ -210,8 +210,8 @@
     "Attributes" : {
       "type" : "object",
       "properties" : {
-        "displayName" : {
-          "type" : "string"
+        "name" : {
+          "$ref" : "#/$defs/MobName"
         },
         "entityType" : {
           "$ref" : "#/$defs/EntityType"
@@ -244,7 +244,7 @@
           "type" : "integer"
         }
       },
-      "required" : [ "displayName", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes", "mythicType", "mythicLevel" ]
+      "required" : [ "name", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes", "mythicType", "mythicLevel" ]
     },
     "BossBarSettings" : {
       "type" : "object",
@@ -352,6 +352,7 @@
             "offer" : true,
             "prompt" : "<red>BloodNight would like to show its blood nights with a few extra effects.",
             "required" : false,
+            "translateMobNames" : true,
             "url" : "https://bloodnight.docs.eldoria.de/pack/bloodnight.zip"
           }
         },
@@ -1134,6 +1135,21 @@
       },
       "required" : [ "weightsScope", "weights", "dropTables", "dropList", "xpScope", "xpModifier", "xpValue", "vanillaLoot" ]
     },
+    "MobName" : {
+      "type" : "object",
+      "properties" : {
+        "style" : {
+          "type" : "string"
+        },
+        "texts" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      },
+      "required" : [ "style", "texts" ]
+    },
     "MobOrigin" : {
       "type" : "object",
       "properties" : {
@@ -1748,6 +1764,10 @@
           "default" : true
         },
         "mergeIntoPackPlugins" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "translateMobNames" : {
           "type" : "boolean",
           "default" : true
         },

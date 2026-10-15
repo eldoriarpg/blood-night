@@ -15,9 +15,12 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Drop;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.mob.meta.VanillaLoot;
 import de.eldoria.bloodnight.store.MobStore;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
@@ -35,6 +38,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Turns the old plugin's settings into this plugin's, on top of the current ones: only what the old plugin had a value
@@ -46,6 +51,7 @@ import java.util.function.Function;
  * with its own name, health or damage for it gets an {@link AttributeOverride}. Drops become registered items.
  */
 public final class LegacyConverter {
+    private static final Pattern LEADING_TAG = Pattern.compile("^<(#[0-9a-fA-F]{6}|[a-z_]+)>");
     private static final ObjectMapper MAPPER = EditorPayload.MAPPER;
     private static final List<String> MOON_PHASES = List.of(
             "FULL_MOON",
@@ -62,6 +68,7 @@ public final class LegacyConverter {
     private final Function<Object, Optional<ItemStack>> items;
     private final Function<String, Optional<String>> sounds;
     private final List<String> notes = new ArrayList<>();
+    private String nameLanguage = MobName.ENGLISH;
     private ItemRegistry registry;
 
     /**
@@ -125,6 +132,9 @@ public final class LegacyConverter {
         copy(general, "broadcastMethod", tree, "announcements.method");
         copy(general, "messageMethod", tree, "announcements.personalMethod");
         copy(general, "language", tree, "announcements.fallbackLocale");
+        nameLanguage = String.valueOf(general.getOrDefault("language", MobName.ENGLISH))
+                .split("_")[0]
+                .toLowerCase(Locale.ROOT);
         copy(general, "updateReminder", tree, "updates.notice");
         for (String gone : List.of("mobTick", "beeFix", "autoUpdater")) {
             if (general.containsKey(gone)) notes.add("%s has no use any more and was left out".formatted(gone));
@@ -409,11 +419,11 @@ public final class LegacyConverter {
             CustomMob mob = installed.get(id);
             if (mob == null) continue;
             if (Boolean.FALSE.equals(old.get("active"))) weights.put(id, 0);
-            override(old, mob.attributes()).ifPresent(override -> overrides.set(id, MAPPER.valueToTree(override)));
+            override(id, old, mob.attributes()).ifPresent(override -> overrides.set(id, MAPPER.valueToTree(override)));
         }
     }
 
-    private static Optional<AttributeOverride> override(Map<String, Object> old, Attributes attributes) {
+    private Optional<AttributeOverride> override(String id, Map<String, Object> old, Attributes attributes) {
         String name = String.valueOf(old.getOrDefault("displayName", ""));
         ValueModifier healthModifier = modifier(old.get("healthModifier"));
         ValueModifier damageModifier = modifier(old.get("damageModifier"));
@@ -423,11 +433,29 @@ public final class LegacyConverter {
         boolean damageSame = damageModifier == attributes.damageModifier() && damage == attributes.damage();
         if (name.isBlank() && healthSame && damageSame) return Optional.empty();
         return Optional.of(new AttributeOverride(
-                name.isBlank() ? null : name,
+                name.isBlank() ? null : legacyName(id, name),
                 healthSame ? null : healthModifier,
                 healthSame ? null : health,
                 damageSame ? null : damageModifier,
                 damageSame ? null : damage));
+    }
+
+    /**
+     * An old name, which was MiniMessage, as a name in the old server language: a leading colour becomes the style,
+     * every other tag is dropped with a note.
+     */
+    private MobName legacyName(String id, String old) {
+        String style = "";
+        String rest = old.strip();
+        Matcher leading = LEADING_TAG.matcher(rest);
+        if (leading.find()
+                && (leading.group(1).startsWith("#") || NamedTextColor.NAMES.value(leading.group(1)) != null)) {
+            style = leading.group();
+            rest = rest.substring(leading.end());
+        }
+        String plain = MiniMessage.miniMessage().stripTags(rest);
+        if (!plain.equals(rest)) notes.add("%s: its name kept only its first colour".formatted(id));
+        return new MobName(style, Map.of(nameLanguage, plain));
     }
 
     /**

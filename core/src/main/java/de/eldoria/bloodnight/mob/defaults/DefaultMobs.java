@@ -14,6 +14,7 @@ import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
 import de.eldoria.bloodnight.mob.meta.MobDrops;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.Movement;
 import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.mob.meta.SpawnConditions;
@@ -1679,7 +1680,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 mob.id(),
                 mob.equipment(),
                 new Attributes(
-                        base.displayName(),
+                        base.name(),
                         base.entityType(),
                         false,
                         base.healthModifier(),
@@ -1910,7 +1911,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 dragon.id(),
                 dragon.equipment(),
                 new Attributes(
-                        "<dark_red>" + base.displayName(),
+                        new MobName("<dark_red>", base.name().texts()),
                         base.entityType(),
                         true,
                         ValueModifier.VALUE,
@@ -1955,11 +1956,10 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * The name of a default mob as MiniMessage: the text {@code bloodnight.mob.<id>} in the player's language, from the
-     * names the store registers or the resource pack, else the English name.
+     * The name of a default mob in English; the store generator adds the other languages from its package.
      */
-    private String translated(String id) {
-        return "<lang_or:bloodnight.mob.%s:'%s'>".formatted(id, names.apply(id).replace("'", "\\'"));
+    private MobName translated(String id) {
+        return MobName.english(names.apply(id));
     }
 
     private static Graph built(String id, MobGraph graph) {

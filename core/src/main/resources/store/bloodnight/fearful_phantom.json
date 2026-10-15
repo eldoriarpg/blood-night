@@ -25,7 +25,18 @@
     "id" : "fearful_phantom",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.fearful_phantom:'Fearful Phantom'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Furchterregendes Phantom",
+          "en" : "Fearful Phantom",
+          "es" : "Phantom aterrador",
+          "fr" : "Phantom terrifiant",
+          "ms" : "Fantom Menggerunkan",
+          "tr" : "Korkunç Fantom",
+          "zh" : "恐怖幻翼"
+        }
+      },
       "entityType" : "PHANTOM",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

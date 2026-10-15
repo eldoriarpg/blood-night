@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeO
 import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.store.BuiltInStore;
 import de.eldoria.bloodnight.store.MobStore;
@@ -116,7 +117,7 @@ class LegacyConverterTest {
                                 .findFirst()
                                 .orElseThrow()));
         AttributeOverride override = world.mobSettings().overrides().get("armored_zombie");
-        assertEquals("<gold>Tank", override.displayName());
+        assertEquals(new MobName("<gold>", Map.of("en", "Tank")), override.name());
         assertEquals(ValueModifier.VALUE, override.healthModifier());
         assertEquals(40.0, override.health());
 

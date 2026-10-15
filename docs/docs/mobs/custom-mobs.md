@@ -28,7 +28,11 @@ mobs:
       legs: minecraft:diamond_leggings
       feet: minecraft:diamond_boots
     attributes:
-      displayName: "Armored Zombie"
+      name:
+        style: ""
+        texts:
+          en: Armored Zombie
+          de: Gepanzerter Zombie
       entityType: ZOMBIE
       exactType: true
       healthModifier: DEFAULT
@@ -79,9 +83,33 @@ Without MythicMobs, or with a name MythicMobs does not know, the zombie stays a 
 
 ## Name
 
-`displayName` is shown above the mob's head. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html),
-so `"<red>Angry Zombie"` works. At first a name only shows when a player looks right at the mob. With
-`mobSettings.displayNames: true`, a world shows the names above the mobs all the time.
+A mob's name is shown above its head, in each player's own language. Give it a text for every language you want:
+
+```yaml
+name:
+  style: "<dark_red>"
+  texts:
+    en: Blood Dragon
+    de: Blutdrache
+```
+
+- `texts` holds the name by language code: `en`, `de`, `fr` and so on. A code with a region works too, like `pt_br`.
+- A player whose language has no text sees the one in your server's fallback language
+  (`announcements.fallbackLocale` in `config.yml`). If that is missing too, English. Then any of the others.
+- `style` is put in front of the name in every language. It uses
+  [MiniMessage](https://docs.advntr.dev/minimessage/format.html), so `"<red>"` or `"<gradient:red:gold>"` work. The
+  texts themselves are plain text.
+- No texts at all means the mob shows no name.
+
+At first a name only shows when a player looks right at the mob. With `mobSettings.displayNames: true`, a world shows
+the names above the mobs all the time.
+
+Names above the head come from the players' game, so players need BloodNight's resource pack to see them in their
+language. Without it they see the name in the fallback language. Chat and boss bars show the right language either
+way. See [the resource pack](../nights/atmosphere.md#the-resource-pack).
+
+Want one name for everyone, without the pack? Set `resourcePack.translateMobNames: false` in `config.yml`. Then every
+player sees the name in your server's fallback language.
 
 ## Health and damage
 
@@ -104,12 +132,16 @@ A world can give a mob its own name, health or damage. Put it under `mobSettings
 mobSettings:
   overrides:
     speed_zombie:
-      displayName: "<green>Slow Zombie"
+      name:
+        style: "<green>"
+        texts:
+          en: Slow Zombie
       healthModifier: VALUE
       health: 10
 ```
 
-Leave out what should stay as the mob has it.
+Leave out what should stay as the mob has it. A world's name texts replace the mob's per language, and its `style`
+replaces the mob's when it has one.
 
 ## More attribute changes
 

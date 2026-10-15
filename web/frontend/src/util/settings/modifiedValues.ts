@@ -72,7 +72,7 @@ const SHOW_RULES: readonly ShowRule[] = [
     {fields: ['lightningChance'], reads: ['lightning'], shows: read => read('lightning') !== false},
     {fields: ['power', 'range', 'minSeconds', 'effects'], reads: ['chance', 'power'], shows: read => Number(read('chance') ?? 0) > 0},
     {fields: ['always'], reads: ['blockDamage'], shows: read => read('blockDamage') !== true},
-    {fields: ['displayName', 'healthModifier', 'health', 'damageModifier', 'damage', 'changes'], reads: ['mythicType'], shows: read => blank(read('mythicType'))},
+    {fields: ['name', 'healthModifier', 'health', 'damageModifier', 'damage', 'changes'], reads: ['mythicType'], shows: read => blank(read('mythicType'))},
     {fields: ['mythicLevel'], reads: ['mythicType'], shows: read => !blank(read('mythicType'))},
     {fields: ['entityType', 'equipment'], reads: ['type', 'entityType'], shows: read => read('type') !== 'NONE'},
     {fields: ['method'], reads: ['reach'], shows: read => read('reach') !== 'NONE'},

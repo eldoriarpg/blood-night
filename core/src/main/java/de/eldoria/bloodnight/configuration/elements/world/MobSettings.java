@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.configuration.elements.world.mobsettings.CreeperSet
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import org.bukkit.World;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +68,17 @@ public class MobSettings {
     public Attributes attributes(CustomMob mob) {
         AttributeOverride override = overrides.get(mob.id());
         return override == null ? mob.attributes() : override.apply(mob.attributes());
+    }
+
+    /**
+     * @param mob   a custom mob
+     * @param world the world it is in
+     * @return the key of the mob's name in this world, below {@code bloodnight.mob.}: its id, or its id and the world's
+     *     UID where this world gives it a name of its own
+     */
+    public String nameKey(CustomMob mob, World world) {
+        AttributeOverride override = overrides.get(mob.id());
+        return override != null && override.renames() ? mob.id() + "." + world.getUID() : mob.id();
     }
 
     /**

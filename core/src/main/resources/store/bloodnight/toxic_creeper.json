@@ -25,7 +25,18 @@
     "id" : "toxic_creeper",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.toxic_creeper:'Toxic Creeper'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Giftiger Creeper",
+          "en" : "Toxic Creeper",
+          "es" : "Creeper tóxico",
+          "fr" : "Creeper toxique",
+          "ms" : "Creeper Toksik",
+          "tr" : "Zehirli Creeper",
+          "zh" : "剧毒苦力怕"
+        }
+      },
       "entityType" : "CREEPER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

@@ -122,6 +122,7 @@ resourcePack:
   url: https://bloodnight.docs.eldoria.de/pack/bloodnight.zip
   required: false
   prompt: "<red>BloodNight would like to show its blood nights with a few extra effects."
+  translateMobNames: true
 ```
 
 | Key | What it does |
@@ -130,6 +131,7 @@ resourcePack:
 | `url` | Where the pack is downloaded from. The default always has the newest pack. The environment variable `BLOODNIGHT_RESOURCEPACK_URL` or the Java option `-Dbloodnight.resourcepack.url=...` win over the file. |
 | `required` | With `true`, players who say no can't play on the server. |
 | `prompt` | The message shown with the question. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html). |
+| `translateMobNames` | Whether players see mob names in their own language. Name tags need the pack for that. With `false`, every player sees the name in your server's fallback language, with or without the pack. |
 
 `screenEffect: false` in a world turns the effect off there, even for players with the pack.
 
@@ -145,3 +147,7 @@ To stop this, set `mergeIntoPackPlugins: false` under `resourcePack`.
 
 For any other pack, run `/bn pack export`. It writes BloodNight's pack to `plugins/BloodNight/pack`, as
 `bloodnight.zip` and as a folder. Copy the `assets` folder into your own pack.
+
+The pack holds the names of your mobs in every language you gave them, so players see the name above a mob in their
+own language. The pack at the default `url` only knows the mobs of BloodNight's store. When you name your own mobs,
+or rename them in a world, use a merged or exported pack and export it again after changing a name.

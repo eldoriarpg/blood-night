@@ -25,7 +25,18 @@
     "id" : "fearful_enderman",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.fearful_enderman:'Fearful Enderman'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Furchterregender Enderman",
+          "en" : "Fearful Enderman",
+          "es" : "Enderman aterrador",
+          "fr" : "Enderman terrifiant",
+          "ms" : "Enderman Menggerunkan",
+          "tr" : "Korkunç Enderman",
+          "zh" : "恐怖末影人"
+        }
+      },
       "entityType" : "ENDERMAN",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

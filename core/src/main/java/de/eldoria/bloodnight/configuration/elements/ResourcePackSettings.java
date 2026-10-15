@@ -18,6 +18,7 @@ import dev.chojo.ocular.override.Prop;
 public class ResourcePackSettings {
     private boolean offer = true;
     private boolean mergeIntoPackPlugins = true;
+    private boolean translateMobNames = true;
 
     @Overwrite(
             prop = @Prop("bloodnight.resourcepack.url"),
@@ -34,6 +35,14 @@ public class ResourcePackSettings {
      */
     public boolean mergeIntoPackPlugins() {
         return mergeIntoPackPlugins;
+    }
+
+    /**
+     * @return whether a mob's name is shown in each player's language, which name tags need the pack for; otherwise
+     *     every player sees the name in the server's fallback language, with or without the pack
+     */
+    public boolean translateMobNames() {
+        return translateMobNames;
     }
 
     /**

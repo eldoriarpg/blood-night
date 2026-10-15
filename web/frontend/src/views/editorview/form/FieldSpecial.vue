@@ -17,9 +17,10 @@ import FieldMoonPhases from '~/views/editorview/form/FieldMoonPhases.vue'
 import FieldPhaseCycle from '~/views/editorview/form/FieldPhaseCycle.vue'
 import FieldCurve from '~/views/editorview/form/FieldCurve.vue'
 import FieldWorldMobs from '~/views/editorview/form/FieldWorldMobs.vue'
+import FieldMobName from '~/views/editorview/form/FieldMobName.vue'
 import type {Field} from '~/util/settings/schemaFields'
 import type {SpecialField} from '~/util/settings/specialFields'
-import {plainText} from '~/util/items/itemChoices'
+import {mobLabel} from '~/util/mobs/mobName'
 
 /**
  * A settings field drawn its own way (see {@link SpecialField}): chances as sliders, times of day as a clock, effects,
@@ -40,7 +41,7 @@ const emit = defineEmits<{
   save: [value: unknown]
 }>()
 
-const {t} = useI18n()
+const {t, locale} = useI18n()
 const session = useEditorSession()
 const assets = useItemAssets()
 
@@ -57,7 +58,7 @@ const effects = computed(() => session.payload.value?.choices?.effects ?? [])
 const effectLabels = computed(() => Object.fromEntries(effects.value.map(key => [key, assets.entry('effect', key) ?? key])))
 const mobs = computed(() => Object.keys(session.payload.value?.mobs ?? {}).sort())
 const dragons = computed(() => mobs.value.filter(id => session.payload.value?.mobs?.[id]?.attributes?.entityType === 'ENDER_DRAGON'))
-const mobLabels = computed(() => Object.fromEntries(mobs.value.map(id => [id, plainText(session.payload.value?.mobs?.[id]?.attributes?.displayName ?? '') || id])))
+const mobLabels = computed(() => Object.fromEntries(mobs.value.map(id => [id, mobLabel(session.payload.value?.mobs?.[id]?.attributes?.name, locale.value) || id])))
 const samples = computed(() => ({name: t('editor.miniMessage.nightName'), player: 'Steve', world: 'world'}))
 </script>
 
@@ -92,6 +93,7 @@ const samples = computed(() => ({name: t('editor.miniMessage.nightName'), player
       @save="emit('save', $event)"
   />
   <FieldDropWeights v-else-if="special === 'dropWeights'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
+  <FieldMobName v-else-if="special === 'mobName'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldWorldMobs v-else-if="special === 'worldMobs'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldCurve v-else-if="special === 'curve'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldPhaseCycle v-else-if="special === 'phaseCycle'" :help="help" :label="label" :read-only="readOnly" :value="numbers" @save="emit('save', $event)"/>

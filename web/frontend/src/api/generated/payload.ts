@@ -405,7 +405,7 @@ export interface Equipment {
  * via the `definition` "Attributes".
  */
 export interface Attributes {
-  displayName: string;
+  name: MobName;
   entityType: EntityType;
   exactType: boolean;
   healthModifier: ValueModifier;
@@ -415,6 +415,16 @@ export interface Attributes {
   changes: AttributeChange[];
   mythicType: string;
   mythicLevel: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MobName".
+ */
+export interface MobName {
+  style: string;
+  texts: {
+    [k: string]: string;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -635,6 +645,7 @@ export interface EditorSettings {
 export interface ResourcePackSettings {
   offer?: boolean;
   mergeIntoPackPlugins?: boolean;
+  translateMobNames?: boolean;
   url?: string;
   required?: boolean;
   prompt?: string;
@@ -843,7 +854,7 @@ export interface CreeperSettings {
  * via the `definition` "AttributeOverride".
  */
 export interface AttributeOverride {
-  displayName?: string;
+  name?: MobName;
   healthModifier?: ValueModifier;
   health?: number;
   damageModifier?: ValueModifier;

@@ -27,6 +27,7 @@ describe('special fields', () => {
         expect(specialField(field('probabilities', 'map'), 'moonPhase')).toBe('moonPhases')
         expect(specialField(field('probabilities', 'any'), 'phase')).toBe('phaseCycle')
         expect(specialField(field('curve', 'group'), 'nightSelection')).toBe('curve')
+        expect(specialField({...field('name', 'group'), definition: 'MobName'}, 'attributes')).toBe('mobName')
     })
 
     it('leaves alike named fields elsewhere alone', () => {

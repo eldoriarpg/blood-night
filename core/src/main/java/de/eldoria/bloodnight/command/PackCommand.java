@@ -42,7 +42,7 @@ final class PackCommand {
     void export(CommandSender sender) {
         Path directory = plugin.getDataFolder().toPath().resolve("pack");
         try {
-            PackMerge pack = PackMerge.bundled();
+            PackMerge pack = PackMerge.bundled().withMobNames(plugin.mobNames());
             pack.export(directory);
             Replies.send(sender, "pack.exported", arg("directory", directory));
             Path plugins = plugin.getDataFolder().toPath().toAbsolutePath().getParent();

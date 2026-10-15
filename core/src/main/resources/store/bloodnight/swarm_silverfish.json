@@ -25,7 +25,18 @@
     "id" : "swarm_silverfish",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.swarm_silverfish:'Swarm Silverfish'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Schwarm-Silberfischchen",
+          "en" : "Swarm Silverfish",
+          "es" : "Lepisma de enjambre",
+          "fr" : "Poisson d'argent d'essaim",
+          "ms" : "Kawanan Ikan Perak",
+          "tr" : "Sürü Gümüşçünü",
+          "zh" : "蜂拥蠹虫"
+        }
+      },
       "entityType" : "SILVERFISH",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

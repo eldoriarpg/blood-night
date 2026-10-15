@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.model.Graph;
 import org.bukkit.World;
@@ -49,7 +50,14 @@ class MobOutfitterTest {
         CustomMob rider = new CustomMob(
                 plain.id(),
                 plain.equipment(),
-                new Attributes("rider", EntityType.ZOMBIE, false, ValueModifier.VALUE, 50, ValueModifier.DEFAULT, 1),
+                new Attributes(
+                        MobName.english("rider"),
+                        EntityType.ZOMBIE,
+                        false,
+                        ValueModifier.VALUE,
+                        50,
+                        ValueModifier.DEFAULT,
+                        1),
                 plain.behaviour(),
                 plain.mobDrops(),
                 new Extension(ExtensionType.RIDER, EntityType.SPIDER, null),

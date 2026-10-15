@@ -25,7 +25,18 @@
     "id" : "assassin_spider",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.assassin_spider:'Assassin Spider'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Meuchelspinne",
+          "en" : "Assassin Spider",
+          "es" : "Araña asesina",
+          "fr" : "Araignée assassine",
+          "ms" : "Labah-labah Pembunuh",
+          "tr" : "Suikastçı Örümcek",
+          "zh" : "刺客蜘蛛"
+        }
+      },
       "entityType" : "SPIDER",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

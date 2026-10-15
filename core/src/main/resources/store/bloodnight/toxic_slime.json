@@ -25,7 +25,18 @@
     "id" : "toxic_slime",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.toxic_slime:'Toxic Slime'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Giftiger Schleim",
+          "en" : "Toxic Slime",
+          "es" : "Slime tóxico",
+          "fr" : "Slime toxique",
+          "ms" : "Slime Toksik",
+          "tr" : "Zehirli Balçık",
+          "zh" : "剧毒史莱姆"
+        }
+      },
       "entityType" : "SLIME",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

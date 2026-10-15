@@ -138,6 +138,15 @@ export default {
             add: 'Anzahl Drops hinzufügen',
         },
         gameRules: {add: 'Spielregel hinzufügen'},
+        mobName: {
+            text: 'Name auf {language}',
+            remove: '{language} entfernen',
+            none: 'Kein Name: Der Mob zeigt keinen.',
+            add: 'Sprache hinzufügen',
+            addPlaceholder: 'Sprache, z. B. de oder pt_br',
+            addButton: 'Hinzufügen',
+            style: 'Stil',
+        },
         miniMessage: {
             preview: 'Vorschau',
             nightName: 'Blutnacht',
@@ -593,6 +602,7 @@ export default {
             mobSettings: {damageModifier: 'Schaden normaler Gegner (x)'},
         },
         helpIn: {
+            attributes: {name: 'Spieler sehen den Namen in ihrer Sprache. Fehlt sie, sehen sie den in der Ausweichsprache des Servers.'},
             spawning: {mobs: 'Schalte die Mobs aus, die hier nicht erscheinen sollen. Ein Gewicht ändert, wie oft ein Mob im Vergleich zu den anderen gewählt wird, nur in dieser Welt.'},
             creepers: {blockDamage: 'Wenn aus, verletzen Creeper-Explosionen weiter Spieler und Mobs, lassen die Blöcke aber ganz.'},
             mobSettings: {damageModifier: 'Der Schaden, den Gegner Spielern zufügen, wird in Blutnächten damit malgenommen. 1 lässt ihn, wie er ist.'},
@@ -607,6 +617,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: 'Namensschilder brauchen dafür das Ressourcenpaket. Aus: Alle Spieler sehen den Namen in der Ausweichsprache des Servers, mit oder ohne Paket.',
             creakingsWake: 'Knarze kommen aus den Knarzherzen in Blassen Gärten. Sonst jagen sie nur in einer normalen Nacht. Ist das an, jagen sie die ganze Blutnacht lang, auch wenn sie länger dauert oder die Welt keine Nacht hat.',
             biomes: 'Einzelne Biome oder ganze Gruppen, z. B. alle Ozean-Biome. Leer heißt überall.',
             exactType: 'An: Dieser Mob ersetzt nur spawnende Mobs genau seines Typs. Aus: auch verwandte, z. B. ersetzt ein Zombie-Mob auch Wüstenzombies, Ertrunkene und Zombiedorfbewohner, wenn keiner der Mobs auf diesen basiert.',
@@ -632,6 +643,7 @@ export default {
             xpValue: {MULTIPLY: 'Die normale Erfahrung wird damit malgenommen.', VALUE: 'Genau so viel Erfahrung fällt.'},
         },
         fields: {
+            translateMobNames: 'Mob-Namen in der Sprache jedes Spielers zeigen',
             heartbeatLoudestWithin: 'Herzschlag am lautesten innerhalb (Blöcke)',
             heartbeatRange: 'Herzschlag-Reichweite (Blöcke)',
             closest: 'Mindestens (Blöcke)',

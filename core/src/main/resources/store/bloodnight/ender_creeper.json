@@ -25,7 +25,18 @@
     "id" : "ender_creeper",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.ender_creeper:'Ender Creeper'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Ender-Creeper",
+          "en" : "Ender Creeper",
+          "es" : "Creeper de Ender",
+          "fr" : "Creeper de l'Ender",
+          "ms" : "Creeper Ender",
+          "tr" : "Ender Creeper",
+          "zh" : "末影苦力怕"
+        }
+      },
       "entityType" : "CREEPER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

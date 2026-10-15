@@ -25,7 +25,18 @@
     "id" : "thunder_wizard",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.thunder_wizard:'Thunder Wizard'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Donnermagier",
+          "en" : "Thunder Wizard",
+          "es" : "Mago del trueno",
+          "fr" : "Sorcier du tonnerre",
+          "ms" : "Ahli Sihir Guruh",
+          "tr" : "Gök Gürültüsü Büyücüsü",
+          "zh" : "雷电巫师"
+        }
+      },
       "entityType" : "WITCH",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

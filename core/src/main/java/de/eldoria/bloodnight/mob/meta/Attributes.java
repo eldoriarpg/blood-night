@@ -18,7 +18,7 @@ import java.util.Objects;
  * get during blood nights; {@code DEFAULT} damage is the entity's own, the world's damage modifier applies to every
  * enemy anyway. {@code MULTIPLY} multiplies the entity's own value, {@code VALUE} replaces it.
  *
- * @param displayName    name shown above the mob, MiniMessage; empty shows none
+ * @param name           name shown above the mob, in each player's language; without texts it shows none
  * @param entityType     the type of entity the mob takes over
  * @param exactType      whether only that type matches, not its subtypes (a husk is a zombie)
  * @param healthModifier how {@code health} applies
@@ -31,7 +31,7 @@ import java.util.Objects;
  * @param mythicLevel    the level of that MythicMobs mob, at least 1
  */
 public record Attributes(
-        String displayName,
+        MobName name,
         EntityType entityType,
         boolean exactType,
         ValueModifier healthModifier,
@@ -42,6 +42,7 @@ public record Attributes(
         String mythicType,
         int mythicLevel) {
     public Attributes {
+        name = Objects.requireNonNullElse(name, MobName.NONE);
         changes = List.copyOf(Objects.requireNonNullElse(changes, List.of()));
         mythicType = Objects.requireNonNullElse(mythicType, "");
         mythicLevel = Math.max(mythicLevel, 1);
@@ -51,7 +52,7 @@ public record Attributes(
      * Attributes of a vanilla based mob.
      */
     public Attributes(
-            String displayName,
+            MobName name,
             EntityType entityType,
             boolean exactType,
             ValueModifier healthModifier,
@@ -59,7 +60,24 @@ public record Attributes(
             ValueModifier damageModifier,
             double damage,
             List<AttributeChange> changes) {
-        this(displayName, entityType, exactType, healthModifier, health, damageModifier, damage, changes, "", 1);
+        this(name, entityType, exactType, healthModifier, health, damageModifier, damage, changes, "", 1);
+    }
+
+    /**
+     * @return the same attributes with another name
+     */
+    public Attributes withName(MobName name) {
+        return new Attributes(
+                name,
+                entityType,
+                exactType,
+                healthModifier,
+                health,
+                damageModifier,
+                damage,
+                changes,
+                mythicType,
+                mythicLevel);
     }
 
     /**
@@ -73,14 +91,14 @@ public record Attributes(
      * Attributes without further changes.
      */
     public Attributes(
-            String displayName,
+            MobName name,
             EntityType entityType,
             boolean exactType,
             ValueModifier healthModifier,
             double health,
             ValueModifier damageModifier,
             double damage) {
-        this(displayName, entityType, exactType, healthModifier, health, damageModifier, damage, List.of());
+        this(name, entityType, exactType, healthModifier, health, damageModifier, damage, List.of());
     }
 
     public boolean isAssignable(EntityType type) {

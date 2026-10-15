@@ -25,7 +25,18 @@
     "id" : "nervous_powered_creeper",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.nervous_powered_creeper:'Nervous Powered Creeper'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Nervöser geladener Creeper",
+          "en" : "Nervous Powered Creeper",
+          "es" : "Creeper cargado nervioso",
+          "fr" : "Creeper chargé nerveux",
+          "ms" : "Creeper Bercas Gelisah",
+          "tr" : "Gergin Yüklü Creeper",
+          "zh" : "紧张的闪电苦力怕"
+        }
+      },
       "entityType" : "CREEPER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

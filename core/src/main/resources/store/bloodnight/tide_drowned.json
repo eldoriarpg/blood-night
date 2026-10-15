@@ -25,7 +25,18 @@
     "id" : "tide_drowned",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.tide_drowned:'Tide Drowned'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Gezeiten-Ertrunkener",
+          "en" : "Tide Drowned",
+          "es" : "Ahogado de la marea",
+          "fr" : "Noyé des marées",
+          "ms" : "Drowned Pasang",
+          "tr" : "Gelgit Boğulmuşu",
+          "zh" : "潮汐溺尸"
+        }
+      },
       "entityType" : "DROWNED",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

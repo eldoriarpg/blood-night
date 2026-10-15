@@ -34,7 +34,7 @@ export function idProblem(id: string, taken: readonly string[]): string | null {
 export function newMob(id: string, entityType: EntityType): CustomMob {
     return {
         id,
-        attributes: {displayName: '', entityType, exactType: false, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+        attributes: {name: {style: '', texts: {}}, entityType, exactType: false, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
         behaviour: {nodes: {}},
         extension: {type: 'NONE'},
         spawn: {weight: 10, nightOnly: true, nightEnd: 'REMOVE', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},

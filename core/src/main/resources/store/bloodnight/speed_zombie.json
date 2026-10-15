@@ -25,7 +25,18 @@
     "id" : "speed_zombie",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.speed_zombie:'Speed Zombie'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Flinker Zombie",
+          "en" : "Speed Zombie",
+          "es" : "Zombi veloz",
+          "fr" : "Zombie rapide",
+          "ms" : "Zombi Laju",
+          "tr" : "Hızlı Zombi",
+          "zh" : "疾速僵尸"
+        }
+      },
       "entityType" : "ZOMBIE",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

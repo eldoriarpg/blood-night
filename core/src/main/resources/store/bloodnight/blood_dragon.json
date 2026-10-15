@@ -25,7 +25,18 @@
     "id" : "blood_dragon",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<dark_red><lang_or:bloodnight.mob.blood_dragon:'Blood Dragon'>",
+      "name" : {
+        "style" : "<dark_red>",
+        "texts" : {
+          "de" : "Blutdrache",
+          "en" : "Blood Dragon",
+          "es" : "Dragón de Sangre",
+          "fr" : "Dragon de sang",
+          "ms" : "Blood Dragon",
+          "tr" : "Kan Ejderhası",
+          "zh" : "血龙"
+        }
+      },
       "entityType" : "ENDER_DRAGON",
       "exactType" : true,
       "healthModifier" : "VALUE",
