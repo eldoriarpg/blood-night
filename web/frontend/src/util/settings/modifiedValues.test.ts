@@ -8,7 +8,7 @@ import type {Field} from '~/util/settings/schemaFields'
 import {shownFields} from '~/util/settings/modifiedValues'
 
 function field(key: string, kind: Field['kind'], defaultValue?: unknown): Field {
-    return {key, kind, options: [], children: [], item: undefined, defaultValue, enumName: undefined}
+    return {key, kind, options: [], children: [], item: undefined, defaultValue, enumName: undefined, definition: undefined}
 }
 
 const fields = [field('healthModifier', 'choice', 'DEFAULT'), field('health', 'number'), field('xpModifier', 'choice'), field('xpValue', 'number')]

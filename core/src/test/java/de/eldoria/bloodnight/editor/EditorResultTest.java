@@ -53,7 +53,7 @@ class EditorResultTest {
                 new SettingsPayload(
                         new ConfigFile(),
                         GlobalDrops.defaultDrops(),
-                        Map.of("uid", new SettingsPayload.WorldPayload("world", world))),
+                        Map.of("uid", new SettingsPayload.WorldPayload("world", "NORMAL", true, world))),
                 new EditorChoices(
                         "26.3",
                         List.of("minecraft:stone"),
@@ -62,7 +62,12 @@ class EditorResultTest {
                         List.of("CREEPER"),
                         List.of("SkeletalKnight"),
                         List.of("minecraft:max_health"),
-                        List.of("minecraft:desert")),
+                        List.of("minecraft:desert"),
+                        List.of("minecraft:darkness"),
+                        Map.of(
+                                "minecraft:spawn_phantoms",
+                                new EditorChoices.GameRuleChoice("boolean", "gamerule.doInsomnia")),
+                        List.of("home", "spawn")),
                 Map.of("mobs.yml", "abc"),
                 EditorStore.empty(),
                 false,

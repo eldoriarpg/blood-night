@@ -7,6 +7,8 @@ package de.eldoria.bloodnight.web;
 
 import de.eldoria.bloodnight.web.api.assets.ItemAsset;
 import de.eldoria.bloodnight.web.api.assets.ItemIndex;
+import de.eldoria.bloodnight.web.api.assets.SoundAsset;
+import de.eldoria.bloodnight.web.api.assets.SoundIndex;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -122,5 +124,36 @@ class ItemAssetsTest {
         assertTrue(assets.texture("1.0", "..", "items.json").isEmpty());
         assertTrue(assets.texture("1.0", "item", "../../items.json").isEmpty());
         assertTrue(assets.texture("1.0", "item", "missing.png").isEmpty());
+    }
+
+    @Test
+    void soundsGetTheirGroupSubtitlesAndWhetherTheyPlay() throws Exception {
+        ItemAssets assets = mojang.assets(cache);
+
+        SoundIndex index = EditorApp.MAPPER.readValue(Files.readAllBytes(assets.sounds("1.0")), SoundIndex.class);
+
+        assertEquals(
+                Map.of(
+                        "entity.zombie.ambient",
+                        new SoundAsset("entity", Map.of("en_us", "Zombie groans", "de_de", "Zombie stöhnt"), true),
+                        "music.game",
+                        new SoundAsset("music", Map.of(), false),
+                        "ambient.cave",
+                        new SoundAsset("ambient", Map.of(), false)),
+                index.sounds());
+    }
+
+    @Test
+    void aSoundIsFetchedWhenFirstPlayedAndKept() throws Exception {
+        ItemAssets assets = mojang.assets(cache);
+        assets.sounds("1.0");
+
+        Path zombie = assets.sound("1.0", "entity.zombie.ambient").orElseThrow();
+
+        assertArrayEquals(MojangFixture.ZOMBIE_OGG, Files.readAllBytes(zombie));
+        assertEquals(zombie, assets.sound("1.0", "entity.zombie.ambient").orElseThrow());
+        assertTrue(assets.sound("1.0", "music.game").isEmpty());
+        assertTrue(assets.sound("1.0", "../sound-files").isEmpty());
+        assertTrue(assets.sound("2.0", "entity.zombie.ambient").isEmpty());
     }
 }

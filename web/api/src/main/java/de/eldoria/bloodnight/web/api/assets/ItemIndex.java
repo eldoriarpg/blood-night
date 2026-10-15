@@ -13,7 +13,8 @@ import java.util.Map;
  * @param version the version, e.g. {@code 26.3}
  * @param items   the items by key, e.g. {@code minecraft:diamond_sword}
  * @param names   names by registry, key and language: registries are {@code enchantment}, {@code entity_type},
- *                {@code effect}, {@code biome}, {@code attribute} and {@code potion}, e.g. {@code enchantment} to
+ *                {@code effect}, {@code biome}, {@code attribute}, {@code potion} and {@code game_rule} (by the rule's
+ *                language key, e.g. {@code minecraft:doInsomnia}), e.g. {@code enchantment} to
  *                {@code minecraft:sharpness} to {@code en_us: Sharpness}
  */
 public record ItemIndex(

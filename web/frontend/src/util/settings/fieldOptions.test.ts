@@ -8,7 +8,7 @@ import type {Field} from '~/util/settings/schemaFields'
 import {fieldOptions} from '~/util/settings/fieldOptions'
 
 const field = (enumName: string): Field => ({
-    key: 'entityType', kind: 'choice', options: ['ARMOR_STAND', 'CREEPER', 'LLAMA_SPIT', 'ZOMBIE'], children: [], item: undefined, defaultValue: undefined, enumName,
+    key: 'entityType', kind: 'choice', options: ['ARMOR_STAND', 'CREEPER', 'LLAMA_SPIT', 'ZOMBIE'], children: [], item: undefined, defaultValue: undefined, enumName, definition: undefined,
 })
 
 describe('fieldOptions', () => {

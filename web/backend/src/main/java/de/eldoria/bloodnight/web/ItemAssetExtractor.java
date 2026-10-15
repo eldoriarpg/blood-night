@@ -43,7 +43,8 @@ final class ItemAssetExtractor {
             "effect", "effect.minecraft.",
             "biome", "biome.minecraft.",
             "attribute", "attribute.name.",
-            "potion", "item.minecraft.potion.effect.");
+            "potion", "item.minecraft.potion.effect.",
+            "game_rule", "gamerule.");
     private static final List<String> FACES = List.of("layer0", "all", "side", "top", "front", "particle");
     private static final int MAX_DEPTH = 16;
 
@@ -101,7 +102,7 @@ final class ItemAssetExtractor {
         return translations;
     }
 
-    private static Map<String, String> language(ZipFile jar, String entry) {
+    static Map<String, String> language(ZipFile jar, String entry) {
         ZipEntry found = jar.getEntry(entry);
         if (found == null) return Map.of();
         try (InputStream in = jar.getInputStream(found)) {

@@ -741,6 +741,78 @@
           }
         }
       }
+    },
+    "/api/v1/assets/{version}/sounds" : {
+      "get" : {
+        "operationId" : "getSoundAssets",
+        "summary" : "Every sound of a Minecraft version with its subtitles",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SoundIndex"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{version}/sounds/{name}" : {
+      "get" : {
+        "operationId" : "getSound",
+        "summary" : "A sound as Ogg Vorbis",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -1191,6 +1263,39 @@
           }
         },
         "required" : [ "id", "state", "revision", "catalog", "payload", "problems", "locks", "online", "areas", "expires" ]
+      },
+      "SoundAsset" : {
+        "type" : "object",
+        "properties" : {
+          "group" : {
+            "type" : "string"
+          },
+          "subtitles" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "playable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "group", "subtitles", "playable" ]
+      },
+      "SoundIndex" : {
+        "type" : "object",
+        "properties" : {
+          "version" : {
+            "type" : "string"
+          },
+          "sounds" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/SoundAsset"
+            }
+          }
+        },
+        "required" : [ "version", "sounds" ]
       },
       "StreamEvent" : {
         "type" : "object",

@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-wrap">
+  <div class="flex min-h-0 flex-1">
     <nav :aria-label="t('editor.items.list')" class="flex w-60 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line-soft bg-surface p-3">
       <SectionLabel class="px-2 pb-1">{{ t('editor.items.list') }}</SectionLabel>
       <SearchInput v-model="query" :aria-label="t('editor.itemPicker.search')" :placeholder="t('editor.itemPicker.search')" class="mb-1"/>
@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
       </BareButton>
       <SecondaryButton class="mt-2" compact icon="plus" @click="creating = true">{{ t('editor.items.new') }}</SecondaryButton>
     </nav>
-    <ItemForm v-if="entry" :key="entry.id" :entry="entry" class="min-w-0 flex-[999_1_40rem]" @deleted="picked = ''"/>
+    <ItemForm v-if="entry" :key="entry.id" :entry="entry" class="min-w-0 flex-1" @deleted="picked = ''"/>
     <EmptyState v-else :message="t('editor.items.empty')" class="flex-1"/>
     <NewItemDialog v-model="creating" :taken="items.map(candidate => candidate.id)" @created="id => picked = id"/>
   </div>

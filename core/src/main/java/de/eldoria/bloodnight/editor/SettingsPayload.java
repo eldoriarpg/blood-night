@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.editor;
 import de.eldoria.bloodnight.configuration.ConfigFile;
 import de.eldoria.bloodnight.configuration.elements.GlobalDrops;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import org.bukkit.World;
 
 import java.util.Map;
 
@@ -20,8 +21,18 @@ import java.util.Map;
  */
 public record SettingsPayload(ConfigFile main, GlobalDrops globalDrops, Map<String, WorldPayload> worlds) {
     /**
-     * @param name     the world's name, for display
-     * @param settings its settings
+     * @param name        the world's name, for display
+     * @param environment its kind, {@code NORMAL}, {@code NETHER}, {@code THE_END} or {@code CUSTOM}; the editor offers
+     *                    only the settings that matter in it, e.g. the dragon fight in the End
+     * @param dayCycle    whether its time goes on, which decides between night times and timed blood nights
+     * @param settings    its settings
      */
-    public record WorldPayload(String name, WorldSettings settings) {}
+    public record WorldPayload(String name, String environment, boolean dayCycle, WorldSettings settings) {
+        /**
+         * @return the world's entry
+         */
+        public static WorldPayload of(World world, WorldSettings settings) {
+            return new WorldPayload(world.getName(), world.getEnvironment().name(), !world.isFixedTime(), settings);
+        }
+    }
 }

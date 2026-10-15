@@ -689,6 +689,8 @@ export interface GlobalDrops {
  */
 export interface WorldPayload {
   name: string;
+  environment: string;
+  dayCycle: boolean;
   settings: WorldSettings;
 }
 /**
@@ -930,8 +932,16 @@ export interface SoundSettings {
  */
 export interface SoundEntry {
   sound?: string;
-  pitches?: number[];
-  volumes?: number[];
+  pitch?: SoundRange;
+  volume?: SoundRange;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "SoundRange".
+ */
+export interface SoundRange {
+  min?: number;
+  max?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1053,6 +1063,19 @@ export interface EditorChoices {
   mythicTypes: string[];
   attributes: string[];
   biomes: string[];
+  effects: string[];
+  gameRules: {
+    [k: string]: GameRuleChoice;
+  };
+  commands: string[];
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "GameRuleChoice".
+ */
+export interface GameRuleChoice {
+  type: string;
+  translationKey: string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

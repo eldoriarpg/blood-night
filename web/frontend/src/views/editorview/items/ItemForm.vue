@@ -12,8 +12,9 @@ import ButtonRow from '@/components/button/ButtonRow.vue'
 import Alert from '@/components/feedback/Alert.vue'
 import Modal from '@/components/feedback/Modal.vue'
 import LabelledField from '@/components/input/LabelledField.vue'
-import TextInput from '@/components/input/text/TextInput.vue'
 import FieldHint from '@/components/typography/FieldHint.vue'
+import MiniMessageText from '@/components/display/MiniMessageText.vue'
+import MiniMessageInput from '~/views/editorview/form/MiniMessageInput.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import PageHeader from '@/components/typography/PageHeader.vue'
 import SubHeader from '@/components/typography/SubHeader.vue'
@@ -26,7 +27,8 @@ import {section} from '~/util/session/sections'
 import {nameItem, type ItemEntry} from '~/util/session/itemEntries'
 
 /**
- * One item: its material, its MiniMessage name and lore, and its enchantments. An item the server registered keeps
+ * One item: its material, its MiniMessage name and lore with a preview of the item's tooltip as players see it while
+ * they are typed, and its enchantments. An item the server registered keeps
  * its material and everything else it carries; only an item made in the editor can change its material or be deleted.
  */
 const props = defineProps<{
@@ -41,6 +43,9 @@ const locks = useEditorLocks()
 const changes = useEditorChanges()
 const {t} = useI18n()
 const name = ref('')
+const lore = ref<string[]>([])
+const NAME_COLOR = '#ffffff'
+const LORE_COLOR = '#aa00aa'
 const confirming = ref(false)
 const MINI_MESSAGE_EXAMPLE = '<red>Blood <bold>Blade'
 
@@ -49,9 +54,11 @@ const denied = computed(() => !locks.mayChange(section.item(props.entry.id)))
 const readOnly = computed(() => heldBy.value !== null || denied.value)
 const defined = computed(() => props.entry.item.kind === ItemKind.DEFINED)
 const materialChoices = useItemAssets().choices(false)
+const materialName = computed(() => materialChoices.value.find(choice => choice.key === props.entry.item.material)?.name ?? props.entry.item.material)
 
 watch(() => props.entry.item, item => {
   name.value = item.name ?? ''
+  lore.value = [...item.lore]
 }, {immediate: true})
 
 function path(...keys: string[]): string {
@@ -102,10 +109,17 @@ function remove(): void {
         />
       </LabelledField>
       <LabelledField v-slot="{id}" :label="t('editor.items.name')">
-        <TextInput :id="id" v-model="name" :disabled="readOnly" class="font-mono" :placeholder="MINI_MESSAGE_EXAMPLE" @focusout="saveName"/>
+        <MiniMessageInput :id="id" v-model="name" :disabled="readOnly" :placeholder="MINI_MESSAGE_EXAMPLE" @focusout="saveName"/>
         <FieldHint>{{ t('editor.items.miniMessage', {example: MINI_MESSAGE_EXAMPLE}) }}</FieldHint>
       </LabelledField>
-      <FieldTexts :label="t('editor.items.lore')" :read-only="readOnly" :value="entry.item.lore" @save="value => save('lore', value)"/>
+      <FieldTexts :label="t('editor.items.lore')" :read-only="readOnly" :value="entry.item.lore" mini-message @edit="lore = $event" @save="value => save('lore', value)"/>
+      <figure :aria-label="t('editor.items.tooltip')" class="flex flex-col gap-1">
+        <figcaption class="text-xs text-ink-muted">{{ t('editor.items.tooltip') }}</figcaption>
+        <div class="w-fit min-w-48 max-w-full rounded-sm border-2 border-[#25015b] bg-[#100010f0] px-2 py-1.5 text-sm leading-snug">
+          <div><MiniMessageText :base="NAME_COLOR" :text="name || materialName"/></div>
+          <div v-for="(line, index) in lore" :key="index"><MiniMessageText :base="LORE_COLOR" :text="line"/></div>
+        </div>
+      </figure>
       <ItemEnchantments :read-only="readOnly" :value="entry.item.enchantments" @save="value => save('enchantments', value)"/>
       <div v-if="defined && !readOnly"><ErrorButton compact icon="trash" @click="confirming = true">{{ t('editor.items.delete') }}</ErrorButton></div>
     </div>

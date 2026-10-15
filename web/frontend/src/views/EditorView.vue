@@ -5,6 +5,7 @@
  */
 <script setup lang="ts">
 import EditorHeader from '~/views/editorview/EditorHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 import WorkspaceArea from '~/views/editorview/workspace/WorkspaceArea.vue'
 import MobsArea from '~/views/editorview/mobs/MobsArea.vue'
 import ItemsArea from '~/views/editorview/items/ItemsArea.vue'
@@ -48,6 +49,7 @@ onBeforeUnmount(() => session.close())
       <SettingsArea v-else-if="area === 'settings'"/>
       <RevisionsArea v-else/>
     </template>
+    <AppFooter/>
     <ToastContainer/>
   </div>
 </template>

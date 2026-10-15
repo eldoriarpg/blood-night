@@ -3,6 +3,10 @@
     {
       "key": "bloodnight.mobSheet.opened",
       "purpose": "The parts of the mob settings sheet the reader opened, as a JSON array of part names; the others stay folded."
+    },
+    {
+      "key": "bloodnight.theme",
+      "purpose": "The colours the editor is drawn in, light or dark, so a page opens in the theme picked last."
     }
   ]
 }

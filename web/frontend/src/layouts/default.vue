@@ -4,7 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script lang="ts" setup>
-/** The frame of every page that is not the editor: the header bar above the page. */
+/** The frame of every page that is not the editor: the header bar above the page and the footer below it. */
 </script>
 
 <template>
@@ -13,5 +13,6 @@
     <main class="flex-1">
       <slot/>
     </main>
+    <AppFooter/>
   </div>
 </template>

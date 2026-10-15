@@ -19,6 +19,9 @@ const UNAUTHORIZED = 4401
  * Opens a session and keeps it in step with everyone editing it: the payload is the service's, changed by every
  * revision the stream reports in order; a gap or a lost stream loads the session again. The payload shown adds this
  * participant's changes still on their way.
+ * <p>
+ * The payload is replaced as a whole on every change and never changed in place, so it is kept out of Vue's deep
+ * reactivity (`markRaw`): with hundreds of mobs, proxying and copying every field made each toggle stall.
  */
 export function useEditorSession() {
     const {data, stream, reset} = editorState()
@@ -38,7 +41,7 @@ export function useEditorSession() {
     }
 
     function take(view: SessionView): void {
-        data.value.confirmed = view.payload as EditorPayload
+        data.value.confirmed = markRaw(view.payload as EditorPayload)
         data.value.revision = view.revision
         data.value.pending = []
         data.value.locks = view.locks
@@ -66,7 +69,7 @@ export function useEditorSession() {
             return
         }
         const operations = (event.operations ?? []) as PatchOperation[]
-        data.value.confirmed = applyPatch(data.value.confirmed, operations)
+        data.value.confirmed = markRaw(applyPatch(data.value.confirmed, operations))
         data.value.revision = revision
         data.value.state = 'EDITING'
         if (event.author === data.value.you) {

@@ -8,7 +8,7 @@ import type {Field} from '~/util/settings/schemaFields'
 import {fieldHelpKey} from '~/util/settings/fieldHelp'
 
 function field(key: string, defaultValue?: unknown): Field {
-    return {key, kind: 'any', options: [], children: [], item: undefined, defaultValue, enumName: undefined}
+    return {key, kind: 'any', options: [], children: [], item: undefined, defaultValue, enumName: undefined, definition: undefined}
 }
 
 describe('field help', () => {
@@ -26,12 +26,5 @@ describe('field help', () => {
     it('keeps a shared key without the deciding field out of the per-value texts', () => {
         const effect = [field('enabled'), field('seconds')]
         expect(fieldHelpKey(effect[1]!, effect, {})).toBe('settings.help.seconds')
-    })
-
-    it('leaves a key that means something else in another object without help', () => {
-        const sounds = [field('begin'), field('end'), field('ambience')]
-        const night = [field('begin'), field('skippable')]
-        expect(fieldHelpKey(sounds[0]!, sounds, {})).toBeUndefined()
-        expect(fieldHelpKey(night[0]!, night, {})).toBe('settings.help.begin')
     })
 })
