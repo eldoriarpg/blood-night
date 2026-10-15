@@ -43,6 +43,9 @@ final class BloodNightCommand {
     final SourceCommand source;
 
     @Subcommand
+    final TriggerCommand trigger;
+
+    @Subcommand
     final DebugCommand debug;
 
     @Subcommand
@@ -78,6 +81,7 @@ final class BloodNightCommand {
         spawn = new SpawnCommand(plugin);
         problems = new ProblemsCommand(plugin);
         source = new SourceCommand(plugin);
+        trigger = new TriggerCommand(plugin);
         debug = new DebugCommand(plugin);
         export = new ExportCommand(plugin);
         night = new NightCommand(plugin);
@@ -122,7 +126,8 @@ final class BloodNightCommand {
         subcommands.put("reload", "reload");
         subcommands.put("problems", "problems [mob]");
         subcommands.put("source", "source <mob>");
-        subcommands.put("debug", "debug [mob]");
+        subcommands.put("trigger", "trigger [mob]");
+        subcommands.put("debug", "debug");
         subcommands.put("export", "export");
         return subcommands;
     }

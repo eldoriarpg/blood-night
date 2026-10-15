@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.util;
 
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.eldoutilities.utils.DataContainerUtil;
+import de.eldoria.eldoutilities.pdc.DataContainerUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataType;

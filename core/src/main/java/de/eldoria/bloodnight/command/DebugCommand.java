@@ -6,15 +6,16 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.debug.DebugReport;
+import de.eldoria.eldoutilities.debug.DebugUtil;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
 import org.bukkit.command.CommandSender;
 
-import static de.eldoria.bloodnight.command.Replies.arg;
-
 /**
- * {@code /bloodnight debug [mob]}: fires the debug entry on every mob, or on the mobs of one id.
+ * {@code /bloodnight debug}: uploads a debug report to Lyna and answers with its links, as the other Eldoria plugins
+ * do. The first time on a server it explains what is sent and asks to run the command again (see {@link DebugUtil}).
  */
 @Subcommand("debug")
 @Permission("bloodnight.command.debug")
@@ -26,12 +27,7 @@ final class DebugCommand {
     }
 
     @Executes
-    void all(CommandSender sender) {
-        Replies.send(sender, "debug.fired", arg("count", plugin.coordinator().debug(null)));
-    }
-
-    @Executes
-    void mob(CommandSender sender, @MobSuggestions String mob) {
-        Replies.send(sender, "debug.fired", arg("count", plugin.coordinator().debug(mob)));
+    void report(CommandSender sender) {
+        DebugUtil.dispatchDebug(sender, plugin, DebugReport.settings());
     }
 }

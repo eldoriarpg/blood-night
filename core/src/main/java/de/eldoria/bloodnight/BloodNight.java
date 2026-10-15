@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight;
 
+import de.eldoria.EldoUtilities;
 import de.eldoria.bloodnight.advancements.BloodAdvancements;
 import de.eldoria.bloodnight.announce.Announcer;
 import de.eldoria.bloodnight.announce.IntroDialog;
@@ -23,6 +24,7 @@ import de.eldoria.bloodnight.command.BloodNightCommandBrigadier;
 import de.eldoria.bloodnight.command.MobIds;
 import de.eldoria.bloodnight.command.StoreIds;
 import de.eldoria.bloodnight.configuration.Configuration;
+import de.eldoria.bloodnight.debug.DebugReport;
 import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.enchantments.BloodEnchantments;
 import de.eldoria.bloodnight.enchantments.EnchantmentEffects;
@@ -80,6 +82,8 @@ import de.eldoria.bloodnight.store.StoreNotice;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.updates.LynaSource;
 import de.eldoria.bloodnight.updates.UpdateNotice;
+import de.eldoria.eldoutilities.debug.DebugDataProvider;
+import de.eldoria.eldoutilities.debug.data.EntryData;
 import de.eldoria.graph.payload.Catalog;
 import de.eldoria.graph.reflect.Documentation;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -121,9 +125,10 @@ import java.util.stream.Collectors;
  * {@code /bloodnight reload} reads the configuration again and recompiles; living mobs switch to the new behaviours
  * once compilation finished. {@code source} writes a mob's generated source to {@code debug/}, {@code problems} lists
  * why a mob does not compile, {@code export} writes the editor payload and catalog to {@code debug/}, {@code spawn}
- * and {@code debug} help testing.
+ * and {@code trigger} help testing. {@code debug} uploads a debug report to Lyna; the plugin is the report's entry
+ * point (see {@link DebugReport}).
  */
-public final class BloodNight extends JavaPlugin {
+public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     /**
      * Random numbers for listeners and tasks, which run on several threads on Folia: each thread draws from its own
      * generator.
@@ -161,6 +166,7 @@ public final class BloodNight extends JavaPlugin {
      */
     @Override
     public void onLoad() {
+        EldoUtilities.preWarm(this);
         if (getServer().getPluginManager().getPlugin("WorldGuard") == null) return;
         try {
             regions = WorldGuardRules.register(getLogger());
@@ -172,6 +178,7 @@ public final class BloodNight extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        EldoUtilities.ignite(this);
         tasks = new Tasks(this);
         moveLegacyAside();
         configuration = new Configuration(this);
@@ -534,6 +541,17 @@ public final class BloodNight extends JavaPlugin {
         messages.unregister();
         if (dispatcher != null) dispatcher.unregister();
         if (behaviourService != null) behaviourService.close();
+        EldoUtilities.shutdown();
+    }
+
+    @Override
+    public EntryData[] getDebugInformations() {
+        return new EntryData[0];
+    }
+
+    @Override
+    public List<DebugDataProvider> getDebugProviders() {
+        return List.of(new DebugReport(this));
     }
 
     /**

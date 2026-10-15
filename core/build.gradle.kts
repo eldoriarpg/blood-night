@@ -62,7 +62,8 @@ paper {
         "spawn" to "spawns a custom mob",
         "problems" to "lists compile problems and runtime failures of mobs",
         "source" to "writes the generated code of a mob to the debug folder",
-        "debug" to "fires the debug trigger of mobs",
+        "trigger" to "fires the debug trigger of mobs",
+        "debug" to "uploads a debug report to Lyna",
         "export" to "writes the editor payload and catalog to the debug folder",
         "night" to "shows the night selection and the next blood night of a world",
         "editor" to "opens, applies or closes a web editor session",
@@ -165,6 +166,7 @@ tasks {
         relocate("dev.chojo.ocular", "$shade.ocular")
         relocate("de.eldoria.jacksonbukkit", "$shade.jacksonbukkit")
         relocate("de.eldoria.eldoutilities", "$shade.eldoutilities")
+        relocate("de.eldoria.EldoUtilities", "$shade.EldoUtilities")
         relocate("com.palantir.javapoet", "$shade.javapoet")
         relocate("org.bstats", "$shade.bstats")
     }

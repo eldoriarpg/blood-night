@@ -23,7 +23,8 @@ All commands start with `/bloodnight`. The short form is `/bn`.
 | `/bn settings <server or world> <path> [value]` | Shows or changes one setting | `bloodnight.command.settings` |
 | `/bn reload` | Reads all files again and builds every mob | `bloodnight.command.reload` |
 | `/bn problems [mob]` | Lists problems of mobs | `bloodnight.command.problems` |
-| `/bn debug [mob]` | Fires the debug trigger | `bloodnight.command.debug` |
+| `/bn trigger [mob]` | Fires the debug trigger | `bloodnight.command.trigger` |
+| `/bn debug` | Uploads a debug report and gives you its link, for support | `bloodnight.command.debug` |
 | `/bn source <mob>` | Writes a mob's Java code to the `debug` folder | `bloodnight.command.source` |
 | `/bn export` | Writes what the editor gets to the `debug` folder | `bloodnight.command.export` |
 
