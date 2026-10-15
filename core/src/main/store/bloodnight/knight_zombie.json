@@ -5,8 +5,8 @@
     "de": "Ritterzombie"
   },
   "descriptions": {
-    "en": "Wears chainmail and a golden axe. Sometimes knocks you up and slows you down, sometimes blocks your hit.",
-    "de": "Trägt Kettenrüstung und eine Goldaxt. Wirft dich manchmal hoch und verlangsamt dich, blockt manchmal deinen Schlag."
+    "en": "Wears chainmail and a golden axe. Every 8 seconds it raises a shield for 2 seconds and blocks hits from the front: hit it from behind. Every 10 seconds it growls and dashes at you.",
+    "de": "Trägt Kettenrüstung und eine Goldaxt. Alle 8 Sekunden hebt es 2 Sekunden lang einen Schild und blockt Schläge von vorn: Triff es von hinten. Alle 10 Sekunden knurrt es und stürmt auf dich zu."
   },
   "requires": []
 }

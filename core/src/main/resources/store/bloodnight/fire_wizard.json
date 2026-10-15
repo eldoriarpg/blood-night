@@ -7,8 +7,8 @@
     "en" : "Fire Wizard"
   },
   "descriptions" : {
-    "de" : "Wirft alle 5 Sekunden einen großen Feuerball.",
-    "en" : "Throws a large fireball every 5 seconds."
+    "de" : "Um ihn tropft Lava, und eine Sekunde später wirft er einen großen Feuerball, alle 5 Sekunden. Schlag den Feuerball zurück: Er macht dem Magier dreifachen Schaden.",
+    "en" : "Lava drips around it, and a second later it throws a large fireball, every 5 seconds. Hit the fireball back: it deals triple damage to the wizard."
   },
   "requires" : [ ],
   "mob" : {
@@ -35,11 +35,11 @@
     },
     "behaviour" : {
       "nodes" : {
-        "attribute_18" : {
+        "attribute_26" : {
           "type" : "living_entity.attribute",
           "inputs" : {
             "target" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             }
           },
@@ -47,100 +47,103 @@
             "attribute" : "minecraft:attack_damage"
           }
         },
-        "branch_15" : {
+        "branch_10" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "equal_13",
+              "node" : "is_null_9",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "mutate_14" ]
+            "false" : [ "branch_8" ]
           }
         },
-        "branch_22" : {
+        "branch_16" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_21",
+              "node" : "equal_14",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "damage_20" ]
+            "false" : [ "mutate_15" ]
           }
         },
         "branch_23" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cast_17",
+              "node" : "equal_19",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_21" ]
+          }
+        },
+        "branch_30" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_29",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_28" ]
+          }
+        },
+        "branch_31" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_25",
               "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "branch_22" ]
+            "true" : [ "branch_30" ]
           }
         },
-        "branch_4" : {
+        "branch_5" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_3",
+              "node" : "is_null_4",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "spawn_particle_2" ]
+            "false" : [ "launch_projectile_3" ]
           }
         },
-        "branch_7" : {
+        "branch_8" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_6",
+              "node" : "cooldown_7",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "launch_projectile_5" ]
+            "true" : [ "spawn_particle_6", "delay_0" ]
           }
         },
-        "branch_9" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_8",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "false" : [ "branch_7" ]
-          }
-        },
-        "cast_17" : {
+        "cast_25" : {
           "type" : "cast",
           "config" : {
             "type" : "player"
           },
           "inputs" : {
             "value" : {
-              "node" : "projectile_hit_16",
+              "node" : "projectile_hit_24",
               "port" : "hit_entity"
             }
           }
         },
-        "cooldown_3" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
-          }
-        },
-        "cooldown_6" : {
+        "cooldown_7" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -149,66 +152,103 @@
             "duration" : 5000
           }
         },
-        "damage_20" : {
+        "damage_28" : {
           "type" : "living_entity.damage",
           "inputs" : {
             "amount" : {
-              "node" : "read_19",
+              "node" : "read_27",
               "port" : "value"
             },
             "source" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             },
             "target" : {
-              "node" : "cast_17",
+              "node" : "cast_25",
               "port" : "result"
             }
           }
         },
-        "equal_13" : {
+        "damage_by_entity_17" : {
+          "type" : "event.damage_by_entity",
+          "executions" : {
+            "next" : [ "branch_23" ]
+          }
+        },
+        "delay_0" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.0
+          },
+          "executions" : {
+            "next" : [ "branch_5" ]
+          }
+        },
+        "equal_14" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "projectile_shoot_11",
+              "node" : "projectile_shoot_12",
               "port" : "entity_type"
             },
             "second" : {
-              "node" : "value_12",
+              "node" : "value_13",
               "port" : "value"
             }
           }
         },
-        "is_null_21" : {
+        "equal_19" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "read_18",
+              "port" : "type"
+            },
+            "second" : {
+              "node" : "value_20",
+              "port" : "value"
+            }
+          }
+        },
+        "is_null_29" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "attribute_18",
+              "node" : "attribute_26",
               "port" : "result"
             }
           }
         },
-        "is_null_8" : {
+        "is_null_4" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "target"
             }
           }
         },
-        "launch_projectile_5" : {
+        "is_null_9" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_1",
+              "port" : "target"
+            }
+          }
+        },
+        "launch_projectile_3" : {
           "type" : "living_entity.launch_projectile",
           "config" : {
             "projectile" : "LARGE_FIREBALL"
           },
           "inputs" : {
             "shooter" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             },
             "target" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "target"
             }
           },
@@ -216,11 +256,23 @@
             "speed" : 4.0
           }
         },
-        "mutate_14" : {
+        "multiply_22" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_by_entity_17",
+              "port" : "damage"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "mutate_15" : {
           "type" : "cancellable.mutate",
           "inputs" : {
             "target" : {
-              "node" : "projectile_shoot_11",
+              "node" : "projectile_shoot_12",
               "port" : "event"
             }
           },
@@ -228,74 +280,76 @@
             "cancelled" : true
           }
         },
-        "night_end_25" : {
+        "mutate_21" : {
+          "type" : "event_data.entity_damage.mutate",
+          "inputs" : {
+            "damage" : {
+              "node" : "multiply_22",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "damage_by_entity_17",
+              "port" : "event"
+            }
+          }
+        },
+        "night_end_33" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_24" ]
+            "next" : [ "spawn_particle_32" ]
           }
         },
-        "projectile_hit_16" : {
+        "projectile_hit_24" : {
           "type" : "event.projectile_hit",
           "executions" : {
-            "next" : [ "branch_23" ]
+            "next" : [ "branch_31" ]
           }
         },
-        "projectile_shoot_11" : {
+        "projectile_shoot_12" : {
           "type" : "event.projectile_shoot",
           "executions" : {
-            "next" : [ "branch_15" ]
+            "next" : [ "branch_16" ]
           }
         },
-        "read_0" : {
+        "read_1" : {
           "type" : "mob.read",
           "inputs" : {
             "target" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             }
           }
         },
-        "read_19" : {
+        "read_18" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "damage_by_entity_17",
+              "port" : "damager"
+            }
+          }
+        },
+        "read_27" : {
           "type" : "attribute.read",
           "inputs" : {
             "target" : {
-              "node" : "attribute_18",
+              "node" : "attribute_26",
               "port" : "result"
             }
           }
         },
-        "self_1" : {
+        "self_2" : {
           "type" : "mob.self"
         },
-        "spawn_particle_2" : {
+        "spawn_particle_32" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "eye_location"
             },
             "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 5,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:dripping_lava"
-          }
-        },
-        "spawn_particle_24" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "world"
             }
           },
@@ -307,13 +361,40 @@
             "particle" : "minecraft:campfire_cosy_smoke"
           }
         },
-        "tick_10" : {
-          "type" : "mob.tick",
-          "executions" : {
-            "next" : [ "branch_4", "branch_9" ]
+        "spawn_particle_6" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_1",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 40,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dripping_lava"
           }
         },
-        "value_12" : {
+        "tick_11" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_10" ]
+          }
+        },
+        "value_13" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:fireball"
+          }
+        },
+        "value_20" : {
           "type" : "value",
           "config" : {
             "type" : "entity_type",

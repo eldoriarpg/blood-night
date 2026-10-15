@@ -5,8 +5,8 @@
     "de": "Phantomseele"
   },
   "descriptions": {
-    "en": "Glows but is invisible. Its hits blind you.",
-    "de": "Leuchtet, ist aber unsichtbar. Seine Treffer blenden dich."
+    "en": "Invisible while it circles. When it dives at you, it shows itself and glows. Its hits blind you.",
+    "de": "Unsichtbar, solange es kreist. Wenn es auf dich herabstößt, zeigt es sich und leuchtet. Seine Treffer blenden dich."
   },
   "requires": []
 }

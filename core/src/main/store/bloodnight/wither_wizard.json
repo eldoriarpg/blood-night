@@ -5,8 +5,8 @@
     "de": "Withermagier"
   },
   "descriptions": {
-    "en": "Throws a wither skull every 5 seconds.",
-    "de": "Wirft alle 5 Sekunden einen Wither-Schädel."
+    "en": "Throws three wither skulls in a row, then rests for 8 seconds. Below half health it heals once.",
+    "de": "Wirft drei Wither-Schädel hintereinander und ruht dann 8 Sekunden. Unter halber Gesundheit heilt er sich einmal."
   },
   "requires": []
 }

@@ -44,6 +44,7 @@ public interface BloodNightNodes extends StdNodes {
     String VECTOR_DIRECTION = "vector.direction";
     String VECTOR_DISTANCE = "vector.distance";
     String VECTOR_DISTANCE_SQUARED = "vector.distance_squared";
+    String VECTOR_DOT = "vector.dot";
     String WORLD_NEARBY_ENTITIES = "world.nearby_entities";
     String LIVING_ENTITY_APPLY_EFFECT = "living_entity.apply_effect";
     String LIVING_ENTITY_LAUNCH_PROJECTILE = "living_entity.launch_projectile";

@@ -134,6 +134,21 @@ public final class BukkitNodes {
                     .build(),
             (port, ctx) -> CodeBlock.of("$L.distance($L)", ctx.input(FIRST), ctx.input(SECOND)));
 
+    public static final ExpressionDefinition DOT = new ExpressionDefinition(
+            NodeDescriptor.builder(BloodNightNodes.VECTOR_DOT, NodeKind.PURE)
+                    .name("Dot Product")
+                    .description("How much two directions agree: with both of length 1, 1 when they point the same way,"
+                            + " 0 when at a right angle, -1 when opposite. Good for checking whether someone looks at"
+                            + " something")
+                    .input(FIRST, Vector.class)
+                    .input(SECOND, Vector.class)
+                    .output(RESULT, double.class)
+                    .describe("first", "A vector")
+                    .describe("second", "Another vector")
+                    .describe("result", "The dot product of both")
+                    .build(),
+            (port, ctx) -> CodeBlock.of("$L.dot($L)", ctx.input(FIRST), ctx.input(SECOND)));
+
     public static final ExpressionDefinition DISTANCE_SQUARED = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.VECTOR_DISTANCE_SQUARED, NodeKind.PURE)
                     .name("Squared Distance Between Points")
@@ -973,6 +988,7 @@ public final class BukkitNodes {
                 DIRECTION,
                 DISTANCE,
                 DISTANCE_SQUARED,
+                DOT,
                 NEARBY_ENTITIES,
                 SELF,
                 EXTENSION,

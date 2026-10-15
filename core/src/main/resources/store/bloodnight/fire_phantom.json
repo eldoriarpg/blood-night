@@ -7,8 +7,8 @@
     "en" : "Fire Phantom"
   },
   "descriptions" : {
-    "de" : "Trägt eine Lohe.",
-    "en" : "Carries a blaze."
+    "de" : "Trägt eine Lohe und lässt alle 6 Sekunden einen kleinen Feuerball auf dich fallen.",
+    "en" : "Carries a blaze and drops a small fireball on you every 6 seconds."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,6 +28,42 @@
     },
     "behaviour" : {
       "nodes" : {
+        "branch_11" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_10",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "remove_9" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "launch_projectile_15" ]
+          }
+        },
+        "branch_19" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_18",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_17" ]
+          }
+        },
         "branch_4" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -52,8 +88,41 @@
             "false" : [ "remove_5" ]
           }
         },
+        "cooldown_16" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 6000
+          }
+        },
+        "death_12" : {
+          "type" : "event.death",
+          "executions" : {
+            "next" : [ "branch_11" ]
+          }
+        },
         "extension_2" : {
           "type" : "mob.extension"
+        },
+        "is_null_10" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "is_null_18" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_13",
+              "port" : "target"
+            }
+          }
         },
         "is_null_3" : {
           "type" : "logic.is_null",
@@ -71,6 +140,25 @@
               "node" : "extension_2",
               "port" : "entity"
             }
+          }
+        },
+        "launch_projectile_15" : {
+          "type" : "living_entity.launch_projectile",
+          "config" : {
+            "projectile" : "SMALL_FIREBALL"
+          },
+          "inputs" : {
+            "shooter" : {
+              "node" : "self_14",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_13",
+              "port" : "target"
+            }
+          },
+          "literals" : {
+            "speed" : 1.5
           }
         },
         "mutate_1" : {
@@ -92,6 +180,15 @@
             "next" : [ "branch_7" ]
           }
         },
+        "read_13" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_14",
+              "port" : "entity"
+            }
+          }
+        },
         "remove_5" : {
           "type" : "entity.remove",
           "inputs" : {
@@ -101,10 +198,28 @@
             }
           }
         },
+        "remove_9" : {
+          "type" : "entity.remove",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_14" : {
+          "type" : "mob.self"
+        },
         "target_change_0" : {
           "type" : "event.target_change",
           "executions" : {
             "next" : [ "branch_4" ]
+          }
+        },
+        "tick_20" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_19" ]
           }
         }
       }

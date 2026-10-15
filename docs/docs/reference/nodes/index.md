@@ -8,7 +8,7 @@ sidebar_position: 0
 
 # Nodes
 
-These are all 173 nodes you can use in a mob's graph. Each group has its own page.
+These are all 174 nodes you can use in a mob's graph. Each group has its own page.
 
 | Group | Nodes |
 |---|---|
@@ -36,4 +36,4 @@ These are all 173 nodes you can use in a mob's graph. Each group has its own pag
 | [Triggers and events](./event.md) | 22 |
 | [Values](./value.md) | 5 |
 | [Variables](./variable.md) | 2 |
-| [Vectors](./vector.md) | 7 |
+| [Vectors](./vector.md) | 8 |

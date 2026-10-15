@@ -5,8 +5,8 @@
     "de": "Furchterregender Enderman"
   },
   "descriptions": {
-    "en": "Comes for the nearest player. Its hits blind you.",
-    "de": "Kommt zum nächsten Spieler. Seine Schläge blenden dich."
+    "en": "Comes for the nearest player. It screams every 12 seconds: look away within a second, or you go blind. Its hits blind you too.",
+    "de": "Kommt zum nächsten Spieler. Alle 12 Sekunden schreit es: Schau innerhalb einer Sekunde weg, sonst wirst du blind. Auch seine Schläge blenden dich."
   },
   "requires": []
 }

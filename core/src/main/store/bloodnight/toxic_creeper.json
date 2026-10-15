@@ -5,8 +5,8 @@
     "de": "Giftiger Creeper"
   },
   "descriptions": {
-    "en": "Leaves a strong poison cloud when it explodes.",
-    "de": "Hinterlässt eine starke Giftwolke, wenn er explodiert."
+    "en": "Leaves small poison clouds as it walks and a strong poison cloud when it explodes.",
+    "de": "Hinterlässt beim Laufen kleine Giftwolken und eine starke Giftwolke, wenn er explodiert."
   },
   "requires": []
 }

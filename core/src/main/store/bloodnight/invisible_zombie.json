@@ -5,8 +5,8 @@
     "de": "Unsichtbarer Zombie"
   },
   "descriptions": {
-    "en": "Invisible. When you hit it, it shows up for 10 seconds.",
-    "de": "Unsichtbar. Wenn du es triffst, wird es für 10 Sekunden sichtbar."
+    "en": "Invisible, but faint dust shows at its feet. When you hit it, it shows up for 10 seconds.",
+    "de": "Unsichtbar, aber an seinen Füßen zeigt sich feiner Staub. Wenn du es triffst, wird es für 10 Sekunden sichtbar."
   },
   "requires": []
 }

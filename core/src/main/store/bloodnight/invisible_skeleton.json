@@ -5,8 +5,8 @@
     "de": "Unsichtbares Skelett"
   },
   "descriptions": {
-    "en": "Invisible.",
-    "de": "Unsichtbar."
+    "en": "Invisible, but it shows itself for a second after each shot. Its arrows glow.",
+    "de": "Unsichtbar, zeigt sich aber nach jedem Schuss für eine Sekunde. Seine Pfeile leuchten."
   },
   "requires": []
 }

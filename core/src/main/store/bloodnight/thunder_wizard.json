@@ -5,8 +5,8 @@
     "de": "Donnermagier"
   },
   "descriptions": {
-    "en": "Marks where you stand with a red ring. When the ring is full, lightning strikes there.",
-    "de": "Markiert, wo du stehst, mit einem roten Ring. Ist er voll, schlägt dort ein Blitz ein."
+    "en": "Marks where you stand with a red ring three times in a row. When a ring is full, lightning strikes there: keep moving.",
+    "de": "Markiert dreimal hintereinander, wo du stehst, mit einem roten Ring. Ist ein Ring voll, schlägt dort ein Blitz ein: Bleib in Bewegung."
   },
   "requires": []
 }

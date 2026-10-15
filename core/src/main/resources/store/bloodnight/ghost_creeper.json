@@ -7,8 +7,8 @@
     "en" : "Ghost Creeper"
   },
   "descriptions" : {
-    "de" : "Reitet einen unsichtbaren Plagegeist und fliegt so.",
-    "en" : "Rides an invisible vex, so it flies."
+    "de" : "Reitet einen unsichtbaren Plagegeist und fliegt so. Über dir zischt er, und eine Sekunde später lässt er sich auf dich fallen.",
+    "en" : "Rides an invisible vex, so it flies. Above you it hisses, and a second later it drops on you."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,6 +28,43 @@
     },
     "behaviour" : {
       "nodes" : {
+        "add_42" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_29",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_44" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_36",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "and_46" : {
+          "type" : "logic.and",
+          "inputs" : {
+            "first" : {
+              "node" : "greater_39",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "less_45",
+              "port" : "result"
+            }
+          }
+        },
         "apply_effect_10" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
@@ -55,52 +92,100 @@
             "true" : [ "apply_effect_10" ]
           }
         },
-        "branch_19" : {
+        "branch_22" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "equal_17",
+              "node" : "or_16",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "mutate_18" ]
-          }
-        },
-        "branch_24" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "equal_22",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "mutate_23" ]
+            "true" : [ "mutate_21" ]
           }
         },
         "branch_27" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "read_26",
-              "port" : "dead"
-            }
-          },
-          "executions" : {
-            "false" : [ "damage_25" ]
-          }
-        },
-        "branch_31" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_30",
+              "node" : "equal_25",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "remove_29" ]
+            "true" : [ "mutate_26" ]
+          }
+        },
+        "branch_30" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_29",
+              "port" : "dead"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_28" ]
+          }
+        },
+        "branch_34" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_33",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "remove_32" ]
+          }
+        },
+        "branch_50" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_49",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "drop_passengers_47", "remove_48" ]
+          }
+        },
+        "branch_55" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_37",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_sound_53" ]
+          }
+        },
+        "branch_56" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "and_46",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "do_once_52" ]
+          }
+        },
+        "branch_58" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_57",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_56" ]
           }
         },
         "branch_8" : {
@@ -115,6 +200,18 @@
             "false" : [ "mutate_1", "equip_4", "equip_6" ]
           }
         },
+        "cast_37" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "read_29",
+              "port" : "target"
+            }
+          }
+        },
         "cooldown_12" : {
           "type" : "function.cooldown",
           "config" : {
@@ -122,6 +219,38 @@
           },
           "literals" : {
             "duration" : 30000
+          }
+        },
+        "create_41" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_42",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_29",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          }
+        },
+        "create_43" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_44",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_36",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
           }
         },
         "create_item_stack_3" : {
@@ -139,14 +268,14 @@
         "damage_15" : {
           "type" : "event.damage",
           "executions" : {
-            "next" : [ "branch_19" ]
+            "next" : [ "branch_22" ]
           }
         },
-        "damage_25" : {
+        "damage_28" : {
           "type" : "living_entity.damage",
           "inputs" : {
             "amount" : {
-              "node" : "read_26",
+              "node" : "read_29",
               "port" : "health"
             },
             "target" : {
@@ -155,7 +284,44 @@
             }
           }
         },
-        "equal_17" : {
+        "delay_51" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.0
+          },
+          "executions" : {
+            "next" : [ "branch_50" ]
+          }
+        },
+        "distance_40" : {
+          "type" : "vector.distance",
+          "inputs" : {
+            "first" : {
+              "node" : "create_41",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "create_43",
+              "port" : "result"
+            }
+          }
+        },
+        "do_once_52" : {
+          "type" : "flow.do_once",
+          "executions" : {
+            "next" : [ "branch_55", "delay_51" ]
+          }
+        },
+        "drop_passengers_47" : {
+          "type" : "entity.drop_passengers",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "equal_18" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
@@ -163,20 +329,33 @@
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_16",
+              "node" : "value_17",
               "port" : "value"
             }
           }
         },
-        "equal_22" : {
+        "equal_20" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "extension_damage_20",
+              "node" : "damage_15",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_21",
+              "node" : "value_19",
+              "port" : "value"
+            }
+          }
+        },
+        "equal_25" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "extension_damage_23",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_24",
               "port" : "value"
             }
           }
@@ -213,33 +392,63 @@
             "slot" : "OFF_HAND"
           }
         },
-        "explode_32" : {
+        "explode_35" : {
           "type" : "event.explode",
           "executions" : {
-            "next" : [ "branch_31" ]
+            "next" : [ "branch_34" ]
           }
         },
         "extension_0" : {
           "type" : "mob.extension"
         },
-        "extension_damage_20" : {
+        "extension_damage_23" : {
           "type" : "event.extension_damage",
-          "executions" : {
-            "next" : [ "branch_24" ]
-          }
-        },
-        "extension_death_28" : {
-          "type" : "event.extension_death",
           "executions" : {
             "next" : [ "branch_27" ]
           }
         },
-        "is_null_30" : {
+        "extension_death_31" : {
+          "type" : "event.extension_death",
+          "executions" : {
+            "next" : [ "branch_30" ]
+          }
+        },
+        "greater_39" : {
+          "type" : "logic.greater",
+          "inputs" : {
+            "first" : {
+              "node" : "subtract_38",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "is_null_33" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
               "node" : "extension_0",
               "port" : "entity"
+            }
+          }
+        },
+        "is_null_49" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "is_null_57" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_29",
+              "port" : "target"
             }
           }
         },
@@ -250,6 +459,18 @@
               "node" : "extension_0",
               "port" : "entity"
             }
+          }
+        },
+        "less_45" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_40",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
           }
         },
         "mutate_1" : {
@@ -264,7 +485,7 @@
             "invisible" : true
           }
         },
-        "mutate_18" : {
+        "mutate_21" : {
           "type" : "cancellable.mutate",
           "inputs" : {
             "target" : {
@@ -276,16 +497,47 @@
             "cancelled" : true
           }
         },
-        "mutate_23" : {
+        "mutate_26" : {
           "type" : "cancellable.mutate",
           "inputs" : {
             "target" : {
-              "node" : "extension_damage_20",
+              "node" : "extension_damage_23",
               "port" : "event"
             }
           },
           "literals" : {
             "cancelled" : true
+          }
+        },
+        "or_16" : {
+          "type" : "logic.or",
+          "inputs" : {
+            "first" : {
+              "node" : "equal_18",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "equal_20",
+              "port" : "result"
+            }
+          }
+        },
+        "play_sound_53" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_54",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_37",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.8,
+            "sound" : "minecraft:entity.creeper.primed",
+            "volume" : 1.5
           }
         },
         "read_2" : {
@@ -297,7 +549,7 @@
             }
           }
         },
-        "read_26" : {
+        "read_29" : {
           "type" : "creeper.read",
           "inputs" : {
             "target" : {
@@ -306,7 +558,34 @@
             }
           }
         },
-        "remove_29" : {
+        "read_36" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_29",
+              "port" : "target"
+            }
+          }
+        },
+        "read_54" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_37",
+              "port" : "result"
+            }
+          }
+        },
+        "remove_32" : {
+          "type" : "entity.remove",
+          "inputs" : {
+            "target" : {
+              "node" : "extension_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "remove_48" : {
           "type" : "entity.remove",
           "inputs" : {
             "target" : {
@@ -324,20 +603,40 @@
             "next" : [ "branch_8" ]
           }
         },
+        "subtract_38" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_29",
+              "port" : "y"
+            },
+            "second" : {
+              "node" : "read_36",
+              "port" : "y"
+            }
+          }
+        },
         "tick_14" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_13" ]
+            "next" : [ "branch_13", "branch_58" ]
           }
         },
-        "value_16" : {
+        "value_17" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",
             "value" : "SUFFOCATION"
           }
         },
-        "value_21" : {
+        "value_19" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "FALL"
+          }
+        },
+        "value_24" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",

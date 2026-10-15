@@ -42,6 +42,6 @@ never saved. After a restart, none are left over.
 
 ## In the ready-made mobs
 
-- The **thunder wizard** draws a red ring where its lightning will strike.
+- The **thunder wizard** draws three red rings along your path, one for each lightning strike.
 - The **unstable creeper** draws a red ring around itself when it is hit. It explodes one second later.
 - The **ender creeper** shows a purple pillar where it will appear, one second before it arrives.

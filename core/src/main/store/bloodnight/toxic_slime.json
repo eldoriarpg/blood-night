@@ -5,8 +5,8 @@
     "de": "Giftiger Schleim"
   },
   "descriptions": {
-    "en": "Leaves a poison cloud when it dies.",
-    "de": "Hinterlässt eine Giftwolke, wenn er stirbt."
+    "en": "Its hits poison you. Leaves a poison cloud when it dies.",
+    "de": "Seine Treffer vergiften dich. Hinterlässt eine Giftwolke, wenn er stirbt."
   },
   "requires": []
 }

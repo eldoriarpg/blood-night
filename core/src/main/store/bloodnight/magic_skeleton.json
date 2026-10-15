@@ -5,8 +5,8 @@
     "de": "Magisches Skelett"
   },
   "descriptions": {
-    "en": "Its arrows give you a random bad effect.",
-    "de": "Seine Pfeile geben dir einen zufälligen schlechten Effekt."
+    "en": "Its arrows bring slowness, weakness, poison and nausea, always in this order. The dust on it shows what comes next.",
+    "de": "Seine Pfeile bringen Langsamkeit, Schwäche, Gift und Übelkeit, immer in dieser Reihenfolge. Der Staub an ihm zeigt, was als Nächstes kommt."
   },
   "requires": []
 }

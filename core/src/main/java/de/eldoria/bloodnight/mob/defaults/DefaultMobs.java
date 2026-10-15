@@ -77,6 +77,15 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final double BACK_OFF_UP = 0.42;
 
     /**
+     * The magic skeleton's effects in the order its arrows bring them, with the dust colour that announces each.
+     */
+    private static final List<MagicEffect> MAGIC_EFFECTS = List.of(
+            new MagicEffect("minecraft:slowness", 6, 90, 108, 129),
+            new MagicEffect("minecraft:weakness", 6, 72, 77, 72),
+            new MagicEffect("minecraft:poison", 5, 135, 163, 99),
+            new MagicEffect("minecraft:nausea", 6, 85, 29, 74));
+
+    /**
      * Blocks a leap covers per unit of sideways speed: air drag takes 9 % of it every tick, so about ten.
      */
     private static final double LEAP_REACH = 10;
@@ -151,6 +160,10 @@ public final class DefaultMobs implements BloodNightNodes {
                 mobs.bloodDragon());
     }
 
+    /**
+     * Full diamond armour. Every hit from a player has a chance to knock off a piece, helmet first, then boots,
+     * leggings and chestplate; with nothing left it runs faster.
+     */
     private CustomMob armoredZombie() {
         return mob(
                 "armored_zombie",
@@ -162,11 +175,58 @@ public final class DefaultMobs implements BloodNightNodes {
                         "minecraft:diamond_boots",
                         null,
                         null),
-                graph -> {});
+                graph -> {
+                    String lost = graph.node(VARIABLE_GET)
+                            .config("name", "lost")
+                            .config("type", "integer")
+                            .id();
+                    var knock = graph.node(FLOW_SWITCH).input(VALUE, lost, VALUE);
+                    List<EquipmentSlot> order =
+                            List.of(EquipmentSlot.HEAD, EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST);
+                    for (int i = 0; i < order.size(); i++) {
+                        knock.config("case_" + i, i).chain("case_" + i, graph.equip(order.get(i), "minecraft:air"));
+                    }
+                    String count = graph.node(VARIABLE_SET)
+                            .config("name", "lost")
+                            .config("type", "integer")
+                            .input(
+                                    VALUE,
+                                    graph.node(MATH_ADD)
+                                            .input("first", lost, VALUE)
+                                            .literal("second", 1)
+                                            .id(),
+                                    RESULT)
+                            .id();
+                    String armoured = graph.node(LOGIC_LESS)
+                            .input("first", lost, VALUE)
+                            .literal("second", order.size())
+                            .id();
+                    String damaged = graph.entry(EVENT_DAMAGE_BY_PLAYER);
+                    String attacker = graph.as("player", damaged, "attacker");
+                    graph.on(
+                            EVENT_DAMAGE_BY_PLAYER,
+                            graph.when(
+                                    armoured,
+                                    RESULT,
+                                    graph.chance(
+                                            15,
+                                            knock.id(),
+                                            count,
+                                            graph.when(
+                                                    attacker,
+                                                    "matches",
+                                                    graph.sound(
+                                                            attacker,
+                                                            RESULT,
+                                                            "minecraft:entity.item.break",
+                                                            1,
+                                                            0.8)))));
+                    graph.on(MOB_TICK, graph.unless(armoured, RESULT, graph.keepEffect("minecraft:speed", 1, false)));
+                });
     }
-
     /**
-     * Blocks some hits with a shield sound and sometimes knocks the player up and slows them instead of hitting.
+     * Every eight seconds it raises a shield for two seconds, slowed, and blocks every hit from the front meanwhile;
+     * every ten seconds it growls and dashes at its target. Its own hits sometimes knock the player up and slow them.
      */
     private CustomMob knightZombie() {
         Equipment armor = new Equipment(
@@ -200,22 +260,125 @@ public final class DefaultMobs implements BloodNightNodes {
                                     graph.effect(victim, RESULT, "minecraft:slowness", 1, 2),
                                     graph.sound(victim, RESULT, "minecraft:block.bubble_column.bubble_pop", 15, 3))));
 
+            String raised = graph.node(VARIABLE_GET)
+                    .config("name", "raised")
+                    .config("type", "boolean")
+                    .id();
+            String lower = graph.node(FLOW_DELAY)
+                    .literal("duration", 2.0)
+                    .chain("next", graph.equip(EquipmentSlot.OFF_HAND, "minecraft:air"), raise(graph, false))
+                    .id();
+            String targetPlayer = graph.as("player", graph.selfRead(), TARGET);
+            String stance = graph.every(
+                    8000,
+                    raise(graph, true),
+                    graph.equip(EquipmentSlot.OFF_HAND, "minecraft:shield"),
+                    graph.effect(graph.self(), "entity", "minecraft:slowness", 2, 2),
+                    graph.when(
+                            targetPlayer,
+                            "matches",
+                            graph.sound(targetPlayer, RESULT, "minecraft:item.armor.equip_chain", 1, 0.8)),
+                    lower);
+            String target = graph.living(graph.selfRead(), TARGET);
+            String charge = graph.selfMutate()
+                    .input(
+                            "velocity",
+                            graph.node(VECTOR_CREATE)
+                                    .input("x", towards(graph, target, "x"), RESULT)
+                                    .literal("y", 0.3)
+                                    .input("z", towards(graph, target, "z"), RESULT)
+                                    .id(),
+                            RESULT)
+                    .id();
+            String dash = graph.every(
+                    10000,
+                    graph.when(
+                            targetPlayer,
+                            "matches",
+                            graph.sound(targetPlayer, RESULT, "minecraft:entity.zombie.ambient", 1, 0.5)),
+                    graph.node(FLOW_DELAY)
+                            .literal("duration", 0.6)
+                            .chain("next", graph.present(graph.selfRead(), TARGET, charge))
+                            .id());
+            graph.on(MOB_TICK, graph.present(graph.selfRead(), TARGET, stance, dash));
+
             String damaged = graph.entry(EVENT_DAMAGE_BY_PLAYER);
             String attacker = graph.as("player", damaged, "attacker");
+            String attackerEntity =
+                    graph.node(ENTITY_READ).input(TARGET, attacker, RESULT).id();
+            String front = facing(graph, graph.selfRead(), attackerEntity, 0.3);
+            String blocks = graph.node(LOGIC_AND)
+                    .input("first", raised, VALUE)
+                    .input("second", front, RESULT)
+                    .id();
             graph.on(
                     EVENT_DAMAGE_BY_PLAYER,
                     graph.when(
                             attacker,
                             "matches",
-                            graph.chance(
-                                    12,
+                            graph.when(
+                                    blocks,
+                                    RESULT,
                                     graph.cancel(damaged),
-                                    graph.sound(attacker, RESULT, "minecraft:item.shield.block", 15, 1))));
+                                    graph.sound(attacker, RESULT, "minecraft:item.shield.block", 1, 1))));
         });
     }
 
+    private static String raise(MobGraph graph, boolean raised) {
+        return graph.node(VARIABLE_SET)
+                .config("name", "raised")
+                .config("type", "boolean")
+                .literal(VALUE, raised)
+                .id();
+    }
+
     /**
-     * Invisible and without equipment, until it is hit; turns invisible again ten seconds after the last hit.
+     * Whether an entity faces another, compared on the ground: the dot product of its looking direction and the
+     * direction to the other, both flattened and of length 1, is above the threshold (1 is straight at it).
+     *
+     * @param looker the node with the looking entity's read ({@code location}, {@code x}, {@code z})
+     * @param other  the node with the other entity's read
+     */
+    private static String facing(MobGraph graph, String looker, String other, double threshold) {
+        String direction = graph.node(VECTOR_READ)
+                .input(
+                        TARGET,
+                        graph.node(LOCATION_READ)
+                                .input(TARGET, looker, "location")
+                                .id(),
+                        "direction")
+                .id();
+        String looking = graph.node(VECTOR_NORMALIZE)
+                .input(
+                        VALUE,
+                        graph.node(VECTOR_CREATE)
+                                .input("x", direction, "x")
+                                .literal("y", 0.0)
+                                .input("z", direction, "z")
+                                .id(),
+                        RESULT)
+                .id();
+        String towardsOther = graph.node(VECTOR_NORMALIZE)
+                .input(
+                        VALUE,
+                        graph.node(VECTOR_DIRECTION)
+                                .input("from", flat(graph, looker, 0.0), RESULT)
+                                .input("to", flat(graph, other, 0.01), RESULT)
+                                .id(),
+                        RESULT)
+                .id();
+        String dot = graph.node(VECTOR_DOT)
+                .input("first", looking, RESULT)
+                .input("second", towardsOther, RESULT)
+                .id();
+        return graph.node(LOGIC_GREATER)
+                .input("first", dot, RESULT)
+                .literal("second", threshold)
+                .id();
+    }
+    /**
+     * Invisible and without equipment, until it is hit; turns invisible again ten seconds after the last hit. While
+     * invisible, faint dust shows at its feet.
      */
     private CustomMob invisibleZombie() {
         return mob("invisible_zombie", EntityType.ZOMBIE, graph -> {
@@ -232,7 +395,13 @@ public final class DefaultMobs implements BloodNightNodes {
                     .literal("seconds", 2.0)
                     .literal("amplifier", 0)
                     .id();
-            graph.on(MOB_TICK, graph.after("damaged", 10, graph.every(1000, hide)));
+            graph.on(
+                    MOB_TICK,
+                    graph.after(
+                            "damaged",
+                            10,
+                            graph.every(1000, hide),
+                            graph.every(400, graph.dustOnce(150, 150, 150, 0.8, 2))));
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String reveal = graph.node(LIVING_ENTITY_REMOVE_POTION_EFFECT)
                         .input(TARGET, graph.self(), "entity")
@@ -243,47 +412,115 @@ public final class DefaultMobs implements BloodNightNodes {
         });
     }
 
+    /**
+     * Lunges instead of running all the time: every six seconds near its target it growls, then gets Speed IV for two
+     * seconds and is slowed for a second after.
+     */
     private CustomMob speedZombie() {
-        return mob(
-                "speed_zombie",
-                EntityType.ZOMBIE,
-                graph -> graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 4, true)));
+        return mob("speed_zombie", EntityType.ZOMBIE, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            String targetPlayer = graph.as("player", graph.selfRead(), TARGET);
+            String distance = graph.node(LOCATION_DISTANCE)
+                    .input(TARGET, graph.selfRead(), "location")
+                    .input("other", target, "location")
+                    .id();
+            String near = graph.node(LOGIC_LESS)
+                    .input("first", distance, RESULT)
+                    .literal("second", 12.0)
+                    .id();
+            String tired = graph.node(FLOW_DELAY)
+                    .literal("duration", 2.0)
+                    .chain("next", graph.effect(graph.self(), "entity", "minecraft:slowness", 1, 1))
+                    .id();
+            String lunge = graph.node(FLOW_DELAY)
+                    .literal("duration", 0.5)
+                    .chain("next", graph.effect(graph.self(), "entity", "minecraft:speed", 2, 3), tired)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.when(
+                                    near,
+                                    RESULT,
+                                    graph.every(
+                                            6000,
+                                            graph.when(
+                                                    targetPlayer,
+                                                    "matches",
+                                                    graph.sound(
+                                                            targetPlayer,
+                                                            RESULT,
+                                                            "minecraft:entity.zombie.ambient",
+                                                            1.5,
+                                                            0.6)),
+                                            lunge))));
+        });
     }
-
+    /**
+     * Invisible, except for a second after each shot; its arrows glow, so players see where they come from.
+     */
     private CustomMob invisibleSkeleton() {
         return mob("invisible_skeleton", EntityType.SKELETON, graph -> {
-            graph.on(MOB_TICK, graph.keepEffect("minecraft:invisibility", 1, false));
+            graph.on(MOB_TICK, graph.after("shot", 1, graph.keepEffect("minecraft:invisibility", 1, false)));
+            String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
+            String glow = graph.node(ENTITY_MUTATE)
+                    .input(TARGET, shoot, "entity")
+                    .literal("glowing", true)
+                    .id();
+            String reveal = graph.node(LIVING_ENTITY_REMOVE_POTION_EFFECT)
+                    .input(TARGET, graph.self(), "entity")
+                    .literal("type", "minecraft:invisibility")
+                    .id();
+            graph.on(EVENT_PROJECTILE_SHOOT, graph.resetTimer("shot"), reveal, glow);
             smokeAtNightEnd(graph);
         });
     }
-
     /**
-     * Arrows that hit put one of eight random effects on the target.
+     * Its arrows put effects on the target in a fixed order: slowness, weakness, poison, nausea. Coloured dust on the
+     * skeleton shows which one comes next.
      */
     private CustomMob magicSkeleton() {
         return mob("magic_skeleton", EntityType.SKELETON, graph -> {
             graph.on(MOB_TICK, graph.keepEffect("minecraft:night_vision", 1, true));
+            String next = graph.node(VARIABLE_GET)
+                    .config("name", "next")
+                    .config("type", "integer")
+                    .id();
+            var show = graph.node(FLOW_SWITCH).input(VALUE, next, VALUE);
+            var apply = graph.node(FLOW_SWITCH).input(VALUE, next, VALUE);
             String hit = graph.entry(EVENT_PROJECTILE_HIT);
             String victim = graph.as("living_entity", hit, "hit_entity");
-            String pick = graph.node(FUNCTION_RANDOM_INTEGER)
-                    .literal("lower", 0)
-                    .literal("upper", 7)
+            for (int i = 0; i < MAGIC_EFFECTS.size(); i++) {
+                MagicEffect effect = MAGIC_EFFECTS.get(i);
+                show.config("case_" + i, i)
+                        .chain("case_" + i, graph.dustOnce(effect.red(), effect.green(), effect.blue(), 1.5, 6));
+                apply.config("case_" + i, i)
+                        .chain("case_" + i, graph.effect(victim, RESULT, effect.effect(), effect.seconds(), 1));
+            }
+            String advance = graph.node(VARIABLE_SET)
+                    .config("name", "next")
+                    .config("type", "integer")
+                    .input(
+                            VALUE,
+                            graph.node(MATH_MODULO_INTEGER)
+                                    .input(
+                                            "first",
+                                            graph.node(MATH_ADD)
+                                                    .input("first", next, VALUE)
+                                                    .literal("second", 1)
+                                                    .id(),
+                                            RESULT)
+                                    .literal("second", MAGIC_EFFECTS.size())
+                                    .id(),
+                            RESULT)
                     .id();
-            var choice = graph.node(FLOW_SWITCH).input(VALUE, pick, RESULT);
-            for (int i = 0; i < 8; i++) choice.config("case_" + i, i);
-            choice.chain("case_0", graph.effect(victim, RESULT, "minecraft:slowness", 8, 1));
-            choice.chain("case_1", graph.effect(victim, RESULT, "minecraft:slowness", 6, 2));
-            choice.chain("case_2", graph.effect(victim, RESULT, "minecraft:instant_damage", 2, 1));
-            choice.chain("case_3", graph.effect(victim, RESULT, "minecraft:levitation", 5, 1));
-            choice.chain("case_4", graph.effect(victim, RESULT, "minecraft:nausea", 5, 1));
-            choice.chain("case_5", graph.effect(victim, RESULT, "minecraft:weakness", 5, 1));
-            choice.chain("case_6", graph.effect(victim, RESULT, "minecraft:poison", 6, 1));
-            choice.chain("case_7", graph.effect(victim, RESULT, "minecraft:poison", 4, 2));
-            graph.on(EVENT_PROJECTILE_HIT, graph.when(victim, "matches", choice.id()));
+            graph.on(MOB_TICK, graph.every(500, show.id()));
+            graph.on(EVENT_PROJECTILE_HIT, graph.when(victim, "matches", apply.id(), advance));
             smokeAtNightEnd(graph);
         });
     }
-
     /**
      * Fast, with a short fuse and an explosion that sets fire.
      */
@@ -303,12 +540,16 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Leaves a cloud of strong poison where it explodes.
+     * Leaves small poison clouds behind it as it walks, and a cloud of strong poison where it explodes.
      */
     private CustomMob toxicCreeper() {
         return mob("toxic_creeper", EntityType.CREEPER, graph -> {
             graph.on(MOB_SPAWN, graph.creeper("max_fuse_ticks", 20));
-            graph.on(MOB_TICK, graph.dust(0, 128, 0, 2, 5));
+            graph.on(
+                    MOB_TICK,
+                    graph.dust(0, 128, 0, 2, 5),
+                    graph.every(
+                            3000, graph.cloud(graph.selfRead(), "location", "minecraft:poison", 3, 1.5, 0, 128, 0)));
             String explode = graph.entry(EVENT_EXPLODE);
             graph.on(EVENT_EXPLODE, graph.cloud(explode, "location", "minecraft:strong_poison", 10, 3, 0, 128, 0));
         });
@@ -322,7 +563,7 @@ public final class DefaultMobs implements BloodNightNodes {
         return mob("unstable_creeper", EntityType.CREEPER, graph -> {
             graph.on(
                     MOB_SPAWN,
-                    graph.creeper("explosion_radius", 10),
+                    graph.creeper("explosion_radius", 5),
                     graph.creeper("powered", true),
                     graph.creeper("max_fuse_ticks", 50));
             graph.on(MOB_TICK, graph.particles("minecraft:end_rod", 2));
@@ -345,7 +586,14 @@ public final class DefaultMobs implements BloodNightNodes {
                     .id();
             graph.routine(
                     "light_fuse",
-                    graph.node(FLOW_DO_ONCE).chain("next", warn, ignite, fuse).id());
+                    graph.node(FLOW_DO_ONCE)
+                            .chain(
+                                    "next",
+                                    warn,
+                                    graph.effect(graph.self(), "entity", "minecraft:glowing", 1, 0),
+                                    ignite,
+                                    fuse)
+                            .id());
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String damage = graph.entry(trigger);
                 String either = graph.node(LOGIC_OR)
@@ -391,7 +639,8 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Rides an invisible vex; neither takes suffocation damage, and the creeper dies with its vex.
+     * Rides an invisible vex; neither takes suffocation damage, and the creeper dies with its vex. Above its target it
+     * hisses, and a second later the vex lets go: the creeper drops straight down and takes no fall damage.
      */
     private CustomMob ghostCreeper() {
         Extension vex = new Extension(ExtensionType.RIDER, EntityType.VEX, null);
@@ -408,22 +657,118 @@ public final class DefaultMobs implements BloodNightNodes {
                             graph.equip(graph.extensionRead(), EquipmentSlot.OFF_HAND, "minecraft:air")));
             graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 4, false));
             String damage = graph.entry(EVENT_DAMAGE);
-            graph.on(EVENT_DAMAGE, graph.when(causeIs(graph, damage, "SUFFOCATION"), RESULT, graph.cancel(damage)));
+            String noFall = graph.node(LOGIC_OR)
+                    .input("first", causeIs(graph, damage, "SUFFOCATION"), RESULT)
+                    .input("second", causeIs(graph, damage, "FALL"), RESULT)
+                    .id();
+            graph.on(EVENT_DAMAGE, graph.when(noFall, RESULT, graph.cancel(damage)));
             bindToExtension(graph);
             String remove =
                     graph.node(ENTITY_REMOVE).input(TARGET, extension, "entity").id();
             graph.on(EVENT_EXPLODE, graph.present(extension, "entity", remove));
+
+            String target = graph.living(graph.selfRead(), TARGET);
+            String targetPlayer = graph.as("player", graph.selfRead(), TARGET);
+            String height = graph.node(MATH_SUBTRACT)
+                    .input("first", graph.selfRead(), "y")
+                    .input("second", target, "y")
+                    .id();
+            String high = graph.node(LOGIC_GREATER)
+                    .input("first", height, RESULT)
+                    .literal("second", 3.0)
+                    .id();
+            String across = graph.node(VECTOR_DISTANCE)
+                    .input("first", flat(graph, graph.selfRead(), 0), RESULT)
+                    .input("second", flat(graph, target, 0), RESULT)
+                    .id();
+            String over = graph.node(LOGIC_LESS)
+                    .input("first", across, RESULT)
+                    .literal("second", 3.0)
+                    .id();
+            String above = graph.node(LOGIC_AND)
+                    .input("first", high, RESULT)
+                    .input("second", over, RESULT)
+                    .id();
+            String letGo = graph.present(
+                    extension,
+                    "entity",
+                    graph.node(ENTITY_DROP_PASSENGERS)
+                            .input(TARGET, extension, "entity")
+                            .id(),
+                    graph.node(ENTITY_REMOVE).input(TARGET, extension, "entity").id());
+            String dive = graph.node(FLOW_DELAY)
+                    .literal("duration", 1.0)
+                    .chain("next", letGo)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.when(
+                                    above,
+                                    RESULT,
+                                    graph.node(FLOW_DO_ONCE)
+                                            .chain(
+                                                    "next",
+                                                    graph.when(
+                                                            targetPlayer,
+                                                            "matches",
+                                                            graph.sound(
+                                                                    targetPlayer,
+                                                                    RESULT,
+                                                                    "minecraft:entity.creeper.primed",
+                                                                    1.5,
+                                                                    0.8)),
+                                                    dive)
+                                            .id())));
         });
     }
-
+    /**
+     * Every twelve seconds it screams; a second later every player within twenty blocks who still faces it is blinded
+     * for four seconds, so looking away in time avoids it. Its hits blind as well.
+     */
     private CustomMob fearfulEnderman() {
         return mob("fearful_enderman", EntityType.ENDERMAN, graph -> {
-            graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.particles("minecraft:witch", 10));
+            String scream = playersAround(
+                    graph, 20, player -> graph.sound(player, RESULT, "minecraft:entity.enderman.scream", 1.5, 0.7));
+            String stare = playersAround(graph, 20, player -> {
+                String playerEntity =
+                        graph.node(ENTITY_READ).input(TARGET, player, RESULT).id();
+                String looks = facing(graph, playerEntity, graph.selfRead(), 0.5);
+                return graph.when(looks, RESULT, graph.effect(player, RESULT, "minecraft:blindness", 4, 0));
+            });
+            String gaze = graph.node(FLOW_DELAY)
+                    .literal("duration", 1.0)
+                    .chain("next", stare)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.targetNearestPlayer(),
+                    graph.particles("minecraft:witch", 10),
+                    graph.present(graph.selfRead(), TARGET, graph.every(12000, scream, gaze)));
             blindPlayersOnHit(graph, 7, 1);
             graph.on(MOB_NIGHT_END, graph.particlesAroundWith("minecraft:dragon_breath", 10, graph.power(1), "power"));
         });
     }
 
+    /**
+     * Runs a chain for every player within a radius of the mob.
+     *
+     * @param body the chain for one player, given the node whose {@code result} is the player
+     */
+    private static String playersAround(MobGraph graph, double radius, Function<String, String> body) {
+        String nearby = graph.node(ENTITY_NEARBY_ENTITIES)
+                .input(TARGET, graph.self(), "entity")
+                .literal("x", radius)
+                .literal("y", radius / 2)
+                .literal("z", radius)
+                .id();
+        Graphs.NodeBuilder each = graph.node(FLOW_FOR_EACH).input("list", nearby, RESULT);
+        String player = graph.as("player", each.id(), "element");
+        each.chain("body", graph.when(player, "matches", body.apply(player)));
+        return each.id();
+    }
     /**
      * Leaves a cloud of strong poison where it teleports away from.
      */
@@ -436,42 +781,100 @@ public final class DefaultMobs implements BloodNightNodes {
         });
     }
 
+    /**
+     * Glows; its hits slow the player, and a player gliding with an elytra is knocked out of the air.
+     */
     private CustomMob fearfulPhantom() {
         return mob("fearful_phantom", EntityType.PHANTOM, graph -> {
             graph.on(MOB_TICK, graph.keepEffect("minecraft:glowing", 1, true));
             String hit = graph.entry(EVENT_HIT);
             String victim = graph.as("player", hit, "entity");
+            String gliding =
+                    graph.node(LIVING_ENTITY_READ).input(TARGET, victim, RESULT).id();
+            String down = graph.node(VECTOR_CREATE)
+                    .literal("x", 0.0)
+                    .literal("y", -1.0)
+                    .literal("z", 0.0)
+                    .id();
+            String ground = graph.node(LIVING_ENTITY_MUTATE)
+                    .input(TARGET, victim, RESULT)
+                    .literal("gliding", false)
+                    .input("velocity", down, RESULT)
+                    .id();
             graph.on(
-                    EVENT_HIT, graph.when(victim, "matches", graph.effect(victim, RESULT, "minecraft:slowness", 7, 2)));
+                    EVENT_HIT,
+                    graph.when(
+                            victim,
+                            "matches",
+                            graph.effect(victim, RESULT, "minecraft:slowness", 7, 2),
+                            graph.when(gliding, "gliding", ground)));
             smokeAtNightEnd(graph);
         });
     }
-
     /**
-     * Carries a blaze that attacks whatever the phantom targets, and drops it when the night ends.
+     * Carries a blaze that attacks whatever the phantom targets, and drops a small fireball on its target every six
+     * seconds. The blaze goes with the phantom when it dies and when the night ends.
      */
     private CustomMob firePhantom() {
         Extension blaze = new Extension(ExtensionType.CARRIER, EntityType.BLAZE, null);
         return mob("fire_phantom", EntityType.PHANTOM, blaze, graph -> {
             graph.forwardTargetToExtension();
             String extension = graph.extension();
-            String remove =
-                    graph.node(ENTITY_REMOVE).input(TARGET, extension, "entity").id();
-            graph.on(MOB_NIGHT_END, graph.present(extension, "entity", remove));
-        });
-    }
-
-    private CustomMob phantomSoul() {
-        return mob("phantom_soul", EntityType.PHANTOM, graph -> {
+            for (String trigger : List.of(MOB_NIGHT_END, EVENT_DEATH)) {
+                String remove = graph.node(ENTITY_REMOVE)
+                        .input(TARGET, extension, "entity")
+                        .id();
+                graph.on(trigger, graph.present(extension, "entity", remove));
+            }
             graph.on(
                     MOB_TICK,
-                    graph.keepEffect("minecraft:glowing", 1, true),
-                    graph.keepEffect("minecraft:invisibility", 1, false));
-            blindPlayersOnHit(graph, 0.5, 1);
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.every(6000, graph.shootAtTarget(ProjectileKind.SMALL_FIREBALL, 1.5))));
+        });
+    }
+    /**
+     * Invisible while it circles; within twelve blocks of its target it shows itself and glows. Its hits blind for
+     * three seconds.
+     */
+    private CustomMob phantomSoul() {
+        return mob("phantom_soul", EntityType.PHANTOM, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            String distance = graph.node(LOCATION_DISTANCE)
+                    .input(TARGET, graph.selfRead(), "location")
+                    .input("other", target, "location")
+                    .id();
+            String close = graph.node(LOGIC_LESS)
+                    .input("first", distance, RESULT)
+                    .literal("second", 12.0)
+                    .id();
+            String reveal = graph.node(LIVING_ENTITY_REMOVE_POTION_EFFECT)
+                    .input(TARGET, graph.self(), "entity")
+                    .literal("type", "minecraft:invisibility")
+                    .id();
+            String hidden = graph.keepEffect("minecraft:invisibility", 1, false);
+            String diving = graph.node(FLOW_BRANCH)
+                    .input("condition", close, RESULT)
+                    .chain("true", reveal, graph.keepEffect("minecraft:glowing", 1, true))
+                    .chain("false", hidden)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.node(FLOW_BRANCH)
+                            .input(
+                                    "condition",
+                                    graph.node(LOGIC_IS_NULL)
+                                            .input(VALUE, graph.selfRead(), TARGET)
+                                            .id(),
+                                    RESULT)
+                            .chain("true", graph.keepEffect("minecraft:invisibility", 1, false))
+                            .chain("false", diving)
+                            .id());
+            blindPlayersOnHit(graph, 3, 0);
             smokeAtNightEnd(graph);
         });
     }
-
     /**
      * Grabs a player it hits, at most every 15 seconds, carries them 20 blocks up within three seconds and drops them.
      * A hit on its way in, up to three seconds before it reaches the player, calls the grab off.
@@ -512,20 +915,45 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Throws a large fireball at its target every five seconds instead of potions; fireballs hitting a player deal the
-     * witch's attack damage on top.
+     * Throws a large fireball at its target every five seconds instead of potions, a second after lava starts dripping
+     * around it; fireballs hitting a player deal the witch's attack damage on top. A fireball hit back at it deals
+     * triple damage.
      */
     private CustomMob fireWizard() {
         Equipment held = new Equipment(null, null, null, null, "minecraft:fire_charge", null);
         return mob("fire_wizard", EntityType.WITCH, held, graph -> {
+            String throwIt = graph.node(FLOW_DELAY)
+                    .literal("duration", 1.0)
+                    .chain(
+                            "next",
+                            graph.present(
+                                    graph.selfRead(), TARGET, graph.shootAtTarget(ProjectileKind.LARGE_FIREBALL, 4)))
+                    .id();
             graph.on(
                     MOB_TICK,
-                    graph.particles("minecraft:dripping_lava", 5),
                     graph.present(
                             graph.selfRead(),
                             TARGET,
-                            graph.every(5000, graph.shootAtTarget(ProjectileKind.LARGE_FIREBALL, 4))));
+                            graph.every(5000, graph.particlesAround("minecraft:dripping_lava", 40), throwIt)));
             onlyShoot(graph, "minecraft:fireball");
+            String struck = graph.entry(EVENT_DAMAGE_BY_ENTITY);
+            String damager =
+                    graph.node(ENTITY_READ).input(TARGET, struck, "damager").id();
+            String fireball = graph.node(LOGIC_EQUAL)
+                    .input("first", damager, "type")
+                    .input("second", graph.value("entity_type", "minecraft:fireball"), VALUE)
+                    .id();
+            String tripled = graph.node(EVENT_DATA_ENTITY_DAMAGE_MUTATE)
+                    .input(TARGET, struck, "event")
+                    .input(
+                            "damage",
+                            graph.node(MATH_MULTIPLY)
+                                    .input("first", struck, "damage")
+                                    .literal("second", 3.0)
+                                    .id(),
+                            RESULT)
+                    .id();
+            graph.on(EVENT_DAMAGE_BY_ENTITY, graph.when(fireball, RESULT, tripled));
 
             String hit = graph.entry(EVENT_PROJECTILE_HIT);
             String victim = graph.as("player", hit, "hit_entity");
@@ -546,41 +974,14 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Calls lightning down on its target every four seconds instead of throwing potions. A red area grows on the
-     * marked spot for the 1.5 seconds before the strike.
+     * Every four seconds it calls three strikes after its target, half a second apart, each on the spot the target
+     * stood on then. A red ring grows on each spot for the 1.5 seconds before its strike, so the player keeps moving.
      */
     private CustomMob thunderWizard() {
         return mob("thunder_wizard", EntityType.WITCH, graph -> {
-            String target = graph.living(graph.selfRead(), TARGET);
-            String marked = graph.node(VARIABLE_GET)
-                    .config("name", "mark")
-                    .config("type", "location")
-                    .id();
-            String strike = graph.node(WORLD_STRIKE_LIGHTNING)
-                    .input(TARGET, graph.selfRead(), "world")
-                    .input("location", marked, VALUE)
-                    .id();
-            String wait = graph.node(FLOW_DELAY)
-                    .literal("duration", 1.5)
-                    .chain("next", strike)
-                    .id();
-            Graphs.NodeBuilder mark = graph.node(VARIABLE_SET)
-                    .config("name", "mark")
-                    .config("type", "location")
-                    .input(VALUE, target, "location");
-            String flash = graph.node(WORLD_STRIKE_LIGHTNING)
-                    .input(TARGET, graph.selfRead(), "world")
-                    .input("location", mark.id(), VALUE)
-                    .literal("effect_only", true)
-                    .id();
-            String warn = graph.node(WORLD_SHOW_MARKER)
-                    .config("shape", "CIRCLE")
-                    .input("location", mark.id(), VALUE)
-                    .input("color", graph.color(255, 40, 40), RESULT)
-                    .literal("size", 1.5)
-                    .literal("seconds", 1.5)
-                    .id();
-            mark.chain("next", flash, warn, wait);
+            String third = strikeFollowing(graph, 2, null);
+            String second = strikeFollowing(graph, 1, third);
+            String first = strikeFollowing(graph, 0, second);
             String sees = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
                     .input(TARGET, graph.self(), "entity")
                     .input("other", graph.selfRead(), TARGET)
@@ -591,7 +992,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             250,
                             graph.particlesAroundWith(
                                     "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
-                    graph.present(graph.selfRead(), TARGET, graph.every(4000, graph.when(sees, RESULT, mark.id()))));
+                    graph.present(graph.selfRead(), TARGET, graph.every(4000, graph.when(sees, RESULT, first))));
             String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
             graph.on(EVENT_PROJECTILE_SHOOT, graph.cancel(shoot));
             smokeAtNightEnd(graph);
@@ -599,11 +1000,67 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Throws a wither skull at its target every five seconds instead of potions.
+     * One strike of the thunder wizard: marks where its target stands, rings the spot, strikes it 1.5 seconds later,
+     * and half a second after the mark starts the next strike, if any.
+     *
+     * @return the node that marks the spot
+     */
+    private static String strikeFollowing(MobGraph graph, int number, @Nullable String next) {
+        String name = "mark_" + number;
+        String target = graph.living(graph.selfRead(), TARGET);
+        String marked = graph.node(VARIABLE_GET)
+                .config("name", name)
+                .config("type", "location")
+                .id();
+        String strike = graph.node(WORLD_STRIKE_LIGHTNING)
+                .input(TARGET, graph.selfRead(), "world")
+                .input("location", marked, VALUE)
+                .id();
+        String wait = graph.node(FLOW_DELAY)
+                .literal("duration", 1.5)
+                .chain("next", strike)
+                .id();
+        Graphs.NodeBuilder mark = graph.node(VARIABLE_SET)
+                .config("name", name)
+                .config("type", "location")
+                .input(VALUE, target, "location");
+        String flash = graph.node(WORLD_STRIKE_LIGHTNING)
+                .input(TARGET, graph.selfRead(), "world")
+                .input("location", mark.id(), VALUE)
+                .literal("effect_only", true)
+                .id();
+        String warn = graph.node(WORLD_SHOW_MARKER)
+                .config("shape", "CIRCLE")
+                .input("location", mark.id(), VALUE)
+                .input("color", graph.color(255, 40, 40), RESULT)
+                .literal("size", 1.5)
+                .literal("seconds", 1.5)
+                .id();
+        if (next == null) {
+            mark.chain("next", flash, warn, wait);
+        } else {
+            String then = graph.node(FLOW_DELAY)
+                    .literal("duration", 0.5)
+                    .chain("next", graph.present(graph.selfRead(), TARGET, next))
+                    .id();
+            mark.chain("next", flash, warn, wait, then);
+        }
+        return mark.id();
+    }
+    /**
+     * Throws three wither skulls at its target, a third of a second apart, then rests for eight seconds. Once its health
+     * drops below half, it heals itself a single time.
      */
     private CustomMob witherWizard() {
         Equipment held = new Equipment(null, null, null, null, "minecraft:wither_skeleton_skull", null);
         return mob("wither_wizard", EntityType.WITCH, held, graph -> {
+            String volley = null;
+            for (int i = 0; i < 2; i++) {
+                String skull =
+                        graph.present(graph.selfRead(), TARGET, graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4));
+                Graphs.NodeBuilder pause = graph.node(FLOW_DELAY).literal("duration", 0.35);
+                volley = (volley == null ? pause.chain("next", skull) : pause.chain("next", skull, volley)).id();
+            }
             graph.on(
                     MOB_TICK,
                     graph.every(
@@ -613,48 +1070,143 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.present(
                             graph.selfRead(),
                             TARGET,
-                            graph.every(5000, graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4))));
+                            graph.every(8000, graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4), volley)));
             onlyShoot(graph, "minecraft:wither_skull");
+            String damage = graph.entry(EVENT_DAMAGE);
+            String attribute = graph.node(LIVING_ENTITY_ATTRIBUTE)
+                    .input(TARGET, graph.self(), "entity")
+                    .literal("attribute", "minecraft:max_health")
+                    .id();
+            String max =
+                    graph.node(ATTRIBUTE_READ).input(TARGET, attribute, RESULT).id();
+            String half = graph.node(MATH_MULTIPLY)
+                    .input("first", max, VALUE)
+                    .literal("second", 0.5)
+                    .id();
+            String left = graph.node(MATH_SUBTRACT)
+                    .input("first", graph.selfRead(), "health")
+                    .input("second", damage, "final_damage")
+                    .id();
+            String low = graph.node(LOGIC_LESS)
+                    .input("first", left, RESULT)
+                    .input("second", half, RESULT)
+                    .id();
+            String heal = graph.node(FLOW_DO_ONCE)
+                    .chain(
+                            "next",
+                            graph.effect(graph.self(), "entity", "minecraft:regeneration", 6, 2),
+                            graph.particles("minecraft:heart", 8))
+                    .id();
+            graph.on(EVENT_DAMAGE, graph.present(attribute, RESULT, graph.when(low, RESULT, heal)));
             smokeAtNightEnd(graph);
         });
     }
-
+    /**
+     * A spider carrying a blaze; players right next to it catch fire.
+     */
     private CustomMob blazeRider() {
-        return rider("blaze_rider", EntityType.BLAZE, false);
+        return rider(
+                "blaze_rider",
+                EntityType.BLAZE,
+                false,
+                graph -> graph.on(
+                        MOB_TICK,
+                        graph.every(
+                                1000,
+                                graph.particles("minecraft:flame", 6),
+                                playersAround(graph, 2.5, player -> graph.node(ENTITY_MUTATE)
+                                        .input(TARGET, player, RESULT)
+                                        .literal("fire_ticks", 60)
+                                        .id()))));
     }
-
+    /**
+     * A fast spider carrying a skeleton; when its target comes close, the spider leaps away so the skeleton can shoot.
+     */
     private CustomMob speedSkeletonRider() {
-        return rider("speed_skeleton_rider", EntityType.SKELETON, true);
+        return rider("speed_skeleton_rider", EntityType.SKELETON, true, graph -> {
+            String target = graph.living(graph.selfRead(), TARGET);
+            String distance = graph.node(LOCATION_DISTANCE)
+                    .input(TARGET, graph.selfRead(), "location")
+                    .input("other", target, "location")
+                    .id();
+            String close = graph.node(LOGIC_LESS)
+                    .input("first", distance, RESULT)
+                    .literal("second", 5.0)
+                    .id();
+            String away = graph.node(VECTOR_NORMALIZE)
+                    .input(
+                            VALUE,
+                            graph.node(VECTOR_DIRECTION)
+                                    .input("from", flat(graph, target, 0), RESULT)
+                                    .input("to", flat(graph, graph.selfRead(), 0.01), RESULT)
+                                    .id(),
+                            RESULT)
+                    .id();
+            String leap = graph.selfMutate()
+                    .input(
+                            "velocity",
+                            graph.node(VECTOR_CREATE)
+                                    .input("x", scaled(graph, away, "x", 1.1), RESULT)
+                                    .literal("y", 0.5)
+                                    .input("z", scaled(graph, away, "z", 1.1), RESULT)
+                                    .id(),
+                            RESULT)
+                    .id();
+            graph.on(
+                    MOB_TICK,
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.when(
+                                    close,
+                                    RESULT,
+                                    graph.when(graph.selfRead(), "on_ground", graph.every(5000, leap)))));
+        });
     }
-
+    /**
+     * A fast spider carrying a wither skeleton; the spider's bite webs the player in place for a moment.
+     */
     private CustomMob witherSkeletonRider() {
-        return rider("wither_skeleton_rider", EntityType.WITHER_SKELETON, true);
+        return rider("wither_skeleton_rider", EntityType.WITHER_SKELETON, true, graph -> {
+            String hit = graph.entry(EVENT_HIT);
+            String victim = graph.as("player", hit, "entity");
+            graph.on(
+                    EVENT_HIT,
+                    graph.when(
+                            victim,
+                            "matches",
+                            graph.effect(victim, RESULT, "minecraft:slowness", 1.5, 4),
+                            graph.sound(victim, RESULT, "minecraft:block.cobweb.place", 1, 0.8)));
+        });
     }
-
     /**
      * A spider carrying another mob that attacks whatever the spider targets; the spider dies with its rider.
+     *
+     * @param role what makes this rider different from the others
      */
-    private CustomMob rider(String id, EntityType passenger, boolean fast) {
+    private CustomMob rider(String id, EntityType passenger, boolean fast, Consumer<MobGraph> role) {
         Extension extension = new Extension(ExtensionType.CARRIER, passenger, null);
         return mob(id, EntityType.SPIDER, extension, graph -> {
             graph.forwardTargetToExtension();
             bindToExtension(graph);
             if (fast) graph.on(MOB_TICK, graph.keepEffect("minecraft:speed", 1, true));
+            role.accept(graph);
             smokeAtNightEnd(graph);
         });
     }
-
     /**
-     * Leaves a cloud of strong poison where it dies.
+     * Its hits poison for three seconds, and it leaves a cloud of strong poison where it dies.
      */
     private CustomMob toxicSlime() {
         return mob("toxic_slime", EntityType.SLIME, graph -> {
             String death = graph.entry(EVENT_DEATH);
             String body = graph.living(death, "entity");
             graph.on(EVENT_DEATH, graph.cloud(body, "location", "minecraft:strong_poison", 5, 3, 78, 147, 49));
+            String hit = graph.entry(EVENT_HIT);
+            String victim = graph.as("living_entity", hit, "entity");
+            graph.on(EVENT_HIT, graph.when(victim, "matches", graph.effect(victim, RESULT, "minecraft:poison", 3, 0)));
         });
     }
-
     /**
      * Fires three wind charges at its target every six seconds.
      */
@@ -1417,4 +1969,9 @@ public final class DefaultMobs implements BloodNightNodes {
             throw new IllegalArgumentException("Default mob %s: %s".formatted(id, e.getMessage()), e);
         }
     }
+
+    /**
+     * One effect of the magic skeleton's arrows and the dust colour that announces it.
+     */
+    private record MagicEffect(String effect, double seconds, int red, int green, int blue) {}
 }

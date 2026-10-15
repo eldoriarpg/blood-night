@@ -7,8 +7,8 @@
     "en" : "Speed Zombie"
   },
   "descriptions" : {
-    "de" : "Sehr schnell.",
-    "en" : "Very fast."
+    "de" : "Alle 6 Sekunden knurrt es und stürzt sich sehr schnell auf dich, danach ist es kurz langsam.",
+    "en" : "Every 6 seconds it growls and lunges at you very fast, then it is slow for a moment."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,7 +28,7 @@
     },
     "behaviour" : {
       "nodes" : {
-        "apply_effect_0" : {
+        "apply_effect_7" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
@@ -37,40 +37,198 @@
             }
           },
           "literals" : {
-            "amplifier" : 4,
-            "effect" : "minecraft:speed",
-            "seconds" : 60.0,
-            "visible" : true
+            "amplifier" : 1,
+            "effect" : "minecraft:slowness",
+            "seconds" : 1.0
           }
         },
-        "branch_3" : {
+        "apply_effect_9" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 3,
+            "effect" : "minecraft:speed",
+            "seconds" : 2.0
+          }
+        },
+        "branch_12" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_2",
+              "node" : "cast_3",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_sound_10" ]
+          }
+        },
+        "branch_14" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_13",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "apply_effect_0" ]
+            "true" : [ "branch_12", "delay_8" ]
           }
         },
-        "cooldown_2" : {
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_5",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_14" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_15" ]
+          }
+        },
+        "cast_3" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "cooldown_13" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
-            "duration" : 30000
+            "duration" : 6000
+          }
+        },
+        "delay_6" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 2.0
+          },
+          "executions" : {
+            "next" : [ "apply_effect_7" ]
+          }
+        },
+        "delay_8" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 0.5
+          },
+          "executions" : {
+            "next" : [ "apply_effect_9", "delay_6" ]
+          }
+        },
+        "distance_4" : {
+          "type" : "location.distance",
+          "inputs" : {
+            "other" : {
+              "node" : "read_2",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "location"
+            }
+          }
+        },
+        "is_null_16" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "less_5" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_4",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 12.0
+          }
+        },
+        "play_sound_10" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_11",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_3",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.6,
+            "sound" : "minecraft:entity.zombie.ambient",
+            "volume" : 1.5
+          }
+        },
+        "read_0" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_11" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_3",
+              "port" : "result"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
           }
         },
         "self_1" : {
           "type" : "mob.self"
         },
-        "tick_4" : {
+        "tick_18" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_3" ]
+            "next" : [ "branch_17" ]
           }
         }
       }

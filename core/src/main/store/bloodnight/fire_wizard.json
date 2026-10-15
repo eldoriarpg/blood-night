@@ -5,8 +5,8 @@
     "de": "Feuermagier"
   },
   "descriptions": {
-    "en": "Throws a large fireball every 5 seconds.",
-    "de": "Wirft alle 5 Sekunden einen großen Feuerball."
+    "en": "Lava drips around it, and a second later it throws a large fireball, every 5 seconds. Hit the fireball back: it deals triple damage to the wizard.",
+    "de": "Um ihn tropft Lava, und eine Sekunde später wirft er einen großen Feuerball, alle 5 Sekunden. Schlag den Feuerball zurück: Er macht dem Magier dreifachen Schaden."
   },
   "requires": []
 }

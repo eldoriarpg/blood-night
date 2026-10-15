@@ -5,8 +5,8 @@
     "de": "Witherskelettreiter"
   },
   "descriptions": {
-    "en": "A fast spider with a wither skeleton on its back.",
-    "de": "Eine schnelle Spinne mit einem Witherskelett auf dem Rücken."
+    "en": "A fast spider with a wither skeleton on its back. Its bite webs you in place for a moment.",
+    "de": "Eine schnelle Spinne mit einem Witherskelett auf dem Rücken. Ihr Biss hält dich kurz wie in einem Netz fest."
   },
   "requires": []
 }

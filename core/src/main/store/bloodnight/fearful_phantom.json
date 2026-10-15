@@ -5,8 +5,8 @@
     "de": "Furchterregendes Phantom"
   },
   "descriptions": {
-    "en": "Glows. Its hits slow you down.",
-    "de": "Leuchtet. Seine Treffer verlangsamen dich."
+    "en": "Glows. Its hits slow you down and knock you out of elytra flight.",
+    "de": "Leuchtet. Seine Treffer verlangsamen dich und holen dich aus dem Elytra-Flug."
   },
   "requires": []
 }

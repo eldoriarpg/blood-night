@@ -5,8 +5,8 @@
     "de": "Flinker Zombie"
   },
   "descriptions": {
-    "en": "Very fast.",
-    "de": "Sehr schnell."
+    "en": "Every 6 seconds it growls and lunges at you very fast, then it is slow for a moment.",
+    "de": "Alle 6 Sekunden knurrt es und stürzt sich sehr schnell auf dich, danach ist es kurz langsam."
   },
   "requires": []
 }

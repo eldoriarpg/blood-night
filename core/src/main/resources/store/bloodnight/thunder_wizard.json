@@ -7,8 +7,8 @@
     "en" : "Thunder Wizard"
   },
   "descriptions" : {
-    "de" : "Markiert, wo du stehst, mit einem roten Ring. Ist er voll, schlägt dort ein Blitz ein.",
-    "en" : "Marks where you stand with a red ring. When the ring is full, lightning strikes there."
+    "de" : "Markiert dreimal hintereinander, wo du stehst, mit einem roten Ring. Ist ein Ring voll, schlägt dort ein Blitz ein: Bleib in Bewegung.",
+    "en" : "Marks where you stand with a red ring three times in a row. When a ring is full, lightning strikes there: keep moving."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,42 +28,6 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_15" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_14",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "spawn_particle_13" ]
-          }
-        },
-        "branch_16" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "has_line_of_sight_10",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "set_6" ]
-          }
-        },
-        "branch_18" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_17",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_16" ]
-          }
-        },
         "branch_20" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -73,10 +37,70 @@
             }
           },
           "executions" : {
-            "false" : [ "branch_18" ]
+            "false" : [ "set_6" ]
           }
         },
-        "cooldown_14" : {
+        "branch_31" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_30",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "set_14" ]
+          }
+        },
+        "branch_37" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_36",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_35" ]
+          }
+        },
+        "branch_38" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_32",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "set_25" ]
+          }
+        },
+        "branch_40" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_39",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_38" ]
+          }
+        },
+        "branch_42" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_41",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_40" ]
+          }
+        },
+        "cooldown_36" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -85,7 +109,7 @@
             "duration" : 250
           }
         },
-        "cooldown_17" : {
+        "cooldown_39" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -94,16 +118,52 @@
             "duration" : 4000
           }
         },
-        "create_11" : {
+        "create_33" : {
           "type" : "spell.create",
           "inputs" : {
             "color" : {
-              "node" : "rgb_12",
+              "node" : "rgb_34",
               "port" : "result"
             }
           },
           "literals" : {
             "power" : 1.0
+          }
+        },
+        "delay_13" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.5
+          },
+          "executions" : {
+            "next" : [ "strike_lightning_12" ]
+          }
+        },
+        "delay_18" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 0.5
+          },
+          "executions" : {
+            "next" : [ "branch_20" ]
+          }
+        },
+        "delay_24" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.5
+          },
+          "executions" : {
+            "next" : [ "strike_lightning_23" ]
+          }
+        },
+        "delay_29" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 0.5
+          },
+          "executions" : {
+            "next" : [ "branch_31" ]
           }
         },
         "delay_5" : {
@@ -115,14 +175,28 @@
             "next" : [ "strike_lightning_4" ]
           }
         },
-        "get_3" : {
+        "get_11" : {
           "type" : "variable.get",
           "config" : {
-            "name" : "mark",
+            "name" : "mark_1",
             "type" : "location"
           }
         },
-        "has_line_of_sight_10" : {
+        "get_22" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "mark_0",
+            "type" : "location"
+          }
+        },
+        "get_3" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "mark_2",
+            "type" : "location"
+          }
+        },
+        "has_line_of_sight_32" : {
           "type" : "living_entity.has_line_of_sight",
           "inputs" : {
             "other" : {
@@ -144,11 +218,29 @@
             }
           }
         },
-        "mutate_23" : {
+        "is_null_30" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_41" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "mutate_45" : {
           "type" : "cancellable.mutate",
           "inputs" : {
             "target" : {
-              "node" : "projectile_shoot_22",
+              "node" : "projectile_shoot_44",
               "port" : "event"
             }
           },
@@ -156,16 +248,16 @@
             "cancelled" : true
           }
         },
-        "night_end_25" : {
+        "night_end_47" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_24" ]
+            "next" : [ "spawn_particle_46" ]
           }
         },
-        "projectile_shoot_22" : {
+        "projectile_shoot_44" : {
           "type" : "event.projectile_shoot",
           "executions" : {
-            "next" : [ "mutate_23" ]
+            "next" : [ "mutate_45" ]
           }
         },
         "read_0" : {
@@ -174,6 +266,15 @@
             "target" : {
               "node" : "self_1",
               "port" : "entity"
+            }
+          }
+        },
+        "read_10" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
             }
           }
         },
@@ -186,7 +287,32 @@
             }
           }
         },
-        "rgb_12" : {
+        "read_21" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "rgb_17" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 40,
+            "green" : 40,
+            "red" : 255
+          }
+        },
+        "rgb_28" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 40,
+            "green" : 40,
+            "red" : 255
+          }
+        },
+        "rgb_34" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 255,
@@ -205,10 +331,42 @@
         "self_1" : {
           "type" : "mob.self"
         },
+        "set_14" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "mark_1",
+            "type" : "location"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "read_10",
+              "port" : "location"
+            }
+          },
+          "executions" : {
+            "next" : [ "strike_lightning_15", "show_marker_16", "delay_13", "delay_18" ]
+          }
+        },
+        "set_25" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "mark_0",
+            "type" : "location"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "read_21",
+              "port" : "location"
+            }
+          },
+          "executions" : {
+            "next" : [ "strike_lightning_26", "show_marker_27", "delay_24", "delay_29" ]
+          }
+        },
         "set_6" : {
           "type" : "variable.set",
           "config" : {
-            "name" : "mark",
+            "name" : "mark_2",
             "type" : "location"
           },
           "inputs" : {
@@ -219,6 +377,46 @@
           },
           "executions" : {
             "next" : [ "strike_lightning_7", "show_marker_8", "delay_5" ]
+          }
+        },
+        "show_marker_16" : {
+          "type" : "world.show_marker",
+          "config" : {
+            "shape" : "CIRCLE"
+          },
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_17",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "set_14",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "seconds" : 1.5,
+            "size" : 1.5
+          }
+        },
+        "show_marker_27" : {
+          "type" : "world.show_marker",
+          "config" : {
+            "shape" : "CIRCLE"
+          },
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_28",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "set_25",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "seconds" : 1.5,
+            "size" : 1.5
           }
         },
         "show_marker_8" : {
@@ -241,11 +439,11 @@
             "size" : 1.5
           }
         },
-        "spawn_particle_13" : {
+        "spawn_particle_35" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "data" : {
-              "node" : "create_11",
+              "node" : "create_33",
               "port" : "result"
             },
             "location" : {
@@ -265,7 +463,7 @@
             "particle" : "minecraft:instant_effect"
           }
         },
-        "spawn_particle_24" : {
+        "spawn_particle_46" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -283,6 +481,64 @@
             "offset_y" : 1.0,
             "offset_z" : 1.5,
             "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        },
+        "strike_lightning_12" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "get_11",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          }
+        },
+        "strike_lightning_15" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "set_14",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "effect_only" : true
+          }
+        },
+        "strike_lightning_23" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "get_22",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          }
+        },
+        "strike_lightning_26" : {
+          "type" : "world.strike_lightning",
+          "inputs" : {
+            "location" : {
+              "node" : "set_25",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "effect_only" : true
           }
         },
         "strike_lightning_4" : {
@@ -314,10 +570,10 @@
             "effect_only" : true
           }
         },
-        "tick_21" : {
+        "tick_43" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_15", "branch_20" ]
+            "next" : [ "branch_37", "branch_42" ]
           }
         }
       }

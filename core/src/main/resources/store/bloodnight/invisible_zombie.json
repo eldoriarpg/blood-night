@@ -7,8 +7,8 @@
     "en" : "Invisible Zombie"
   },
   "descriptions" : {
-    "de" : "Unsichtbar. Wenn du es triffst, wird es für 10 Sekunden sichtbar.",
-    "en" : "Invisible. When you hit it, it shows up for 10 seconds."
+    "de" : "Unsichtbar, aber an seinen Füßen zeigt sich feiner Staub. Wenn du es triffst, wird es für 10 Sekunden sichtbar.",
+    "en" : "Invisible, but faint dust shows at its feet. When you hit it, it shows up for 10 seconds."
   },
   "requires" : [ ],
   "mob" : {
@@ -54,16 +54,28 @@
             "true" : [ "apply_effect_13" ]
           }
         },
-        "branch_18" : {
+        "branch_20" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "greater_or_equal_17",
+              "node" : "cooldown_19",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_15" ]
+            "true" : [ "spawn_particle_18" ]
+          }
+        },
+        "branch_23" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "greater_or_equal_22",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_15", "branch_20" ]
           }
         },
         "cooldown_14" : {
@@ -73,6 +85,27 @@
           },
           "literals" : {
             "duration" : 1000
+          }
+        },
+        "cooldown_19" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 400
+          }
+        },
+        "create_16" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_17",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 0.8
           }
         },
         "create_item_stack_10" : {
@@ -105,19 +138,19 @@
             "target" : "minecraft:air"
           }
         },
-        "damage_by_entity_22" : {
+        "damage_by_entity_27" : {
           "type" : "event.damage_by_entity",
           "executions" : {
-            "next" : [ "reset_21", "remove_potion_effect_20" ]
+            "next" : [ "reset_26", "remove_potion_effect_25" ]
           }
         },
-        "damage_by_player_25" : {
+        "damage_by_player_30" : {
           "type" : "event.damage_by_player",
           "executions" : {
-            "next" : [ "reset_24", "remove_potion_effect_23" ]
+            "next" : [ "reset_29", "remove_potion_effect_28" ]
           }
         },
-        "elapsed_16" : {
+        "elapsed_21" : {
           "type" : "timer.elapsed",
           "config" : {
             "timer" : "damaged"
@@ -203,11 +236,11 @@
             "slot" : "LEGS"
           }
         },
-        "greater_or_equal_17" : {
+        "greater_or_equal_22" : {
           "type" : "logic.greater_or_equal",
           "inputs" : {
             "first" : {
-              "node" : "elapsed_16",
+              "node" : "elapsed_21",
               "port" : "elapsed"
             }
           },
@@ -224,7 +257,7 @@
             }
           }
         },
-        "remove_potion_effect_20" : {
+        "remove_potion_effect_25" : {
           "type" : "living_entity.remove_potion_effect",
           "inputs" : {
             "target" : {
@@ -236,7 +269,7 @@
             "type" : "minecraft:invisibility"
           }
         },
-        "remove_potion_effect_23" : {
+        "remove_potion_effect_28" : {
           "type" : "living_entity.remove_potion_effect",
           "inputs" : {
             "target" : {
@@ -248,16 +281,24 @@
             "type" : "minecraft:invisibility"
           }
         },
-        "reset_21" : {
+        "reset_26" : {
           "type" : "timer.reset",
           "config" : {
             "timer" : "damaged"
           }
         },
-        "reset_24" : {
+        "reset_29" : {
           "type" : "timer.reset",
           "config" : {
             "timer" : "damaged"
+          }
+        },
+        "rgb_17" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 150,
+            "green" : 150,
+            "red" : 150
           }
         },
         "self_1" : {
@@ -269,10 +310,34 @@
             "next" : [ "equip_3", "equip_5", "equip_7", "equip_9", "equip_11" ]
           }
         },
-        "tick_19" : {
+        "spawn_particle_18" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_16",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_0",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 2,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "tick_24" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_18" ]
+            "next" : [ "branch_23" ]
           }
         }
       }
