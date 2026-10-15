@@ -950,6 +950,9 @@ export default {
                 enabled: 'Cambiar a los enemigos normales',
                 tables: 'Tablas de botín extra',
             },
+            settings: {
+                displayName: 'Nombre que ven los jugadores',
+            },
         },
         helpIn: {
             attributes: {name: 'Los jugadores ven el nombre en su idioma. Si falta, ven el del idioma de reserva del servidor.'},
@@ -975,6 +978,9 @@ export default {
             },
             ordinary: {
                 tables: 'Tablas de botín de las que los enemigos normales también sueltan durante las noches sangrientas. Las del mundo se suman a las del servidor.',
+            },
+            settings: {
+                displayName: 'Se muestra en mensajes, marcadores y aquí en el editor. Admite colores MiniMessage. Vacío: el nombre del mundo en Multiverse o Hyperverse, si no el nombre de su carpeta.',
             },
         },
         soundLists: {

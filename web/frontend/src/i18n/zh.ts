@@ -950,6 +950,9 @@ export default {
                 enabled: '更改普通敌人',
                 tables: '额外战利品表',
             },
+            settings: {
+                displayName: '玩家看到的名称',
+            },
         },
         helpIn: {
             attributes: {name: '玩家会看到自己语言的名称。如果没有，就显示服务器后备语言的名称。'},
@@ -975,6 +978,9 @@ export default {
             },
             ordinary: {
                 tables: '普通敌人在血夜期间额外掉落的战利品表。世界的表会加入服务器的表。',
+            },
+            settings: {
+                displayName: '显示在消息、占位符和编辑器中。支持 MiniMessage 颜色。留空：使用 Multiverse 或 Hyperverse 中的世界名称，否则使用文件夹名称。',
             },
         },
         soundLists: {

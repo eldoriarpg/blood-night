@@ -154,7 +154,8 @@ final class EditorCommand {
                     plugin.behaviours(),
                     plugin.catalog().version(),
                     plugin.getServer().getWorlds(),
-                    plugin.store());
+                    plugin.store(),
+                    plugin.worldNames()::alias);
             payload = (setup ? opened.forSetup(legacy(sender)) : opened).asJson();
         } catch (IOException e) {
             Replies.send(sender, "editor.unreadable", arg("reason", String.valueOf(e.getMessage())));

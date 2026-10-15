@@ -4,6 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script setup lang="ts">
+import {worldLabel} from '~/util/settings/worldNames'
 import ButtonRow from '@/components/button/ButtonRow.vue'
 import PrimaryButton from '@/components/button/PrimaryButton.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
@@ -45,7 +46,7 @@ const finished = ref(false)
 const steps = computed(() => [...(props.payload.legacy ? ['legacy'] : []), 'worlds', 'frequency', 'difficulty', 'atmosphere', 'mobs', 'summary'])
 const step = computed(() => steps.value[index.value] ?? 'summary')
 const last = computed(() => index.value === steps.value.length - 1)
-const names = computed(() => Object.fromEntries(Object.entries(props.payload.settings.worlds).map(([uid, world]) => [uid, world.name])))
+const names = computed(() => Object.fromEntries(Object.entries(props.payload.settings.worlds).map(([uid, world]) => [uid, worldLabel(world)])))
 const offers = computed(() => chosenOffers(props.payload, choices.value))
 const taken = computed(() => new Set(Object.keys((choices.value.takeOver ? props.payload.legacy?.mobs : props.payload.mobs) ?? {})))
 

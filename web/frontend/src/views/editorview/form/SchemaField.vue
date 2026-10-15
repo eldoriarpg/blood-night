@@ -23,7 +23,7 @@ import FieldJson from '~/views/editorview/form/FieldJson.vue'
 import SchemaForm from '~/views/editorview/form/SchemaForm.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import {fieldLabel} from '~/views/editorview/form/fieldLabel'
-import {fieldOptions} from '~/util/settings/fieldOptions'
+import {fieldOptions, spawnReasonOptions} from '~/util/settings/fieldOptions'
 import type {Field} from '~/util/settings/schemaFields'
 import {isItemField} from '~/util/session/itemEntries'
 import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
@@ -55,6 +55,7 @@ const {t, te} = useI18n()
 const soundList = computed(() => props.field.kind === 'list' && props.field.item?.definition === 'SoundEntry')
 const parent = computed(() => parentKey(props.path))
 const group = computed(() => groupKey(props.path.split('/').slice(0, -1).join('/')))
+const MOB_SPAWN_REASONS = /^\/mobs\/([^/]+)\/spawn\/reasons$/
 const NIGHT_COMMANDS: ReadonlySet<string> = new Set(['beginCommands', 'endCommands'])
 const COMMAND_LISTS: ReadonlySet<string> = new Set([...NIGHT_COMMANDS, 'deathCommands', 'respawnCommands'])
 const commandSuggestions = computed(() => props.field.key.endsWith('Commands') ? session.payload.value?.choices?.commands ?? [] : undefined)
@@ -95,7 +96,13 @@ const assets = useItemAssets()
 const itemChoices = assets.choices(true)
 const choiceValue = computed(() => typeof current.value === 'string' ? current.value : null)
 const choiceLabels = useChoiceLabels()
-const options = computed(() => fieldOptions(props.field, session.payload.value?.choices?.mobTypes ?? [], current.value))
+const options = computed(() => {
+  const own = fieldOptions(props.field, session.payload.value?.choices?.mobTypes ?? [], current.value)
+  const mob = MOB_SPAWN_REASONS.exec(props.path)?.[1]
+  if (props.field.enumName !== 'SpawnReason' || mob === undefined) return own
+  const type = session.payload.value?.mobs?.[mob]?.attributes?.entityType
+  return spawnReasonOptions(own, type ? session.payload.value?.choices?.spawnReasons?.[type] : undefined, current.value)
+})
 const optionLabels = computed(() => choiceLabels.labels(options.value, {enumName: props.field.enumName}))
 const mythicTypes = computed(() => session.payload.value?.choices?.mythicTypes ?? [])
 const mythicField = computed(() => props.field.key === 'mythicType' && mythicTypes.value.length > 0)

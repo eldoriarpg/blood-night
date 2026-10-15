@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.graph.runtime.Integrations;
 import de.eldoria.bloodnight.mob.MobTypes;
+import de.eldoria.bloodnight.mob.SpawnReasons;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
  * @param entityClasses    the Bukkit interface of each entity type, by type name, e.g. {@code CREEPER} to
  *                         {@code org.bukkit.entity.Creeper}; the editor types Self and Extension of a mob by it
  * @param mobTypes         the entity types a custom mob or its extension can be, by name, sorted; see {@link MobTypes}
+ * @param spawnReasons     the spawn reasons each of those types can spawn by, by type name; see {@link SpawnReasons}
  * @param mythicTypes      the MythicMobs mobs a custom mob can spawn as, sorted; empty without MythicMobs
  * @param attributes       attribute keys a mob's attributes can change, sorted
  * @param biomes           biome keys and biome tags ({@code #minecraft:is_nether}) spawn rules can name, sorted
@@ -48,6 +50,7 @@ public record EditorChoices(
         List<String> enchantments,
         Map<String, String> entityClasses,
         List<String> mobTypes,
+        Map<String, List<String>> spawnReasons,
         List<String> mythicTypes,
         List<String> attributes,
         List<String> biomes,
@@ -84,6 +87,7 @@ public record EditorChoices(
                 enchantments,
                 entityClasses,
                 MobTypes.all(),
+                SpawnReasons.byType(MobTypes.all()),
                 Integrations.mythicMobTypes(),
                 keys(RegistryKey.ATTRIBUTE),
                 biomeKeys(),

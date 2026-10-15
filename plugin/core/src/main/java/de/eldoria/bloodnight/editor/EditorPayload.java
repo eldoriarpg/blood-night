@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 /**
  * What the editor gets from a server: the user data, plus the version of the catalog it was made for.
@@ -85,6 +86,7 @@ public record EditorPayload(
      * @param catalog       version of the catalog the server runs
      * @param worlds        the server's worlds
      * @param store         the mob store
+     * @param aliases       a world's name in a world plugin, empty for none
      * @return the payload
      * @throws IOException when a file cannot be hashed
      */
@@ -93,9 +95,10 @@ public record EditorPayload(
             Behaviours behaviours,
             String catalog,
             Collection<? extends World> worlds,
-            MobStore store)
+            MobStore store,
+            Function<World, String> aliases)
             throws IOException {
-        SettingsPayload settings = settings(configuration, worlds);
+        SettingsPayload settings = settings(configuration, worlds, aliases);
         Map<String, CustomMob> mobs = new TreeMap<>();
         configuration.mobs().all().forEach(mob -> mobs.put(mob.id(), mob));
         return new EditorPayload(
@@ -144,12 +147,13 @@ public record EditorPayload(
         return items;
     }
 
-    private static SettingsPayload settings(Configuration configuration, Collection<? extends World> worlds) {
+    private static SettingsPayload settings(
+            Configuration configuration, Collection<? extends World> worlds, Function<World, String> aliases) {
         Map<String, SettingsPayload.WorldPayload> settings = new TreeMap<>();
         for (World world : worlds) {
             settings.put(
                     world.getUID().toString(),
-                    SettingsPayload.WorldPayload.of(world, configuration.worldConfig(world)));
+                    SettingsPayload.WorldPayload.of(world, configuration.worldConfig(world), aliases.apply(world)));
         }
         return new SettingsPayload(configuration.main(), settings);
     }

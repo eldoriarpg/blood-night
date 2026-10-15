@@ -950,6 +950,9 @@ export default {
                 enabled: 'Sıradan düşmanları değiştir',
                 tables: 'Ek ganimet tabloları',
             },
+            settings: {
+                displayName: 'Oyuncuların gördüğü ad',
+            },
         },
         helpIn: {
             attributes: {name: 'Oyuncular adı kendi dillerinde görür. Yoksa sunucunun yedek dilindeki adı görürler.'},
@@ -975,6 +978,9 @@ export default {
             },
             ordinary: {
                 tables: 'Sıradan düşmanların Lanetli Gecelerde ek olarak düşürdüğü ganimet tabloları. Dünyanınkiler sunucununkilere eklenir.',
+            },
+            settings: {
+                displayName: 'Mesajlarda, yer tutucularda ve burada düzenleyicide görünür. MiniMessage renkleri çalışır. Boş: dünyanın Multiverse veya Hyperverse içindeki adı, yoksa klasör adı.',
             },
         },
         soundLists: {

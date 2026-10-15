@@ -106,7 +106,7 @@ class EditorChecksTest {
 
     @Test
     void unknownWorldsAreFound() {
-        var world = new SettingsPayload.WorldPayload("w", "NORMAL", true, new WorldSettings());
+        var world = new SettingsPayload.WorldPayload("w", "NORMAL", true, new WorldSettings(), "");
         EditorResult result = new EditorResult(
                 Map.of(),
                 List.of(),
