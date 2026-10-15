@@ -136,7 +136,7 @@ function fieldLabels(field: ConfigView): Record<string, string> {
       class="w-max max-w-[36rem] rounded-node border bg-raised/85 text-xs text-ink"
   >
     <div :class="tone" class="flex items-center gap-2 rounded-t-node px-3 py-1.5">
-      <span class="text-[10px] uppercase tracking-wider text-ink/75">{{ t(`editor.graph.tones.${data.tone}`) }}</span>
+      <span class="text-[10px] uppercase tracking-wider text-white/75">{{ t(`editor.graph.tones.${data.tone}`) }}</span>
       <span class="min-w-0 truncate text-sm font-semibold text-white">{{ data.title }}</span>
       <CountBadge v-if="step !== undefined" :count="step" data-testid="step" small/>
       <span class="ml-auto flex shrink-0 items-center gap-1.5">

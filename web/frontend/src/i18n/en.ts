@@ -8,6 +8,13 @@ export default {
     app: {
         name: 'BloodNight',
     },
+    footer: {
+        docs: 'Docs',
+        license: 'Free software under the AGPL-3.0',
+        language: 'Language',
+        light: 'Switch to light colours',
+        dark: 'Switch to dark colours',
+    },
     common: {
         close: 'Close',
     },
@@ -184,6 +191,12 @@ export default {
             weightOf: 'Weight of {name} in this world',
             notNatural: 'No {type} spawns by itself {world}, so this mob only appears where one is brought in some other way, e.g. by a spawner or a command.',
             environment: {NORMAL: 'in the overworld', NETHER: 'in the Nether', THE_END: 'in the End', CUSTOM: 'in this world'},
+        },
+        docs: {
+            section: 'About this tab in the docs',
+            node: 'This node in the docs',
+            placeholders: 'More placeholders',
+            problems: 'Finding problems',
         },
         phaseCycle: {
             nights: 'Nights in the cycle',
@@ -589,6 +602,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            creakingsWake: 'Creakings come out of the creaking hearts in pale gardens. Normally they only hunt during a normal night. With this on, they hunt for the whole blood night, even when it lasts longer or the world has no night.',
             biomes: 'Single biomes or whole groups of them, e.g. all ocean biomes. Empty means anywhere.',
             exactType: 'On: this mob only takes the place of spawning mobs of exactly its type. Off: also of related ones, e.g. a zombie mob also replaces husks, drowned and zombie villagers when none of the mobs is based on those.',
             channel: 'Which volume slider in the players\' Music & Sounds settings controls these sounds.',
@@ -641,7 +655,7 @@ export default {
             chest: 'Chest',
             color: 'Colour',
             conditions: 'Conditions',
-            creakingsWake: 'Creakings hunt',
+            creakingsWake: 'Creakings hunt the whole blood night',
             creepers: 'Creepers',
             curve: 'Curve',
             damage: 'Damage',

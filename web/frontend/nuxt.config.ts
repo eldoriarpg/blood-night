@@ -8,6 +8,7 @@ import {readdirSync, statSync} from 'node:fs'
 import {resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import type {Plugin} from 'vite'
+import {THEME_SCRIPT} from './src/util/theme'
 
 /** Where the sources are, which Nuxt's watcher names files relative to. */
 const SRC = fileURLToPath(new URL('./src/', import.meta.url))
@@ -83,6 +84,17 @@ export default defineNuxtConfig({
 
   srcDir: 'src/',
 
+  app: {
+    head: {
+      script: [{innerHTML: THEME_SCRIPT}],
+      link: [{rel: 'icon', type: 'image/svg+xml', href: '/logo.svg'}],
+      meta: [
+        {property: 'og:image', content: '/logo.png'},
+        {name: 'theme-color', content: '#c8243a'},
+      ],
+    },
+  },
+
   modules: ['@nuxt/test-utils/module', '@nuxt/eslint', '@nuxtjs/i18n'],
 
   eslint: {
@@ -98,7 +110,8 @@ export default defineNuxtConfig({
     strategy: 'no_prefix',
     defaultLocale: 'en',
     detectBrowserLanguage: {
-      useCookie: false,
+      useCookie: true,
+      cookieKey: 'bloodnight-language',
       redirectOn: 'root',
       fallbackLocale: 'en',
     },

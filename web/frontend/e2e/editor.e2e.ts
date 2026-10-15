@@ -273,7 +273,7 @@ test('mob settings pick named choices and fold their parts', async ({page}) => {
     const entityType = sheet.getByRole('button', {name: 'Entity type'}).first()
     await expect(entityType).toContainText('Creeper')
     await entityType.click()
-    await expect(page.getByRole('option')).toHaveText(['Creeper', 'Skeleton', 'Zombie'])
+    await expect(page.getByRole('listbox').getByRole('option')).toHaveText(['Creeper', 'Skeleton', 'Zombie'])
     await page.getByRole('option', {name: 'Zombie', exact: true}).click()
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
     expect(stage.changes).toEqual([[{op: 'add', path: '/mobs/speed_creeper/attributes/entityType', value: 'ZOMBIE'}]])
@@ -779,7 +779,7 @@ test.describe('settings an everyday user can fill in', () => {
         await page.getByRole('switch', {name: 'Blood nights in this world'}).click()
         await page.locator('main').getByRole('tab', {name: 'Night', exact: true}).click()
         await page.getByRole('button', {name: 'Mob the dragon becomes'}).click()
-        await expect(page.getByRole('option')).toHaveText(['Blood Dragon'])
+        await expect(page.getByRole('listbox').getByRole('option')).toHaveText(['Blood Dragon'])
     })
 
     test('effects, game rules and drop weights are picked by name', async ({page}) => {
@@ -1038,4 +1038,23 @@ test('a world picks its mobs and warns about ones that cannot spawn there', asyn
     await expect(page.getByText('Saved, revision 2')).toBeVisible()
     await expect(page.getByRole('button', {name: 'Switch those off'})).toHaveCount(0)
     expect(Object.values((stage.changes[1]?.[0] as {value: Record<string, number>}).value).every(weight => weight === 0)).toBe(true)
+})
+
+/** The footer switches the editor to light colours and to another language, and both stay after a reload. */
+test('the footer switches colours and language', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    const footer = page.getByRole('contentinfo')
+    await expect(footer.getByRole('link', {name: 'Docs'})).toHaveAttribute('href', /bloodnight\.docs/)
+
+    await footer.getByRole('button', {name: 'Switch to light colours'}).click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await footer.getByRole('combobox').selectOption('de')
+    await expect(page.getByRole('tab', {name: 'Einstellungen'})).toBeVisible()
+
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await expect(page.getByRole('tab', {name: 'Einstellungen'})).toBeVisible()
+    await page.getByRole('contentinfo').getByRole('button', {name: 'Zu dunklen Farben wechseln'}).click()
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'light')
 })

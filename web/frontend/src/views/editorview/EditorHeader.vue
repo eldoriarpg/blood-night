@@ -52,7 +52,7 @@ async function submit(): Promise<void> {
 <template>
   <header class="flex flex-wrap items-center gap-4 border-b border-line-soft bg-surface px-5">
     <div class="flex items-center gap-2 py-3">
-      <span aria-hidden="true" class="size-3 rounded-full bg-accent"/>
+      <img alt="" class="size-6" src="/logo.svg"/>
       <span class="font-heading text-lg font-bold">{{ t('app.name') }}</span>
     </div>
     <nav v-if="ready" :aria-label="t('editor.header.areas')" class="flex self-stretch gap-5" role="tablist">

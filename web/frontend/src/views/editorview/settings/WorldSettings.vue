@@ -8,6 +8,8 @@ import InfoBadge from '@/components/badge/InfoBadge.vue'
 import BareButton from '@/components/button/BareButton.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import TabBar from '@/components/navigation/TabBar.vue'
+import DocsLink from '@/components/navigation/DocsLink.vue'
+import {sectionDocsLink} from '~/util/docsLinks'
 import SectionLabel from '@/components/typography/SectionLabel.vue'
 import PageHeader from '@/components/typography/PageHeader.vue'
 import EmptyState from '@/components/feedback/EmptyState.vue'
@@ -93,8 +95,9 @@ function copy(sections: string[]): void {
       <Alert v-if="heldBy" class="mt-3" variant="held">{{ t('editor.settings.heldBy', {name: heldBy}) }}</Alert>
       <Alert v-else-if="denied" class="mt-3" variant="held">{{ t('editor.permission.readOnly') }}</Alert>
       <TabBar v-model="tab" :tabs="tabs" class="mt-3"/>
-      <div class="flex justify-end pt-2">
-        <SecondaryButton compact @click="copy([tab])">{{ t('editor.copy.section') }}</SecondaryButton>
+      <div class="flex items-center justify-between gap-3 pt-2">
+        <DocsLink v-if="sectionDocsLink(current.key, false)" :href="sectionDocsLink(current.key, false)!">{{ t('editor.docs.section') }}</DocsLink>
+        <SecondaryButton class="ml-auto" compact @click="copy([tab])">{{ t('editor.copy.section') }}</SecondaryButton>
       </div>
       <SettingsForm
           :definition="'WorldSettings'"

@@ -11,6 +11,8 @@ import MutedIconButton from '@/components/button/MutedIconButton.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import BareButton from '@/components/button/BareButton.vue'
 import MiniMessageInput from '~/views/editorview/form/MiniMessageInput.vue'
+import DocsLink from '@/components/navigation/DocsLink.vue'
+import {DOCS_PAGES, DOCS_URL} from '~/util/docsLinks'
 
 /**
  * A list of texts, e.g. commands: every entry a row of its own, changed in place and saved when it is left, and
@@ -120,6 +122,7 @@ function remove(index: number): void {
         >{{ entry.token }}</BareButton>
         {{ entry.meaning }}
       </span>
+      <DocsLink :href="`${DOCS_URL}${DOCS_PAGES.placeholders}`">{{ t('editor.docs.placeholders') }}</DocsLink>
     </div>
   </LabelledField>
 </template>

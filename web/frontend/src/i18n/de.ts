@@ -8,6 +8,13 @@ export default {
     app: {
         name: 'BloodNight',
     },
+    footer: {
+        docs: 'Doku',
+        license: 'Freie Software unter der AGPL-3.0',
+        language: 'Sprache',
+        light: 'Zu hellen Farben wechseln',
+        dark: 'Zu dunklen Farben wechseln',
+    },
     common: {
         close: 'Schließen',
     },
@@ -184,6 +191,12 @@ export default {
             weightOf: 'Gewicht von {name} in dieser Welt',
             notNatural: 'Kein {type} erscheint {world} von selbst, daher taucht dieser Mob nur auf, wo einer anders hinkommt, z. B. durch einen Spawner oder einen Befehl.',
             environment: {NORMAL: 'in der Oberwelt', NETHER: 'im Nether', THE_END: 'im Ende', CUSTOM: 'in dieser Welt'},
+        },
+        docs: {
+            section: 'Mehr zu diesem Tab in der Doku',
+            node: 'Diese Node in der Doku',
+            placeholders: 'Mehr Platzhalter',
+            problems: 'Probleme finden',
         },
         phaseCycle: {
             nights: 'Nächte im Zyklus',
@@ -593,6 +606,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            creakingsWake: 'Knarze kommen aus den Knarzherzen in Blassen Gärten. Sonst jagen sie nur in einer normalen Nacht. Ist das an, jagen sie die ganze Blutnacht lang, auch wenn sie länger dauert oder die Welt keine Nacht hat.',
             biomes: 'Einzelne Biome oder ganze Gruppen, z. B. alle Ozean-Biome. Leer heißt überall.',
             exactType: 'An: Dieser Mob ersetzt nur spawnende Mobs genau seines Typs. Aus: auch verwandte, z. B. ersetzt ein Zombie-Mob auch Wüstenzombies, Ertrunkene und Zombiedorfbewohner, wenn keiner der Mobs auf diesen basiert.',
             channel: 'Welcher Lautstärkeregler in den Musik-und-Geräusche-Einstellungen der Spieler diese Geräusche steuert.',
@@ -645,7 +659,7 @@ export default {
             chest: 'Brust',
             color: 'Farbe',
             conditions: 'Bedingungen',
-            creakingsWake: 'Knarze jagen',
+            creakingsWake: 'Knarze jagen die ganze Blutnacht',
             creepers: 'Creeper',
             curve: 'Kurve',
             damage: 'Schaden',

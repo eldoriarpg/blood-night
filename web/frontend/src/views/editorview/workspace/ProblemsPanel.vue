@@ -4,6 +4,8 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script setup lang="ts">
+import DocsLink from '@/components/navigation/DocsLink.vue'
+import {DOCS_PAGES, DOCS_URL} from '~/util/docsLinks'
 import MutedIconButton from '@/components/button/MutedIconButton.vue'
 import SectionLabel from '@/components/typography/SectionLabel.vue'
 import EmptyState from '@/components/feedback/EmptyState.vue'
@@ -25,6 +27,7 @@ const {t} = useI18n()
   <section :aria-label="t('editor.canvas.problems')" class="absolute bottom-20 left-1/2 flex max-h-72 w-[36rem] max-w-[calc(100%-2rem)] -translate-x-1/2 flex-col gap-2 rounded-panel border border-line bg-surface p-3">
     <div class="flex items-center justify-between">
       <SectionLabel>{{ t('editor.canvas.problems') }}</SectionLabel>
+      <DocsLink :href="`${DOCS_URL}${DOCS_PAGES.problems}`" class="ml-auto mr-2">{{ t('editor.docs.problems') }}</DocsLink>
       <MutedIconButton :label="t('editor.palette.close')" icon="xmark" @click="emit('close')"/>
     </div>
     <EmptyState v-if="problems.length === 0" compact :message="t('editor.problems.none')"/>
