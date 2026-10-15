@@ -5,8 +5,8 @@
     "de": "Gepanzerter Zombie"
   },
   "descriptions": {
-    "en": "Wears full diamond armour.",
-    "de": "Trägt eine volle Diamantrüstung."
+    "en": "Wears full diamond armour. Your hits can knock pieces off. Without armour it gets faster.",
+    "de": "Trägt eine volle Diamantrüstung. Deine Schläge können Teile abschlagen. Ohne Rüstung wird es schneller."
   },
   "requires": []
 }

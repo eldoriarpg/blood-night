@@ -7,8 +7,8 @@
     "en" : "Armored Zombie"
   },
   "descriptions" : {
-    "de" : "Trägt eine volle Diamantrüstung.",
-    "en" : "Wears full diamond armour."
+    "de" : "Trägt eine volle Diamantrüstung. Deine Schläge können Teile abschlagen. Ohne Rüstung wird es schneller.",
+    "en" : "Wears full diamond armour. Your hits can knock pieces off. Without armour it gets faster."
   },
   "requires" : [ ],
   "mob" : {
@@ -34,7 +34,314 @@
       "mythicLevel" : 1
     },
     "behaviour" : {
-      "nodes" : { }
+      "nodes" : {
+        "add_13" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "get_0",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "second" : 1
+          }
+        },
+        "apply_effect_23" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "branch_19" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_16",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_sound_17" ]
+          }
+        },
+        "branch_21" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "chance_20",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "switch_1", "set_12", "branch_19" ]
+          }
+        },
+        "branch_22" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_14",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_21" ]
+          }
+        },
+        "branch_25" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_24",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_23" ]
+          }
+        },
+        "branch_26" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_14",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_25" ]
+          }
+        },
+        "cast_16" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "damage_by_player_15",
+              "port" : "attacker"
+            }
+          }
+        },
+        "chance_20" : {
+          "type" : "function.chance",
+          "literals" : {
+            "percent" : 15.0
+          }
+        },
+        "cooldown_24" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "create_item_stack_10" : {
+          "type" : "item_type.create_item_stack",
+          "literals" : {
+            "target" : "minecraft:air"
+          }
+        },
+        "create_item_stack_4" : {
+          "type" : "item_type.create_item_stack",
+          "literals" : {
+            "target" : "minecraft:air"
+          }
+        },
+        "create_item_stack_6" : {
+          "type" : "item_type.create_item_stack",
+          "literals" : {
+            "target" : "minecraft:air"
+          }
+        },
+        "create_item_stack_8" : {
+          "type" : "item_type.create_item_stack",
+          "literals" : {
+            "target" : "minecraft:air"
+          }
+        },
+        "damage_by_player_15" : {
+          "type" : "event.damage_by_player",
+          "executions" : {
+            "next" : [ "branch_22" ]
+          }
+        },
+        "equip_11" : {
+          "type" : "equipment.equip",
+          "inputs" : {
+            "item" : {
+              "node" : "create_item_stack_10",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "equipment"
+            }
+          },
+          "literals" : {
+            "slot" : "CHEST"
+          }
+        },
+        "equip_5" : {
+          "type" : "equipment.equip",
+          "inputs" : {
+            "item" : {
+              "node" : "create_item_stack_4",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "equipment"
+            }
+          },
+          "literals" : {
+            "slot" : "HEAD"
+          }
+        },
+        "equip_7" : {
+          "type" : "equipment.equip",
+          "inputs" : {
+            "item" : {
+              "node" : "create_item_stack_6",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "equipment"
+            }
+          },
+          "literals" : {
+            "slot" : "FEET"
+          }
+        },
+        "equip_9" : {
+          "type" : "equipment.equip",
+          "inputs" : {
+            "item" : {
+              "node" : "create_item_stack_8",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "equipment"
+            }
+          },
+          "literals" : {
+            "slot" : "LEGS"
+          }
+        },
+        "get_0" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "lost",
+            "type" : "integer"
+          }
+        },
+        "less_14" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "get_0",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "second" : 4
+          }
+        },
+        "play_sound_17" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_18",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_16",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.8,
+            "sound" : "minecraft:entity.item.break",
+            "volume" : 1.0
+          }
+        },
+        "read_18" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_16",
+              "port" : "result"
+            }
+          }
+        },
+        "read_2" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_3" : {
+          "type" : "mob.self"
+        },
+        "set_12" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "lost",
+            "type" : "integer"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "add_13",
+              "port" : "result"
+            }
+          }
+        },
+        "switch_1" : {
+          "type" : "flow.switch",
+          "config" : {
+            "case_0" : 0,
+            "case_1" : 1,
+            "case_2" : 2,
+            "case_3" : 3
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "get_0",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "case_0" : [ "equip_5" ],
+            "case_1" : [ "equip_7" ],
+            "case_2" : [ "equip_9" ],
+            "case_3" : [ "equip_11" ]
+          }
+        },
+        "tick_27" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_26" ]
+          }
+        }
+      }
     },
     "mobDrops" : {
       "weightsScope" : "GLOBAL",

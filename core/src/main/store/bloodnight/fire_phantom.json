@@ -5,8 +5,8 @@
     "de": "Feuerphantom"
   },
   "descriptions": {
-    "en": "Carries a blaze.",
-    "de": "Trägt eine Lohe."
+    "en": "Carries a blaze and drops a small fireball on you every 6 seconds.",
+    "de": "Trägt eine Lohe und lässt alle 6 Sekunden einen kleinen Feuerball auf dich fallen."
   },
   "requires": []
 }

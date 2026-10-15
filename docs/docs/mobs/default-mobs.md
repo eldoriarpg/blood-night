@@ -20,52 +20,52 @@ Husks, drowned, zombie villagers and zombified piglins can become these too, whe
 
 | ID | What it does |
 |---|---|
-| `armored_zombie` | Wears full diamond armour. |
-| `knight_zombie` | Wears chainmail and a golden axe. Sometimes knocks you up and slows you down. Sometimes blocks your hit with a shield sound. |
-| `invisible_zombie` | Invisible. When you hit it, it shows up for 10 seconds. |
-| `speed_zombie` | Very fast. |
+| `armored_zombie` | Wears full diamond armour. Your hits can knock pieces off. Without armour it gets faster. |
+| `knight_zombie` | Wears chainmail and a golden axe. Every 8 seconds it raises a shield for 2 seconds and blocks hits from the front: hit it from behind. Every 10 seconds it growls and dashes at you. |
+| `invisible_zombie` | Invisible, but faint dust shows at its feet. When you hit it, it shows up for 10 seconds. |
+| `speed_zombie` | Every 6 seconds it growls and lunges at you very fast, then it is slow for a moment. |
 
 ## Skeletons
 
 | ID | What it does |
 |---|---|
-| `invisible_skeleton` | Invisible. |
-| `magic_skeleton` | Its arrows give you a random bad effect: slowness, harm, nausea, levitation, weakness or poison. |
+| `invisible_skeleton` | Invisible, but it shows itself for a second after each shot. Its arrows glow. |
+| `magic_skeleton` | Its arrows bring slowness, weakness, poison and nausea, always in this order. The dust on it shows what comes next. |
 
 ## Creepers
 
 | ID | What it does |
 |---|---|
 | `speed_creeper` | Fast, with a short fuse. Its explosion sets fire. |
-| `toxic_creeper` | Leaves a strong poison cloud when it explodes. |
-| `unstable_creeper` | Charged, with a huge explosion. When you hit it, a red ring grows around it. Run: it explodes a second later. |
+| `toxic_creeper` | Leaves small poison clouds as it walks and a strong poison cloud when it explodes. |
+| `unstable_creeper` | Charged. When you hit it, it glows and a red ring grows around it. Run: a second later it explodes as far as the ring. |
 | `nervous_powered_creeper` | Charged, fast and explodes almost at once. |
 | `ender_creeper` | Teleports close to you when you are far away. A purple pillar shows where, a second before. |
-| `ghost_creeper` | Rides an invisible vex, so it flies. |
+| `ghost_creeper` | Rides an invisible vex, so it flies. Above you it hisses, and a second later it drops on you. |
 
 ## Endermen
 
 | ID | What it does |
 |---|---|
-| `fearful_enderman` | Comes for the nearest player. Its hits blind you. |
+| `fearful_enderman` | Comes for the nearest player. It screams every 12 seconds: look away within a second, or you go blind. Its hits blind you too. |
 | `toxic_enderman` | Leaves a poison cloud where it teleports from. |
 
 ## Phantoms
 
 | ID | What it does |
 |---|---|
-| `fearful_phantom` | Glows. Its hits slow you down. |
-| `fire_phantom` | Carries a blaze. |
-| `phantom_soul` | Glows but is invisible. Its hits blind you. |
+| `fearful_phantom` | Glows. Its hits slow you down and knock you out of elytra flight. |
+| `fire_phantom` | Carries a blaze and drops a small fireball on you every 6 seconds. |
+| `phantom_soul` | Invisible while it circles. When it dives at you, it shows itself and glows. Its hits blind you. |
 | `carrier_phantom` | Grabs you, carries you 20 blocks up and drops you. Hit it on its way in to stop the grab. Press sneak five times to break loose. |
 
 ## Witches
 
 | ID | What it does |
 |---|---|
-| `fire_wizard` | Throws a large fireball every 5 seconds. |
-| `thunder_wizard` | Marks where you stand with a red ring. When the ring is full, lightning strikes there. |
-| `wither_wizard` | Throws a wither skull every 5 seconds. |
+| `fire_wizard` | Lava drips around it, and a second later it throws a large fireball, every 5 seconds. Hit the fireball back: it deals triple damage to the wizard. |
+| `thunder_wizard` | Marks where you stand with a red ring three times in a row. When a ring is full, lightning strikes there: keep moving. |
+| `wither_wizard` | Throws three wither skulls in a row, then rests for 8 seconds. Below half health it heals once. |
 
 ## Spider riders
 
@@ -73,15 +73,15 @@ Cave spiders can become these too.
 
 | ID | What it does |
 |---|---|
-| `blaze_rider` | A spider with a blaze on its back. |
-| `speed_skeleton_rider` | A fast spider with a skeleton on its back. |
-| `wither_skeleton_rider` | A fast spider with a wither skeleton on its back. |
+| `blaze_rider` | A spider with a blaze on its back. Players right next to it catch fire. |
+| `speed_skeleton_rider` | A fast spider with a skeleton on its back. When you get close, it leaps away so the skeleton can shoot. |
+| `wither_skeleton_rider` | A fast spider with a wither skeleton on its back. Its bite webs you in place for a moment. |
 
 ## Slimes
 
 | ID | What it does |
 |---|---|
-| `toxic_slime` | Leaves a poison cloud when it dies. |
+| `toxic_slime` | Its hits poison you. Leaves a poison cloud when it dies. |
 
 ## Newer mobs
 

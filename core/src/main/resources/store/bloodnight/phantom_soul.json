@@ -7,8 +7,8 @@
     "en" : "Phantom Soul"
   },
   "descriptions" : {
-    "de" : "Leuchtet, ist aber unsichtbar. Seine Treffer blenden dich.",
-    "en" : "Glows but is invisible. Its hits blind you."
+    "de" : "Unsichtbar, solange es kreist. Wenn es auf dich herabstößt, zeigt es sich und leuchtet. Seine Treffer blenden dich.",
+    "en" : "Invisible while it circles. When it dives at you, it shows itself and glows. Its hits blind you."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,7 +28,7 @@
     },
     "behaviour" : {
       "nodes" : {
-        "apply_effect_0" : {
+        "apply_effect_10" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
@@ -43,21 +43,7 @@
             "visible" : true
           }
         },
-        "apply_effect_10" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_9",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 1,
-            "effect" : "minecraft:blindness",
-            "seconds" : 0.5
-          }
-        },
-        "apply_effect_4" : {
+        "apply_effect_15" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
@@ -72,55 +58,122 @@
             "visible" : false
           }
         },
-        "branch_11" : {
+        "apply_effect_21" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_20",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 0,
+            "effect" : "minecraft:blindness",
+            "seconds" : 3.0
+          }
+        },
+        "apply_effect_6" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:invisibility",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "branch_12" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cast_9",
-              "port" : "matches"
+              "node" : "cooldown_11",
+              "port" : "result"
             }
           },
           "executions" : {
             "true" : [ "apply_effect_10" ]
           }
         },
-        "branch_3" : {
+        "branch_13" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_2",
+              "node" : "is_null_14",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "apply_effect_0" ]
+            "false" : [ "branch_9" ],
+            "true" : [ "branch_17" ]
           }
         },
-        "branch_6" : {
+        "branch_17" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_5",
+              "node" : "cooldown_16",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "apply_effect_4" ]
+            "true" : [ "apply_effect_15" ]
           }
         },
-        "cast_9" : {
+        "branch_22" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_20",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_21" ]
+          }
+        },
+        "branch_8" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_7",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_6" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_4",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_8" ],
+            "true" : [ "remove_potion_effect_5", "branch_12" ]
+          }
+        },
+        "cast_20" : {
           "type" : "cast",
           "config" : {
             "type" : "player"
           },
           "inputs" : {
             "value" : {
-              "node" : "hit_8",
+              "node" : "hit_19",
               "port" : "entity"
             }
           }
         },
-        "cooldown_2" : {
+        "cooldown_11" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -129,7 +182,7 @@
             "duration" : 30000
           }
         },
-        "cooldown_5" : {
+        "cooldown_16" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -138,19 +191,62 @@
             "duration" : 30000
           }
         },
-        "hit_8" : {
+        "cooldown_7" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "distance_3" : {
+          "type" : "location.distance",
+          "inputs" : {
+            "other" : {
+              "node" : "read_2",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "read_0",
+              "port" : "location"
+            }
+          }
+        },
+        "hit_19" : {
           "type" : "event.hit",
           "executions" : {
-            "next" : [ "branch_11" ]
+            "next" : [ "branch_22" ]
           }
         },
-        "night_end_14" : {
+        "is_null_14" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "less_4" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_3",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 12.0
+          }
+        },
+        "night_end_24" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_13" ]
+            "next" : [ "spawn_particle_23" ]
           }
         },
-        "read_12" : {
+        "read_0" : {
           "type" : "mob.read",
           "inputs" : {
             "target" : {
@@ -159,18 +255,39 @@
             }
           }
         },
+        "read_2" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_0",
+              "port" : "target"
+            }
+          }
+        },
+        "remove_potion_effect_5" : {
+          "type" : "living_entity.remove_potion_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "type" : "minecraft:invisibility"
+          }
+        },
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_13" : {
+        "spawn_particle_23" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
-              "node" : "read_12",
+              "node" : "read_0",
               "port" : "eye_location"
             },
             "target" : {
-              "node" : "read_12",
+              "node" : "read_0",
               "port" : "world"
             }
           },
@@ -182,10 +299,10 @@
             "particle" : "minecraft:campfire_cosy_smoke"
           }
         },
-        "tick_7" : {
+        "tick_18" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_3", "branch_6" ]
+            "next" : [ "branch_13" ]
           }
         }
       }

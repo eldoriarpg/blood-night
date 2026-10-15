@@ -7,8 +7,8 @@
     "en" : "Toxic Slime"
   },
   "descriptions" : {
-    "de" : "Hinterlässt eine Giftwolke, wenn er stirbt.",
-    "en" : "Leaves a poison cloud when it dies."
+    "de" : "Seine Treffer vergiften dich. Hinterlässt eine Giftwolke, wenn er stirbt.",
+    "en" : "Its hits poison you. Leaves a poison cloud when it dies."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,10 +28,54 @@
     },
     "behaviour" : {
       "nodes" : {
+        "apply_effect_6" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_5",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 0,
+            "effect" : "minecraft:poison",
+            "seconds" : 3.0
+          }
+        },
+        "branch_7" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_5",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_6" ]
+          }
+        },
+        "cast_5" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_4",
+              "port" : "entity"
+            }
+          }
+        },
         "death_0" : {
           "type" : "event.death",
           "executions" : {
             "next" : [ "spawn_potion_cloud_2" ]
+          }
+        },
+        "hit_4" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_7" ]
           }
         },
         "read_1" : {

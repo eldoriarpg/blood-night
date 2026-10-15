@@ -7,8 +7,8 @@
     "en" : "Fearful Phantom"
   },
   "descriptions" : {
-    "de" : "Leuchtet. Seine Treffer verlangsamen dich.",
-    "en" : "Glows. Its hits slow you down."
+    "de" : "Leuchtet. Seine Treffer verlangsamen dich und holen dich aus dem Elytra-Flug.",
+    "en" : "Glows. Its hits slow you down and knock you out of elytra flight."
   },
   "requires" : [ ],
   "mob" : {
@@ -43,7 +43,7 @@
             "visible" : true
           }
         },
-        "apply_effect_7" : {
+        "apply_effect_10" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
@@ -57,6 +57,30 @@
             "seconds" : 7.0
           }
         },
+        "branch_11" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_7",
+              "port" : "gliding"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_9" ]
+          }
+        },
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_6",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_10", "branch_11" ]
+          }
+        },
         "branch_3" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -67,18 +91,6 @@
           },
           "executions" : {
             "true" : [ "apply_effect_0" ]
-          }
-        },
-        "branch_8" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_6",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "apply_effect_7" ]
           }
         },
         "cast_6" : {
@@ -102,19 +114,43 @@
             "duration" : 30000
           }
         },
+        "create_8" : {
+          "type" : "vector.create",
+          "literals" : {
+            "x" : 0.0,
+            "y" : -1.0,
+            "z" : 0.0
+          }
+        },
         "hit_5" : {
           "type" : "event.hit",
           "executions" : {
-            "next" : [ "branch_8" ]
+            "next" : [ "branch_12" ]
           }
         },
-        "night_end_11" : {
+        "mutate_9" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            },
+            "velocity" : {
+              "node" : "create_8",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "gliding" : false
+          }
+        },
+        "night_end_15" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_10" ]
+            "next" : [ "spawn_particle_14" ]
           }
         },
-        "read_9" : {
+        "read_13" : {
           "type" : "mob.read",
           "inputs" : {
             "target" : {
@@ -123,18 +159,27 @@
             }
           }
         },
+        "read_7" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_6",
+              "port" : "result"
+            }
+          }
+        },
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_10" : {
+        "spawn_particle_14" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
-              "node" : "read_9",
+              "node" : "read_13",
               "port" : "eye_location"
             },
             "target" : {
-              "node" : "read_9",
+              "node" : "read_13",
               "port" : "world"
             }
           },

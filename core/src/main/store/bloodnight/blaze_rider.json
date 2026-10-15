@@ -5,8 +5,8 @@
     "de": "Lohenreiter"
   },
   "descriptions": {
-    "en": "A spider with a blaze on its back.",
-    "de": "Eine Spinne mit einer Lohe auf dem Rücken."
+    "en": "A spider with a blaze on its back. Players right next to it catch fire.",
+    "de": "Eine Spinne mit einer Lohe auf dem Rücken. Spieler direkt neben ihr fangen Feuer."
   },
   "requires": []
 }

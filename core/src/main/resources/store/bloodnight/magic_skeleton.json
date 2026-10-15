@@ -7,8 +7,8 @@
     "en" : "Magic Skeleton"
   },
   "descriptions" : {
-    "de" : "Seine Pfeile geben dir einen zufälligen schlechten Effekt.",
-    "en" : "Its arrows give you a random bad effect."
+    "de" : "Seine Pfeile bringen Langsamkeit, Schwäche, Gift und Übelkeit, immer in dieser Reihenfolge. Der Staub an ihm zeigt, was als Nächstes kommt.",
+    "en" : "Its arrows bring slowness, weakness, poison and nausea, always in this order. The dust on it shows what comes next."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,6 +28,18 @@
     },
     "behaviour" : {
       "nodes" : {
+        "add_29" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "get_5",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "second" : 1
+          }
+        },
         "apply_effect_0" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
@@ -43,128 +55,60 @@
             "visible" : true
           }
         },
-        "apply_effect_10" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_6",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 2,
-            "effect" : "minecraft:slowness",
-            "seconds" : 6.0
-          }
-        },
-        "apply_effect_11" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_6",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 1,
-            "effect" : "minecraft:instant_damage",
-            "seconds" : 2.0
-          }
-        },
-        "apply_effect_12" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_6",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 1,
-            "effect" : "minecraft:levitation",
-            "seconds" : 5.0
-          }
-        },
-        "apply_effect_13" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_6",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 1,
-            "effect" : "minecraft:nausea",
-            "seconds" : 5.0
-          }
-        },
         "apply_effect_14" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_6",
+              "node" : "cast_9",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:slowness",
+            "seconds" : 6.0
+          }
+        },
+        "apply_effect_18" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_9",
               "port" : "result"
             }
           },
           "literals" : {
             "amplifier" : 1,
             "effect" : "minecraft:weakness",
-            "seconds" : 5.0
-          }
-        },
-        "apply_effect_15" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_6",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 1,
-            "effect" : "minecraft:poison",
             "seconds" : 6.0
           }
         },
-        "apply_effect_16" : {
+        "apply_effect_22" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_6",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "amplifier" : 2,
-            "effect" : "minecraft:poison",
-            "seconds" : 4.0
-          }
-        },
-        "apply_effect_9" : {
-          "type" : "living_entity.apply_effect",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_6",
+              "node" : "cast_9",
               "port" : "result"
             }
           },
           "literals" : {
             "amplifier" : 1,
-            "effect" : "minecraft:slowness",
-            "seconds" : 8.0
+            "effect" : "minecraft:poison",
+            "seconds" : 5.0
           }
         },
-        "branch_17" : {
-          "type" : "flow.branch",
+        "apply_effect_26" : {
+          "type" : "living_entity.apply_effect",
           "inputs" : {
-            "condition" : {
-              "node" : "cast_6",
-              "port" : "matches"
+            "target" : {
+              "node" : "cast_9",
+              "port" : "result"
             }
           },
-          "executions" : {
-            "true" : [ "switch_8" ]
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:nausea",
+            "seconds" : 6.0
           }
         },
         "branch_3" : {
@@ -179,14 +123,38 @@
             "true" : [ "apply_effect_0" ]
           }
         },
-        "cast_6" : {
+        "branch_31" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_30",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "switch_6" ]
+          }
+        },
+        "branch_32" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_9",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "switch_7", "set_27" ]
+          }
+        },
+        "cast_9" : {
           "type" : "cast",
           "config" : {
             "type" : "living_entity"
           },
           "inputs" : {
             "value" : {
-              "node" : "projectile_hit_5",
+              "node" : "projectile_hit_8",
               "port" : "hit_entity"
             }
           }
@@ -200,26 +168,95 @@
             "duration" : 30000
           }
         },
-        "night_end_20" : {
+        "cooldown_30" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 500
+          }
+        },
+        "create_10" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_11",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 1.5
+          }
+        },
+        "create_15" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_16",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 1.5
+          }
+        },
+        "create_19" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_20",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 1.5
+          }
+        },
+        "create_23" : {
+          "type" : "dust.create",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_24",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "size" : 1.5
+          }
+        },
+        "get_5" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "next",
+            "type" : "integer"
+          }
+        },
+        "modulo_integer_28" : {
+          "type" : "math.modulo_integer",
+          "inputs" : {
+            "first" : {
+              "node" : "add_29",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 4
+          }
+        },
+        "night_end_34" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_19" ]
+            "next" : [ "spawn_particle_33" ]
           }
         },
-        "projectile_hit_5" : {
+        "projectile_hit_8" : {
           "type" : "event.projectile_hit",
           "executions" : {
-            "next" : [ "branch_17" ]
+            "next" : [ "branch_32" ]
           }
         },
-        "random_integer_7" : {
-          "type" : "function.random_integer",
-          "literals" : {
-            "lower" : 0,
-            "upper" : 7
-          }
-        },
-        "read_18" : {
+        "read_13" : {
           "type" : "mob.read",
           "inputs" : {
             "target" : {
@@ -228,18 +265,159 @@
             }
           }
         },
+        "rgb_11" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 129,
+            "green" : 108,
+            "red" : 90
+          }
+        },
+        "rgb_16" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 72,
+            "green" : 77,
+            "red" : 72
+          }
+        },
+        "rgb_20" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 99,
+            "green" : 163,
+            "red" : 135
+          }
+        },
+        "rgb_24" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 74,
+            "green" : 29,
+            "red" : 85
+          }
+        },
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_19" : {
+        "set_27" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "next",
+            "type" : "integer"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "modulo_integer_28",
+              "port" : "result"
+            }
+          }
+        },
+        "spawn_particle_12" : {
           "type" : "world.spawn_particle",
           "inputs" : {
+            "data" : {
+              "node" : "create_10",
+              "port" : "result"
+            },
             "location" : {
-              "node" : "read_18",
+              "node" : "read_13",
               "port" : "eye_location"
             },
             "target" : {
-              "node" : "read_18",
+              "node" : "read_13",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 6,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_particle_17" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_15",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_13",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_13",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 6,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_particle_21" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_19",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_13",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_13",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 6,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_particle_25" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "data" : {
+              "node" : "create_23",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_13",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_13",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 6,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:dust"
+          }
+        },
+        "spawn_particle_33" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_13",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_13",
               "port" : "world"
             }
           },
@@ -251,39 +429,52 @@
             "particle" : "minecraft:campfire_cosy_smoke"
           }
         },
-        "switch_8" : {
+        "switch_6" : {
           "type" : "flow.switch",
           "config" : {
             "case_0" : 0,
             "case_1" : 1,
             "case_2" : 2,
-            "case_3" : 3,
-            "case_4" : 4,
-            "case_5" : 5,
-            "case_6" : 6,
-            "case_7" : 7
+            "case_3" : 3
           },
           "inputs" : {
             "value" : {
-              "node" : "random_integer_7",
-              "port" : "result"
+              "node" : "get_5",
+              "port" : "value"
             }
           },
           "executions" : {
-            "case_0" : [ "apply_effect_9" ],
-            "case_1" : [ "apply_effect_10" ],
-            "case_2" : [ "apply_effect_11" ],
-            "case_3" : [ "apply_effect_12" ],
-            "case_4" : [ "apply_effect_13" ],
-            "case_5" : [ "apply_effect_14" ],
-            "case_6" : [ "apply_effect_15" ],
-            "case_7" : [ "apply_effect_16" ]
+            "case_0" : [ "spawn_particle_12" ],
+            "case_1" : [ "spawn_particle_17" ],
+            "case_2" : [ "spawn_particle_21" ],
+            "case_3" : [ "spawn_particle_25" ]
+          }
+        },
+        "switch_7" : {
+          "type" : "flow.switch",
+          "config" : {
+            "case_0" : 0,
+            "case_1" : 1,
+            "case_2" : 2,
+            "case_3" : 3
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "get_5",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "case_0" : [ "apply_effect_14" ],
+            "case_1" : [ "apply_effect_18" ],
+            "case_2" : [ "apply_effect_22" ],
+            "case_3" : [ "apply_effect_26" ]
           }
         },
         "tick_4" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_3" ]
+            "next" : [ "branch_3", "branch_31" ]
           }
         }
       }

@@ -7,8 +7,8 @@
     "en" : "Invisible Skeleton"
   },
   "descriptions" : {
-    "de" : "Unsichtbar.",
-    "en" : "Invisible."
+    "de" : "Unsichtbar, zeigt sich aber nach jedem Schuss für eine Sekunde. Seine Pfeile leuchten.",
+    "en" : "Invisible, but it shows itself for a second after each shot. Its arrows glow."
   },
   "requires" : [ ],
   "mob" : {
@@ -55,6 +55,18 @@
             "true" : [ "apply_effect_0" ]
           }
         },
+        "branch_6" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "greater_or_equal_5",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_3" ]
+          }
+        },
         "cooldown_2" : {
           "type" : "function.cooldown",
           "config" : {
@@ -64,13 +76,49 @@
             "duration" : 30000
           }
         },
-        "night_end_7" : {
-          "type" : "mob.night_end",
-          "executions" : {
-            "next" : [ "spawn_particle_6" ]
+        "elapsed_4" : {
+          "type" : "timer.elapsed",
+          "config" : {
+            "timer" : "shot"
           }
         },
-        "read_5" : {
+        "greater_or_equal_5" : {
+          "type" : "logic.greater_or_equal",
+          "inputs" : {
+            "first" : {
+              "node" : "elapsed_4",
+              "port" : "elapsed"
+            }
+          },
+          "literals" : {
+            "second" : 1.0
+          }
+        },
+        "mutate_9" : {
+          "type" : "entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "projectile_shoot_8",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "glowing" : true
+          }
+        },
+        "night_end_14" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_13" ]
+          }
+        },
+        "projectile_shoot_8" : {
+          "type" : "event.projectile_shoot",
+          "executions" : {
+            "next" : [ "reset_11", "remove_potion_effect_10", "mutate_9" ]
+          }
+        },
+        "read_12" : {
           "type" : "mob.read",
           "inputs" : {
             "target" : {
@@ -79,18 +127,36 @@
             }
           }
         },
+        "remove_potion_effect_10" : {
+          "type" : "living_entity.remove_potion_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "type" : "minecraft:invisibility"
+          }
+        },
+        "reset_11" : {
+          "type" : "timer.reset",
+          "config" : {
+            "timer" : "shot"
+          }
+        },
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_6" : {
+        "spawn_particle_13" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
-              "node" : "read_5",
+              "node" : "read_12",
               "port" : "eye_location"
             },
             "target" : {
-              "node" : "read_5",
+              "node" : "read_12",
               "port" : "world"
             }
           },
@@ -102,10 +168,10 @@
             "particle" : "minecraft:campfire_cosy_smoke"
           }
         },
-        "tick_4" : {
+        "tick_7" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_3" ]
+            "next" : [ "branch_6" ]
           }
         }
       }

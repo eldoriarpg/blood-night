@@ -7,8 +7,8 @@
     "en" : "Blaze Rider"
   },
   "descriptions" : {
-    "de" : "Eine Spinne mit einer Lohe auf dem Rücken.",
-    "en" : "A spider with a blaze on its back."
+    "de" : "Eine Spinne mit einer Lohe auf dem Rücken. Spieler direkt neben ihr fangen Feuer.",
+    "en" : "A spider with a blaze on its back. Players right next to it catch fire."
   },
   "requires" : [ ],
   "mob" : {
@@ -40,6 +40,42 @@
             "false" : [ "damage_10" ]
           }
         },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_particle_15" ]
+          }
+        },
+        "branch_22" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_20",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_21" ]
+          }
+        },
+        "branch_24" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_23",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_17", "for_each_19" ]
+          }
+        },
         "branch_4" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -62,6 +98,36 @@
           },
           "executions" : {
             "true" : [ "mutate_8" ]
+          }
+        },
+        "cast_20" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_19",
+              "port" : "element"
+            }
+          }
+        },
+        "cooldown_16" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 250
+          }
+        },
+        "cooldown_23" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 1000
           }
         },
         "damage_10" : {
@@ -105,6 +171,18 @@
             "next" : [ "branch_13" ]
           }
         },
+        "for_each_19" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_18",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_22" ]
+          }
+        },
         "is_null_3" : {
           "type" : "logic.is_null",
           "inputs" : {
@@ -127,6 +205,18 @@
             }
           }
         },
+        "mutate_21" : {
+          "type" : "entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_20",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "fire_ticks" : 60
+          }
+        },
         "mutate_8" : {
           "type" : "cancellable.mutate",
           "inputs" : {
@@ -139,10 +229,24 @@
             "cancelled" : true
           }
         },
-        "night_end_16" : {
+        "nearby_entities_18" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 2.5,
+            "y" : 1.25,
+            "z" : 2.5
+          }
+        },
+        "night_end_27" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_15" ]
+            "next" : [ "spawn_particle_26" ]
           }
         },
         "read_12" : {
@@ -170,6 +274,26 @@
             }
           },
           "literals" : {
+            "count" : 6,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:flame"
+          }
+        },
+        "spawn_particle_26" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_12",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_12",
+              "port" : "world"
+            }
+          },
+          "literals" : {
             "count" : 30,
             "offset_x" : 1.5,
             "offset_y" : 1.0,
@@ -181,6 +305,12 @@
           "type" : "event.target_change",
           "executions" : {
             "next" : [ "branch_4" ]
+          }
+        },
+        "tick_25" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_24" ]
           }
         },
         "value_6" : {

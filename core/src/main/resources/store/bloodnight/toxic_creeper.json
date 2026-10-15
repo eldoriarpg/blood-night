@@ -7,8 +7,8 @@
     "en" : "Toxic Creeper"
   },
   "descriptions" : {
-    "de" : "Hinterlässt eine starke Giftwolke, wenn er explodiert.",
-    "en" : "Leaves a strong poison cloud when it explodes."
+    "de" : "Hinterlässt beim Laufen kleine Giftwolken und eine starke Giftwolke, wenn er explodiert.",
+    "en" : "Leaves small poison clouds as it walks and a strong poison cloud when it explodes."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,6 +28,18 @@
     },
     "behaviour" : {
       "nodes" : {
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_11",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "spawn_potion_cloud_9" ]
+          }
+        },
         "branch_8" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -38,6 +50,15 @@
           },
           "executions" : {
             "true" : [ "spawn_particle_5" ]
+          }
+        },
+        "cooldown_11" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 3000
           }
         },
         "cooldown_7" : {
@@ -61,10 +82,10 @@
             "size" : 2.0
           }
         },
-        "explode_10" : {
+        "explode_14" : {
           "type" : "event.explode",
           "executions" : {
-            "next" : [ "spawn_potion_cloud_11" ]
+            "next" : [ "spawn_potion_cloud_15" ]
           }
         },
         "mutate_0" : {
@@ -88,7 +109,15 @@
             }
           }
         },
-        "rgb_12" : {
+        "rgb_10" : {
+          "type" : "color.rgb",
+          "literals" : {
+            "blue" : 0,
+            "green" : 128,
+            "red" : 0
+          }
+        },
+        "rgb_16" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 0,
@@ -137,15 +166,15 @@
             "particle" : "minecraft:dust"
           }
         },
-        "spawn_potion_cloud_11" : {
+        "spawn_potion_cloud_15" : {
           "type" : "world.spawn_potion_cloud",
           "inputs" : {
             "color" : {
-              "node" : "rgb_12",
+              "node" : "rgb_16",
               "port" : "result"
             },
             "location" : {
-              "node" : "explode_10",
+              "node" : "explode_14",
               "port" : "location"
             }
           },
@@ -156,10 +185,29 @@
             "seconds" : 10
           }
         },
-        "tick_9" : {
+        "spawn_potion_cloud_9" : {
+          "type" : "world.spawn_potion_cloud",
+          "inputs" : {
+            "color" : {
+              "node" : "rgb_10",
+              "port" : "result"
+            },
+            "location" : {
+              "node" : "read_6",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "potion" : "minecraft:poison",
+            "radius" : 1.5,
+            "radius_per_tick" : 0.01,
+            "seconds" : 3
+          }
+        },
+        "tick_13" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_8" ]
+            "next" : [ "branch_8", "branch_12" ]
           }
         }
       }

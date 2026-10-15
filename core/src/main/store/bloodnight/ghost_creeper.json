@@ -5,8 +5,8 @@
     "de": "Geister-Creeper"
   },
   "descriptions": {
-    "en": "Rides an invisible vex, so it flies.",
-    "de": "Reitet einen unsichtbaren Plagegeist und fliegt so."
+    "en": "Rides an invisible vex, so it flies. Above you it hisses, and a second later it drops on you.",
+    "de": "Reitet einen unsichtbaren Plagegeist und fliegt so. Über dir zischt er, und eine Sekunde später lässt er sich auf dich fallen."
   },
   "requires": []
 }

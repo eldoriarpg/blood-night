@@ -26,17 +26,22 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Phantom;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Slime;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -132,13 +137,20 @@ class DefaultMobsRunTest {
     }
 
     @Test
-    void speedZombieKeepsItsSpeed() {
+    void speedZombieLungesAtANearbyTargetInsteadOfRunningAllTheTime() {
         Zombie zombie = spawn("speed_zombie", Zombie.class);
         server.getScheduler().performOneTick();
+        assertFalse(zombie.hasPotionEffect(PotionEffectType.SPEED));
+
+        PlayerMock player = server.addPlayer();
+        player.teleport(new Location(world, 4, 64, 0));
+        zombie.setTarget(player);
+        server.getScheduler().performOneTick();
+        waitAndTick(600);
 
         PotionEffect speed = zombie.getPotionEffect(PotionEffectType.SPEED);
         assertNotNull(speed);
-        assertEquals(4, speed.getAmplifier());
+        assertEquals(3, speed.getAmplifier());
     }
 
     @Test
@@ -155,11 +167,11 @@ class DefaultMobsRunTest {
     }
 
     @Test
-    void unstableCreeperIsPoweredWithALargeBlast() {
+    void unstableCreeperBlastsAsFarAsItsRingShows() {
         Creeper creeper = spawn("unstable_creeper", Creeper.class);
 
         assertTrue(creeper.isPowered());
-        assertEquals(10, creeper.getExplosionRadius());
+        assertEquals(5, creeper.getExplosionRadius());
         assertEquals(50, creeper.getMaxFuseTicks());
     }
 
@@ -291,6 +303,89 @@ class DefaultMobsRunTest {
                         blaze, DamageSource.builder(DamageType.GENERIC).build(), List.of()));
 
         assertTrue(spider.isDead());
+    }
+
+    @Test
+    void invisibleSkeletonShowsItselfAndItsArrowWhenItShoots() {
+        Skeleton skeleton = spawn("invisible_skeleton", Skeleton.class);
+        waitAndTick(1100);
+        assertTrue(skeleton.hasPotionEffect(PotionEffectType.INVISIBILITY));
+
+        Arrow arrow = world.spawn(skeleton.getLocation(), Arrow.class);
+        arrow.setShooter(skeleton);
+        server.getPluginManager().callEvent(new ProjectileLaunchEvent(arrow));
+
+        assertFalse(skeleton.hasPotionEffect(PotionEffectType.INVISIBILITY));
+        assertTrue(arrow.isGlowing());
+    }
+
+    @Test
+    void magicSkeletonsArrowsBringTheirEffectsInOrder() {
+        Skeleton skeleton = spawn("magic_skeleton", Skeleton.class);
+        PlayerMock player = server.addPlayer();
+        List<PotionEffectType> expected = List.of(
+                PotionEffectType.SLOWNESS, PotionEffectType.WEAKNESS, PotionEffectType.POISON, PotionEffectType.NAUSEA);
+
+        for (PotionEffectType type : expected) {
+            Arrow arrow = world.spawn(skeleton.getLocation(), Arrow.class);
+            arrow.setShooter(skeleton);
+            server.getPluginManager().callEvent(new ProjectileHitEvent(arrow, player));
+            assertTrue(player.hasPotionEffect(type), type.toString());
+        }
+    }
+
+    @Test
+    void knightZombieBlocksHitsFromTheFrontWhileItsShieldIsUp() {
+        Zombie zombie = spawn("knight_zombie", Zombie.class);
+        PlayerMock player = server.addPlayer();
+        player.teleport(new Location(world, 0, 64, 4));
+        zombie.teleport(new Location(world, 0, 64, 0, 0, 0));
+        zombie.setTarget(player);
+        server.getScheduler().performOneTick();
+        assertEquals(Material.SHIELD, zombie.getEquipment().getItemInOffHand().getType());
+
+        EntityDamageByEntityEvent front = hit(player, zombie);
+        server.getPluginManager().callEvent(front);
+        assertTrue(front.isCancelled());
+
+        waitAndTick(2100);
+        EntityDamageByEntityEvent lowered = hit(player, zombie);
+        server.getPluginManager().callEvent(lowered);
+        assertFalse(lowered.isCancelled());
+    }
+
+    @Test
+    void fearfulPhantomKnocksGlidersOutOfTheAir() {
+        Phantom phantom = spawn("fearful_phantom", Phantom.class);
+        PlayerMock player = server.addPlayer();
+        player.setGliding(true);
+
+        server.getPluginManager().callEvent(hit(phantom, player));
+
+        assertFalse(player.isGliding());
+    }
+
+    @Test
+    void toxicSlimesHitsPoison() {
+        Slime slime = spawn("toxic_slime", Slime.class);
+        PlayerMock player = server.addPlayer();
+
+        server.getPluginManager().callEvent(hit(slime, player));
+
+        assertTrue(player.hasPotionEffect(PotionEffectType.POISON));
+    }
+
+    /**
+     * Lets real time pass, then ticks: graph delays, timers and cooldowns count milliseconds, not ticks.
+     */
+    private void waitAndTick(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+        server.getScheduler().performOneTick();
     }
 
     private static EntityDamageByEntityEvent hit(org.bukkit.entity.Entity damager, org.bukkit.entity.Entity victim) {

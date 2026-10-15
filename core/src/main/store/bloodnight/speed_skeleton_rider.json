@@ -5,8 +5,8 @@
     "de": "Flinker Skelettreiter"
   },
   "descriptions": {
-    "en": "A fast spider with a skeleton on its back.",
-    "de": "Eine schnelle Spinne mit einem Skelett auf dem Rücken."
+    "en": "A fast spider with a skeleton on its back. When you get close, it leaps away so the skeleton can shoot.",
+    "de": "Eine schnelle Spinne mit einem Skelett auf dem Rücken. Kommst du nah, springt sie weg, damit das Skelett schießen kann."
   },
   "requires": []
 }

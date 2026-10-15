@@ -54,6 +54,21 @@ Distance between two points. Uses a square root; prefer Distance Squared for com
 |---|---|---|
 | Result | Number | The distance between both |
 
+## Dot Product
+
+`vector.dot`
+
+How much two directions agree: with both of length 1, 1 when they point the same way, 0 when at a right angle, -1 when opposite. Good for checking whether someone looks at something
+
+| In | Type | What it is |
+|---|---|---|
+| First | Vector | A vector |
+| Second | Vector | Another vector |
+
+| Out | Type | What it is |
+|---|---|---|
+| Result | Number | The dot product of both |
+
 ## Mutate Vector
 
 `vector.mutate`

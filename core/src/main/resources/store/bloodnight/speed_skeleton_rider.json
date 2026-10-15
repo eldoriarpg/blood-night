@@ -7,8 +7,8 @@
     "en" : "Speed Skeleton Rider"
   },
   "descriptions" : {
-    "de" : "Eine schnelle Spinne mit einem Skelett auf dem Rücken.",
-    "en" : "A fast spider with a skeleton on its back."
+    "de" : "Eine schnelle Spinne mit einem Skelett auf dem Rücken. Kommst du nah, springt sie weg, damit das Skelett schießen kann.",
+    "en" : "A fast spider with a skeleton on its back. When you get close, it leaps away so the skeleton can shoot."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,6 +28,30 @@
     },
     "behaviour" : {
       "nodes" : {
+        "add_25" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_19",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_27" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_12",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.01
+          }
+        },
         "apply_effect_15" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
@@ -67,6 +91,54 @@
             "true" : [ "apply_effect_15" ]
           }
         },
+        "branch_35" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_34",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_28" ]
+          }
+        },
+        "branch_36" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_12",
+              "port" : "on_ground"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_35" ]
+          }
+        },
+        "branch_37" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_21",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_36" ]
+          }
+        },
+        "branch_39" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_38",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_37" ]
+          }
+        },
         "branch_4" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -100,6 +172,63 @@
             "duration" : 30000
           }
         },
+        "cooldown_34" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 5000
+          }
+        },
+        "create_24" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_25",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_19",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          }
+        },
+        "create_26" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_27",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_12",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          }
+        },
+        "create_29" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "multiply_31",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "multiply_33",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "y" : 0.5
+          }
+        },
         "damage_10" : {
           "type" : "living_entity.damage",
           "inputs" : {
@@ -110,6 +239,32 @@
             "target" : {
               "node" : "self_11",
               "port" : "entity"
+            }
+          }
+        },
+        "direction_23" : {
+          "type" : "vector.direction",
+          "inputs" : {
+            "from" : {
+              "node" : "create_24",
+              "port" : "result"
+            },
+            "to" : {
+              "node" : "create_26",
+              "port" : "result"
+            }
+          }
+        },
+        "distance_20" : {
+          "type" : "location.distance",
+          "inputs" : {
+            "other" : {
+              "node" : "read_19",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "read_12",
+              "port" : "location"
             }
           }
         },
@@ -150,6 +305,51 @@
             }
           }
         },
+        "is_null_38" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_12",
+              "port" : "target"
+            }
+          }
+        },
+        "less_21" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_20",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 5.0
+          }
+        },
+        "multiply_31" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_30",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 1.1
+          }
+        },
+        "multiply_33" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_32",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 1.1
+          }
+        },
         "mutate_1" : {
           "type" : "mob.mutate",
           "inputs" : {
@@ -160,6 +360,19 @@
             "target_value" : {
               "node" : "target_change_0",
               "port" : "target"
+            }
+          }
+        },
+        "mutate_28" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_11",
+              "port" : "entity"
+            },
+            "velocity" : {
+              "node" : "create_29",
+              "port" : "result"
             }
           }
         },
@@ -175,10 +388,19 @@
             "cancelled" : true
           }
         },
-        "night_end_20" : {
+        "night_end_41" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_19" ]
+            "next" : [ "spawn_particle_40" ]
+          }
+        },
+        "normalize_22" : {
+          "type" : "vector.normalize",
+          "inputs" : {
+            "value" : {
+              "node" : "direction_23",
+              "port" : "result"
+            }
           }
         },
         "read_12" : {
@@ -190,10 +412,37 @@
             }
           }
         },
+        "read_19" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_12",
+              "port" : "target"
+            }
+          }
+        },
+        "read_30" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "normalize_22",
+              "port" : "result"
+            }
+          }
+        },
+        "read_32" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "normalize_22",
+              "port" : "result"
+            }
+          }
+        },
         "self_11" : {
           "type" : "mob.self"
         },
-        "spawn_particle_19" : {
+        "spawn_particle_40" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -222,7 +471,7 @@
         "tick_18" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_17" ]
+            "next" : [ "branch_17", "branch_39" ]
           }
         },
         "value_6" : {
