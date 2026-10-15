@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.Extension;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.model.Graph;
@@ -25,7 +26,14 @@ public final class Mobs {
         return new CustomMob(
                 id,
                 new Equipment(null, null, null, null, null, null),
-                new Attributes(id, EntityType.ZOMBIE, false, ValueModifier.DEFAULT, 20, ValueModifier.DEFAULT, 1),
+                new Attributes(
+                        MobName.english(id),
+                        EntityType.ZOMBIE,
+                        false,
+                        ValueModifier.DEFAULT,
+                        20,
+                        ValueModifier.DEFAULT,
+                        1),
                 behaviour,
                 null,
                 new Extension(ExtensionType.NONE, null, null),

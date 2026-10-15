@@ -25,7 +25,18 @@
     "id" : "carrier_phantom",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.carrier_phantom:'Carrier Phantom'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Trägerphantom",
+          "en" : "Carrier Phantom",
+          "es" : "Phantom porteador",
+          "fr" : "Phantom porteur",
+          "ms" : "Fantom Pembawa",
+          "tr" : "Taşıyıcı Fantom",
+          "zh" : "搬运幻翼"
+        }
+      },
       "entityType" : "PHANTOM",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

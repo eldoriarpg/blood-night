@@ -59,7 +59,7 @@ class EditorChecksTest {
                 zombie.id(),
                 zombie.equipment(),
                 new Attributes(
-                        attributes.displayName(),
+                        attributes.name(),
                         EntityType.LLAMA_SPIT,
                         attributes.exactType(),
                         attributes.healthModifier(),

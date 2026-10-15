@@ -25,7 +25,18 @@
     "id" : "launcher_enderman",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.launcher_enderman:'Launcher Enderman'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Schleuder-Enderman",
+          "en" : "Launcher Enderman",
+          "es" : "Enderman lanzador",
+          "fr" : "Enderman catapulteur",
+          "ms" : "Enderman Pelontar",
+          "tr" : "Fırlatıcı Enderman",
+          "zh" : "投掷末影人"
+        }
+      },
       "entityType" : "ENDERMAN",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

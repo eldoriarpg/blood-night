@@ -25,7 +25,18 @@
     "id" : "speed_creeper",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.speed_creeper:'Speed Creeper'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Flinker Creeper",
+          "en" : "Speed Creeper",
+          "es" : "Creeper veloz",
+          "fr" : "Creeper rapide",
+          "ms" : "Creeper Laju",
+          "tr" : "Hızlı Creeper",
+          "zh" : "疾速苦力怕"
+        }
+      },
       "entityType" : "CREEPER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

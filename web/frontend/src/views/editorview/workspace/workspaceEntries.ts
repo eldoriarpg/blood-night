@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-import type {EditorPayload, Graph} from '~/api/generated/payload'
+import type {EditorPayload, Graph, MobName} from '~/api/generated/payload'
 import {pointer} from '~/util/patch/jsonPointer'
 import {section} from '~/util/session/sections'
 
@@ -14,6 +14,8 @@ export type WorkspaceKind = 'mobs' | 'macros'
 export interface WorkspaceEntry {
     id: string
     detail: string
+    /** A mob's name, shown in the editor's language; none for macros. */
+    name?: MobName
     graph: Graph
     base: string
     path: string
@@ -32,6 +34,7 @@ export function workspaceEntries(payload: EditorPayload, kind: WorkspaceKind): W
         return Object.values(payload.mobs ?? {}).sort((a, b) => a.id.localeCompare(b.id)).map(mob => ({
             id: mob.id,
             detail: mob.attributes?.entityType ?? '',
+            name: mob.attributes?.name,
             graph: mob.behaviour ?? {nodes: {}},
             base: pointer('mobs', mob.id, 'behaviour'),
             path: pointer('mobs', mob.id),

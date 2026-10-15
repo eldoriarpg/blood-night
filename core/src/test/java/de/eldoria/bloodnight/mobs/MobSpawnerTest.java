@@ -17,6 +17,7 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.AttributeChange;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.NightEnd;
 import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
@@ -29,8 +30,7 @@ import de.eldoria.bloodnight.rules.Settings;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -52,6 +52,8 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SplittableRandom;
@@ -85,7 +87,7 @@ class MobSpawnerTest {
                 strong.id(),
                 strong.equipment(),
                 new Attributes(
-                        "<red>Strong",
+                        new MobName("<red>", Map.of("en", "Strong")),
                         EntityType.ZOMBIE,
                         false,
                         ValueModifier.VALUE,
@@ -178,12 +180,18 @@ class MobSpawnerTest {
     void worldsCanOverrideNameAndHealth() {
         settings.mobSettings()
                 .overrides()
-                .put("strong", new AttributeOverride("<green>Tame", ValueModifier.VALUE, 80.0, null, null));
+                .put(
+                        "strong",
+                        new AttributeOverride(
+                                new MobName("<green>", Map.of("en", "Tame")), ValueModifier.VALUE, 80.0, null, null));
         at(13_000);
         LivingEntity mob = spawned();
 
         assertEquals(80, mob.getAttribute(Attribute.MAX_HEALTH).getValue());
-        assertEquals(Component.text("Tame", NamedTextColor.GREEN), mob.customName());
+        String name = MiniMessage.miniMessage().serialize(Objects.requireNonNull(mob.customName()));
+        assertTrue(name.startsWith("<green>"), name);
+        assertTrue(name.contains("bloodnight.mob.strong." + mob.getWorld().getUID()), name);
+        assertTrue(name.contains("Tame"), name);
     }
 
     @Test
@@ -250,7 +258,7 @@ class MobSpawnerTest {
                 "knight",
                 strong.equipment(),
                 new Attributes(
-                        base.displayName(),
+                        base.name(),
                         base.entityType(),
                         base.exactType(),
                         base.healthModifier(),
@@ -280,7 +288,7 @@ class MobSpawnerTest {
                 "knight",
                 strong.equipment(),
                 new Attributes(
-                        base.displayName(),
+                        base.name(),
                         base.entityType(),
                         base.exactType(),
                         base.healthModifier(),

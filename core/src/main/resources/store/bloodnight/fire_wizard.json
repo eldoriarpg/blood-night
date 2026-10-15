@@ -32,7 +32,18 @@
       "offHand" : null
     },
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.fire_wizard:'Fire Wizard'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Feuermagier",
+          "en" : "Fire Wizard",
+          "es" : "Mago de fuego",
+          "fr" : "Sorcier de feu",
+          "ms" : "Ahli Sihir Api",
+          "tr" : "Ateş Büyücüsü",
+          "zh" : "火焰巫师"
+        }
+      },
       "entityType" : "WITCH",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

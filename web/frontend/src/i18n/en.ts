@@ -138,6 +138,15 @@ export default {
             add: 'Add a number of drops',
         },
         gameRules: {add: 'Add a game rule'},
+        mobName: {
+            text: 'Name in {language}',
+            remove: 'Remove {language}',
+            none: 'No name: the mob shows none.',
+            add: 'Add a language',
+            addPlaceholder: 'Language, e.g. de or pt_br',
+            addButton: 'Add',
+            style: 'Style',
+        },
         miniMessage: {
             preview: 'Preview',
             nightName: 'Blood Night',
@@ -589,6 +598,7 @@ export default {
             mobSettings: {damageModifier: 'Damage of ordinary enemies (x)'},
         },
         helpIn: {
+            attributes: {name: 'Players see the name in their own language. Where it has none, they see the one in the server\'s fallback language.'},
             spawning: {mobs: 'Switch off the mobs that should not spawn here. A weight changes how often a mob is picked compared to the others, in this world only.'},
             creepers: {blockDamage: 'When off, creeper explosions still hurt players and mobs but leave the blocks whole.'},
             mobSettings: {damageModifier: 'The damage enemies deal to players is multiplied by this during blood nights. 1 leaves it as it is.'},
@@ -603,6 +613,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: 'Name tags need the resource pack for that. Off: every player sees the name in the server\'s fallback language, with or without the pack.',
             creakingsWake: 'Creakings come out of the creaking hearts in pale gardens. Normally they only hunt during a normal night. With this on, they hunt for the whole blood night, even when it lasts longer or the world has no night.',
             biomes: 'Single biomes or whole groups of them, e.g. all ocean biomes. Empty means anywhere.',
             exactType: 'On: this mob only takes the place of spawning mobs of exactly its type. Off: also of related ones, e.g. a zombie mob also replaces husks, drowned and zombie villagers when none of the mobs is based on those.',
@@ -628,6 +639,7 @@ export default {
             xpValue: {MULTIPLY: 'The normal experience is multiplied by this.', VALUE: 'Exactly this much experience drops.'},
         },
         fields: {
+            translateMobNames: 'Show mob names in each player\'s language',
             heartbeatLoudestWithin: 'Heartbeat loudest within (blocks)',
             heartbeatRange: 'Heartbeat range (blocks)',
             closest: 'Closest (blocks)',

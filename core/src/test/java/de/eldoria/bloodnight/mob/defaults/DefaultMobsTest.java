@@ -11,6 +11,7 @@ import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.store.BuiltInStore;
 import de.eldoria.bloodnight.store.StoreEntry;
 import de.eldoria.graph.platform.GraphPlatform;
@@ -62,7 +63,9 @@ class DefaultMobsTest {
                 String key = "bloodnight.mob." + mob.id();
                 assertTrue(store.containsKey(mob.id()), mob.id());
                 assertTrue(pack.contains('"' + key + '"'), file + ": " + key);
-                assertTrue(store.get(mob.id()).mob().attributes().displayName().contains("<lang_or:" + key + ":"), key);
+                MobName name = store.get(mob.id()).mob().attributes().name();
+                assertTrue(name.miniMessage(mob.id(), "en").contains("<lang_or:" + key + ":"), key);
+                assertEquals(store.get(mob.id()).mobPackage().names(), name.texts(), key);
             }
         }
     }

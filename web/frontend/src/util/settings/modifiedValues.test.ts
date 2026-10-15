@@ -62,8 +62,8 @@ describe('modified values', () => {
     it('hides world particles around players and the outfit of a MythicMobs mob', () => {
         const atmosphere = [field('worldParticles', 'boolean', true), field('particles', 'list')]
         expect(shownFields(atmosphere, {}).map(entry => entry.key)).toEqual(['worldParticles'])
-        const attributes = [field('mythicType', 'text', ''), field('displayName', 'text'), field('mythicLevel', 'integer')]
-        expect(shownFields(attributes, {}).map(entry => entry.key)).toEqual(['mythicType', 'displayName'])
+        const attributes = [field('mythicType', 'text', ''), field('name', 'text'), field('mythicLevel', 'integer')]
+        expect(shownFields(attributes, {}).map(entry => entry.key)).toEqual(['mythicType', 'name'])
         expect(shownFields(attributes, {mythicType: 'SkeletonKing'}).map(entry => entry.key)).toEqual(['mythicType', 'mythicLevel'])
     })
 

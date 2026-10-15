@@ -25,7 +25,18 @@
     "id" : "wither_skeleton_rider",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.wither_skeleton_rider:'Wither Skeleton Rider'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Witherskelettreiter",
+          "en" : "Wither Skeleton Rider",
+          "es" : "Jinete esqueleto del Wither",
+          "fr" : "Cavalier squelette wither",
+          "ms" : "Penunggang Rangka Wither",
+          "tr" : "Wither İskeleti Binicisi",
+          "zh" : "凋灵骷髅骑士"
+        }
+      },
       "entityType" : "SPIDER",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

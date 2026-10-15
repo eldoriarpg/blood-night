@@ -25,7 +25,18 @@
     "id" : "ghost_creeper",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.ghost_creeper:'Ghost Creeper'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Geister-Creeper",
+          "en" : "Ghost Creeper",
+          "es" : "Creeper fantasma",
+          "fr" : "Creeper fantôme",
+          "ms" : "Creeper Hantu",
+          "tr" : "Hayalet Creeper",
+          "zh" : "幽灵苦力怕"
+        }
+      },
       "entityType" : "CREEPER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

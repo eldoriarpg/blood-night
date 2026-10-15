@@ -81,6 +81,13 @@ public record CustomMob(
     }
 
     /**
+     * @return the same mob with other attributes
+     */
+    public CustomMob withAttributes(Attributes attributes) {
+        return new CustomMob(id, equipment, attributes, behaviour, mobDrops, extension, spawn, origin, movement);
+    }
+
+    /**
      * @return the same mob with another origin
      */
     public CustomMob withOrigin(@Nullable MobOrigin origin) {

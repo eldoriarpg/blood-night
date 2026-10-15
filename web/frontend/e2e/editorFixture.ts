@@ -115,7 +115,7 @@ const payload = {
     mobs: {
         speed_creeper: {
             id: 'speed_creeper',
-            attributes: {displayName: "<lang_or:bloodnight.mob.speed_creeper:'Speed Creeper'>", entityType: 'CREEPER', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+            attributes: {name: {style: '', texts: {en: 'Speed Creeper', de: 'Flinker Creeper'}}, entityType: 'CREEPER', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
             behaviour: {nodes: {
                 tick: {type: 'mob.tick', executions: {next: ['ignite']}, editor: {x: 0, y: 0}},
                 ignite: {type: 'creeper.ignite', editor: {x: 420, y: 0}},
@@ -125,14 +125,14 @@ const payload = {
         },
         zz_dragon: {
             id: 'zz_dragon',
-            attributes: {displayName: 'Blood Dragon', entityType: 'ENDER_DRAGON', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+            attributes: {name: {style: '', texts: {en: 'Blood Dragon'}}, entityType: 'ENDER_DRAGON', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
             behaviour: {nodes: {}},
             extension: {type: 'NONE'},
             spawn: {weight: 0, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},
         },
         z_painter: {
             id: 'z_painter',
-            attributes: {displayName: 'Painter', entityType: 'ZOMBIE', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+            attributes: {name: {style: '', texts: {en: 'Painter'}}, entityType: 'ZOMBIE', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
             behaviour: {nodes: {
                 amount: {type: 'value', editor: {x: 0, y: 0}},
                 paint: {type: 'color.rgb', literals: {red: 255, green: 0, blue: 0}, editor: {x: 0, y: 220}},
@@ -176,7 +176,7 @@ const payload = {
             id: 'night_hound', pack: 'classic', names: {en: 'Night Hound'}, descriptions: {en: 'A wolf that hunts in packs.'}, requires: [], hash: 'h1',
             mob: {
                 id: 'night_hound',
-                attributes: {displayName: 'Night Hound', entityType: 'ZOMBIE', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
+                attributes: {name: {style: '', texts: {en: 'Night Hound'}}, entityType: 'ZOMBIE', exactType: true, healthModifier: 'DEFAULT', health: 1, damageModifier: 'DEFAULT', damage: 1, changes: []},
                 behaviour: {nodes: {}},
                 extension: {type: 'NONE'},
                 spawn: {weight: 10, nightOnly: true, despawn: 'NIGHT_END', reasons: [], conditions: {worlds: [], biomes: [], surface: 'ANY'}},

@@ -206,6 +206,15 @@ export default {
         gameRules: {
             add: 'Ajouter une règle du jeu',
         },
+        mobName: {
+            text: 'Nom en {language}',
+            remove: 'Retirer {language}',
+            none: 'Pas de nom : la créature n\'en affiche aucun.',
+            add: 'Ajouter une langue',
+            addPlaceholder: 'Langue, par ex. de ou pt_br',
+            addButton: 'Ajouter',
+            style: 'Style',
+        },
         miniMessage: {
             preview: 'Aperçu',
             nightName: 'Nuit de sang',
@@ -845,6 +854,7 @@ export default {
             },
         },
         helpIn: {
+            attributes: {name: 'Les joueurs voient le nom dans leur langue. S\'il manque, ils voient celui de la langue de secours du serveur.'},
             spawning: {
                 mobs: 'Désactive les créatures qui ne doivent pas apparaître ici. Un poids change la fréquence à laquelle une créature est choisie par rapport aux autres, dans ce monde uniquement.',
             },
@@ -871,6 +881,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: 'Les noms au-dessus des têtes ont besoin du pack de ressources pour cela. Désactivé : tous les joueurs voient le nom dans la langue de secours du serveur, avec ou sans le pack.',
             creakingsWake: 'Les grinceurs sortent des cœurs de grinceur dans les jardins pâles. Normalement, ils ne chassent que pendant une nuit normale. Avec cette option, ils chassent pendant toute la nuit de sang, même si elle dure plus longtemps ou si le monde n\'a pas de nuit.',
             biomes: 'Des biomes seuls ou des groupes entiers, par ex. tous les biomes océaniques. Vide signifie partout.',
             exactType: 'Activé : cette créature remplace seulement les créatures qui apparaissent et sont exactement de son type. Désactivé : aussi les types proches, par ex. une créature zombie remplace aussi les zombies momifiés, les noyés et les zombies-villageois quand aucune des créatures n\'est basée sur eux.',
@@ -918,6 +929,7 @@ export default {
             },
         },
         fields: {
+            translateMobNames: 'Afficher le nom des créatures dans la langue de chaque joueur',
             heartbeatLoudestWithin: 'Battements les plus forts dans un rayon de (blocs)',
             heartbeatRange: 'Portée des battements de cœur (blocs)',
             closest: 'Au plus près (blocs)',

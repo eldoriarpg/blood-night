@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
+import de.eldoria.bloodnight.mob.meta.MobName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -54,6 +55,30 @@ class PackMergeTest {
         Path root = plugins.resolve("ItemsAdder/contents/bloodnight/resourcepack");
         assertTrue(Files.exists(root.resolve("assets/bloodnight/post_effect/blood.json")));
         assertFalse(Files.exists(root.resolve("pack.mcmeta")));
+    }
+
+    @Test
+    void mobNamesGoIntoTheLanguageFilesBesideWhatIsThere() throws IOException {
+        PackMerge pack = PackMerge.of(Map.of(
+                        "pack.mcmeta", bytes("{}"),
+                        "assets/bloodnight/lang/de_de.json", bytes("{\"bloodnight.night\": \"Blutnacht\"}")))
+                .withMobNames(
+                        Map.of("tank", new MobName("<red>", Map.of("de", "Panzer", "en", "Tank", "pt_br", "Tanque"))));
+        assertTrue(pack.install(plugins, target("ItemsAdder")));
+
+        Path lang = plugins.resolve("ItemsAdder/contents/bloodnight/resourcepack/assets/bloodnight/lang");
+        String german = Files.readString(lang.resolve("de_de.json"));
+        assertTrue(german.contains("\"bloodnight.night\" : \"Blutnacht\""), german);
+        assertTrue(german.contains("\"bloodnight.mob.tank\" : \"Panzer\""), german);
+        assertTrue(Files.readString(lang.resolve("en_us.json")).contains("Tank"));
+        assertTrue(Files.readString(lang.resolve("pt_br.json")).contains("Tanque"));
+    }
+
+    @Test
+    void languageCodesBecomeMinecraftLocales() {
+        assertEquals("zh_cn", PackMerge.minecraftLocale("zh"));
+        assertEquals("pt_br", PackMerge.minecraftLocale("pt_br"));
+        assertEquals("nl_nl", PackMerge.minecraftLocale("nl"));
     }
 
     @Test

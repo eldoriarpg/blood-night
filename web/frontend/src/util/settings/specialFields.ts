@@ -23,9 +23,10 @@ import type {Field} from '~/util/settings/schemaFields'
  *     <li>`moonPhases`: a chance for every phase of the moon</li>
  *     <li>`phaseCycle`: a cycle of nights with a chance each, as an equalizer</li>
  *     <li>`curve`: the curve night selection with a graph of its chances</li>
+ *     <li>`mobName`: a mob's name per language with one style</li>
  * </ul>
  */
-export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve'
+export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName'
 
 const PERCENT: ReadonlySet<string> = new Set(['chance', 'chancePerMinute', 'lightningChance', 'thunderChance', 'loseExperienceChance', 'loseInventoryChance', 'probability', 'spawnPercentage'])
 const MINI_MESSAGE: ReadonlySet<string> = new Set(['title', 'prompt', 'prefix', 'displayName'])
@@ -56,6 +57,7 @@ export function specialField(field: Field, parent: string | undefined): SpecialF
             if (field.key === 'overrides') return 'mobMap'
             return undefined
         case 'group':
+            if (field.definition === 'MobName') return 'mobName'
             return parent === 'nightSelection' && field.key === 'curve' ? 'curve' : undefined
         case 'any':
             return parent === 'phase' && field.key === 'probabilities' ? 'phaseCycle' : undefined

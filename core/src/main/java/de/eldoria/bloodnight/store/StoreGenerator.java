@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.web.api.Language;
 import tools.jackson.core.type.TypeReference;
 
@@ -72,8 +73,10 @@ public final class StoreGenerator {
                     "%d descriptions for %d default mobs".formatted(described.size(), mobs.size()));
         }
         List<MobPackage> packages = new ArrayList<>();
-        for (CustomMob mob : mobs) {
-            Description description = described(described, mob.id());
+        for (CustomMob plain : mobs) {
+            Description description = described(described, plain.id());
+            MobName name = new MobName(plain.attributes().name().style(), description.names());
+            CustomMob mob = plain.withAttributes(plain.attributes().withName(name));
             packages.add(new MobPackage(
                     StoreFiles.FORMAT,
                     mob.id(),

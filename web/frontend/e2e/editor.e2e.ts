@@ -984,24 +984,25 @@ test('commands get placeholders with a click', async ({page}) => {
     await expect(page.locator('main').getByRole('tab', {name: 'Enemy deaths'})).toBeVisible()
 })
 
-/** A default mob's name in each player's language reads as its English name until one is written. */
-test('a translated mob name reads as a name', async ({page}) => {
+/** A mob's name is written per language, a language is added by picking it, and the style shows in the preview. */
+test('a mob name is written per language', async ({page}) => {
     const stage = await stageEditor(page)
     await page.goto(stage.link)
     const sheet = page.getByRole('complementary', {name: 'Mob settings'})
     await sheet.getByRole('button', {name: 'Attributes'}).click()
-    await expect(sheet.getByText('Each player sees this name in their own language.')).toBeVisible()
-    await expect(sheet).not.toContainText('lang_or')
+    await expect(sheet.getByRole('textbox', {name: 'Name in English'})).toHaveValue('Speed Creeper')
+    await expect(sheet.getByRole('textbox', {name: 'Name in German'})).toHaveValue('Flinker Creeper')
     await expect(sheet.getByText(/^On: this mob only takes the place/)).toBeVisible()
     await expect(sheet).not.toContainText('MythicMobs')
 
-    await sheet.getByRole('button', {name: 'Write my own name'}).click()
-    const name = sheet.getByLabel('Display name', {exact: true})
-    await expect(name).toHaveValue('Speed Creeper')
-    await name.fill('<red>Speedy')
-    await name.blur()
+    const adding = sheet.getByRole('combobox', {name: 'Add a language'})
+    await adding.fill('fr')
+    await page.getByRole('option', {name: /French/}).click()
+    const french = sheet.getByRole('textbox', {name: 'Name in French'})
+    await french.fill('Creeper rapide')
+    await french.press('Enter')
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
-    expect(stage.changes[0]).toEqual([{op: 'add', path: '/mobs/speed_creeper/attributes/displayName', value: '<red>Speedy'}])
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/mobs/speed_creeper/attributes/name', value: {style: '', texts: {en: 'Speed Creeper', de: 'Flinker Creeper', fr: 'Creeper rapide'}}}])
 })
 
 /** Biomes are picked by name and biome tags read as groups of biomes. */

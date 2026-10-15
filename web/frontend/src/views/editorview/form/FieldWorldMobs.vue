@@ -10,7 +10,7 @@ import AppIcon from '@/components/display/AppIcon.vue'
 import NumberInput from '@/components/input/number/NumberInput.vue'
 import ToggleInput from '@/components/input/toggle/ToggleInput.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
-import {plainText} from '~/util/items/itemChoices'
+import {mobLabel} from '~/util/mobs/mobName'
 import {spawnsNaturally} from '~/util/mobs/naturalSpawns'
 import {WORLD_KIND} from '~/util/settings/worldKind'
 
@@ -31,7 +31,7 @@ const emit = defineEmits<{
   save: [value: Record<string, number>]
 }>()
 
-const {t} = useI18n()
+const {t, locale} = useI18n()
 const session = useEditorSession()
 const assets = useItemAssets()
 const world = inject(WORLD_KIND, ref(undefined))
@@ -47,7 +47,7 @@ interface Row {
 const rows = computed<Row[]>(() => Object.entries(session.payload.value?.mobs ?? {})
   .map(([id, mob]) => ({
     id,
-    name: plainText(mob.attributes.displayName) || id,
+    name: mobLabel(mob.attributes.name, locale.value) || id,
     type: assets.entry('entity_type', `minecraft:${mob.attributes.entityType.toLowerCase()}`) ?? mob.attributes.entityType,
     own: mob.spawn.weight,
     natural: spawnsNaturally(mob.attributes.entityType, mob.attributes.exactType, world.value?.environment ?? 'CUSTOM'),

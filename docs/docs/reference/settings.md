@@ -32,6 +32,7 @@ Settings for the whole server.
 | `editor.timeoutSeconds` | whole number | `30` |
 | `resourcePack.offer` | true or false | `true` |
 | `resourcePack.mergeIntoPackPlugins` | true or false | `true` |
+| `resourcePack.translateMobNames` | true or false | `true` |
 | `resourcePack.url` | text | `https://bloodnight.docs.eldoria.de/pack/bloodnight.zip` |
 | `resourcePack.required` | true or false | `false` |
 | `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
@@ -61,6 +62,7 @@ resourcePack:
   offer: true
   prompt: <red>BloodNight would like to show its blood nights with a few extra effects.
   required: false
+  translateMobNames: true
   url: https://bloodnight.docs.eldoria.de/pack/bloodnight.zip
 placeholders:
   revealNext: false

@@ -12,6 +12,7 @@ import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.minimessage.translation.MiniMessageTranslationStore;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.Translator;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +31,8 @@ import static net.kyori.adventure.text.Component.translatable;
 
 /**
  * The texts the server renders for each player on its own, through Adventure's global translator: the death message
- * of the blood curse, the night names on boss bars, and the names of store mobs.
+ * of the blood curse, the night names on boss bars, and the names of mobs. Mob names live in a store of their own,
+ * swapped as a whole whenever they are registered again, since a translation store refuses a key twice.
  * <p>
  * Chat texts are not here; they go through {@link Texts}. These are MiniMessage in
  * {@code translations/<language>.properties}, and a text missing in a language falls back to the configured fallback
@@ -48,6 +50,7 @@ public final class Messages {
 
     private final MiniMessageTranslationStore store =
             MiniMessageTranslationStore.create(Key.key("bloodnight", "messages"));
+    private @Nullable MiniMessageTranslationStore names;
 
     /**
      * Loads the shipped texts and adds them to the global translator.
@@ -63,13 +66,18 @@ public final class Messages {
     }
 
     /**
-     * Adds texts that do not come from the bundles, e.g. the names of store mobs.
+     * Replaces the mob names the server renders with these.
      *
-     * @param language a language, e.g. {@code en}
-     * @param texts    MiniMessage texts by key
+     * @param byLanguage MiniMessage texts by key, by language, e.g. {@code en}
+     * @param fallback   the language for players whose language has no name, e.g. {@code en}
      */
-    public void add(String language, Map<String, String> texts) {
-        store.registerAll(parse(language), texts);
+    public synchronized void names(Map<String, Map<String, String>> byLanguage, String fallback) {
+        MiniMessageTranslationStore fresh = MiniMessageTranslationStore.create(Key.key("bloodnight", "mob_names"));
+        byLanguage.forEach((language, texts) -> fresh.registerAll(parse(language), texts));
+        fresh.defaultLocale(Locale.of(parse(fallback).getLanguage()));
+        if (names != null) GlobalTranslator.translator().removeSource(names);
+        GlobalTranslator.translator().addSource(fresh);
+        names = fresh;
     }
 
     /**
@@ -82,8 +90,10 @@ public final class Messages {
     /**
      * Removes the texts from the global translator.
      */
-    public void unregister() {
+    public synchronized void unregister() {
         GlobalTranslator.translator().removeSource(store);
+        if (names != null) GlobalTranslator.translator().removeSource(names);
+        names = null;
     }
 
     /**

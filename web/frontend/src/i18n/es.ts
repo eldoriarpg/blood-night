@@ -206,6 +206,15 @@ export default {
         gameRules: {
             add: 'Añadir una regla del juego',
         },
+        mobName: {
+            text: 'Nombre en {language}',
+            remove: 'Quitar {language}',
+            none: 'Sin nombre: el mob no muestra ninguno.',
+            add: 'Añadir un idioma',
+            addPlaceholder: 'Idioma, p. ej. de o pt_br',
+            addButton: 'Añadir',
+            style: 'Estilo',
+        },
         miniMessage: {
             preview: 'Vista previa',
             nightName: 'Noche sangrienta',
@@ -845,6 +854,7 @@ export default {
             },
         },
         helpIn: {
+            attributes: {name: 'Los jugadores ven el nombre en su idioma. Si falta, ven el del idioma de reserva del servidor.'},
             spawning: {
                 mobs: 'Desactiva las criaturas que no deben aparecer aquí. El peso cambia cuántas veces se elige una criatura frente a las demás, solo en este mundo.',
             },
@@ -871,6 +881,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: 'Los nombres sobre la cabeza necesitan el paquete de recursos para ello. Desactivado: todos los jugadores ven el nombre en el idioma de reserva del servidor, con o sin el paquete.',
             creakingsWake: 'Los crujidores salen de los corazones de crujidor en los jardines pálidos. Normalmente solo cazan durante una noche normal. Con esto activado, cazan durante toda la noche sangrienta, aunque dure más o el mundo no tenga noche.',
             biomes: 'Biomas sueltos o grupos enteros, p. ej. todos los biomas de océano. Vacío significa en cualquier lugar.',
             exactType: 'Activado: esta criatura solo sustituye a las criaturas que aparecen de exactamente su tipo. Desactivado: también a las parecidas, p. ej. una criatura zombi también sustituye a zombis momificados, ahogados y aldeanos zombi cuando ninguna criatura se basa en ellos.',
@@ -918,6 +929,7 @@ export default {
             },
         },
         fields: {
+            translateMobNames: 'Mostrar los nombres de los mobs en el idioma de cada jugador',
             heartbeatLoudestWithin: 'Latido más fuerte dentro de (bloques)',
             heartbeatRange: 'Alcance del latido (bloques)',
             closest: 'Mínimo (bloques)',

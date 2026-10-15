@@ -25,7 +25,18 @@
     "id" : "blaze_rider",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.blaze_rider:'Blaze Rider'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Lohenreiter",
+          "en" : "Blaze Rider",
+          "es" : "Jinete de blaze",
+          "fr" : "Cavalier blaze",
+          "ms" : "Penunggang Blaze",
+          "tr" : "Blaze Binicisi",
+          "zh" : "烈焰骑士"
+        }
+      },
       "entityType" : "SPIDER",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

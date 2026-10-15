@@ -32,7 +32,18 @@
       "offHand" : null
     },
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.knight_zombie:'Knight Zombie'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Ritterzombie",
+          "en" : "Knight Zombie",
+          "es" : "Zombi caballero",
+          "fr" : "Zombie chevalier",
+          "ms" : "Zombi Kesatria",
+          "tr" : "Şövalye Zombi",
+          "zh" : "骑士僵尸"
+        }
+      },
       "entityType" : "ZOMBIE",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

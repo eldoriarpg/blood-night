@@ -25,7 +25,18 @@
     "id" : "toxic_enderman",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.toxic_enderman:'Toxic Enderman'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Giftiger Enderman",
+          "en" : "Toxic Enderman",
+          "es" : "Enderman tóxico",
+          "fr" : "Enderman toxique",
+          "ms" : "Enderman Toksik",
+          "tr" : "Zehirli Enderman",
+          "zh" : "剧毒末影人"
+        }
+      },
       "entityType" : "ENDERMAN",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

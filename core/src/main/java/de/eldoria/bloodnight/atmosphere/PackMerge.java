@@ -5,6 +5,11 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
+import de.eldoria.bloodnight.editor.EditorPayload;
+import de.eldoria.bloodnight.mob.meta.MobName;
+import de.eldoria.bloodnight.web.api.Language;
+import tools.jackson.core.type.TypeReference;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +17,7 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystems;
@@ -37,6 +43,8 @@ import java.util.zip.ZipOutputStream;
 public final class PackMerge {
     static final String ROOT = "resourcepack";
     private static final long FIXED_TIME = 0;
+    private static final String LANG = "assets/bloodnight/lang/";
+    private static final TypeReference<Map<String, String>> LANG_FILE = new TypeReference<>() {};
 
     /**
      * A pack plugin and where it takes outside packs.
@@ -91,6 +99,43 @@ public final class PackMerge {
      */
     static PackMerge of(Map<String, byte[]> files) {
         return new PackMerge(new TreeMap<>(files));
+    }
+
+    /**
+     * The pack with mob names added to its language files, so name tags show them in each player's language: each
+     * name's text goes under {@code bloodnight.mob.<key>} into the file of its language, next to what the file holds.
+     *
+     * @param names names by their key below {@code bloodnight.mob.}, e.g. a mob's id
+     * @return a pack with those names; this pack stays as it is
+     */
+    public PackMerge withMobNames(Map<String, MobName> names) {
+        Map<String, SortedMap<String, String>> byFile = new TreeMap<>();
+        names.forEach((key, name) -> name.texts().forEach((language, text) -> byFile.computeIfAbsent(
+                        LANG + minecraftLocale(language) + ".json", ignored -> new TreeMap<>())
+                .put(MobName.translationKey(key), text)));
+        SortedMap<String, byte[]> merged = new TreeMap<>(files);
+        byFile.forEach((file, texts) -> {
+            SortedMap<String, String> content = new TreeMap<>();
+            byte[] present = merged.get(file);
+            if (present != null) content.putAll(EditorPayload.MAPPER.readValue(present, LANG_FILE));
+            content.putAll(texts);
+            merged.put(
+                    file,
+                    (EditorPayload.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(content) + "\n")
+                            .getBytes(StandardCharsets.UTF_8));
+        });
+        return new PackMerge(merged);
+    }
+
+    /**
+     * @param language a language code of a mob name, e.g. {@code de} or {@code pt_br}
+     * @return the name of Minecraft's language file for it, e.g. {@code de_de} or {@code pt_br}
+     */
+    static String minecraftLocale(String language) {
+        for (Language shipped : Language.values()) {
+            if (shipped.language().equals(language)) return shipped.minecraft();
+        }
+        return language.contains("_") ? language : language + "_" + language;
     }
 
     /**

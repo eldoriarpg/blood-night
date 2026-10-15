@@ -26,6 +26,8 @@ import de.eldoria.bloodnight.command.MobIds;
 import de.eldoria.bloodnight.command.StoreIds;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.configuration.elements.Announcements;
+import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
+import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeOverride;
 import de.eldoria.bloodnight.debug.DebugReport;
 import de.eldoria.bloodnight.editor.RuntimeCatalog;
 import de.eldoria.bloodnight.enchantments.BloodEnchantments;
@@ -47,6 +49,7 @@ import de.eldoria.bloodnight.legacy.LegacyFolder;
 import de.eldoria.bloodnight.metrics.BloodNightMetrics;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
@@ -95,6 +98,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.GameRule;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -221,7 +225,13 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         coordinator = new MobCoordinator(
                 new MobOutfitter(
                         () -> configuration.items(),
-                        world -> configuration.worldConfig(world).mobSettings()),
+                        world -> configuration.worldConfig(world).mobSettings(),
+                        () -> configuration
+                                .main()
+                                .announcements()
+                                .fallbackLocale()
+                                .language(),
+                        () -> configuration.main().resourcePack().translateMobNames()),
                 () -> configuration.items(),
                 id -> configuration.mobs().get(id),
                 bloodNights::running,
@@ -332,7 +342,6 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                         tasks),
                 this);
         messages.register(configuration.main().announcements().fallbackLocale().name());
-        registerMobNames();
         StoreNotice storeNotice =
                 new StoreNotice(mobStore, () -> configuration.mobs().all());
         plugins.registerEvents(storeNotice, this);
@@ -560,13 +569,14 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     }
 
     /**
-     * Compiles every mob in the background and switches living mobs over on the main thread.
+     * Registers every mob's name, compiles every mob in the background and switches living mobs over on the main thread.
      *
      * @return completes on the main thread once the new behaviours are active
      */
     public CompletableFuture<Behaviours> recompile() {
         configuration.mobs();
         configuration.macros();
+        registerMobNames();
         configuration.problems().forEach((file, problem) -> getLogger()
                 .severe(
                         "%s could not be read and was left untouched; its content is ignored until it is fixed and reloaded: %s"
@@ -605,9 +615,6 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     }
 
     /**
-     * @return offers the resource pack to joining players
-     */
-    /**
      * @return the installed pack plugins BloodNight's pack goes into; empty when merging is off
      */
     public List<PackMerge.Target> packTargets() {
@@ -622,7 +629,7 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         List<PackMerge.Target> targets = packTargets();
         if (targets.isEmpty()) return;
         try {
-            PackMerge pack = PackMerge.bundled();
+            PackMerge pack = PackMerge.bundled().withMobNames(mobNames());
             Path plugins = getDataFolder().toPath().toAbsolutePath().getParent();
             for (PackMerge.Target target : targets) {
                 if (pack.install(plugins, target)) {
@@ -666,20 +673,47 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     }
 
     /**
-     * Lets the server name store mobs in each player's language, from their packages.
+     * @return every configured mob's name by its key below {@code bloodnight.mob.}, and a name a world gives a mob
+     *     under that world's key (see {@link MobSettings#nameKey})
+     */
+    public Map<String, MobName> mobNames() {
+        Map<String, MobName> names = new TreeMap<>();
+        for (CustomMob mob : configuration.mobs().all()) {
+            if (!mob.attributes().name().isEmpty())
+                names.put(mob.id(), mob.attributes().name());
+            for (World world : getServer().getWorlds()) {
+                AttributeOverride override = configuration
+                        .worldConfig(world)
+                        .mobSettings()
+                        .overrides()
+                        .get(mob.id());
+                if (override != null && override.renames()) {
+                    names.put(
+                            mob.id() + "." + world.getUID(),
+                            override.apply(mob.attributes()).name());
+                }
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Lets the server name every configured mob in each player's language, and a mob a world renames under that
+     * world's key (see {@link MobSettings#nameKey}).
      */
     private void registerMobNames() {
         Map<String, Map<String, String>> byLanguage = new TreeMap<>();
-        for (StoreEntry entry : mobStore.store().entries()) {
-            entry.mobPackage().names().forEach((language, name) -> byLanguage
-                    .computeIfAbsent(language, ignored -> new TreeMap<>())
-                    .put(
-                            "bloodnight.mob." + entry.id(),
-                            MiniMessage.miniMessage().escapeTags(name)));
-        }
-        byLanguage.forEach(messages::add);
+        mobNames().forEach((key, name) -> name.texts().forEach((language, text) -> byLanguage
+                .computeIfAbsent(language, ignored -> new TreeMap<>())
+                .put(MobName.translationKey(key), MiniMessage.miniMessage().escapeTags(text))));
+        messages.names(
+                byLanguage,
+                configuration.main().announcements().fallbackLocale().language());
     }
 
+    /**
+     * @return offers the resource pack to joining players
+     */
     public BloodPack bloodPack() {
         return bloodPack;
     }

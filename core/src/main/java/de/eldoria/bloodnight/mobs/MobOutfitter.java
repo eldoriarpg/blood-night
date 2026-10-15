@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.mob.meta.AttributeChange;
 import de.eldoria.bloodnight.mob.meta.Attributes;
 import de.eldoria.bloodnight.mob.meta.Equipment;
 import de.eldoria.bloodnight.mob.meta.ExtensionType;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.util.MobTags;
 import io.papermc.paper.registry.RegistryAccess;
@@ -31,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -49,14 +51,34 @@ public final class MobOutfitter {
     private static final NamespacedKey DAMAGE = new NamespacedKey("bloodnight", MODIFIER + "damage");
     private final Supplier<ItemRegistry> items;
     private final Function<World, MobSettings> settings;
+    private final Supplier<String> fallbackLanguage;
+    private final BooleanSupplier translatedNames;
 
     /**
+     * @param items            the current item registry
+     * @param settings         the mob settings of a world
+     * @param fallbackLanguage the language whose name text players see when theirs has none, e.g. {@code en}
+     * @param translatedNames  whether names show in each player's language, else in the fallback language for everyone
+     */
+    public MobOutfitter(
+            Supplier<ItemRegistry> items,
+            Function<World, MobSettings> settings,
+            Supplier<String> fallbackLanguage,
+            BooleanSupplier translatedNames) {
+        this.items = items;
+        this.settings = settings;
+        this.fallbackLanguage = fallbackLanguage;
+        this.translatedNames = translatedNames;
+    }
+
+    /**
+     * An outfitter whose mobs fall back to their English name.
+     *
      * @param items    the current item registry
      * @param settings the mob settings of a world
      */
     public MobOutfitter(Supplier<ItemRegistry> items, Function<World, MobSettings> settings) {
-        this.items = items;
-        this.settings = settings;
+        this(items, settings, () -> MobName.ENGLISH, () -> true);
     }
 
     /**
@@ -78,7 +100,7 @@ public final class MobOutfitter {
         equip(entity, mob.equipment());
         MobSettings mobSettings = settings.apply(entity.getWorld());
         Attributes attributes = mobSettings.attributes(mob);
-        name(entity, attributes, mobSettings.displayNames());
+        name(entity, attributes.name(), mobSettings.nameKey(mob, entity.getWorld()), mobSettings.displayNames());
         health(entity, attributes, mobSettings.healthMultiplier());
         if (extension instanceof LivingEntity living) shareMaxHealth(entity, living);
         damage(entity, attributes);
@@ -86,9 +108,10 @@ public final class MobOutfitter {
         return extension;
     }
 
-    private static void name(LivingEntity entity, Attributes attributes, boolean visible) {
-        if (attributes.displayName().isBlank()) return;
-        entity.customName(MiniMessage.miniMessage().deserialize(attributes.displayName()));
+    private void name(LivingEntity entity, MobName name, String key, boolean visible) {
+        if (name.isEmpty()) return;
+        entity.customName(MiniMessage.miniMessage()
+                .deserialize(name.miniMessage(key, fallbackLanguage.get(), translatedNames.getAsBoolean())));
         entity.setCustomNameVisible(visible);
     }
 

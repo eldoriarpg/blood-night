@@ -25,7 +25,18 @@
     "id" : "unstable_creeper",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.unstable_creeper:'Unstable Creeper'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Instabiler Creeper",
+          "en" : "Unstable Creeper",
+          "es" : "Creeper inestable",
+          "fr" : "Creeper instable",
+          "ms" : "Creeper Tidak Stabil",
+          "tr" : "Dengesiz Creeper",
+          "zh" : "不稳定苦力怕"
+        }
+      },
       "entityType" : "CREEPER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

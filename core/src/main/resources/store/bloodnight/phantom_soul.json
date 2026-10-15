@@ -25,7 +25,18 @@
     "id" : "phantom_soul",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.phantom_soul:'Phantom Soul'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Phantomseele",
+          "en" : "Phantom Soul",
+          "es" : "Alma de phantom",
+          "fr" : "Âme de phantom",
+          "ms" : "Roh Fantom",
+          "tr" : "Fantom Ruhu",
+          "zh" : "幻翼之魂"
+        }
+      },
       "entityType" : "PHANTOM",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

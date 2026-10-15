@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.mobs;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.SpawnContext;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.graph.model.Graph;
@@ -58,7 +59,14 @@ class MobSelectorTest {
         CustomMob husk = new CustomMob(
                 "husk",
                 zombie.equipment(),
-                new Attributes("Husk", EntityType.HUSK, false, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
+                new Attributes(
+                        MobName.english("Husk"),
+                        EntityType.HUSK,
+                        false,
+                        ValueModifier.DEFAULT,
+                        2,
+                        ValueModifier.DEFAULT,
+                        2),
                 zombie.behaviour(),
                 zombie.mobDrops(),
                 zombie.extension(),

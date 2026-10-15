@@ -25,7 +25,18 @@
     "id" : "volley_pillager",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.volley_pillager:'Volley Pillager'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Salven-Plünderer",
+          "en" : "Volley Pillager",
+          "es" : "Saqueador de ráfagas",
+          "fr" : "Pillard à salves",
+          "ms" : "Pillager Bertubi",
+          "tr" : "Yaylım Yağmacısı",
+          "zh" : "齐射掠夺者"
+        }
+      },
       "entityType" : "PILLAGER",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

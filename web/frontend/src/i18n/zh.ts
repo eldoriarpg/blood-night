@@ -206,6 +206,15 @@ export default {
         gameRules: {
             add: '添加游戏规则',
         },
+        mobName: {
+            text: '{language}名称',
+            remove: '移除{language}',
+            none: '没有名称：该生物不显示名称。',
+            add: '添加语言',
+            addPlaceholder: '语言，例如 de 或 pt_br',
+            addButton: '添加',
+            style: '样式',
+        },
         miniMessage: {
             preview: '预览',
             nightName: '血夜',
@@ -845,6 +854,7 @@ export default {
             },
         },
         helpIn: {
+            attributes: {name: '玩家会看到自己语言的名称。如果没有，就显示服务器后备语言的名称。'},
             spawning: {
                 mobs: '关闭不应在这里生成的生物。权重决定一个生物相对其他生物被选中的频率，只在这个世界生效。',
             },
@@ -871,6 +881,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: '头顶名称需要资源包才能这样显示。关闭：所有玩家都看到服务器后备语言的名称，无论是否有资源包。',
             creakingsWake: '嘎枝从苍白之园里的嘎枝之心中出现。通常它们只在普通夜晚狩猎。开启后，它们会在整个血夜中狩猎，即使血夜持续更久或世界没有夜晚。',
             biomes: '单个生物群系或整组生物群系，例如所有海洋生物群系。留空表示任何地方。',
             exactType: '开启：这个生物只替换完全相同类型的生成生物。关闭：也替换相关类型，例如僵尸生物在没有其他生物基于尸壳、溺尸和僵尸村民时，也会替换它们。',
@@ -918,6 +929,7 @@ export default {
             },
         },
         fields: {
+            translateMobNames: '以每位玩家的语言显示生物名称',
             heartbeatLoudestWithin: '心跳最响的范围（格）',
             heartbeatRange: '心跳范围（格）',
             closest: '最近（格）',

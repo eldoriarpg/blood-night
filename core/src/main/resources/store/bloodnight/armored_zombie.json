@@ -32,7 +32,18 @@
       "offHand" : null
     },
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.armored_zombie:'Armored Zombie'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Gepanzerter Zombie",
+          "en" : "Armored Zombie",
+          "es" : "Zombi acorazado",
+          "fr" : "Zombie blindé",
+          "ms" : "Zombi Berperisai",
+          "tr" : "Zırhlı Zombi",
+          "zh" : "装甲僵尸"
+        }
+      },
       "entityType" : "ZOMBIE",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

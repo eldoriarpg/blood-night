@@ -206,6 +206,15 @@ export default {
         gameRules: {
             add: 'Tambah peraturan permainan',
         },
+        mobName: {
+            text: 'Nama dalam {language}',
+            remove: 'Buang {language}',
+            none: 'Tiada nama: mob tidak menunjukkan nama.',
+            add: 'Tambah bahasa',
+            addPlaceholder: 'Bahasa, cth. de atau pt_br',
+            addButton: 'Tambah',
+            style: 'Gaya',
+        },
         miniMessage: {
             preview: 'Pratonton',
             nightName: 'Blood Night',
@@ -845,6 +854,7 @@ export default {
             },
         },
         helpIn: {
+            attributes: {name: 'Pemain melihat nama dalam bahasa mereka. Jika tiada, mereka melihat nama dalam bahasa sandaran pelayan.'},
             spawning: {
                 mobs: 'Matikan mob yang tidak patut muncul di sini. Pemberat mengubah berapa kerap sesuatu mob dipilih berbanding yang lain, di dunia ini sahaja.',
             },
@@ -871,6 +881,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: 'Tanda nama memerlukan pek sumber untuk itu. Mati: setiap pemain melihat nama dalam bahasa sandaran pelayan, dengan atau tanpa pek.',
             creakingsWake: 'Creaking keluar dari Creaking Heart di Pale Garden. Biasanya ia hanya memburu pada malam biasa. Dengan ini hidup, ia memburu sepanjang blood night, walaupun malam itu lebih lama atau dunia tiada malam.',
             biomes: 'Biom tunggal atau seluruh kumpulan biom, contohnya semua biom lautan. Kosong bermaksud di mana-mana.',
             exactType: 'Hidup: mob ini hanya menggantikan mob yang muncul daripada jenis yang sama. Mati: juga yang berkaitan, contohnya mob zombi juga menggantikan husk, drowned dan penduduk kampung zombi apabila tiada mob yang berasaskan jenis itu.',
@@ -918,6 +929,7 @@ export default {
             },
         },
         fields: {
+            translateMobNames: 'Tunjukkan nama mob dalam bahasa setiap pemain',
             heartbeatLoudestWithin: 'Degupan jantung paling kuat dalam (blok)',
             heartbeatRange: 'Jarak degupan jantung (blok)',
             closest: 'Paling dekat (blok)',

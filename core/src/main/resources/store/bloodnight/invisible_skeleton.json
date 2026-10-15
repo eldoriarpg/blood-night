@@ -25,7 +25,18 @@
     "id" : "invisible_skeleton",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.invisible_skeleton:'Invisible Skeleton'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Unsichtbares Skelett",
+          "en" : "Invisible Skeleton",
+          "es" : "Esqueleto invisible",
+          "fr" : "Squelette invisible",
+          "ms" : "Rangka Halimunan",
+          "tr" : "Görünmez İskelet",
+          "zh" : "隐形骷髅"
+        }
+      },
       "entityType" : "SKELETON",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

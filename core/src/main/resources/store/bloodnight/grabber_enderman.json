@@ -25,7 +25,18 @@
     "id" : "grabber_enderman",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.grabber_enderman:'Grabber Enderman'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Greifer-Enderman",
+          "en" : "Grabber Enderman",
+          "es" : "Enderman agarrador",
+          "fr" : "Enderman ravisseur",
+          "ms" : "Enderman Penyambar",
+          "tr" : "Kapıcı Enderman",
+          "zh" : "抓取末影人"
+        }
+      },
       "entityType" : "ENDERMAN",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

@@ -25,7 +25,18 @@
     "id" : "speed_skeleton_rider",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.speed_skeleton_rider:'Speed Skeleton Rider'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Flinker Skelettreiter",
+          "en" : "Speed Skeleton Rider",
+          "es" : "Jinete esqueleto veloz",
+          "fr" : "Cavalier squelette rapide",
+          "ms" : "Penunggang Rangka Laju",
+          "tr" : "Hızlı İskelet Binicisi",
+          "zh" : "疾速骷髅骑士"
+        }
+      },
       "entityType" : "SPIDER",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

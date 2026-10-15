@@ -206,6 +206,15 @@ export default {
         gameRules: {
             add: 'Oyun kuralı ekle',
         },
+        mobName: {
+            text: '{language} adı',
+            remove: '{language} kaldır',
+            none: 'Ad yok: yaratık bir ad göstermez.',
+            add: 'Dil ekle',
+            addPlaceholder: 'Dil, örn. de veya pt_br',
+            addButton: 'Ekle',
+            style: 'Stil',
+        },
         miniMessage: {
             preview: 'Önizleme',
             nightName: 'Lanetli Gece',
@@ -845,6 +854,7 @@ export default {
             },
         },
         helpIn: {
+            attributes: {name: 'Oyuncular adı kendi dillerinde görür. Yoksa sunucunun yedek dilindeki adı görürler.'},
             spawning: {
                 mobs: 'Burada doğmaması gereken yaratıkları kapat. Ağırlık, bir yaratığın diğerlerine göre ne sıklıkta seçildiğini değiştirir, yalnızca bu dünyada.',
             },
@@ -871,6 +881,7 @@ export default {
             respawnCommands: 'effect give {player} minecraft:regeneration 10',
         },
         help: {
+            translateMobNames: 'Ad etiketleri bunun için kaynak paketine ihtiyaç duyar. Kapalı: her oyuncu adı paketle ya da paketsiz sunucunun yedek dilinde görür.',
             creakingsWake: 'Gıcırtılar solgun bahçelerdeki gıcırtı kalplerinden çıkar. Normalde yalnızca normal bir gecede avlanırlar. Bu açıkken, gece daha uzun sürse ya da dünyada gece olmasa bile bütün Lanetli Gece boyunca avlanırlar.',
             biomes: 'Tek biyomlar ya da bütün gruplar, örneğin bütün okyanus biyomları. Boş, her yer demektir.',
             exactType: 'Açık: bu yaratık yalnızca tam olarak kendi türündeki doğan yaratıkların yerini alır. Kapalı: benzerlerinin de, örneğin hiçbir yaratık onlara dayanmıyorsa bir zombi yaratığı kurumuş zombilerin, boğulmuşların ve zombi köylülerin de yerini alır.',
@@ -918,6 +929,7 @@ export default {
             },
         },
         fields: {
+            translateMobNames: 'Yaratık adlarını her oyuncunun dilinde göster',
             heartbeatLoudestWithin: 'Kalp atışının en yüksek olduğu mesafe (blok)',
             heartbeatRange: 'Kalp atışı menzili (blok)',
             closest: 'En yakın (blok)',

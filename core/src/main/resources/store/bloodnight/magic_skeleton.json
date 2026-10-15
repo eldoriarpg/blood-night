@@ -25,7 +25,18 @@
     "id" : "magic_skeleton",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.magic_skeleton:'Magic Skeleton'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Magisches Skelett",
+          "en" : "Magic Skeleton",
+          "es" : "Esqueleto mágico",
+          "fr" : "Squelette magique",
+          "ms" : "Rangka Sihir",
+          "tr" : "Büyülü İskelet",
+          "zh" : "魔法骷髅"
+        }
+      },
       "entityType" : "SKELETON",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

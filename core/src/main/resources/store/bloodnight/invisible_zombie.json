@@ -25,7 +25,18 @@
     "id" : "invisible_zombie",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.invisible_zombie:'Invisible Zombie'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Unsichtbarer Zombie",
+          "en" : "Invisible Zombie",
+          "es" : "Zombi invisible",
+          "fr" : "Zombie invisible",
+          "ms" : "Zombi Halimunan",
+          "tr" : "Görünmez Zombi",
+          "zh" : "隐形僵尸"
+        }
+      },
       "entityType" : "ZOMBIE",
       "exactType" : false,
       "healthModifier" : "DEFAULT",

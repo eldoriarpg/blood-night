@@ -25,7 +25,18 @@
     "id" : "fire_phantom",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.fire_phantom:'Fire Phantom'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Feuerphantom",
+          "en" : "Fire Phantom",
+          "es" : "Phantom de fuego",
+          "fr" : "Phantom de feu",
+          "ms" : "Fantom Api",
+          "tr" : "Ateş Fantomu",
+          "zh" : "火焰幻翼"
+        }
+      },
       "entityType" : "PHANTOM",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

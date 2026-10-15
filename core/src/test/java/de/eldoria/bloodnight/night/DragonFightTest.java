@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.configuration.elements.world.night.TimedNights;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;
+import de.eldoria.bloodnight.mob.meta.MobName;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
@@ -68,7 +69,7 @@ class DragonFightTest {
                 plain.id(),
                 plain.equipment(),
                 new Attributes(
-                        "Blood Dragon",
+                        MobName.english("Blood Dragon"),
                         EntityType.ENDER_DRAGON,
                         true,
                         ValueModifier.VALUE,

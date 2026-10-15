@@ -25,7 +25,18 @@
     "id" : "storm_breeze",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.storm_breeze:'Storm Breeze'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Sturmböe",
+          "en" : "Storm Breeze",
+          "es" : "Breeze de tormenta",
+          "fr" : "Brise de tempête",
+          "ms" : "Breeze Ribut",
+          "tr" : "Fırtına Esintisi",
+          "zh" : "风暴旋风人"
+        }
+      },
       "entityType" : "BREEZE",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

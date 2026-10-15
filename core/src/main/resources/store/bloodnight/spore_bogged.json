@@ -25,7 +25,18 @@
     "id" : "spore_bogged",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.spore_bogged:'Spore Bogged'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Sporen-Sumpfskelett",
+          "en" : "Spore Bogged",
+          "es" : "Esqueleto pantanoso de esporas",
+          "fr" : "Embourbé à spores",
+          "ms" : "Bogged Spora",
+          "tr" : "Sporlu Bataklık İskeleti",
+          "zh" : "孢子沼骸"
+        }
+      },
       "entityType" : "BOGGED",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

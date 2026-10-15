@@ -32,7 +32,18 @@
       "offHand" : null
     },
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.wither_wizard:'Wither Wizard'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Withermagier",
+          "en" : "Wither Wizard",
+          "es" : "Mago del Wither",
+          "fr" : "Sorcier wither",
+          "ms" : "Ahli Sihir Wither",
+          "tr" : "Wither Büyücüsü",
+          "zh" : "凋灵巫师"
+        }
+      },
       "entityType" : "WITCH",
       "exactType" : true,
       "healthModifier" : "DEFAULT",

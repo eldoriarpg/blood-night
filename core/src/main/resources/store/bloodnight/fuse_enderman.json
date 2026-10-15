@@ -25,7 +25,18 @@
     "id" : "fuse_enderman",
     "equipment" : null,
     "attributes" : {
-      "displayName" : "<lang_or:bloodnight.mob.fuse_enderman:'Fuse Enderman'>",
+      "name" : {
+        "style" : "",
+        "texts" : {
+          "de" : "Zünder-Enderman",
+          "en" : "Fuse Enderman",
+          "es" : "Enderman detonador",
+          "fr" : "Enderman artificier",
+          "ms" : "Enderman Sumbu",
+          "tr" : "Fitil Enderman",
+          "zh" : "引信末影人"
+        }
+      },
       "entityType" : "ENDERMAN",
       "exactType" : true,
       "healthModifier" : "DEFAULT",
