@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.mob.defaults;
 
+import de.eldoria.bloodnight.DamageEvents;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
@@ -233,7 +234,7 @@ class DefaultMobsRunTest {
     @Test
     void assassinSpiderTakesNoFallDamage() {
         Spider spider = spawn("assassin_spider", Spider.class);
-        EntityDamageEvent fall = new EntityDamageEvent(
+        EntityDamageEvent fall = DamageEvents.of(
                 spider, DamageCause.FALL, DamageSource.builder(DamageType.FALL).build(), 4);
 
         server.getPluginManager().callEvent(fall);
@@ -281,7 +282,7 @@ class DefaultMobsRunTest {
         Entity blaze = coordinator.mob(spider).orElseThrow().extension();
         assertNotNull(blaze);
 
-        EntityDamageEvent suffocation = new EntityDamageEvent(
+        EntityDamageEvent suffocation = DamageEvents.of(
                 blaze,
                 EntityDamageEvent.DamageCause.SUFFOCATION,
                 DamageSource.builder(DamageType.IN_WALL).build(),
@@ -389,7 +390,7 @@ class DefaultMobsRunTest {
     }
 
     private static EntityDamageByEntityEvent hit(org.bukkit.entity.Entity damager, org.bukkit.entity.Entity victim) {
-        return new EntityDamageByEntityEvent(
+        return DamageEvents.byEntity(
                 damager,
                 victim,
                 EntityDamageEvent.DamageCause.ENTITY_ATTACK,

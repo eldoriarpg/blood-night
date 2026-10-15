@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Behaviour of a custom mob, generated and compiled at runtime from its node graph.
@@ -21,7 +22,10 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
  * One method per trigger. Every method is a no-op by default; the generated class overrides those its graph uses.
  * Each living mob has its own instance, constructed with its {@link MobContext}. This is the only type the plugin and
  * generated code share besides the context.
+ * <p>
+ * For the code BloodNight generates from mob graphs; may change in any version without notice.
  */
+@ApiStatus.Internal
 public interface CompiledBehaviour {
     /**
      * Called once when the mob has been spawned and outfitted; not when it is taken over again after its chunk loaded.

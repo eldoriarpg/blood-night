@@ -143,13 +143,13 @@ class BloodNightPlatformTest {
         behaviours.put(skeleton.getEntityId(), recorder("skeleton", calls));
 
         server.getPluginManager()
-                .callEvent(new EntityDamageEvent(
+                .callEvent(DamageEvents.of(
                         zombie,
                         EntityDamageEvent.DamageCause.FALL,
                         DamageSource.builder(DamageType.GENERIC).build(),
                         1));
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         skeleton,
                         zombie,
                         EntityDamageEvent.DamageCause.ENTITY_ATTACK,
@@ -159,7 +159,7 @@ class BloodNightPlatformTest {
                                 .build(),
                         1));
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         player,
                         zombie,
                         EntityDamageEvent.DamageCause.ENTITY_ATTACK,
@@ -169,7 +169,7 @@ class BloodNightPlatformTest {
                                 .build(),
                         1));
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         zombie,
                         skeleton,
                         EntityDamageEvent.DamageCause.ENTITY_ATTACK,
@@ -180,7 +180,7 @@ class BloodNightPlatformTest {
                         1));
         Arrow playerArrow = world.spawn(player.getLocation(), Arrow.class);
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         playerArrow,
                         zombie,
                         EntityDamageEvent.DamageCause.PROJECTILE,
@@ -191,7 +191,7 @@ class BloodNightPlatformTest {
                         1));
         Arrow skeletonArrow = world.spawn(skeleton.getLocation(), Arrow.class);
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         skeletonArrow,
                         player,
                         EntityDamageEvent.DamageCause.PROJECTILE,
@@ -295,12 +295,12 @@ class BloodNightPlatformTest {
         Zombie zombie = zombie();
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
 
-        EntityDamageEvent fall = new EntityDamageEvent(
+        EntityDamageEvent fall = DamageEvents.of(
                 zombie,
                 EntityDamageEvent.DamageCause.FALL,
                 DamageSource.builder(DamageType.FALL).build(),
                 1);
-        EntityDamageEvent fire = new EntityDamageEvent(
+        EntityDamageEvent fire = DamageEvents.of(
                 zombie,
                 EntityDamageEvent.DamageCause.FIRE,
                 DamageSource.builder(DamageType.IN_FIRE).build(),
@@ -348,7 +348,7 @@ class BloodNightPlatformTest {
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
         PlayerMock player = server.addPlayer();
 
-        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(
+        EntityDamageByEntityEvent damage = DamageEvents.byEntity(
                 player,
                 zombie,
                 EntityDamageEvent.DamageCause.ENTITY_ATTACK,
@@ -392,7 +392,7 @@ class BloodNightPlatformTest {
         PlayerMock player = server.addPlayer();
         Arrow arrow = world.spawn(player.getLocation(), Arrow.class);
 
-        EntityDamageByEntityEvent damage = new EntityDamageByEntityEvent(
+        EntityDamageByEntityEvent damage = DamageEvents.byEntity(
                 arrow,
                 zombie,
                 EntityDamageEvent.DamageCause.PROJECTILE,
@@ -518,7 +518,7 @@ class BloodNightPlatformTest {
         PlayerMock player = server.addPlayer();
 
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         player,
                         zombie,
                         EntityDamageEvent.DamageCause.ENTITY_ATTACK,
@@ -557,7 +557,7 @@ class BloodNightPlatformTest {
         behaviours.put(zombie.getEntityId(), compile(graph).instantiate(new TestContext(zombie)));
 
         server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(
+                .callEvent(DamageEvents.byEntity(
                         zombie,
                         skeleton,
                         EntityDamageEvent.DamageCause.ENTITY_ATTACK,

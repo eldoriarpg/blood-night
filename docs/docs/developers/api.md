@@ -53,10 +53,36 @@ bloodNight.customMobId(entity).ifPresent(id -> {
 | `isCustomMob(entity)`, `customMobId(entity)` | Whether an entity is a special mob, or rides or carries one |
 | `customMobIds()` | Every special mob on the server |
 | `spawn(mobId, location)` | Spawn a special mob |
+| `mob(mobId)`, `mob(entity)`, `mobs()` | A special mob's details: its names, entity type, store and weight |
+| `weight(world, mobId)` | How often a mob is picked in a world; 0 when it is switched off there |
+| `isEnabled(world)` | Whether the world has blood nights at all |
+| `world(world)` | How the world has blood nights: night times, how nights are picked, how strong enemies get |
 
 You can also get the service from Paper's services manager.
 
 On Folia, call `force` and `cancel` on the global region and `spawn` on the region of the location.
+
+### Mobs and worlds
+
+A mob's name comes in every language it has. `name(language)` picks the one to show, the same way BloodNight does:
+
+```java
+bloodNight.mob(entity).ifPresent(mob -> {
+    String name = mob.name(player.locale().getLanguage());
+    // mob.entityType(), mob.store(), mob.weight()
+});
+
+WorldInfo info = bloodNight.world(world);
+if (info.enabled() && !info.timed()) {
+    // blood nights begin at info.beginTick().getAsLong()
+}
+```
+
+`timed()` is true for worlds whose time stands still, like the Nether and the End. Blood nights there run by the
+clock, so they have no begin and end time.
+
+`CompiledBehaviour`, `MobContext` and `MovementPreset` are in the API for the code BloodNight writes from mob graphs.
+Don't use them: they can change in any version.
 
 ## Events
 
@@ -66,6 +92,9 @@ On Folia, call `force` and `cancel` on the global region and `spawn` on the regi
 | `BloodNightEndEvent` | A blood night ended. `reason()` says why. | No |
 | `CustomMobSpawnEvent` | A spawning mob is about to become a special mob | Yes. The mob stays normal. |
 | `CustomMobDeathEvent` | A special mob died. You can still change its drops. | No |
+| `CustomMobNightEndEvent` | A special mob's blood night is over and it is about to go or turn ordinary. `action(...)` changes what happens. | Yes. The mob stays as it is. |
+| `DeathActionEvent` | A death is about to cause lightning, thunder or a shockwave. `action()` says which. | Yes. That one is left out. |
+| `BloodNightSettingsChangeEvent` | The settings changed and are in use. `cause()` says why: `RELOAD`, `EDITOR`, `COMMAND`, `STORE` or `CONVERT`. | No |
 
 The night events are world events, so `getWorld()` tells you the world. `night()` gives the night's number.
 

@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.api.event.SettingsChangeCause;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.legacy.LegacyConverter;
 import de.eldoria.bloodnight.legacy.LegacyFolder;
@@ -81,7 +82,7 @@ final class ConvertCommand {
             plugin.configuration().replaceMobs(result.mobs());
             plugin.configuration().replaceItems(result.items());
             Replies.send(sender, "convert.done", arg("backup", backup));
-            ReloadCommand.reload(plugin, sender);
+            ReloadCommand.reload(plugin, sender, SettingsChangeCause.CONVERT);
         } catch (IOException e) {
             Replies.send(sender, "convert.failed", arg("reason", String.valueOf(e.getMessage())));
         }

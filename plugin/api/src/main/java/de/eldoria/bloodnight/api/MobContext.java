@@ -10,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -18,7 +19,10 @@ import org.jspecify.annotations.Nullable;
  * A behaviour runs on the thread of its mob's region. On Folia, other regions and world-wide state belong to other
  * threads; {@link #owns}, {@link #at} and {@link #global} let generated code stay on the right one. On Paper everything
  * is owned and runs right away.
+ * <p>
+ * For the code BloodNight generates from mob graphs; may change in any version without notice.
  */
+@ApiStatus.Internal
 public interface MobContext {
     /**
      * @return the mob itself

@@ -3,6 +3,10 @@ plugins {
     `maven-publish`
 }
 
+dependencies {
+    compileOnly(libs.jetbrains.annotations)
+}
+
 java {
     withSourcesJar()
     withJavadocJar()

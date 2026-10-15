@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.api.event.DeathAction;
+import de.eldoria.bloodnight.api.event.DeathActionEvent;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.death.DeathActions;
 import de.eldoria.bloodnight.configuration.elements.world.death.LightningSettings;
@@ -95,7 +97,7 @@ public final class DeathActionHandler implements Listener {
         if (nights.running(world).isEmpty()) return;
         WorldSettings worldSettings = settings.apply(world);
         if (worldSettings.mobSettings().spawning().ignoredReasons().contains(entity.getEntitySpawnReason())) return;
-        perform(entity.getLocation(), worldSettings.deathActions().mob());
+        perform(entity, worldSettings.deathActions().mob());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -104,7 +106,7 @@ public final class DeathActionHandler implements Listener {
         World world = player.getWorld();
         if (nights.running(world).isEmpty() || !regions.allows(player.getLocation(), RegionFlag.RULES)) return;
         PlayerDeathActions actions = settings.apply(world).deathActions().player();
-        perform(player.getLocation(), actions);
+        perform(player, actions);
         if (chance(actions.loseInventoryChance())) event.getDrops().clear();
         if (chance(actions.loseExperienceChance())) event.setDroppedExp(0);
         String name = player.getName();
@@ -130,15 +132,20 @@ public final class DeathActionHandler implements Listener {
         tasks.global(() -> run(actions.respawnCommands(), name, player, world));
     }
 
-    private void perform(Location location, DeathActions actions) {
-        if (chance(actions.shockwave().chance())) Shockwave.dispatch(location, actions.shockwave(), random);
-        lightning(location, actions.lightning());
+    private void perform(LivingEntity dead, DeathActions actions) {
+        Location location = dead.getLocation();
+        if (chance(actions.shockwave().chance()) && allowed(dead, DeathAction.SHOCKWAVE)) {
+            Shockwave.dispatch(location, actions.shockwave(), random);
+        }
+        lightning(dead, location, actions.lightning());
     }
 
-    private void lightning(Location location, LightningSettings lightning) {
+    private void lightning(LivingEntity dead, Location location, LightningSettings lightning) {
         if (lightning.lightning() && chance(lightning.lightningChance())) {
-            location.getWorld().strikeLightningEffect(location.clone().add(0, 10, 0));
-        } else if (lightning.thunder() && chance(lightning.thunderChance())) {
+            if (allowed(dead, DeathAction.LIGHTNING)) {
+                location.getWorld().strikeLightningEffect(location.clone().add(0, 10, 0));
+            }
+        } else if (lightning.thunder() && chance(lightning.thunderChance()) && allowed(dead, DeathAction.THUNDER)) {
             location.getWorld()
                     .getPlayers()
                     .forEach(player -> tasks.entityNow(player, () -> player.playSound(THUNDER)));
@@ -155,6 +162,15 @@ public final class DeathActionHandler implements Listener {
                                     .replace("{world}", world.getName()),
                             player));
         }
+    }
+
+    /**
+     * Asks other plugins whether a death action may happen.
+     */
+    private boolean allowed(LivingEntity dead, DeathAction action) {
+        DeathActionEvent event = new DeathActionEvent(dead, action);
+        server.getPluginManager().callEvent(event);
+        return !event.isCancelled();
     }
 
     private boolean chance(int percent) {

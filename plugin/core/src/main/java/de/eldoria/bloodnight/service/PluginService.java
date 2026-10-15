@@ -6,9 +6,13 @@
 package de.eldoria.bloodnight.service;
 
 import de.eldoria.bloodnight.api.BloodNightService;
+import de.eldoria.bloodnight.api.MobInfo;
 import de.eldoria.bloodnight.api.NightForecast;
 import de.eldoria.bloodnight.api.RunningNight;
+import de.eldoria.bloodnight.api.WorldInfo;
+import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.meta.MobOrigin;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.NightSelector;
@@ -39,6 +43,7 @@ public final class PluginService implements BloodNightService {
     private final MobCoordinator coordinator;
     private final Function<String, CustomMob> mobs;
     private final Supplier<? extends Collection<CustomMob>> allMobs;
+    private final Function<World, WorldSettings> worlds;
 
     /**
      * @param server      the server
@@ -47,6 +52,7 @@ public final class PluginService implements BloodNightService {
      * @param coordinator the living mobs
      * @param mobs        a mob by id, or {@code null}
      * @param allMobs     every mob
+     * @param worlds      a world's settings
      */
     public PluginService(
             Server server,
@@ -54,13 +60,15 @@ public final class PluginService implements BloodNightService {
             NightSelector selector,
             MobCoordinator coordinator,
             Function<String, CustomMob> mobs,
-            Supplier<? extends Collection<CustomMob>> allMobs) {
+            Supplier<? extends Collection<CustomMob>> allMobs,
+            Function<World, WorldSettings> worlds) {
         this.server = server;
         this.nights = nights;
         this.selector = selector;
         this.coordinator = coordinator;
         this.mobs = mobs;
         this.allMobs = allMobs;
+        this.worlds = worlds;
     }
 
     @Override
@@ -124,6 +132,61 @@ public final class PluginService implements BloodNightService {
     @Override
     public Set<String> customMobIds() {
         return allMobs.get().stream().map(CustomMob::id).collect(Collectors.toUnmodifiableSet());
+    }
+
+    @Override
+    public Optional<MobInfo> mob(String mobId) {
+        return Optional.ofNullable(mobs.apply(mobId)).map(PluginService::info);
+    }
+
+    @Override
+    public Optional<MobInfo> mob(Entity entity) {
+        return customMobId(entity).flatMap(this::mob);
+    }
+
+    @Override
+    public Collection<MobInfo> mobs() {
+        return allMobs.get().stream().map(PluginService::info).toList();
+    }
+
+    @Override
+    public int weight(World world, String mobId) {
+        CustomMob mob = mobs.apply(mobId);
+        return mob == null ? 0 : worlds.apply(world).mobSettings().spawning().weight(mob);
+    }
+
+    @Override
+    public boolean isEnabled(World world) {
+        return worlds.apply(world).enabled();
+    }
+
+    @Override
+    public WorldInfo world(World world) {
+        WorldSettings settings = worlds.apply(world);
+        boolean timed = world.isFixedTime();
+        return new WorldInfo(
+                settings.enabled(),
+                timed,
+                timed
+                        ? OptionalLong.empty()
+                        : OptionalLong.of(settings.nightSettings().begin()),
+                timed
+                        ? OptionalLong.empty()
+                        : OptionalLong.of(settings.nightSettings().end()),
+                settings.nightSelection().type().name(),
+                settings.mobSettings().healthMultiplier(),
+                settings.mobSettings().damageModifier());
+    }
+
+    private static MobInfo info(CustomMob mob) {
+        MobOrigin origin = mob.origin();
+        return new MobInfo(
+                mob.id(),
+                mob.attributes().name().style(),
+                mob.attributes().name().texts(),
+                mob.attributes().entityType(),
+                Optional.ofNullable(origin).map(MobOrigin::store),
+                mob.spawn().weight());
     }
 
     @Override

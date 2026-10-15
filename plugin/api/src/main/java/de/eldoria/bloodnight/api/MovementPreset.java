@@ -5,10 +5,15 @@
  */
 package de.eldoria.bloodnight.api;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * How a custom mob moves, on top of its vanilla AI. Only mobs that find paths (zombies, skeletons, spiders, ...) follow
  * a preset; others keep moving as they do.
+ * <p>
+ * For the code BloodNight generates from mob graphs; may change in any version without notice.
  */
+@ApiStatus.Internal
 public enum MovementPreset {
     /**
      * Moves as the vanilla mob does.

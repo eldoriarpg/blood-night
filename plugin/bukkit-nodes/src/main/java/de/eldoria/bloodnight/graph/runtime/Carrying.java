@@ -6,7 +6,6 @@
 package de.eldoria.bloodnight.graph.runtime;
 
 import de.eldoria.bloodnight.api.MobContext;
-import io.papermc.paper.entity.TeleportFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -120,7 +119,7 @@ public final class Carrying {
                         if (target instanceof Mob mob) mob.setAware(aware);
                         return;
                     }
-                    target.teleportAsync(next, TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+                    target.teleportAsync(next, TeleportCause.PLUGIN);
                     rise(context, target, step, remaining - 1, aware);
                 },
                 () -> {});

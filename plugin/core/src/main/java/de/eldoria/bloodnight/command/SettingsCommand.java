@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.api.event.SettingsChangeCause;
 import de.eldoria.bloodnight.configuration.ConfigFile;
 import de.eldoria.bloodnight.configuration.SettingsPaths;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
@@ -70,6 +71,7 @@ final class SettingsCommand {
                     plugin.configuration().replaceMain(changed);
                     plugin.applyTextSettings();
                     plugin.bloodPack().refresh();
+                    plugin.settingsChanged(SettingsChangeCause.COMMAND);
                     show(sender, "settings.set", path, changed);
                     return;
                 }
@@ -78,6 +80,7 @@ final class SettingsCommand {
                 WorldSettings changed = SettingsPaths.write(
                         plugin.configuration().worldConfig(world.get()), WorldSettings.class, path, value);
                 plugin.configuration().replaceWorld(world.get(), changed);
+                plugin.settingsChanged(SettingsChangeCause.COMMAND);
                 show(sender, "settings.set", path, changed);
             } catch (IllegalArgumentException e) {
                 Replies.send(

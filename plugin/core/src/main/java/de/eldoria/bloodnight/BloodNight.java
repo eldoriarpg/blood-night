@@ -12,6 +12,8 @@ import de.eldoria.bloodnight.announce.IntroDialog;
 import de.eldoria.bloodnight.announce.Messages;
 import de.eldoria.bloodnight.announce.Texts;
 import de.eldoria.bloodnight.api.BloodNightService;
+import de.eldoria.bloodnight.api.event.BloodNightSettingsChangeEvent;
+import de.eldoria.bloodnight.api.event.SettingsChangeCause;
 import de.eldoria.bloodnight.atmosphere.BloodPack;
 import de.eldoria.bloodnight.atmosphere.Haunting;
 import de.eldoria.bloodnight.atmosphere.Omens;
@@ -237,7 +239,8 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                 bloodNights::running,
                 tasks,
                 steering,
-                getLogger());
+                getLogger(),
+                getServer().getPluginManager()::callEvent);
         dispatcher = new TriggerDispatcher(
                 coordinator::behaviour, coordinator::extensionBehaviour, (trigger, entity, error) -> {
                     if (entity != null) {
@@ -253,7 +256,8 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                 selector,
                 coordinator,
                 id -> configuration.mobs().get(id),
-                () -> configuration.mobs().all());
+                () -> configuration.mobs().all(),
+                world -> configuration.worldConfig(world));
         getServer().getServicesManager().register(BloodNightService.class, service, this, ServicePriority.Normal);
         var plugins = getServer().getPluginManager();
         worldNames = new WorldNames(
@@ -670,6 +674,15 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         if (change.done().isEmpty()) return;
         configuration.replaceMobs(change.mobs());
         getLogger().info("Updated from the store: " + String.join(", ", change.done()));
+    }
+
+    /**
+     * Tells other plugins that the settings changed and are in use now. Call it on the global thread.
+     *
+     * @param cause what made them change
+     */
+    public void settingsChanged(SettingsChangeCause cause) {
+        getServer().getPluginManager().callEvent(new BloodNightSettingsChangeEvent(cause));
     }
 
     /**

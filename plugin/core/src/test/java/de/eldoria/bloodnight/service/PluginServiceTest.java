@@ -9,8 +9,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.api.BloodNightProvider;
 import de.eldoria.bloodnight.api.BloodNightService;
+import de.eldoria.bloodnight.api.MobInfo;
+import de.eldoria.bloodnight.api.WorldInfo;
+import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
@@ -22,6 +26,7 @@ import de.eldoria.bloodnight.night.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.graph.model.Graph;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
@@ -34,6 +39,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -43,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PluginServiceTest {
+    private WorldSettings settings = new WorldSettings();
     private static final NightTimes TIMES = new NightTimes(13_000, 23_000);
     private ServerMock server;
     private World world;
@@ -78,7 +85,8 @@ class PluginServiceTest {
                 selector,
                 coordinator,
                 id -> id.equals("zombie") ? zombie : null,
-                () -> List.of(zombie));
+                () -> List.of(zombie),
+                ignored -> settings);
         server.getServicesManager().register(BloodNightService.class, service, plugin, ServicePriority.Normal);
     }
 
@@ -115,6 +123,34 @@ class PluginServiceTest {
         assertEquals("zombie", service.customMobId(mob).orElseThrow());
         assertEquals(Set.of("zombie"), service.customMobIds());
         assertTrue(service.spawn("nothing", world.getSpawnLocation()).isEmpty());
+    }
+
+    @Test
+    void mobsAreDescribed() {
+        MobInfo info = service.mob("zombie").orElseThrow();
+        assertEquals(EntityType.ZOMBIE, info.entityType());
+        assertEquals("zombie", info.name("de"));
+        assertEquals(Optional.empty(), info.store());
+        assertEquals(List.of("zombie"), service.mobs().stream().map(MobInfo::id).toList());
+        assertEquals(Optional.empty(), service.mob("nothing"));
+
+        LivingEntity spawned = service.spawn("zombie", world.getSpawnLocation()).orElseThrow();
+        assertEquals("zombie", service.mob(spawned).orElseThrow().id());
+    }
+
+    @Test
+    void worldsTellTheirWeightAndNights() {
+        settings = EditorPayload.MAPPER.readValue(
+                "{\"enabled\":true,\"mobSettings\":{\"spawning\":{\"mobs\":{\"zombie\":0}}}}", WorldSettings.class);
+        assertEquals(0, service.weight(world, "zombie"));
+        assertEquals(0, service.weight(world, "nothing"));
+
+        WorldInfo info = service.world(world);
+        assertTrue(service.isEnabled(world));
+        assertEquals(service.isEnabled(world), info.enabled());
+        assertEquals(world.isFixedTime(), info.timed());
+        assertEquals(settings.nightSelection().type().name(), info.selection());
+        assertEquals(settings.mobSettings().healthMultiplier(), info.healthMultiplier());
     }
 
     @Test
