@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.store;
 
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.graph.model.Graph;
@@ -14,11 +15,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
+import tools.jackson.databind.node.DoubleNode;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MobStoreTest {
     private static final Graph OLD = Graph.builder().build();
@@ -57,6 +60,19 @@ class MobStoreTest {
         assertEquals(StoreState.CURRENT, store(OLD).state(installed));
         assertEquals(StoreState.OUTDATED, store(NEW).state(installed));
         assertEquals(StoreState.OWN, store(OLD).state(Mobs.zombie("mine", OLD)));
+    }
+
+    @Test
+    void aMobThatWentThroughTheEditorIsStillUnchanged() {
+        Graph decimals = Graph.builder()
+                .node("wait", NodeInstance.of("flow.delay").literal("duration", DoubleNode.valueOf(60.0)))
+                .build();
+        CustomMob installed = only(store(decimals).install(List.of(), "classic"));
+        String json = EditorPayload.MAPPER.writeValueAsString(installed);
+        CustomMob edited = EditorPayload.MAPPER.readValue(json.replace("60.0", "60"), CustomMob.class);
+
+        assertTrue(json.contains("60.0"));
+        assertEquals(StoreState.CURRENT, store(decimals).state(edited));
     }
 
     @Test
