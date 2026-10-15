@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -82,4 +83,41 @@ public interface BloodNightService {
      * @return the mob, or empty when no mob has that id or its entity type is not a living one
      */
     Optional<LivingEntity> spawn(String mobId, Location location);
+
+    /**
+     * @param mobId a mob's id
+     * @return the mob, if the server has one with that id
+     */
+    Optional<MobInfo> mob(String mobId);
+
+    /**
+     * @param entity any entity
+     * @return the special mob the entity is, if it is one
+     */
+    Optional<MobInfo> mob(Entity entity);
+
+    /**
+     * @return every special mob the server has
+     */
+    Collection<MobInfo> mobs();
+
+    /**
+     * @param world a world
+     * @param mobId a mob's id
+     * @return how often the mob is picked in that world compared to the others; 0 when it is switched off there or
+     *     there is no such mob
+     */
+    int weight(World world, String mobId);
+
+    /**
+     * @param world a world
+     * @return whether the world has blood nights at all
+     */
+    boolean isEnabled(World world);
+
+    /**
+     * @param world a world
+     * @return how the world has blood nights
+     */
+    WorldInfo world(World world);
 }

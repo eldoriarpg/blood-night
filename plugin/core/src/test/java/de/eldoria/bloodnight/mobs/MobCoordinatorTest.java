@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
+import de.eldoria.bloodnight.DamageEvents;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
@@ -134,7 +135,7 @@ class MobCoordinatorTest {
         coordinator.register(zombie, definitions.get("burner"));
 
         server.getScheduler().performOneTick();
-        EntityDamageEvent damage = new EntityDamageEvent(
+        EntityDamageEvent damage = DamageEvents.of(
                 zombie,
                 EntityDamageEvent.DamageCause.FALL,
                 DamageSource.builder(DamageType.GENERIC).build(),
@@ -152,7 +153,7 @@ class MobCoordinatorTest {
         Zombie plain = zombie();
 
         server.getScheduler().performOneTick();
-        EntityDamageEvent damage = new EntityDamageEvent(
+        EntityDamageEvent damage = DamageEvents.of(
                 plain,
                 EntityDamageEvent.DamageCause.FALL,
                 DamageSource.builder(DamageType.GENERIC).build(),
@@ -276,7 +277,7 @@ class MobCoordinatorTest {
         server.getScheduler().performOneTick();
         for (int i = 0; i < 2; i++) {
             server.getPluginManager()
-                    .callEvent(new EntityDamageEvent(
+                    .callEvent(DamageEvents.of(
                             zombie,
                             EntityDamageEvent.DamageCause.FALL,
                             DamageSource.builder(DamageType.GENERIC).build(),

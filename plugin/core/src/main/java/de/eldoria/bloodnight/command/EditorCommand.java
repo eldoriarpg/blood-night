@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.api.event.SettingsChangeCause;
 import de.eldoria.bloodnight.editor.EditorChecks;
 import de.eldoria.bloodnight.editor.EditorClient;
 import de.eldoria.bloodnight.editor.EditorItems;
@@ -338,7 +339,7 @@ final class EditorCommand {
                 arg("mobs", result.mobs().size()),
                 arg("macros", result.macros().size()),
                 arg("backup", backup));
-        ReloadCommand.reload(plugin, sender);
+        ReloadCommand.reload(plugin, sender, SettingsChangeCause.EDITOR);
         return true;
     }
 

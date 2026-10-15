@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.enchantments;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import de.eldoria.bloodnight.DamageEvents;
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
 import de.eldoria.bloodnight.night.BloodNights;
@@ -23,7 +24,6 @@ import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -104,7 +104,7 @@ class EnchantmentEffectsTest {
                 .withCausingEntity(attacker)
                 .withDirectEntity(attacker)
                 .build();
-        var event = new EntityDamageByEntityEvent(attacker, player, DamageCause.ENTITY_ATTACK, source, 10);
+        var event = DamageEvents.byEntity(attacker, player, DamageCause.ENTITY_ATTACK, source, 10);
         server.getPluginManager().callEvent(event);
         return event.getDamage();
     }
@@ -163,7 +163,7 @@ class EnchantmentEffectsTest {
                 .withCausingEntity(player)
                 .withDirectEntity(player)
                 .build();
-        var event = new EntityDamageByEntityEvent(player, victim, DamageCause.ENTITY_ATTACK, source, 10);
+        var event = DamageEvents.byEntity(player, victim, DamageCause.ENTITY_ATTACK, source, 10);
         server.getPluginManager().callEvent(event);
         return event.getDamage();
     }
@@ -192,13 +192,11 @@ class EnchantmentEffectsTest {
                 .withDirectEntity(arrow)
                 .build();
 
-        server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(arrow, zombie, DamageCause.PROJECTILE, source, 4));
+        server.getPluginManager().callEvent(DamageEvents.byEntity(arrow, zombie, DamageCause.PROJECTILE, source, 4));
         assertFalse(zombie.hasPotionEffect(PotionEffectType.GLOWING));
 
         bloodNight();
-        server.getPluginManager()
-                .callEvent(new EntityDamageByEntityEvent(arrow, zombie, DamageCause.PROJECTILE, source, 4));
+        server.getPluginManager().callEvent(DamageEvents.byEntity(arrow, zombie, DamageCause.PROJECTILE, source, 4));
         assertEquals(
                 2 * EnchantmentEffects.MARK_SECONDS_PER_LEVEL * 20,
                 zombie.getPotionEffect(PotionEffectType.GLOWING).getDuration());

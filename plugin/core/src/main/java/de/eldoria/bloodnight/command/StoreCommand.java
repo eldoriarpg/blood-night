@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.api.event.SettingsChangeCause;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.MobOrigin;
 import de.eldoria.bloodnight.store.MobStore;
@@ -118,7 +119,7 @@ final class StoreCommand {
         }
         plugin.configuration().replaceMobs(change.mobs());
         Replies.send(sender, done, arg("mobs", String.join(", ", change.done())));
-        ReloadCommand.reload(plugin, sender);
+        ReloadCommand.reload(plugin, sender, SettingsChangeCause.STORE);
     }
 
     private String state(CustomMob mob) {

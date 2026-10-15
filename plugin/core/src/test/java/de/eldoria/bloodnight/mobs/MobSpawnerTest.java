@@ -7,7 +7,9 @@ package de.eldoria.bloodnight.mobs;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.api.event.CustomMobNightEndEvent;
 import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
+import de.eldoria.bloodnight.api.event.NightEndAction;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
@@ -51,6 +53,7 @@ import org.mockbukkit.mockbukkit.ServerMock;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -109,7 +112,8 @@ class MobSpawnerTest {
                 world -> nights.running(world),
                 tasks,
                 Steering.NONE,
-                Logger.getLogger("test"));
+                Logger.getLogger("test"),
+                server.getPluginManager()::callEvent);
         NightSelection every = JsonMapper.builder()
                 .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY))
                 .build()
@@ -212,6 +216,28 @@ class MobSpawnerTest {
         at(24_000);
         server.getScheduler().performTicks(20);
         assertFalse(mob.isValid());
+    }
+
+    @Test
+    void otherPluginsCanKeepAMobPastItsNight() {
+        List<NightEndAction> planned = new ArrayList<>();
+        server.getPluginManager()
+                .registerEvents(
+                        new Listener() {
+                            @EventHandler
+                            void keep(CustomMobNightEndEvent event) {
+                                planned.add(event.action());
+                                event.action(NightEndAction.KEEP);
+                            }
+                        },
+                        MockBukkit.createMockPlugin());
+        at(13_000);
+        LivingEntity mob = spawned();
+        server.getScheduler().performTicks(40);
+        at(24_000);
+        server.getScheduler().performTicks(100);
+        assertTrue(mob.isValid());
+        assertEquals(List.of(NightEndAction.REMOVE), planned);
     }
 
     @Test

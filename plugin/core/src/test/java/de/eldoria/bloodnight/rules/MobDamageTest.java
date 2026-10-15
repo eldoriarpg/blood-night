@@ -5,13 +5,13 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.DamageEvents;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ class MobDamageTest extends RulesTest {
                 .withCausingEntity(attacker)
                 .withDirectEntity(attacker)
                 .build();
-        var event = new EntityDamageByEntityEvent(attacker, victim, DamageCause.ENTITY_ATTACK, source, 4);
+        var event = DamageEvents.byEntity(attacker, victim, DamageCause.ENTITY_ATTACK, source, 4);
         server.getPluginManager().callEvent(event);
         return event.getDamage();
     }

@@ -5,16 +5,21 @@
  */
 package de.eldoria.bloodnight.rules;
 
+import de.eldoria.bloodnight.api.event.DeathAction;
+import de.eldoria.bloodnight.api.event.DeathActionEvent;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
 import de.eldoria.bloodnight.tasks.Tasks;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +75,8 @@ class DeathActionHandlerTest extends RulesTest {
                 DamageSource.builder(DamageType.GENERIC).build(),
                 new ArrayList<>(List.of(new ItemStack(Material.DIAMOND))),
                 10,
-                "died");
+                Component.text("died"),
+                true);
         server.getPluginManager().callEvent(event);
         return event;
     }
@@ -83,6 +89,29 @@ class DeathActionHandlerTest extends RulesTest {
         assertEquals(0, event.getDroppedExp());
         server.getScheduler().performOneTick();
         assertEquals(List.of(player.getName() + " world"), commands);
+    }
+
+    @Test
+    void otherPluginsCanCancelDeathActions() {
+        settings = Settings.world("""
+                {"deathActions":{"player":{
+                  "lightning":{"lightning":true,"lightningChance":100,"thunder":false},
+                  "shockwave":{"chance":100}}}}
+                """);
+        List<DeathAction> asked = new ArrayList<>();
+        server.getPluginManager()
+                .registerEvents(
+                        new Listener() {
+                            @EventHandler
+                            void cancel(DeathActionEvent event) {
+                                asked.add(event.action());
+                                event.setCancelled(true);
+                            }
+                        },
+                        plugin);
+        bloodNight();
+        die();
+        assertEquals(List.of(DeathAction.SHOCKWAVE, DeathAction.LIGHTNING), asked);
     }
 
     @Test

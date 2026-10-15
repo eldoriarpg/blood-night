@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
+import de.eldoria.bloodnight.api.event.SettingsChangeCause;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;
@@ -27,16 +28,18 @@ final class ReloadCommand {
 
     @Executes
     void reload(CommandSender sender) {
-        plugin.tasks().globalNow(() -> reload(plugin, sender));
+        plugin.tasks().globalNow(() -> reload(plugin, sender, SettingsChangeCause.RELOAD));
     }
 
     /**
-     * Reads the configuration again, reports files that could not be read and recompiles every mob.
+     * Reads the configuration again, reports files that could not be read and recompiles every mob; once the mobs
+     * are switched over, tells other plugins the settings changed.
      *
      * @param plugin the plugin
      * @param sender who hears about it
+     * @param cause  what made the settings change
      */
-    static void reload(BloodNight plugin, CommandSender sender) {
+    static void reload(BloodNight plugin, CommandSender sender, SettingsChangeCause cause) {
         plugin.configuration().reload();
         plugin.configuration().mobs();
         plugin.configuration().items();
@@ -48,12 +51,14 @@ final class ReloadCommand {
                 .keySet()
                 .forEach(file -> Replies.send(sender, "reload.unreadable", arg("file", file)));
         Replies.send(sender, "reload.compiling");
-        plugin.recompile()
-                .thenAccept(result -> Replies.send(
-                        sender,
-                        "reload.compiled",
-                        arg("compiled", result.compiled().size()),
-                        arg("cached", result.fromCache()),
-                        arg("problems", result.problems().size())));
+        plugin.recompile().thenAccept(result -> {
+            Replies.send(
+                    sender,
+                    "reload.compiled",
+                    arg("compiled", result.compiled().size()),
+                    arg("cached", result.fromCache()),
+                    arg("problems", result.problems().size()));
+            plugin.settingsChanged(cause);
+        });
     }
 }

@@ -6,8 +6,10 @@
 package de.eldoria.bloodnight.integration.placeholders;
 
 import de.eldoria.bloodnight.api.BloodNightService;
+import de.eldoria.bloodnight.api.MobInfo;
 import de.eldoria.bloodnight.api.NightForecast;
 import de.eldoria.bloodnight.api.RunningNight;
+import de.eldoria.bloodnight.api.WorldInfo;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -18,8 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -137,6 +141,36 @@ class PlaceholdersTest {
         @Override
         public Optional<LivingEntity> spawn(String mobId, Location location) {
             return Optional.empty();
+        }
+
+        @Override
+        public Optional<MobInfo> mob(String mobId) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Optional<MobInfo> mob(Entity entity) {
+            return Optional.empty();
+        }
+
+        @Override
+        public Collection<MobInfo> mobs() {
+            return List.of();
+        }
+
+        @Override
+        public int weight(World target, String mobId) {
+            return 0;
+        }
+
+        @Override
+        public boolean isEnabled(World target) {
+            return true;
+        }
+
+        @Override
+        public WorldInfo world(World target) {
+            return new WorldInfo(true, false, OptionalLong.empty(), OptionalLong.empty(), "RANDOM", 2, 2);
         }
     }
 }

@@ -6,6 +6,8 @@
 package de.eldoria.bloodnight.mobs;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.api.event.CustomMobNightEndEvent;
+import de.eldoria.bloodnight.api.event.NightEndAction;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -16,6 +18,7 @@ import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -28,6 +31,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -61,6 +65,7 @@ public final class MobCoordinator {
     private final Tasks tasks;
     private final Steering steering;
     private final Logger logger;
+    private final Consumer<Event> events;
     private volatile Behaviours behaviours = Behaviours.empty();
 
     /**
@@ -80,6 +85,29 @@ public final class MobCoordinator {
             Tasks tasks,
             Steering steering,
             Logger logger) {
+        this(outfitter, items, definitions, runningNight, tasks, steering, logger, event -> {});
+    }
+
+    /**
+     * @param outfitter    turns entities into custom mobs
+     * @param items        the current item registry
+     * @param definitions  mob definition by id, or {@code null}
+     * @param runningNight the number of the blood night running in a world, if any
+     * @param tasks        runs work on the mobs' threads
+     * @param steering     gives mobs their movement
+     * @param logger       receives behaviour failures
+     * @param events       calls events for other plugins, e.g. when a mob's night is over
+     */
+    public MobCoordinator(
+            MobOutfitter outfitter,
+            Supplier<ItemRegistry> items,
+            Function<String, CustomMob> definitions,
+            Function<World, OptionalLong> runningNight,
+            Tasks tasks,
+            Steering steering,
+            Logger logger,
+            Consumer<Event> events) {
+        this.events = events;
         this.outfitter = outfitter;
         this.items = items;
         this.definitions = definitions;
@@ -233,13 +261,19 @@ public final class MobCoordinator {
             guard(mob, "mob.night_end", () -> mob.behaviour().onNightEnd());
         }
         tracked.seenNight = running;
-        if (tracked.age++ % SPREAD == tracked.offset && expired(mob, running)) {
-            if (mob.mob().spawn().nightEnd() == NightEnd.REVERT) {
-                revert(mob);
+        if (tracked.age++ % SPREAD == tracked.offset && !tracked.kept && expired(mob, running)) {
+            NightEndAction planned =
+                    mob.mob().spawn().nightEnd() == NightEnd.REVERT ? NightEndAction.REVERT : NightEndAction.REMOVE;
+            CustomMobNightEndEvent event =
+                    new CustomMobNightEndEvent(mob.entity(), mob.mob().id(), planned);
+            events.accept(event);
+            if (event.isCancelled() || event.action() == NightEndAction.KEEP) {
+                tracked.kept = true;
             } else {
-                despawn(mob);
+                if (event.action() == NightEndAction.REVERT) revert(mob);
+                else despawn(mob);
+                return false;
             }
-            return false;
         }
         guard(mob, "mob.tick", () -> mob.behaviour().onTick());
         return true;
@@ -342,6 +376,7 @@ public final class MobCoordinator {
     private static final class Tracked {
         private volatile ActiveMob active;
         private OptionalLong seenNight;
+        private boolean kept;
         private final int offset;
         private long age;
 
