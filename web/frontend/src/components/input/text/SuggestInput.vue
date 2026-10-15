@@ -133,15 +133,15 @@ function enter(): void {
             :key="entry.value"
             :aria-selected="index === active"
             :class="index === active ? 'bg-selected text-ink' : 'text-ink-muted'"
-            class="flex cursor-pointer items-baseline gap-2 rounded-control px-2 py-1.5 text-sm hover:bg-raised hover:text-ink"
+            class="flex cursor-pointer flex-col rounded-control px-2 py-1.5 text-sm hover:bg-raised hover:text-ink"
             role="option"
             tabindex="-1"
             @mousedown.prevent="take(entry)"
         >
-          <span class="min-w-0 flex-1 truncate">
+          <span class="min-w-0 break-words">
             <span v-for="(part, at) in parts(entry.label ?? entry.value)" :key="at" :class="part.marked ? 'font-semibold text-accent-text' : ''">{{ part.text }}</span>
           </span>
-          <span v-if="entry.label" class="max-w-48 shrink-0 truncate font-mono text-xs text-ink-faint">{{ entry.value }}</span>
+          <span v-if="entry.label" class="min-w-0 break-all font-mono text-xs text-ink-faint">{{ entry.value }}</span>
         </li>
       </ul>
     </Teleport>

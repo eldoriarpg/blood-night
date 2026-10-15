@@ -46,9 +46,12 @@ function remove(text: string): void {
 <template>
   <LabelledField v-slot="{id}" :label="label">
     <ul v-if="entries.length > 0" class="flex flex-wrap gap-1">
-      <li v-for="entry in entries" :key="entry" class="flex items-center gap-1 rounded-control border border-line-soft pl-2 font-mono text-sm">
-        <template v-if="labels?.[entry]"><span class="font-sans">{{ labels[entry] }}</span> <span class="text-xs text-ink-faint">{{ entry }}</span></template>
-        <template v-else>{{ entry }}</template>
+      <li v-for="entry in entries" :key="entry" class="flex min-w-0 max-w-full items-center gap-1 rounded-control border border-line-soft py-0.5 pl-2 font-mono text-sm">
+        <span v-if="labels?.[entry]" class="flex min-w-0 flex-col">
+          <span class="break-words font-sans">{{ labels[entry] }}</span>
+          <span class="break-all text-xs text-ink-faint">{{ entry }}</span>
+        </span>
+        <span v-else class="min-w-0 break-all">{{ entry }}</span>
         <MutedIconButton v-if="!readOnly" :label="t('editor.form.remove', {entry: labels?.[entry] ?? entry})" hover="error" icon="xmark" @click="remove(entry)"/>
       </li>
     </ul>
