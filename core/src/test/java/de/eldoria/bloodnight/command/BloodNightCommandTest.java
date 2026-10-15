@@ -80,7 +80,8 @@ class BloodNightCommandTest {
 
     @Test
     void eachSubcommandNeedsItsOwnPermission() {
-        List<String> subcommands = List.of("reload", "spawn", "problems", "source", "debug", "export", "night");
+        List<String> subcommands =
+                List.of("reload", "spawn", "problems", "source", "trigger", "debug", "export", "night");
         CommandNode<CommandSourceStack> root = tree();
         assertFalse(root.canUse(source(server.addPlayer())));
 
