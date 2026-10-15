@@ -442,6 +442,8 @@ export default {
     },
     settings: {
         fields: {
+            heartbeatLoudestWithin: 'Heartbeat loudest within (blocks)',
+            heartbeatRange: 'Heartbeat range (blocks)',
             closest: 'Closest (blocks)',
             farthest: 'Farthest (blocks)',
             fleeBelow: 'Flees below (share of health, 0 to 1)',

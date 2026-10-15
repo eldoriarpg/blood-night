@@ -101,6 +101,14 @@
           "type" : "boolean",
           "default" : true
         },
+        "heartbeatRange" : {
+          "type" : "number",
+          "default" : 30.0
+        },
+        "heartbeatLoudestWithin" : {
+          "type" : "number",
+          "default" : 5.0
+        },
         "screenEffect" : {
           "type" : "boolean",
           "default" : true
@@ -2267,6 +2275,8 @@
           "default" : {
             "darknessPulses" : true,
             "heartbeat" : true,
+            "heartbeatLoudestWithin" : 5.0,
+            "heartbeatRange" : 30.0,
             "particles" : [ {
               "particle" : "minecraft:ash",
               "perSecond" : 12

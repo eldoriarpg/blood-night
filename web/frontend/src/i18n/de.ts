@@ -446,6 +446,8 @@ export default {
     },
     settings: {
         fields: {
+            heartbeatLoudestWithin: 'Herzschlag am lautesten innerhalb (Blöcke)',
+            heartbeatRange: 'Herzschlag-Reichweite (Blöcke)',
             closest: 'Mindestens (Blöcke)',
             farthest: 'Höchstens (Blöcke)',
             fleeBelow: 'Flieht unter (Anteil am Leben, 0 bis 1)',
