@@ -81,6 +81,19 @@ announcement:
 
 Players get a message when they enter or leave a world where a blood night runs.
 
+## A first-night guide
+
+```yaml
+announcement:
+  introDialog: true
+```
+
+On their first blood night, each player sees a short window. It tells them what happens and what helps: find
+shelter, make light, stay together, wear good armor. A button closes it. Every player sees it only once, on any
+world. It shows in the player's own language, like BloodNight's other messages.
+
+Set `introDialog: false` to switch it off in a world.
+
 ## Sounds
 
 ```yaml

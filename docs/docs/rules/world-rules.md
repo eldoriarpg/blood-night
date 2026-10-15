@@ -10,8 +10,8 @@ The easiest way to change these settings is the [web editor](../editor/sessions.
 type. This page shows the files, so you know what the editor writes for you.
 :::
 
-A blood night can change the world itself: make it harder, let more monsters spawn, or bring a thunderstorm. Nothing
-changes at first. You choose what changes in `nightRules` in the world file:
+A blood night can change the world itself: make it harder, let more monsters spawn, or bring a thunderstorm. At first,
+only the creakings wake up. You choose what changes in `nightRules` in the world file:
 
 ```yaml
 nightRules:
@@ -22,6 +22,9 @@ nightRules:
   gameRules:
     minecraft:spawn_phantoms: "true"
   phantomsOnlyAtBloodNights: false
+  monstersDontBurn: false
+  creakingsWake: true
+  raids: UNCHANGED
 ```
 
 | Key | What it does |
@@ -32,6 +35,11 @@ nightRules:
 | `weather` | `CLEAR`, `RAIN` or `THUNDER` for the night. `UNCHANGED` leaves it. |
 | `gameRules` | Any game rules for the night, by their name. Write the value in quotes. |
 | `phantomsOnlyAtBloodNights` | With `true`, phantoms only come during blood nights. |
+| `monstersDontBurn` | With `true`, zombies and skeletons don't burn in the sun. This lasts through the dawn after the night. |
+| `creakingsWake` | With `true`, creakings hunt during the night. |
+| `raids` | `ALLOW` or `DENY` raids during the night. `UNCHANGED` leaves it. |
+
+The last three come from BloodNight's own data pack. It loads by itself.
 
 More monsters is a good way to make a blood night busy. BloodNight does not spawn mobs itself. It lets the game
 spawn more, so the server stays fast.

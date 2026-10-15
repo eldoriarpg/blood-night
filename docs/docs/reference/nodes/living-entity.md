@@ -43,13 +43,14 @@ Gets the specified attribute instance from the object.
 
 `living_entity.damage`
 
-Deals damage to an entity; with a source, the damage counts as dealt by it
+Deals damage to an entity; with a source, the damage counts as dealt by it, and with a type, it is that kind of damage, such as bloodnight:blood_curse
 
 | In | Type | What it is |
 |---|---|---|
 | Living Entity | Living Entity | Who takes the damage |
 | Amount | Number | The damage, in half hearts |
 | Source (optional) | Entity | Who deals it; without, the damage has no source |
+| Damage Type (optional) | Damage Type | The kind of damage, which decides armor, resistances and the death message; an ordinary attack when not given |
 
 Goes on with: **Next**
 

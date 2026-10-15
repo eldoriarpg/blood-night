@@ -36,7 +36,8 @@ class DropRulesTest {
             ConfigurationScope.WORLD,
             ValueModifier.VALUE,
             7,
-            VanillaDrops.defaultDrops());
+            VanillaDrops.defaultDrops(),
+            true);
 
     /**
      * Answers {@code nextInt(bound)} with the given values in order.

@@ -72,10 +72,15 @@ class MessagesTest {
         Set<String> expected = new HashSet<>(Set.of(
                 Messages.NIGHT_SLEEP,
                 Messages.COMMAND_BLOCKED,
+                Messages.BLOOD_CURSE_DEATH,
+                Messages.BLOOD_CURSE_DEATH + ".player",
                 NightKind.DRAGON.key("begin"),
                 NightKind.DRAGON.key("end")));
         for (NightKind kind : List.of(NightKind.NIGHT, NightKind.TIDE, NightKind.ECLIPSE)) {
             for (String text : List.of("begin", "end", "joined", "left", "name")) expected.add(kind.key(text));
+        }
+        for (String text : List.of("title", "danger", "help", "reward", "end", "ready")) {
+            expected.add("bloodnight.intro." + text);
         }
         Set<String> announcements = new HashSet<>(bundle("en").stringPropertyNames());
         announcements.removeIf(key ->
@@ -140,5 +145,14 @@ class MessagesTest {
                         "<red><name>",
                         Placeholder.component("name", Component.translatable("bloodnight.eclipse.name")));
         assertEquals("Blutfinsternis", render(title, Locale.GERMANY));
+    }
+
+    @Test
+    void theBloodCurseHasADeathMessageWithItsVictimAndKiller() {
+        Component death = Component.translatable(
+                Messages.BLOOD_CURSE_DEATH + ".player", Component.text("Steve"), Component.text("Zombie"));
+
+        assertEquals("Steve was claimed by the blood night through Zombie", render(death, Locale.US));
+        assertEquals("Steve wurde durch Zombie von der Blutnacht geholt", render(death, Locale.GERMANY));
     }
 }

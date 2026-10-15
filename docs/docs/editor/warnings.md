@@ -17,6 +17,7 @@ Draws a glowing shape on the ground. It grows from nothing to its full size whil
 | `AREA` | A flat square | The radius |
 | `PILLAR` | A thin column of light | The height |
 | `CROSS` | Two bars crossing on the ground | The radius |
+| `CIRCLE` | A flat ring on the ground | The radius |
 
 Pick a colour, a size and how many seconds it shows. Use the seconds your attack waits. Then the marker is full
 exactly when the attack lands.
@@ -36,11 +37,11 @@ is good for scares that only one player should notice.
 
 ## Limits
 
-A mob can show at most 8 warnings at the same time. More are skipped, so a loop cannot fill the world. Warnings are
+A mob can show at most 8 warnings at the same time. A marker counts once, whatever its shape. More are skipped, so a loop cannot fill the world. Warnings are
 never saved. After a restart, none are left over.
 
 ## In the ready-made mobs
 
-- The **thunder wizard** draws a red area where its lightning will strike.
-- The **unstable creeper** draws a red area around itself when it is hit. It explodes one second later.
+- The **thunder wizard** draws a red ring where its lightning will strike.
+- The **unstable creeper** draws a red ring around itself when it is hit. It explodes one second later.
 - The **ender creeper** shows a purple pillar where it will appear, one second before it arrives.

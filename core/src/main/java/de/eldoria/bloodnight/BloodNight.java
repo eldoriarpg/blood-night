@@ -5,13 +5,17 @@
  */
 package de.eldoria.bloodnight;
 
+import de.eldoria.bloodnight.advancements.BloodAdvancements;
 import de.eldoria.bloodnight.announce.Announcer;
+import de.eldoria.bloodnight.announce.IntroDialog;
 import de.eldoria.bloodnight.announce.Messages;
 import de.eldoria.bloodnight.api.BloodNightService;
 import de.eldoria.bloodnight.atmosphere.BloodPack;
-import de.eldoria.bloodnight.atmosphere.BloodSky;
 import de.eldoria.bloodnight.atmosphere.Haunting;
+import de.eldoria.bloodnight.atmosphere.Omens;
 import de.eldoria.bloodnight.atmosphere.PackMerge;
+import de.eldoria.bloodnight.atmosphere.TimelineGroup;
+import de.eldoria.bloodnight.atmosphere.Timelines;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
@@ -20,6 +24,9 @@ import de.eldoria.bloodnight.command.MobIds;
 import de.eldoria.bloodnight.command.StoreIds;
 import de.eldoria.bloodnight.configuration.Configuration;
 import de.eldoria.bloodnight.editor.RuntimeCatalog;
+import de.eldoria.bloodnight.enchantments.BloodEnchantments;
+import de.eldoria.bloodnight.enchantments.EnchantmentEffects;
+import de.eldoria.bloodnight.enchantments.NightGear;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.PluginNodes;
@@ -35,15 +42,18 @@ import de.eldoria.bloodnight.integration.worlds.WorldNames;
 import de.eldoria.bloodnight.legacy.LegacyFolder;
 import de.eldoria.bloodnight.metrics.BloodNightMetrics;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.mobs.DamageHandler;
 import de.eldoria.bloodnight.mobs.DropHandler;
 import de.eldoria.bloodnight.mobs.ForeignMobs;
+import de.eldoria.bloodnight.mobs.HeldPassengers;
 import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.mobs.MobDeaths;
 import de.eldoria.bloodnight.mobs.MobLifecycle;
 import de.eldoria.bloodnight.mobs.MobOutfitter;
 import de.eldoria.bloodnight.mobs.MobSpawner;
 import de.eldoria.bloodnight.mobs.PickupGuard;
+import de.eldoria.bloodnight.mobs.RewardLoot;
 import de.eldoria.bloodnight.mobs.TargetPolicy;
 import de.eldoria.bloodnight.mobs.movement.PaperSteering;
 import de.eldoria.bloodnight.night.BloodNights;
@@ -53,6 +63,7 @@ import de.eldoria.bloodnight.night.NightSelector;
 import de.eldoria.bloodnight.night.NightSkipGuard;
 import de.eldoria.bloodnight.night.NightStretch;
 import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.Prediction;
 import de.eldoria.bloodnight.rules.CommandBlocker;
 import de.eldoria.bloodnight.rules.CreeperGuard;
 import de.eldoria.bloodnight.rules.DeathActionHandler;
@@ -127,8 +138,9 @@ public final class BloodNight extends JavaPlugin {
     private Tasks tasks;
     private NightStretch stretch;
     private Announcer announcer;
-    private BloodSky bloodSky;
+    private Timelines timelines;
     private Haunting haunting;
+    private NightGear nightGear;
     private BloodPack bloodPack;
     private PluginService service;
     private @Nullable Object miniPlaceholders;
@@ -229,6 +241,7 @@ public final class BloodNight extends JavaPlugin {
         CommandText commandText = hookPlaceholders();
         plugins.registerEvents(new DamageHandler(), this);
         plugins.registerEvents(new TargetPolicy(), this);
+        plugins.registerEvents(new HeldPassengers(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
         plugins.registerEvents(new MobDeaths(plugins), this);
         ForeignMobs foreign =
@@ -242,8 +255,21 @@ public final class BloodNight extends JavaPlugin {
                         world -> bloodNights.running(world).isPresent(),
                         foreign,
                         RANDOM,
-                        regions),
+                        regions,
+                        RewardLoot::rollFor),
                 this);
+        plugins.registerEvents(new EnchantmentEffects(bloodNights, BloodEnchantments::level, tasks::entityNow), this);
+        plugins.registerEvents(
+                new BloodAdvancements(
+                        bloodNights,
+                        () -> configuration.main().advancements(),
+                        mobStore.store().entries().stream().map(StoreEntry::id).collect(Collectors.toSet()),
+                        DefaultMobs.BLOOD_DRAGON,
+                        BloodAdvancements.progress(getServer()::getAdvancement, tasks::entityNow),
+                        BloodEnchantments::level),
+                this);
+        nightGear = new NightGear(getServer(), bloodNights, BloodEnchantments::level, tasks::entityNow);
+        plugins.registerEvents(nightGear, this);
         plugins.registerEvents(
                 new PickupGuard(
                         world -> bloodNights.running(world).isPresent(),
@@ -320,6 +346,13 @@ public final class BloodNight extends JavaPlugin {
                 worldNames::name,
                 regions);
         plugins.registerEvents(announcer, this);
+        plugins.registerEvents(
+                new IntroDialog(
+                        bloodNights,
+                        world -> configuration.worldConfig(world).announcement(),
+                        (entity, ticks, work) -> tasks.entityLater(entity, ticks, work, () -> {}),
+                        IntroDialog::show),
+                this);
         phantoms = new PhantomForce(
                 bloodNights,
                 world -> configuration.worldConfig(world).mobSettings().forcePhantoms(),
@@ -357,25 +390,43 @@ public final class BloodNight extends JavaPlugin {
                         RANDOM,
                         regions),
                 this);
-        bloodSky = new BloodSky(
-                bloodNights, world -> configuration.worldConfig(world).atmosphere(), BloodSky.silently(getServer()));
-        plugins.registerEvents(bloodSky, this);
+        timelines = new Timelines(
+                bloodNights,
+                world -> TimelineGroup.of(
+                        configuration.worldConfig(world).atmosphere(),
+                        configuration.worldConfig(world).nightRules()),
+                Timelines.silently(getServer()));
+        plugins.registerEvents(timelines, this);
+        Omens omens = new Omens(
+                getServer(),
+                world -> configuration.worldConfig(world).enabled()
+                        ? selector.next(world, 1).map(Prediction::ticksUntil).orElse(-1L)
+                        : -1L,
+                world -> configuration.worldConfig(world).atmosphere(),
+                timelines,
+                tasks::entityNow,
+                RANDOM,
+                Omens::runTo);
         haunting = new Haunting(
                 getServer(),
                 bloodNights,
                 world -> configuration.worldConfig(world).atmosphere(),
                 tasks,
                 getServer()::createWorldBorder,
-                regions);
+                regions,
+                player -> BloodEnchantments.wears(player, BloodEnchantments.STEADY_HEART),
+                announcer::darken);
         plugins.registerEvents(haunting, this);
         mergePack();
         bloodPack = new BloodPack(() -> configuration.main().resourcePack(), tasks, getLogger(), () -> !packTargets()
                 .isEmpty());
         plugins.registerEvents(bloodPack, this);
         bloodPack.refresh();
-        tasks.global(() -> bloodSky.restore(getServer().getWorlds()));
+        tasks.global(() -> timelines.restore(getServer().getWorlds()));
         tasks.global(() -> worldRules.restoreLeftovers(getServer().getWorlds()));
         tasks.globalTimer(Haunting.STEP, haunting::tick);
+        tasks.globalTimer(Omens.STEP, omens::tick);
+        tasks.globalTimer(NightGear.STEP, nightGear::tick);
         tasks.globalTimer(20, announcer::tick);
         UpdateNotice updates = new UpdateNotice(
                 LynaSource.bloodNight(),
@@ -475,8 +526,9 @@ public final class BloodNight extends JavaPlugin {
         if (bloodNights != null) bloodNights.endAll(getServer().getWorlds());
         if (announcer != null) announcer.clear();
         if (haunting != null) haunting.clear();
-        if (bloodSky != null)
-            bloodSky.clear(getServer().getWorlds(), getServer().isGlobalTickThread());
+        if (nightGear != null) nightGear.clear();
+        if (timelines != null)
+            timelines.clear(getServer().getWorlds(), getServer().isGlobalTickThread());
         if (miniPlaceholders != null) MiniExpansion.unregister(miniPlaceholders);
         if (phantoms != null) phantoms.restoreAll(getServer().getOnlinePlayers());
         messages.unregister();

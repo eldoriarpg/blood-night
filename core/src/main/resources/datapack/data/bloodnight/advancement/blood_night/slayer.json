@@ -1,0 +1,30 @@
+{
+  "parent": "bloodnight:blood_night/survive",
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.bloodnight.slayer.description",
+      "fallback": "Kill 10 special mobs in one blood night"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:iron_sword"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.bloodnight.slayer.title",
+      "fallback": "Night Slayer"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ]
+}

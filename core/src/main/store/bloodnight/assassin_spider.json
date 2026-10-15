@@ -5,8 +5,8 @@
     "de": "Meuchelspinne"
   },
   "descriptions": {
-    "en": "Leaps onto you from up to 12 blocks away, even up into trees. Takes no fall damage.",
-    "de": "Springt dich aus bis zu 12 Blöcken Entfernung an, auch hoch in Bäume. Nimmt keinen Fallschaden."
+    "en": "Leaps onto you from up to 16 blocks away, even up into trees. Below you, it hops back first to leap from the side. Takes no fall damage.",
+    "de": "Springt dich aus bis zu 16 Blöcken Entfernung an, auch hoch in Bäume. Unter dir springt es erst zurück, um von der Seite anzuspringen. Nimmt keinen Fallschaden."
   },
   "requires": []
 }

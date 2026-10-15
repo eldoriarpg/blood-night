@@ -24,7 +24,9 @@ import java.util.TreeMap;
 /**
  * Builds the plugin's own store at build time: the mobs of {@link DefaultMobs}, each joined with its hand-written
  * description ({@code <id>.json}: pack, names, descriptions, requirements) into a {@link MobPackage}, and the
- * packs of {@code packs.json}. The result is committed in {@code src/main/resources/store/bloodnight}. Also writes the mob names for the resource pack ({@code <language>_<region>.json}).
+ * packs of {@code packs.json}. The result is committed in {@code src/main/resources/store/bloodnight}. Also writes the
+ * resource pack's language files ({@code <language>_<region>.json}): the mob names, and the data pack's texts (see
+ * {@link PackTexts}).
  */
 public final class StoreGenerator {
     private static final Map<String, String> PACK_LANGUAGES = Map.of("en", "en_us", "de", "de_de");
@@ -36,10 +38,14 @@ public final class StoreGenerator {
      *
      * @param descriptions the hand-written descriptions and {@code packs.json}
      * @param store        where the store is written
-     * @param lang         where the resource pack's name files are written
-     * @throws IllegalStateException when a default mob has no description or a description no mob
+     * @param lang         where the resource pack's language files are written
+     * @param datapack     the plugin's data pack, whose texts go into the language files
+     * @param texts        the data pack's texts in languages other than English
+     * @throws IllegalStateException when a default mob has no description or a description no mob, or a language
+     *     file does not cover the data pack's texts
      */
-    public static void generate(Path descriptions, Path store, Path lang) throws IOException {
+    public static void generate(Path descriptions, Path store, Path lang, Path datapack, Path texts)
+            throws IOException {
         List<StorePack> packs = EditorPayload.MAPPER.readValue(
                 Files.readString(descriptions.resolve("packs.json")), new TypeReference<List<StorePack>>() {});
         Map<String, Description> described = new TreeMap<>();
@@ -80,7 +86,7 @@ public final class StoreGenerator {
                         packs,
                         packages.stream().map(MobPackage::id).toList()),
                 packages);
-        writeLang(lang, packages);
+        writeLang(lang, packages, datapack, texts);
     }
 
     private static Description described(Map<String, Description> described, String id) {
@@ -89,14 +95,19 @@ public final class StoreGenerator {
         return description;
     }
 
-    private static void writeLang(Path lang, List<MobPackage> packages) throws IOException {
+    private static void writeLang(Path lang, List<MobPackage> packages, Path datapack, Path texts) throws IOException {
         Files.createDirectories(lang);
+        Map<String, String> english = PackTexts.english(datapack);
         for (var language : PACK_LANGUAGES.entrySet()) {
             Map<String, String> names = new LinkedHashMap<>();
             for (MobPackage mobPackage : packages) {
                 String name = mobPackage.names().get(language.getKey());
                 if (name != null) names.put("bloodnight.mob." + mobPackage.id(), name);
             }
+            names.putAll(
+                    language.getKey().equals("en")
+                            ? english
+                            : PackTexts.translated(texts, language.getKey(), english.keySet()));
             Files.writeString(
                     lang.resolve(language.getValue() + ".json"),
                     EditorPayload.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(names) + "\n");

@@ -16,6 +16,7 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,9 +37,9 @@ class ArmorCalmTest {
 
     @Test
     void fullStrongIntactArmorIsFullyCalm() {
-        assertEquals(1, ArmorCalm.of(20, INTACT), 1e-9);
-        assertEquals(0.35, ArmorCalm.of(7, INTACT), 1e-9);
-        assertEquals(0, ArmorCalm.of(0, Map.of()), 1e-9);
+        assertEquals(1, ArmorCalm.of(20, INTACT, Set.of()), 1e-9);
+        assertEquals(0.35, ArmorCalm.of(7, INTACT, Set.of()), 1e-9);
+        assertEquals(0, ArmorCalm.of(0, Map.of(), Set.of()), 1e-9);
     }
 
     @Test
@@ -55,7 +56,8 @@ class ArmorCalmTest {
                                 EquipmentSlot.LEGS,
                                 1.0,
                                 EquipmentSlot.FEET,
-                                1.0)),
+                                1.0),
+                        Set.of()),
                 1e-9);
         assertEquals(
                 0.6,
@@ -69,7 +71,8 @@ class ArmorCalmTest {
                                 EquipmentSlot.LEGS,
                                 1.0,
                                 EquipmentSlot.FEET,
-                                1.0)),
+                                1.0),
+                        Set.of()),
                 1e-9);
     }
 
@@ -85,5 +88,14 @@ class ArmorCalmTest {
     @Test
     void playersWithoutArmorAreNotCalm() {
         assertEquals(0, ArmorCalm.of(server.addPlayer()), 1e-9);
+    }
+
+    @Test
+    void nightWardPiecesCountDouble() {
+        Map<EquipmentSlot, Double> chestOnly = Map.of(EquipmentSlot.CHEST, 1.0);
+
+        assertEquals(0.4, ArmorCalm.of(20, chestOnly, Set.of()), 1e-9);
+        assertEquals(0.8, ArmorCalm.of(20, chestOnly, Set.of(EquipmentSlot.CHEST)), 1e-9);
+        assertEquals(1, ArmorCalm.of(20, INTACT, Set.of(EquipmentSlot.CHEST)), 1e-9);
     }
 }

@@ -42,6 +42,7 @@ Settings for the whole server.
 | `foreignMobs.rules` | true or false | `false` |
 | `foreignMobs.markerKeys` | list of text | `[]` |
 | `setup.done` | true or false | `false` |
+| `advancements` | true or false | `true` |
 
 The whole file with its defaults:
 
@@ -73,6 +74,7 @@ foreignMobs:
   wrap: false
 setup:
   done: false
+advancements: true
 ```
 
 ## worlds/&lt;world id&gt;.yml
@@ -125,7 +127,15 @@ Settings for one world. Every world has its own file.
 | `announcement.effect.effect` | text | `minecraft:darkness` |
 | `announcement.effect.seconds` | whole number | `5` |
 | `announcement.joinWarning` | true or false | `true` |
+| `announcement.introDialog` | true or false | `true` |
 | `atmosphere.sky` | true or false | `true` |
+| `atmosphere.redDawn` | true or false | `true` |
+| `atmosphere.thickFog` | true or false | `false` |
+| `atmosphere.darkness` | true or false | `false` |
+| `atmosphere.worldParticles` | true or false | `true` |
+| `atmosphere.omen` | true or false | `true` |
+| `atmosphere.omenSounds` | true or false | `true` |
+| `atmosphere.restlessAnimals` | true or false | `true` |
 | `atmosphere.vignette` | true or false | `true` |
 | `atmosphere.darknessPulses` | true or false | `true` |
 | `atmosphere.rain` | true or false | `false` |
@@ -180,12 +190,16 @@ Settings for one world. Every world has its own file.
 | `worldDrops.vanilla.xpValue` | number |  |
 | `worldDrops.vanilla.excludedTypes` | list of `ACACIA_BOAT`, `ACACIA_CHEST_BOAT`, `ALLAY`, `AREA_EFFECT_CLOUD`, `ARMADILLO`, `ARMOR_STAND`, `ARROW`, `AXOLOTL`, `BAMBOO_CHEST_RAFT`, `BAMBOO_RAFT`, `BAT`, `BEE`, `BIRCH_BOAT`, `BIRCH_CHEST_BOAT`, `BLAZE`, `BLOCK_DISPLAY`, `BOGGED`, `BREEZE`, `BREEZE_WIND_CHARGE`, `CAMEL`, `CAMEL_HUSK`, `CAT`, `CAVE_SPIDER`, `CHERRY_BOAT`, `CHERRY_CHEST_BOAT`, `CHEST_MINECART`, `CHICKEN`, `COD`, `COMMAND_BLOCK_MINECART`, `COPPER_GOLEM`, `COW`, `CREAKING`, `CREEPER`, `DARK_OAK_BOAT`, `DARK_OAK_CHEST_BOAT`, `DOLPHIN`, `DONKEY`, `DRAGON_FIREBALL`, `DROWNED`, `EGG`, `ELDER_GUARDIAN`, `END_CRYSTAL`, `ENDER_DRAGON`, `ENDER_PEARL`, `ENDERMAN`, `ENDERMITE`, `EVOKER`, `EVOKER_FANGS`, `EXPERIENCE_BOTTLE`, `EXPERIENCE_ORB`, `EYE_OF_ENDER`, `FALLING_BLOCK`, `FIREBALL`, `FIREWORK_ROCKET`, `FISHING_BOBBER`, `FOX`, `FROG`, `FURNACE_MINECART`, `GHAST`, `GIANT`, `GLOW_ITEM_FRAME`, `GLOW_SQUID`, `GOAT`, `GUARDIAN`, `HAPPY_GHAST`, `HOGLIN`, `HOPPER_MINECART`, `HORSE`, `HUSK`, `ILLUSIONER`, `INTERACTION`, `IRON_GOLEM`, `ITEM`, `ITEM_DISPLAY`, `ITEM_FRAME`, `JUNGLE_BOAT`, `JUNGLE_CHEST_BOAT`, `LEASH_KNOT`, `LIGHTNING_BOLT`, `LINGERING_POTION`, `LLAMA`, `LLAMA_SPIT`, `MAGMA_CUBE`, `MANGROVE_BOAT`, `MANGROVE_CHEST_BOAT`, `MANNEQUIN`, `MARKER`, `MINECART`, `MOOSHROOM`, `MULE`, `NAUTILUS`, `OAK_BOAT`, `OAK_CHEST_BOAT`, `OCELOT`, `OMINOUS_ITEM_SPAWNER`, `PAINTING`, `PALE_OAK_BOAT`, `PALE_OAK_CHEST_BOAT`, `PANDA`, `PARCHED`, `PARROT`, `PHANTOM`, `PIG`, `PIGLIN`, `PIGLIN_BRUTE`, `PILLAGER`, `PLAYER`, `POLAR_BEAR`, `PUFFERFISH`, `RABBIT`, `RAVAGER`, `SALMON`, `SHEEP`, `SHULKER`, `SHULKER_BULLET`, `SILVERFISH`, `SKELETON`, `SKELETON_HORSE`, `SLIME`, `SMALL_FIREBALL`, `SNIFFER`, `SNOW_GOLEM`, `SNOWBALL`, `SPAWNER_MINECART`, `SPECTRAL_ARROW`, `SPIDER`, `SPLASH_POTION`, `SPRUCE_BOAT`, `SPRUCE_CHEST_BOAT`, `SQUID`, `STRAY`, `STRIDER`, `SULFUR_CUBE`, `TADPOLE`, `TEXT_DISPLAY`, `TNT`, `TNT_MINECART`, `TRADER_LLAMA`, `TRIDENT`, `TROPICAL_FISH`, `TURTLE`, `VEX`, `VILLAGER`, `VINDICATOR`, `WANDERING_TRADER`, `WARDEN`, `WIND_CHARGE`, `WITCH`, `WITHER`, `WITHER_SKELETON`, `WITHER_SKULL`, `WOLF`, `ZOGLIN`, `ZOMBIE`, `ZOMBIE_HORSE`, `ZOMBIE_NAUTILUS`, `ZOMBIE_VILLAGER`, `ZOMBIFIED_PIGLIN`, `UNKNOWN` |  |
 | `worldDrops.vanilla.excludedReasons` | list of `NATURAL`, `JOCKEY`, `CHUNK_GEN`, `SPAWNER`, `TRIAL_SPAWNER`, `EGG`, `SPAWNER_EGG`, `LIGHTNING`, `BUILD_SNOWMAN`, `BUILD_IRONGOLEM`, `BUILD_COPPERGOLEM`, `BUILD_WITHER`, `VILLAGE_DEFENSE`, `VILLAGE_INVASION`, `BREEDING`, `SLIME_SPLIT`, `REINFORCEMENTS`, `NETHER_PORTAL`, `DISPENSE_EGG`, `INFECTION`, `CURED`, `OCELOT_BABY`, `SILVERFISH_BLOCK`, `MOUNT`, `TRAP`, `ENDER_PEARL`, `SHOULDER_ENTITY`, `DROWNED`, `SHEARED`, `EXPLOSION`, `RAID`, `PATROL`, `BEEHIVE`, `PIGLIN_ZOMBIFIED`, `SPELL`, `FROZEN`, `METAMORPHOSIS`, `DUPLICATION`, `COMMAND`, `ENCHANTMENT`, `OMINOUS_ITEM_SPAWNER`, `BUCKET`, `POTION_EFFECT`, `REANIMATE`, `REHYDRATION`, `CUSTOM`, `DEFAULT` |  |
+| `worldDrops.rewardLoot` | true or false |  |
 | `nightRules.difficulty` | `UNCHANGED`, `PEACEFUL`, `EASY`, `NORMAL`, `HARD` | `UNCHANGED` |
 | `nightRules.monsterSpawnLimit` | whole number | `-1` |
 | `nightRules.monsterTicksPerSpawn` | whole number | `-1` |
 | `nightRules.weather` | `UNCHANGED`, `CLEAR`, `RAIN`, `THUNDER` | `UNCHANGED` |
 | `nightRules.gameRules` | map | `{}` |
 | `nightRules.phantomsOnlyAtBloodNights` | true or false | `false` |
+| `nightRules.monstersDontBurn` | true or false | `false` |
+| `nightRules.creakingsWake` | true or false | `true` |
+| `nightRules.raids` | `UNCHANGED`, `ALLOW`, `DENY` | `UNCHANGED` |
 
 The whole file with its defaults:
 
@@ -261,18 +275,24 @@ announcement:
     effect: minecraft:darkness
     enabled: true
     seconds: 5
+  introDialog: true
   joinWarning: true
 atmosphere:
+  darkness: false
   darknessPulses: true
   heartbeat: true
   heartbeatLoudestWithin: 5
   heartbeatRange: 30
+  omen: true
+  omenSounds: true
   particles:
     - particle: minecraft:ash
       perSecond: 12
     - particle: minecraft:crimson_spore
       perSecond: 4
   rain: false
+  redDawn: true
+  restlessAnimals: true
   scares:
     chancePerMinute: 10
     enabled: false
@@ -282,7 +302,9 @@ atmosphere:
       - GUARDIAN
   screenEffect: true
   sky: true
+  thickFog: false
   vignette: true
+  worldParticles: true
 soundSettings:
   ambience:
     - pitches:
@@ -422,12 +444,16 @@ worldDrops:
       - SPAWNER
       - TRIAL_SPAWNER
       - NETHER_PORTAL
+  rewardLoot: true
 nightRules:
+  creakingsWake: true
   difficulty: UNCHANGED
   gameRules: {}
   monsterSpawnLimit: -1
   monsterTicksPerSpawn: -1
+  monstersDontBurn: false
   phantomsOnlyAtBloodNights: false
+  raids: UNCHANGED
   weather: UNCHANGED
 ```
 

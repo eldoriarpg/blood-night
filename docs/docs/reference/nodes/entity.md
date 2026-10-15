@@ -8,6 +8,35 @@ sidebar_position: 4
 
 # Entities
 
+## Carry
+
+`entity.carry`
+
+Puts an entity on the carrier; it cannot get off on its own, e.g. by sneaking, until it is dropped or the carrier dies
+
+| In | Type | What it is |
+|---|---|---|
+| Carrier | Entity | Who carries |
+| Passenger | Entity | Who is carried |
+
+| Out | Type | What it is |
+|---|---|---|
+| Result | Boolean | True: the carrier now carries it |
+
+Goes on with: **Next**
+
+## Drop Passengers
+
+`entity.drop_passengers`
+
+Lets go of everything an entity carries
+
+| In | Type | What it is |
+|---|---|---|
+| Carrier | Entity | Who lets go |
+
+Goes on with: **Next**
+
 ## Entities Near Entity
 
 `entity.nearby_entities`
@@ -77,6 +106,20 @@ Gets the ItemStack at the given equipment slot in the inventory.
 | Out | Type | What it is |
 |---|---|---|
 | Result | Item | the ItemStack in the given slot |
+
+## Lift
+
+`entity.lift`
+
+Moves an entity straight up with everything it carries, a little each tick; a mob does not steer while it rises. Goes on right away, the rise takes its time
+
+| In | Type | What it is |
+|---|---|---|
+| Entity | Entity | Who rises |
+| Height | Number | How far up, in blocks; it stops early below a block |
+| Seconds | Number | How long the rise takes |
+
+Goes on with: **Next**
 
 ## Mutate Attribute
 

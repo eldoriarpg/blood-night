@@ -16,8 +16,9 @@ import java.util.Objects;
 
 /**
  * Registers what has to exist before the worlds load: the data pack in the jar's {@code datapack} folder, holding the
- * blood night world clock and its timeline. Clients receive both when they join, so a blood night can recolour the
- * sky by moving the clock.
+ * blood night world clocks and their timelines, the damage type {@code bloodnight:blood_curse}, the enchantments and
+ * the reward loot table. Clients receive the clocks and timelines when they join, so a blood night can change the sky
+ * by moving a clock.
  */
 public final class BloodNightBootstrap implements PluginBootstrap {
     @Override
@@ -28,11 +29,10 @@ public final class BloodNightBootstrap implements PluginBootstrap {
                         .discoverPack(
                                 Objects.requireNonNull(getClass().getResource("/datapack"))
                                         .toURI(),
-                                "sky",
-                                pack -> pack.title(Component.text("BloodNight sky"))
-                                        .autoEnableOnServerStart(true));
+                                "data",
+                                pack -> pack.title(Component.text("BloodNight")).autoEnableOnServerStart(true));
             } catch (URISyntaxException | IOException e) {
-                context.getLogger().error("The blood night sky could not be registered", e);
+                context.getLogger().error("The BloodNight data pack could not be registered", e);
             }
         }));
     }

@@ -7,8 +7,8 @@
     "en" : "Assassin Spider"
   },
   "descriptions" : {
-    "de" : "Springt dich aus bis zu 12 Blöcken Entfernung an, auch hoch in Bäume. Nimmt keinen Fallschaden.",
-    "en" : "Leaps onto you from up to 12 blocks away, even up into trees. Takes no fall damage."
+    "de" : "Springt dich aus bis zu 16 Blöcken Entfernung an, auch hoch in Bäume. Unter dir springt es erst zurück, um von der Seite anzuspringen. Nimmt keinen Fallschaden.",
+    "en" : "Leaps onto you from up to 16 blocks away, even up into trees. Below you, it hops back first to leap from the side. Takes no fall damage."
   },
   "requires" : [ ],
   "mob" : {
@@ -28,11 +28,11 @@
     },
     "behaviour" : {
       "nodes" : {
-        "add_13" : {
+        "add_22" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "multiply_12",
+              "node" : "multiply_21",
               "port" : "result"
             }
           },
@@ -40,44 +40,106 @@
             "second" : 0.75
           }
         },
-        "and_6" : {
+        "add_5" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_0",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.01
+          }
+        },
+        "add_7" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "and_12" : {
           "type" : "logic.and",
           "inputs" : {
             "first" : {
-              "node" : "greater_4",
+              "node" : "greater_10",
               "port" : "result"
             },
             "second" : {
-              "node" : "less_5",
+              "node" : "less_11",
               "port" : "result"
             }
           }
         },
-        "branch_20" : {
+        "and_15" : {
+          "type" : "logic.and",
+          "inputs" : {
+            "first" : {
+              "node" : "greater_13",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "less_14",
+              "port" : "result"
+            }
+          }
+        },
+        "branch_34" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_19",
+              "node" : "and_12",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "mutate_7", "spawn_particle_18" ]
+            "false" : [ "branch_40" ],
+            "true" : [ "branch_36" ]
           }
         },
-        "branch_21" : {
+        "branch_36" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "and_6",
+              "node" : "cooldown_35",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_20" ]
+            "true" : [ "mutate_28" ]
           }
         },
-        "branch_22" : {
+        "branch_39" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_38",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_16", "spawn_particle_37" ]
+          }
+        },
+        "branch_40" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "and_15",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_39" ]
+          }
+        },
+        "branch_41" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -86,26 +148,38 @@
             }
           },
           "executions" : {
-            "true" : [ "branch_21" ]
+            "true" : [ "branch_34" ]
           }
         },
-        "branch_24" : {
+        "branch_43" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_23",
+              "node" : "is_null_42",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_22" ]
+            "false" : [ "branch_41" ]
           }
         },
-        "clamp_14" : {
+        "branch_49" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_47",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_48" ]
+          }
+        },
+        "clamp_23" : {
           "type" : "math.clamp",
           "inputs" : {
             "value" : {
-              "node" : "add_13",
+              "node" : "add_22",
               "port" : "result"
             }
           },
@@ -114,7 +188,16 @@
             "upper" : 1.6
           }
         },
-        "cooldown_19" : {
+        "cooldown_35" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 1500
+          }
+        },
+        "cooldown_38" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -123,19 +206,86 @@
             "duration" : 4000
           }
         },
-        "create_8" : {
+        "create_17" : {
           "type" : "vector.create",
           "inputs" : {
             "x" : {
-              "node" : "divide_10",
+              "node" : "divide_19",
               "port" : "result"
             },
             "y" : {
-              "node" : "clamp_14",
+              "node" : "clamp_23",
               "port" : "result"
             },
             "z" : {
-              "node" : "divide_16",
+              "node" : "divide_25",
+              "port" : "result"
+            }
+          }
+        },
+        "create_29" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "multiply_31",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "multiply_33",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "y" : 0.42
+          }
+        },
+        "create_4" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_5",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_0",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          }
+        },
+        "create_6" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_7",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_2",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          }
+        },
+        "damage_45" : {
+          "type" : "event.damage",
+          "executions" : {
+            "next" : [ "branch_49" ]
+          }
+        },
+        "direction_27" : {
+          "type" : "vector.direction",
+          "inputs" : {
+            "from" : {
+              "node" : "create_6",
+              "port" : "result"
+            },
+            "to" : {
+              "node" : "create_4",
               "port" : "result"
             }
           }
@@ -153,8 +303,58 @@
             }
           }
         },
-        "divide_10" : {
+        "distance_8" : {
+          "type" : "vector.distance",
+          "inputs" : {
+            "first" : {
+              "node" : "create_4",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "create_6",
+              "port" : "result"
+            }
+          }
+        },
+        "divide_19" : {
           "type" : "math.divide",
+          "inputs" : {
+            "first" : {
+              "node" : "subtract_18",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 10.0
+          }
+        },
+        "divide_25" : {
+          "type" : "math.divide",
+          "inputs" : {
+            "first" : {
+              "node" : "subtract_24",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 10.0
+          }
+        },
+        "equal_47" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_45",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_46",
+              "port" : "value"
+            }
+          }
+        },
+        "greater_10" : {
+          "type" : "logic.greater",
           "inputs" : {
             "first" : {
               "node" : "subtract_9",
@@ -162,26 +362,14 @@
             }
           },
           "literals" : {
-            "second" : 10.0
+            "second" : 2.0
           }
         },
-        "divide_16" : {
-          "type" : "math.divide",
-          "inputs" : {
-            "first" : {
-              "node" : "subtract_15",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "second" : 10.0
-          }
-        },
-        "greater_4" : {
+        "greater_13" : {
           "type" : "logic.greater",
           "inputs" : {
             "first" : {
-              "node" : "distance_3",
+              "node" : "distance_8",
               "port" : "result"
             }
           },
@@ -189,7 +377,7 @@
             "second" : 3.0
           }
         },
-        "is_null_23" : {
+        "is_null_42" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -198,7 +386,19 @@
             }
           }
         },
-        "less_5" : {
+        "less_11" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_8",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          }
+        },
+        "less_14" : {
           "type" : "logic.less",
           "inputs" : {
             "first" : {
@@ -207,14 +407,14 @@
             }
           },
           "literals" : {
-            "second" : 12.0
+            "second" : 16.0
           }
         },
-        "multiply_12" : {
+        "multiply_21" : {
           "type" : "math.multiply",
           "inputs" : {
             "first" : {
-              "node" : "subtract_11",
+              "node" : "subtract_20",
               "port" : "result"
             }
           },
@@ -222,19 +422,31 @@
             "second" : 0.1
           }
         },
-        "mutate_17" : {
-          "type" : "mob.mutate",
+        "multiply_31" : {
+          "type" : "math.multiply",
           "inputs" : {
-            "target" : {
-              "node" : "self_1",
-              "port" : "entity"
+            "first" : {
+              "node" : "read_30",
+              "port" : "x"
             }
           },
           "literals" : {
-            "fall_distance" : 0.0
+            "second" : 0.6
           }
         },
-        "mutate_7" : {
+        "multiply_33" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_32",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 0.6
+          }
+        },
+        "mutate_16" : {
           "type" : "mob.mutate",
           "inputs" : {
             "target" : {
@@ -242,15 +454,49 @@
               "port" : "entity"
             },
             "velocity" : {
-              "node" : "create_8",
+              "node" : "create_17",
               "port" : "result"
             }
           }
         },
-        "night_end_27" : {
+        "mutate_28" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "velocity" : {
+              "node" : "create_29",
+              "port" : "result"
+            }
+          }
+        },
+        "mutate_48" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "damage_45",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "night_end_51" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_26" ]
+            "next" : [ "spawn_particle_50" ]
+          }
+        },
+        "normalize_26" : {
+          "type" : "vector.normalize",
+          "inputs" : {
+            "value" : {
+              "node" : "direction_27",
+              "port" : "result"
+            }
           }
         },
         "read_0" : {
@@ -271,10 +517,28 @@
             }
           }
         },
+        "read_30" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "normalize_26",
+              "port" : "result"
+            }
+          }
+        },
+        "read_32" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "normalize_26",
+              "port" : "result"
+            }
+          }
+        },
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_18" : {
+        "spawn_particle_37" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -294,7 +558,7 @@
             "particle" : "minecraft:crit"
           }
         },
-        "spawn_particle_26" : {
+        "spawn_particle_50" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "location" : {
@@ -314,7 +578,20 @@
             "particle" : "minecraft:campfire_cosy_smoke"
           }
         },
-        "subtract_11" : {
+        "subtract_18" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_2",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "read_0",
+              "port" : "x"
+            }
+          }
+        },
+        "subtract_20" : {
           "type" : "math.subtract",
           "inputs" : {
             "first" : {
@@ -327,7 +604,7 @@
             }
           }
         },
-        "subtract_15" : {
+        "subtract_24" : {
           "type" : "math.subtract",
           "inputs" : {
             "first" : {
@@ -345,18 +622,25 @@
           "inputs" : {
             "first" : {
               "node" : "read_2",
-              "port" : "x"
+              "port" : "y"
             },
             "second" : {
               "node" : "read_0",
-              "port" : "x"
+              "port" : "y"
             }
           }
         },
-        "tick_25" : {
+        "tick_44" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "mutate_17", "branch_24" ]
+            "next" : [ "branch_43" ]
+          }
+        },
+        "value_46" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "FALL"
           }
         }
       }

@@ -13,7 +13,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,10 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * One boss bar per player in a world with a running blood night, emptying as the night passes.
  * <p>
  * Every player has a bar of their own, so a bar is only ever changed on its player's thread (on Folia, players in
- * different regions run on different threads).
+ * different regions run on different threads). A darkened player's bar also darkens their sky and world, which the
+ * client fades in and out by itself.
  */
 final class NightBars {
     private final Map<UUID, BossBar> bars = new ConcurrentHashMap<>();
+    private final Set<UUID> darkened = ConcurrentHashMap.newKeySet();
 
     /**
      * Shows the player their bar with the world's current settings and the night's progress. Runs on the player's
@@ -48,7 +52,7 @@ final class NightBars {
                         .deserialize(settings.title(), Placeholder.component("name", Component.translatable(name))))
                 .color(settings.color())
                 .overlay(settings.overlay())
-                .flags(settings.flags())
+                .flags(flags(player, settings))
                 .progress(remaining(times, night, NightTimes.now(player.getWorld())));
         player.showBossBar(bar);
     }
@@ -57,8 +61,29 @@ final class NightBars {
      * Hides and forgets the player's bar. Runs on the player's thread.
      */
     void hide(Player player) {
+        darkened.remove(player.getUniqueId());
         BossBar bar = bars.remove(player.getUniqueId());
         if (bar != null) player.hideBossBar(bar);
+    }
+
+    /**
+     * Darkens the player's world through their bar, or lets it brighten again; nothing happens without a bar. Runs on
+     * the player's thread.
+     */
+    void darken(Player player, boolean dark) {
+        if (dark) darkened.add(player.getUniqueId());
+        else darkened.remove(player.getUniqueId());
+        BossBar bar = bars.get(player.getUniqueId());
+        if (bar == null) return;
+        if (dark) bar.addFlag(BossBar.Flag.DARKEN_SCREEN);
+        else bar.removeFlag(BossBar.Flag.DARKEN_SCREEN);
+    }
+
+    private Set<BossBar.Flag> flags(Player player, BossBarSettings settings) {
+        Set<BossBar.Flag> flags = EnumSet.noneOf(BossBar.Flag.class);
+        flags.addAll(settings.flags());
+        if (darkened.contains(player.getUniqueId())) flags.add(BossBar.Flag.DARKEN_SCREEN);
+        return flags;
     }
 
     /**

@@ -1,0 +1,305 @@
+{
+  "format" : 1,
+  "id" : "carrier_phantom",
+  "pack" : "newer",
+  "names" : {
+    "de" : "Trägerphantom",
+    "en" : "Carrier Phantom"
+  },
+  "descriptions" : {
+    "de" : "Packt dich, trägt dich 20 Blöcke hoch und lässt dich fallen. Triff es im Anflug, um den Griff zu verhindern, oder drück fünfmal Schleichen, um dich loszureißen.",
+    "en" : "Grabs you, carries you 20 blocks up and drops you. Hit it on its way in to stop the grab, or press sneak five times to break loose."
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "carrier_phantom",
+    "equipment" : null,
+    "attributes" : {
+      "displayName" : "<lang_or:bloodnight.mob.carrier_phantom:'Carrier Phantom'>",
+      "entityType" : "PHANTOM",
+      "exactType" : true,
+      "healthModifier" : "DEFAULT",
+      "health" : 2.0,
+      "damageModifier" : "DEFAULT",
+      "damage" : 2.0,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "branch_11" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_10",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "carry_2" ]
+          }
+        },
+        "branch_14" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "greater_or_equal_13",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_11" ]
+          }
+        },
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_1",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_14" ]
+          }
+        },
+        "branch_9" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "carry_2",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_sound_7", "lift_4", "delay_6" ]
+          }
+        },
+        "carry_2" : {
+          "type" : "entity.carry",
+          "inputs" : {
+            "passenger" : {
+              "node" : "cast_1",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_9" ]
+          }
+        },
+        "cast_1" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "cooldown_10" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 15000
+          }
+        },
+        "damage_by_entity_17" : {
+          "type" : "event.damage_by_entity",
+          "executions" : {
+            "next" : [ "reset_16" ]
+          }
+        },
+        "damage_by_player_19" : {
+          "type" : "event.damage_by_player",
+          "executions" : {
+            "next" : [ "reset_18" ]
+          }
+        },
+        "delay_6" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 3.5
+          },
+          "executions" : {
+            "next" : [ "drop_passengers_5" ]
+          }
+        },
+        "drop_passengers_5" : {
+          "type" : "entity.drop_passengers",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "elapsed_12" : {
+          "type" : "timer.elapsed",
+          "config" : {
+            "timer" : "hurt"
+          }
+        },
+        "greater_or_equal_13" : {
+          "type" : "logic.greater_or_equal",
+          "inputs" : {
+            "first" : {
+              "node" : "elapsed_12",
+              "port" : "elapsed"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "hit_0" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_15" ]
+          }
+        },
+        "lift_4" : {
+          "type" : "entity.lift",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "height" : 20.0,
+            "seconds" : 3.0
+          }
+        },
+        "night_end_22" : {
+          "type" : "mob.night_end",
+          "executions" : {
+            "next" : [ "spawn_particle_21" ]
+          }
+        },
+        "play_sound_7" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_8",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.6,
+            "sound" : "minecraft:entity.phantom.swoop",
+            "volume" : 1.0
+          }
+        },
+        "read_20" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_8" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          }
+        },
+        "reset_16" : {
+          "type" : "timer.reset",
+          "config" : {
+            "timer" : "hurt"
+          }
+        },
+        "reset_18" : {
+          "type" : "timer.reset",
+          "config" : {
+            "timer" : "hurt"
+          }
+        },
+        "self_3" : {
+          "type" : "mob.self"
+        },
+        "spawn_particle_21" : {
+          "type" : "world.spawn_particle",
+          "inputs" : {
+            "location" : {
+              "node" : "read_20",
+              "port" : "eye_location"
+            },
+            "target" : {
+              "node" : "read_20",
+              "port" : "world"
+            }
+          },
+          "literals" : {
+            "count" : 30,
+            "offset_x" : 1.5,
+            "offset_y" : 1.0,
+            "offset_z" : 1.5,
+            "particle" : "minecraft:campfire_cosy_smoke"
+          }
+        }
+      }
+    },
+    "mobDrops" : {
+      "weightsScope" : "GLOBAL",
+      "weights" : {
+        "1" : 90,
+        "2" : 50,
+        "3" : 10
+      },
+      "dropTables" : [ "GLOBAL", "WORLD", "MOB" ],
+      "dropList" : [ ],
+      "xpScope" : "GLOBAL",
+      "xpModifier" : "MULTIPLY",
+      "xpValue" : 4.0,
+      "vanillaLoot" : "KEEP"
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 10,
+      "nightOnly" : true,
+      "nightEnd" : "REMOVE",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null,
+    "movement" : {
+      "preset" : "VANILLA",
+      "range" : 24.0,
+      "closest" : 6.0,
+      "farthest" : 10.0,
+      "seconds" : 3.0,
+      "fleeBelow" : 0.3
+    }
+  }
+}

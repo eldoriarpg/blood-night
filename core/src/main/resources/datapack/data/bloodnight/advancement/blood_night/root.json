@@ -1,0 +1,30 @@
+{
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.bloodnight.root.description",
+      "fallback": "The sky turns red and the monsters grow strong"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:redstone"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.bloodnight.root.title",
+      "fallback": "Blood Night"
+    },
+    "background": "minecraft:gui/advancements/backgrounds/nether"
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ]
+}

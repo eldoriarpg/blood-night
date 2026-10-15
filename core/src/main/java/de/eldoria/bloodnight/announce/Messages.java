@@ -36,6 +36,12 @@ import static net.kyori.adventure.text.Component.translatable;
 public final class Messages {
     public static final String NIGHT_SLEEP = "bloodnight.night.sleep";
     public static final String COMMAND_BLOCKED = "bloodnight.command.blocked";
+    /**
+     * Death message of the data pack's damage type {@code bloodnight:blood_curse}, which clients have no text for;
+     * with {@code .player} when someone dealt it.
+     */
+    public static final String BLOOD_CURSE_DEATH = "death.attack.bloodnight.blood_curse";
+
     private static final List<String> LOCALES = List.of("en", "de", "es", "ms", "tr", "zh");
 
     private final MiniMessageTranslationStore store =

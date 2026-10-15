@@ -332,6 +332,11 @@ export type DifficultyChange = 'UNCHANGED' | 'PEACEFUL' | 'EASY' | 'NORMAL' | 'H
 export type WeatherChange = 'UNCHANGED' | 'CLEAR' | 'RAIN' | 'THUNDER';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "RaidChange".
+ */
+export type RaidChange = 'UNCHANGED' | 'ALLOW' | 'DENY';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "StoreState".
  */
 export type StoreState = 'OWN' | 'CURRENT' | 'OUTDATED' | 'CHANGED' | 'CHANGED_OUTDATED' | 'ORPHANED';
@@ -597,6 +602,7 @@ export interface ConfigFile {
   store?: StoreSettings;
   foreignMobs?: ForeignMobSettings;
   setup?: SetupSettings;
+  advancements?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -844,6 +850,7 @@ export interface AnnouncementSettings {
   bossBar?: BossBarSettings;
   effect?: NightEffect;
   joinWarning?: boolean;
+  introDialog?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -871,6 +878,13 @@ export interface NightEffect {
  */
 export interface AtmosphereSettings {
   sky?: boolean;
+  redDawn?: boolean;
+  thickFog?: boolean;
+  darkness?: boolean;
+  worldParticles?: boolean;
+  omen?: boolean;
+  omenSounds?: boolean;
+  restlessAnimals?: boolean;
   vignette?: boolean;
   darknessPulses?: boolean;
   rain?: boolean;
@@ -992,6 +1006,7 @@ export interface WorldDrops {
   xpModifier: ValueModifier;
   xpValue: number;
   vanilla: VanillaDrops;
+  rewardLoot: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1019,6 +1034,9 @@ export interface NightRuleSettings {
     [k: string]: string;
   };
   phantomsOnlyAtBloodNights?: boolean;
+  monstersDontBurn?: boolean;
+  creakingsWake?: boolean;
+  raids?: RaidChange & string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1473,6 +1491,12 @@ export const Overlay = {
     NOTCHED_20: "NOTCHED_20",
     NOTCHED_6: "NOTCHED_6",
     PROGRESS: "PROGRESS",
+} as const;
+
+export const RaidChange = {
+    ALLOW: "ALLOW",
+    DENY: "DENY",
+    UNCHANGED: "UNCHANGED",
 } as const;
 
 export const Reach = {

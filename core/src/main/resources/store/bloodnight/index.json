@@ -18,8 +18,8 @@
       "en" : "Newer mobs"
     },
     "descriptions" : {
-      "de" : "Mobs für Böen, Sumpfskelette, Plünderer, Ertrunkene, Silberfischchen und eine springende Spinne.",
-      "en" : "Mobs for breezes, bogged, pillagers, drowned, silverfish and a leaping spider."
+      "de" : "Mobs für Böen, Sumpfskelette, Plünderer, Ertrunkene, Silberfischchen, eine springende Spinne und ein Phantom, das dich davonträgt.",
+      "en" : "Mobs for breezes, bogged, pillagers, drowned, silverfish, a leaping spider and a phantom that carries you off."
     }
   }, {
     "id" : "end",
@@ -32,5 +32,5 @@
       "en" : "Endermen that launch, grab and blow you up, and the Blood Dragon for dragon fights."
     }
   } ],
-  "entries" : [ "armored_zombie", "knight_zombie", "invisible_zombie", "speed_zombie", "invisible_skeleton", "magic_skeleton", "speed_creeper", "toxic_creeper", "unstable_creeper", "nervous_powered_creeper", "ender_creeper", "ghost_creeper", "fearful_enderman", "toxic_enderman", "fearful_phantom", "fire_phantom", "phantom_soul", "fire_wizard", "thunder_wizard", "wither_wizard", "blaze_rider", "speed_skeleton_rider", "wither_skeleton_rider", "toxic_slime", "storm_breeze", "spore_bogged", "volley_pillager", "tide_drowned", "swarm_silverfish", "assassin_spider", "launcher_enderman", "grabber_enderman", "fuse_enderman", "blood_dragon" ]
+  "entries" : [ "armored_zombie", "knight_zombie", "invisible_zombie", "speed_zombie", "invisible_skeleton", "magic_skeleton", "speed_creeper", "toxic_creeper", "unstable_creeper", "nervous_powered_creeper", "ender_creeper", "ghost_creeper", "fearful_enderman", "toxic_enderman", "fearful_phantom", "fire_phantom", "phantom_soul", "carrier_phantom", "fire_wizard", "thunder_wizard", "wither_wizard", "blaze_rider", "speed_skeleton_rider", "wither_skeleton_rider", "toxic_slime", "storm_breeze", "spore_bogged", "volley_pillager", "tide_drowned", "swarm_silverfish", "assassin_spider", "launcher_enderman", "grabber_enderman", "fuse_enderman", "blood_dragon" ]
 }

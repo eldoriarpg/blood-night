@@ -176,6 +176,14 @@ public final class Announcer implements Listener {
     /**
      * Hides every boss bar, e.g. when the plugin disables.
      */
+    /**
+     * Darkens the player's world through their blood night bar, or lets it brighten again; nothing happens where the
+     * world shows no bar. Runs on the player's thread.
+     */
+    public void darken(Player player, boolean dark) {
+        bars.darken(player, dark);
+    }
+
     public void clear() {
         for (Player player : server.getOnlinePlayers()) tasks.entityNow(player, () -> bars.hide(player));
     }

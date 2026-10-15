@@ -11,6 +11,7 @@ import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.keys.AttributeKeys;
 import io.papermc.paper.registry.keys.BiomeKeys;
 import io.papermc.paper.registry.keys.BlockTypeKeys;
+import io.papermc.paper.registry.keys.DamageTypeKeys;
 import io.papermc.paper.registry.keys.EnchantmentKeys;
 import io.papermc.paper.registry.keys.ItemTypeKeys;
 import io.papermc.paper.registry.keys.MobEffectKeys;
@@ -28,6 +29,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockType;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
@@ -88,7 +90,8 @@ public final class BukkitTypes {
             Sound.class,
             Enchantment.class,
             Attribute.class,
-            Biome.class);
+            Biome.class,
+            DamageType.class);
 
     /**
      * @return the type mapping of the blood-night platform
@@ -120,6 +123,7 @@ public final class BukkitTypes {
                 .name(EntityType.class, "Entity Type")
                 .name(ItemType.class, "Item Type")
                 .name(BlockType.class, "Block Type")
+                .name(DamageType.class, "Damage Type")
                 .codec(new ColorCodec())
                 .codec(registry(EntityType.class, RegistryKey.ENTITY_TYPE, "ENTITY_TYPE", null))
                 .codec(registry(PotionEffectType.class, RegistryKey.MOB_EFFECT, "MOB_EFFECT", MobEffectKeys.class))
@@ -131,6 +135,7 @@ public final class BukkitTypes {
                 .codec(registry(Attribute.class, RegistryKey.ATTRIBUTE, "ATTRIBUTE", AttributeKeys.class))
                 .codec(registry(Biome.class, RegistryKey.BIOME, "BIOME", BiomeKeys.class))
                 .codec(registry(PotionType.class, RegistryKey.POTION, "POTION", null))
+                .codec(registry(DamageType.class, RegistryKey.DAMAGE_TYPE, "DAMAGE_TYPE", DamageTypeKeys.class))
                 .selectable("entity", PortType.of(Entity.class))
                 .selectable("living_entity", PortType.of(LivingEntity.class))
                 .selectable("mob", PortType.of(Mob.class))
@@ -151,6 +156,7 @@ public final class BukkitTypes {
                 .selectable("particle", PortType.of(Particle.class))
                 .selectable("biome", PortType.of(Biome.class))
                 .selectable("potion", PortType.of(PotionType.class))
+                .selectable("damage_type", PortType.of(DamageType.class))
                 .selectable("color", PortType.of(Color.class))
                 .build();
     }

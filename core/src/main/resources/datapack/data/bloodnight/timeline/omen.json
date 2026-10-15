@@ -1,0 +1,107 @@
+{
+  "clock": "bloodnight:omen",
+  "tracks": {
+    "minecraft:visual/sunrise_sunset_color": {
+      "ease": "in_out_sine",
+      "modifier": "multiply",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "#ffffffff"
+        },
+        {
+          "ticks": 1200,
+          "value": "#ffff3020"
+        },
+        {
+          "ticks": 1500,
+          "value": "#ffff3020"
+        },
+        {
+          "ticks": 1700,
+          "value": "#ffffffff"
+        }
+      ]
+    },
+    "minecraft:visual/cloud_color": {
+      "ease": "in_out_sine",
+      "modifier": "alpha_blend",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "#00000000"
+        },
+        {
+          "ticks": 1200,
+          "value": "#50a02020"
+        },
+        {
+          "ticks": 1500,
+          "value": "#50a02020"
+        },
+        {
+          "ticks": 1700,
+          "value": "#00000000"
+        }
+      ]
+    },
+    "minecraft:visual/sky_color": {
+      "ease": "in_out_sine",
+      "modifier": "alpha_blend",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "#00000000"
+        },
+        {
+          "ticks": 1200,
+          "value": "#38c02800"
+        },
+        {
+          "ticks": 1500,
+          "value": "#38c02800"
+        },
+        {
+          "ticks": 1700,
+          "value": "#00000000"
+        }
+      ]
+    },
+    "minecraft:visual/ambient_particles": {
+      "ease": "in_out_sine",
+      "modifier": "append",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": []
+        },
+        {
+          "ticks": 1200,
+          "value": [
+            {
+              "particle": {
+                "type": "minecraft:ash"
+              },
+              "probability": 0.004
+            }
+          ]
+        },
+        {
+          "ticks": 1500,
+          "value": [
+            {
+              "particle": {
+                "type": "minecraft:ash"
+              },
+              "probability": 0.004
+            }
+          ]
+        },
+        {
+          "ticks": 1700,
+          "value": []
+        }
+      ]
+    }
+  }
+}

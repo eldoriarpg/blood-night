@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.configuration.elements.world;
 
 import de.eldoria.bloodnight.configuration.elements.world.rules.DifficultyChange;
+import de.eldoria.bloodnight.configuration.elements.world.rules.RaidChange;
 import de.eldoria.bloodnight.configuration.elements.world.rules.WeatherChange;
 
 import java.util.LinkedHashMap;
@@ -13,7 +14,10 @@ import java.util.Map;
 
 /**
  * How the world itself changes while a blood night runs. Everything is given back when the night ends, unless someone
- * changed it in the meantime. Nothing changes by default.
+ * changed it in the meantime.
+ * <p>
+ * {@code monstersDontBurn}, {@code creakingsWake} and {@code raids} work through the plugin's data pack and end with
+ * the night; monsters stay unburnt through the following dawn. By default only creakings wake.
  */
 public class NightRuleSettings {
     private DifficultyChange difficulty = DifficultyChange.UNCHANGED;
@@ -22,6 +26,9 @@ public class NightRuleSettings {
     private WeatherChange weather = WeatherChange.UNCHANGED;
     private Map<String, String> gameRules = new LinkedHashMap<>();
     private boolean phantomsOnlyAtBloodNights = false;
+    private boolean monstersDontBurn = false;
+    private boolean creakingsWake = true;
+    private RaidChange raids = RaidChange.UNCHANGED;
 
     /**
      * @return the world's difficulty during the night
@@ -63,5 +70,26 @@ public class NightRuleSettings {
      */
     public boolean phantomsOnlyAtBloodNights() {
         return phantomsOnlyAtBloodNights;
+    }
+
+    /**
+     * @return whether monsters survive the sunlight during the night and the dawn after it
+     */
+    public boolean monstersDontBurn() {
+        return monstersDontBurn;
+    }
+
+    /**
+     * @return whether creakings hunt during the night
+     */
+    public boolean creakingsWake() {
+        return creakingsWake;
+    }
+
+    /**
+     * @return whether raids may start during the night
+     */
+    public RaidChange raids() {
+        return raids;
     }
 }

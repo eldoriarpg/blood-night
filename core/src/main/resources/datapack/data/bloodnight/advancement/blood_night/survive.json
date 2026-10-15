@@ -1,0 +1,30 @@
+{
+  "parent": "bloodnight:blood_night/root",
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.bloodnight.survive.description",
+      "fallback": "Live through a blood night"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:clock"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.bloodnight.survive.title",
+      "fallback": "Still Breathing"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "clock": "bloodnight:red_dawn",
+  "tracks": {
+    "minecraft:visual/sunrise_sunset_color": {
+      "ease": "in_out_sine",
+      "modifier": "multiply",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "#ffffffff"
+        },
+        {
+          "ticks": 200,
+          "value": "#ffff4030"
+        },
+        {
+          "ticks": 2200,
+          "value": "#ffff4030"
+        },
+        {
+          "ticks": 2400,
+          "value": "#ffffffff"
+        }
+      ]
+    }
+  }
+}

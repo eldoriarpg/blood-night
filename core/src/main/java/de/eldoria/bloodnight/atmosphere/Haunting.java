@@ -29,8 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
 
@@ -39,18 +38,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
  * What a blood night does to each player in its world, on their own client, as the world's atmosphere settings say: a
- * red screen edge, short darkness pulses, rain, particles around the camera, a heartbeat while monsters are near, the
- * resource pack's screen
- * effect and, when switched on, scares. Everything ends with the night, when the player leaves the world or quits.
+ * red screen edge, short darkness pulses, rain, particles around the camera (unless the client draws them as a world
+ * effect), a heartbeat while monsters are near, the resource pack's screen effect and, when switched on, scares. Gear
+ * with Steady Heart spares a player the heartbeat, the darkness pulses and the scares. Everything ends with the night,
+ * when the player leaves the world or quits.
  * <p>
  * The red edge is a world border only this player sees, far around them, with a warning distance that reaches them:
  * the client tints the screen the way it warns of a near border. It follows the player before they could come close
- * to it. Darkness pulses are sent as an effect only the client knows of. {@link #tick()} runs every
+ * to it. A darkness pulse sets the darken flag of the player's blood night bar for {@value #PULSE_TICKS} ticks: the
+ * client fades the sky and the world darker and back by itself, and the red fog stays as it is (the Darkness effect
+ * would replace the fog's distance while it lasts). {@link #tick()} runs every
  * {@value #STEP} ticks on the global region and hands each player to their own thread.
  */
 public final class Haunting implements Listener {
@@ -62,6 +66,7 @@ public final class Haunting implements Listener {
     private static final int BORDER_RADIUS = 1000;
     private static final int WARNING = 1600;
     private static final int RECENTER = 400;
+    static final int PULSE_TICKS = 40;
     private static final double PARTICLE_RADIUS = 8;
     private static final double HEARTBEAT_QUIETEST = 0.03;
     private static final double HEARTBEAT_LOUDEST = 0.45;
@@ -78,6 +83,8 @@ public final class Haunting implements Listener {
     private final Supplier<WorldBorder> borders;
     private final Map<UUID, Haunted> haunted = new ConcurrentHashMap<>();
     private final RegionRules regions;
+    private final Predicate<Player> steady;
+    private final BiConsumer<Player, Boolean> darken;
 
     /**
      * @param server   the server
@@ -86,6 +93,8 @@ public final class Haunting implements Listener {
      * @param tasks    runs each player on their thread
      * @param borders  creates a world border no world has, e.g. {@link Server#createWorldBorder()}
      * @param regions  where regions keep the atmosphere away
+     * @param steady   whether a player's gear spares them the heartbeat, darkness pulses and scares
+     * @param darken   darkens a player's world or lets it brighten again, e.g. through their blood night bar
      */
     public Haunting(
             Server server,
@@ -93,8 +102,12 @@ public final class Haunting implements Listener {
             Function<World, AtmosphereSettings> settings,
             Tasks tasks,
             Supplier<WorldBorder> borders,
-            RegionRules regions) {
+            RegionRules regions,
+            Predicate<Player> steady,
+            BiConsumer<Player, Boolean> darken) {
         this.regions = regions;
+        this.steady = steady;
+        this.darken = darken;
         this.server = server;
         this.nights = nights;
         this.settings = settings;
@@ -114,6 +127,20 @@ public final class Haunting implements Listener {
      */
     public void clear() {
         for (Player player : server.getOnlinePlayers()) tasks.entityNow(player, () -> leave(player));
+    }
+
+    /**
+     * Shows the screen effect again once the player's client has loaded the pack: a request that arrived while it was
+     * still loading found no effect and was dropped.
+     */
+    @EventHandler
+    public void onPackLoaded(PlayerResourcePackStatusEvent event) {
+        if (event.getStatus() != PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) return;
+        Player player = event.getPlayer();
+        if (haunted.containsKey(player.getUniqueId())
+                && settings.apply(player.getWorld()).screenEffect()) {
+            ScreenEffect.show(player);
+        }
     }
 
     @EventHandler
@@ -157,6 +184,7 @@ public final class Haunting implements Listener {
         Haunted state = haunted.remove(player.getUniqueId());
         if (state == null) return;
         if (state.border != null) player.setWorldBorder(null);
+        if (state.pulseEnd >= 0) endPulse(player, state);
         player.resetPlayerWeather();
         ScreenEffect.hide(player);
     }
@@ -164,9 +192,12 @@ public final class Haunting implements Listener {
     private void haunt(Player player, Haunted state, AtmosphereSettings atmosphere) {
         long step = state.steps++;
         if (state.border != null && distance(player, state.border) > RECENTER) centre(player, state);
-        particles(player, atmosphere.particles());
+        if (!atmosphere.worldParticles()) particles(player, atmosphere.particles());
+        if (state.pulseEnd >= 0 && step >= state.pulseEnd) endPulse(player, state);
+        if (steady.test(player)) return;
         if (atmosphere.darknessPulses() && step >= state.nextPulse) {
-            player.sendPotionEffectChange(player, new PotionEffect(PotionEffectType.DARKNESS, 40, 0, false, false));
+            darken.accept(player, true);
+            state.pulseEnd = step + PULSE_TICKS / STEP;
             state.nextPulse = step + pulseDelay();
         }
         if (atmosphere.heartbeat()) heartbeat(player, state, atmosphere);
@@ -176,6 +207,11 @@ public final class Haunting implements Listener {
                         < atmosphere.scares().chancePerMinute()) {
             scare(player, atmosphere.scares().kinds().stream().toList());
         }
+    }
+
+    private void endPulse(Player player, Haunted state) {
+        state.pulseEnd = -1;
+        darken.accept(player, false);
     }
 
     /**
@@ -300,6 +336,7 @@ public final class Haunting implements Listener {
         private @Nullable WorldBorder border;
         private long steps;
         private long nextPulse;
+        private long pulseEnd = -1;
         private long lastBeat = Long.MIN_VALUE / 2;
 
         private Haunted(UUID world) {

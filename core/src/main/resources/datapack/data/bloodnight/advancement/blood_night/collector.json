@@ -1,0 +1,234 @@
+{
+  "parent": "bloodnight:blood_night/slayer",
+  "criteria": {
+    "armored_zombie": {
+      "trigger": "minecraft:impossible"
+    },
+    "assassin_spider": {
+      "trigger": "minecraft:impossible"
+    },
+    "blaze_rider": {
+      "trigger": "minecraft:impossible"
+    },
+    "blood_dragon": {
+      "trigger": "minecraft:impossible"
+    },
+    "carrier_phantom": {
+      "trigger": "minecraft:impossible"
+    },
+    "ender_creeper": {
+      "trigger": "minecraft:impossible"
+    },
+    "fearful_enderman": {
+      "trigger": "minecraft:impossible"
+    },
+    "fearful_phantom": {
+      "trigger": "minecraft:impossible"
+    },
+    "fire_phantom": {
+      "trigger": "minecraft:impossible"
+    },
+    "fire_wizard": {
+      "trigger": "minecraft:impossible"
+    },
+    "fuse_enderman": {
+      "trigger": "minecraft:impossible"
+    },
+    "ghost_creeper": {
+      "trigger": "minecraft:impossible"
+    },
+    "grabber_enderman": {
+      "trigger": "minecraft:impossible"
+    },
+    "invisible_skeleton": {
+      "trigger": "minecraft:impossible"
+    },
+    "invisible_zombie": {
+      "trigger": "minecraft:impossible"
+    },
+    "knight_zombie": {
+      "trigger": "minecraft:impossible"
+    },
+    "launcher_enderman": {
+      "trigger": "minecraft:impossible"
+    },
+    "magic_skeleton": {
+      "trigger": "minecraft:impossible"
+    },
+    "nervous_powered_creeper": {
+      "trigger": "minecraft:impossible"
+    },
+    "phantom_soul": {
+      "trigger": "minecraft:impossible"
+    },
+    "speed_creeper": {
+      "trigger": "minecraft:impossible"
+    },
+    "speed_skeleton_rider": {
+      "trigger": "minecraft:impossible"
+    },
+    "speed_zombie": {
+      "trigger": "minecraft:impossible"
+    },
+    "spore_bogged": {
+      "trigger": "minecraft:impossible"
+    },
+    "storm_breeze": {
+      "trigger": "minecraft:impossible"
+    },
+    "swarm_silverfish": {
+      "trigger": "minecraft:impossible"
+    },
+    "thunder_wizard": {
+      "trigger": "minecraft:impossible"
+    },
+    "tide_drowned": {
+      "trigger": "minecraft:impossible"
+    },
+    "toxic_creeper": {
+      "trigger": "minecraft:impossible"
+    },
+    "toxic_enderman": {
+      "trigger": "minecraft:impossible"
+    },
+    "toxic_slime": {
+      "trigger": "minecraft:impossible"
+    },
+    "unstable_creeper": {
+      "trigger": "minecraft:impossible"
+    },
+    "volley_pillager": {
+      "trigger": "minecraft:impossible"
+    },
+    "wither_skeleton_rider": {
+      "trigger": "minecraft:impossible"
+    },
+    "wither_wizard": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.bloodnight.collector.description",
+      "fallback": "Kill every special mob of the store once"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:writable_book"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.bloodnight.collector.title",
+      "fallback": "Bestiary"
+    }
+  },
+  "requirements": [
+    [
+      "armored_zombie"
+    ],
+    [
+      "assassin_spider"
+    ],
+    [
+      "blaze_rider"
+    ],
+    [
+      "blood_dragon"
+    ],
+    [
+      "carrier_phantom"
+    ],
+    [
+      "ender_creeper"
+    ],
+    [
+      "fearful_enderman"
+    ],
+    [
+      "fearful_phantom"
+    ],
+    [
+      "fire_phantom"
+    ],
+    [
+      "fire_wizard"
+    ],
+    [
+      "fuse_enderman"
+    ],
+    [
+      "ghost_creeper"
+    ],
+    [
+      "grabber_enderman"
+    ],
+    [
+      "invisible_skeleton"
+    ],
+    [
+      "invisible_zombie"
+    ],
+    [
+      "knight_zombie"
+    ],
+    [
+      "launcher_enderman"
+    ],
+    [
+      "magic_skeleton"
+    ],
+    [
+      "nervous_powered_creeper"
+    ],
+    [
+      "phantom_soul"
+    ],
+    [
+      "speed_creeper"
+    ],
+    [
+      "speed_skeleton_rider"
+    ],
+    [
+      "speed_zombie"
+    ],
+    [
+      "spore_bogged"
+    ],
+    [
+      "storm_breeze"
+    ],
+    [
+      "swarm_silverfish"
+    ],
+    [
+      "thunder_wizard"
+    ],
+    [
+      "tide_drowned"
+    ],
+    [
+      "toxic_creeper"
+    ],
+    [
+      "toxic_enderman"
+    ],
+    [
+      "toxic_slime"
+    ],
+    [
+      "unstable_creeper"
+    ],
+    [
+      "volley_pillager"
+    ],
+    [
+      "wither_skeleton_rider"
+    ],
+    [
+      "wither_wizard"
+    ]
+  ]
+}

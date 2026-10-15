@@ -28,11 +28,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HauntingTest extends AtmosphereTest {
     private Haunting haunting;
     private PlayerMock player;
+    private boolean steady;
+    private int pulses;
+    private boolean dark;
 
     @BeforeEach
     void setUp() {
         haunting = new Haunting(
-                server, nights, ignored -> atmosphere, new Tasks(plugin), HauntingTest::border, RegionRules.NONE);
+                server,
+                nights,
+                ignored -> atmosphere,
+                new Tasks(plugin),
+                HauntingTest::border,
+                RegionRules.NONE,
+                ignored -> steady,
+                (ignored, darken) -> {
+                    if (darken) pulses++;
+                    dark = darken;
+                });
         server.getPluginManager().registerEvents(haunting, plugin);
         player = new BorderedPlayer(server);
         server.addPlayer(player);
@@ -69,6 +82,36 @@ class HauntingTest extends AtmosphereTest {
         world.spawn(player.getLocation().add(3, 0, 0), Zombie.class);
         for (int i = 0; i < 20; i++) haunting.tick();
         assertFalse(player.getHeardSounds().isEmpty());
+    }
+
+    @Test
+    void aDarknessPulseBrightensAgainAfterTwoSeconds() {
+        bloodNight();
+        while (pulses == 0) haunting.tick();
+        assertTrue(dark);
+
+        for (int i = 0; i < Haunting.PULSE_TICKS / Haunting.STEP; i++) haunting.tick();
+        assertFalse(dark);
+    }
+
+    @Test
+    void leavingTheNightEndsARunningPulse() {
+        bloodNight();
+        while (pulses == 0) haunting.tick();
+
+        day();
+        haunting.tick();
+        assertFalse(dark);
+    }
+
+    @Test
+    void aSteadyHeartHearsNoHeartbeat() {
+        steady = true;
+        bloodNight();
+        world.spawn(player.getLocation().add(3, 0, 0), Zombie.class);
+        for (int i = 0; i < 20; i++) haunting.tick();
+        assertTrue(player.getHeardSounds().isEmpty());
+        assertNotNull(player.getWorldBorder());
     }
 
     /**

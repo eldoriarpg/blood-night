@@ -27,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,8 +37,9 @@ import java.util.function.Consumer;
 /**
  * Warnings drawn with display entities, which every client shows without the resource pack. Displays are tagged
  * {@link #DISPLAY}, never saved with the world, lit at full brightness and taken away when their time is up. A mob
- * has at most {@value #PER_MOB} displays at once, so a behaviour in a loop cannot flood the world; more are not
- * shown. A display meant for one player is hidden from everyone else.
+ * has at most {@value #PER_MOB} warnings at once, so a behaviour in a loop cannot flood the world; more are not
+ * shown. A marker counts as one warning, however many displays it is made of. A display meant for one player is
+ * hidden from everyone else.
  */
 public final class Displays {
     /**
@@ -46,7 +48,7 @@ public final class Displays {
     public static final NamespacedKey DISPLAY = new NamespacedKey("bloodnight", "display");
 
     /**
-     * How many displays one mob may have at once.
+     * How many warnings one mob may show at once.
      */
     public static final int PER_MOB = 8;
 
@@ -75,7 +77,10 @@ public final class Displays {
             @Nullable Player viewer) {
         long ticks = ticks(seconds);
         Material glass = glass(color);
-        for (MarkerShape.Bar bar : shape.bars(size)) {
+        List<MarkerShape.Bar> bars = shape.bars(size);
+        Runnable gone = reserve(context, bars.size());
+        if (gone == null) return;
+        for (MarkerShape.Bar bar : bars) {
             spawn(
                     context,
                     location,
@@ -88,7 +93,8 @@ public final class Displays {
                         display.setGlowColorOverride(color);
                         display.setTransformation(box(bar, HIDDEN));
                     },
-                    display -> grow(context, display, box(bar, 1), ticks));
+                    display -> grow(context, display, box(bar, 1), ticks),
+                    gone);
         }
     }
 
@@ -102,6 +108,8 @@ public final class Displays {
      */
     public static void text(
             MobContext context, Location location, String text, double size, double seconds, @Nullable Player viewer) {
+        Runnable gone = reserve(context, 1);
+        if (gone == null) return;
         spawn(
                 context,
                 location,
@@ -114,7 +122,8 @@ public final class Displays {
                     display.setSeeThrough(true);
                     display.setTransformation(scaled((float) Math.max(size, 0.1), 0));
                 },
-                display -> {});
+                display -> {},
+                gone);
     }
 
     /**
@@ -127,7 +136,11 @@ public final class Displays {
     public static void above(
             MobContext context, Entity entity, @Nullable String text, @Nullable ItemStack item, double seconds) {
         long ticks = ticks(seconds);
-        if (text != null && !text.isBlank()) {
+        boolean showsText = text != null && !text.isBlank();
+        if (!showsText && item == null) return;
+        Runnable gone = reserve(context, 1);
+        if (gone == null) return;
+        if (showsText) {
             spawn(
                     context,
                     entity.getLocation(),
@@ -140,8 +153,9 @@ public final class Displays {
                         display.setSeeThrough(true);
                         display.setTransformation(scaled(1, ABOVE));
                     },
-                    entity::addPassenger);
-        } else if (item != null) {
+                    entity::addPassenger,
+                    gone);
+        } else {
             spawn(
                     context,
                     entity.getLocation(),
@@ -153,7 +167,8 @@ public final class Displays {
                         display.setBillboard(Display.Billboard.CENTER);
                         display.setTransformation(scaled(0.6f, ABOVE));
                     },
-                    entity::addPassenger);
+                    entity::addPassenger,
+                    gone);
         }
     }
 
@@ -181,13 +196,8 @@ public final class Displays {
             @Nullable Player viewer,
             long ticks,
             Consumer<T> setup,
-            Consumer<T> shown) {
-        UUID owner = context.entity().getUniqueId();
-        AtomicInteger alive = ALIVE.computeIfAbsent(owner, ignored -> new AtomicInteger());
-        if (alive.incrementAndGet() > PER_MOB) {
-            release(owner, alive);
-            return;
-        }
+            Consumer<T> shown,
+            Runnable gone) {
         context.at(location, () -> {
             T display = location.getWorld().spawn(location, type, spawned -> {
                 spawned.setPersistent(false);
@@ -203,9 +213,9 @@ public final class Displays {
                     ticks,
                     () -> {
                         display.remove();
-                        release(owner, alive);
+                        gone.run();
                     },
-                    () -> release(owner, alive));
+                    gone);
         });
     }
 
@@ -222,6 +232,26 @@ public final class Displays {
                 gone);
     }
 
+    /**
+     * Takes one of the mob's warning slots for a warning made of some displays.
+     *
+     * @param parts how many displays the warning is made of
+     * @return what each display runs once it is gone, freeing the slot after the last; {@code null} when the mob has
+     *     no slot left
+     */
+    private static @Nullable Runnable reserve(MobContext context, int parts) {
+        UUID owner = context.entity().getUniqueId();
+        AtomicInteger alive = ALIVE.computeIfAbsent(owner, ignored -> new AtomicInteger());
+        if (alive.incrementAndGet() > PER_MOB) {
+            release(owner, alive);
+            return null;
+        }
+        AtomicInteger left = new AtomicInteger(parts);
+        return () -> {
+            if (left.decrementAndGet() == 0) release(owner, alive);
+        };
+    }
+
     private static void release(UUID owner, AtomicInteger alive) {
         if (alive.decrementAndGet() <= 0) ALIVE.remove(owner, alive);
     }
@@ -229,7 +259,7 @@ public final class Displays {
     private static Transformation box(MarkerShape.Bar bar, float scale) {
         return new Transformation(
                 new Vector3f((float) bar.x() * scale, (float) bar.y(), (float) bar.z() * scale),
-                new AxisAngle4f(),
+                new AxisAngle4f((float) bar.yaw(), 0, 1, 0),
                 new Vector3f((float) bar.width() * scale, (float) bar.height() * scale, (float) bar.depth() * scale),
                 new AxisAngle4f());
     }
