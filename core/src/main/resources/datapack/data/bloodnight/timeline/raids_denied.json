@@ -1,0 +1,22 @@
+{
+  "clock": "bloodnight:raids_denied",
+  "tracks": {
+    "minecraft:gameplay/can_start_raid": {
+      "modifier": "and",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": true
+        },
+        {
+          "ticks": 1,
+          "value": false
+        },
+        {
+          "ticks": 1000200,
+          "value": true
+        }
+      ]
+    }
+  }
+}

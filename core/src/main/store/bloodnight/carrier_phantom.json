@@ -1,0 +1,12 @@
+{
+  "pack": "newer",
+  "names": {
+    "en": "Carrier Phantom",
+    "de": "Trägerphantom"
+  },
+  "descriptions": {
+    "en": "Grabs you, carries you 20 blocks up and drops you. Hit it on its way in to stop the grab, or press sneak five times to break loose.",
+    "de": "Packt dich, trägt dich 20 Blöcke hoch und lässt dich fallen. Triff es im Anflug, um den Griff zu verhindern, oder drück fünfmal Schleichen, um dich loszureißen."
+  },
+  "requires": []
+}

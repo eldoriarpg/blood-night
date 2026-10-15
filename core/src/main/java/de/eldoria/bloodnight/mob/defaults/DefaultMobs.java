@@ -61,6 +61,22 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final double LEAP_UP_MAX = 1.6;
 
     /**
+     * How far sideways from a target above it the assassin spider wants to be before it leaps; closer, it hops back
+     * first, so it does not leap straight up into the leaves under its target.
+     */
+    private static final double LEAP_STAND_OFF = 4;
+
+    /**
+     * Sideways speed of the assassin spider's hop away from a target above it, about five blocks.
+     */
+    private static final double BACK_OFF_SPEED = 0.6;
+
+    /**
+     * Upward speed of the assassin spider's hop away from a target above it, about one block high.
+     */
+    private static final double BACK_OFF_UP = 0.42;
+
+    /**
      * Blocks a leap covers per unit of sideways speed: air drag takes 9 % of it every tick, so about ten.
      */
     private static final double LEAP_REACH = 10;
@@ -115,6 +131,7 @@ public final class DefaultMobs implements BloodNightNodes {
                 mobs.fearfulPhantom(),
                 mobs.firePhantom(),
                 mobs.phantomSoul(),
+                mobs.carrierPhantom(),
                 moving(mobs.fireWizard(), MovementPreset.KEEP_DISTANCE),
                 moving(mobs.thunderWizard(), MovementPreset.KEEP_DISTANCE),
                 moving(mobs.witherWizard(), MovementPreset.KEEP_DISTANCE),
@@ -456,6 +473,45 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
+     * Grabs a player it hits, at most every 15 seconds, carries them 20 blocks up within three seconds and drops them.
+     * A hit on its way in, up to three seconds before it reaches the player, calls the grab off.
+     */
+    private CustomMob carrierPhantom() {
+        return mob("carrier_phantom", EntityType.PHANTOM, graph -> {
+            String hit = graph.entry(EVENT_HIT);
+            String victim = graph.as("player", hit, "entity");
+            Graphs.NodeBuilder carry = graph.node(ENTITY_CARRY)
+                    .input(TARGET, graph.self(), "entity")
+                    .input("passenger", victim, RESULT);
+            String lift = graph.node(ENTITY_LIFT)
+                    .input(TARGET, graph.self(), "entity")
+                    .literal("height", 20.0)
+                    .literal("seconds", 3.0)
+                    .id();
+            String drop = graph.node(ENTITY_DROP_PASSENGERS)
+                    .input(TARGET, graph.self(), "entity")
+                    .id();
+            String release = graph.node(FLOW_DELAY)
+                    .literal("duration", 3.5)
+                    .chain("next", drop)
+                    .id();
+            carry.chain(
+                    "next",
+                    graph.when(
+                            carry.id(),
+                            RESULT,
+                            graph.sound(victim, RESULT, "minecraft:entity.phantom.swoop", 1, 0.6),
+                            lift,
+                            release));
+            graph.on(EVENT_HIT, graph.when(victim, "matches", graph.after("hurt", 3, graph.every(15000, carry.id()))));
+            for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
+                graph.on(trigger, graph.resetTimer("hurt"));
+            }
+            smokeAtNightEnd(graph);
+        });
+    }
+
+    /**
      * Throws a large fireball at its target every five seconds instead of potions; fireballs hitting a player deal the
      * witch's attack damage on top.
      */
@@ -718,8 +774,9 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * Leaps at its target every four seconds when it stands between 3 and 12 blocks away: high enough to reach a target
-     * up in a tree and far enough to land on it. Never takes fall damage.
+     * Leaps at its target every four seconds when it stands more than 3 blocks to the side and less than 16 away: high
+     * enough to reach a target up in a tree and far enough to land on it. Right below a target that is higher up, it
+     * hops back first, since a leap straight up ends in the leaves. Takes no fall damage at all.
      */
     private CustomMob assassinSpider() {
         return mob("assassin_spider", EntityType.SPIDER, graph -> {
@@ -728,13 +785,35 @@ public final class DefaultMobs implements BloodNightNodes {
                     .input(TARGET, graph.selfRead(), "location")
                     .input("other", target, "location")
                     .id();
+            String flatSelf = flat(graph, graph.selfRead(), 0.01);
+            String flatTarget = flat(graph, target, 0);
+            String across = graph.node(VECTOR_DISTANCE)
+                    .input("first", flatSelf, RESULT)
+                    .input("second", flatTarget, RESULT)
+                    .id();
+            String rise = graph.node(MATH_SUBTRACT)
+                    .input("first", target, "y")
+                    .input("second", graph.selfRead(), "y")
+                    .id();
+            String high = graph.node(LOGIC_GREATER)
+                    .input("first", rise, RESULT)
+                    .literal("second", 2.0)
+                    .id();
+            String close = graph.node(LOGIC_LESS)
+                    .input("first", across, RESULT)
+                    .literal("second", LEAP_STAND_OFF)
+                    .id();
+            String beneath = graph.node(LOGIC_AND)
+                    .input("first", high, RESULT)
+                    .input("second", close, RESULT)
+                    .id();
             String far = graph.node(LOGIC_GREATER)
-                    .input("first", distance, RESULT)
+                    .input("first", across, RESULT)
                     .literal("second", 3.0)
                     .id();
             String near = graph.node(LOGIC_LESS)
                     .input("first", distance, RESULT)
-                    .literal("second", 12.0)
+                    .literal("second", 16.0)
                     .id();
             String inReach = graph.node(LOGIC_AND)
                     .input("first", far, RESULT)
@@ -750,21 +829,66 @@ public final class DefaultMobs implements BloodNightNodes {
                                     .id(),
                             RESULT)
                     .id();
-            graph.on(
-                    MOB_TICK,
-                    graph.selfMutate().literal("fall_distance", 0.0).id(),
-                    graph.present(
-                            graph.selfRead(),
-                            TARGET,
+            String away = graph.node(VECTOR_NORMALIZE)
+                    .input(
+                            VALUE,
+                            graph.node(VECTOR_DIRECTION)
+                                    .input("from", flatTarget, RESULT)
+                                    .input("to", flatSelf, RESULT)
+                                    .id(),
+                            RESULT)
+                    .id();
+            String backOff = graph.selfMutate()
+                    .input(
+                            "velocity",
+                            graph.node(VECTOR_CREATE)
+                                    .input("x", scaled(graph, away, "x", BACK_OFF_SPEED), RESULT)
+                                    .literal("y", BACK_OFF_UP)
+                                    .input("z", scaled(graph, away, "z", BACK_OFF_SPEED), RESULT)
+                                    .id(),
+                            RESULT)
+                    .id();
+            String move = graph.node(FLOW_BRANCH)
+                    .input("condition", beneath, RESULT)
+                    .chain("true", graph.every(1500, backOff))
+                    .chain(
+                            "false",
                             graph.when(
-                                    graph.selfRead(),
-                                    "on_ground",
-                                    graph.when(
-                                            inReach,
-                                            RESULT,
-                                            graph.every(4000, leap, graph.particlesAround("minecraft:crit", 15))))));
+                                    inReach,
+                                    RESULT,
+                                    graph.every(4000, leap, graph.particlesAround("minecraft:crit", 15))))
+                    .id();
+            graph.on(
+                    MOB_TICK, graph.present(graph.selfRead(), TARGET, graph.when(graph.selfRead(), "on_ground", move)));
+            String damage = graph.entry(EVENT_DAMAGE);
+            graph.on(EVENT_DAMAGE, graph.when(causeIs(graph, damage, "FALL"), RESULT, graph.cancel(damage)));
             smokeAtNightEnd(graph);
         });
+    }
+
+    /**
+     * A point at an entity's x and z on height 0, shifted along x by a little so two such points never coincide.
+     */
+    private static String flat(MobGraph graph, String entity, double shift) {
+        return graph.node(VECTOR_CREATE)
+                .input(
+                        "x",
+                        graph.node(MATH_ADD)
+                                .input("first", entity, "x")
+                                .literal("second", shift)
+                                .id(),
+                        RESULT)
+                .literal("y", 0.0)
+                .input("z", entity, "z")
+                .id();
+    }
+
+    private static String scaled(MobGraph graph, String vector, String axis, double factor) {
+        String component = graph.node(VECTOR_READ).input(TARGET, vector, RESULT).id();
+        return graph.node(MATH_MULTIPLY)
+                .input("first", component, axis)
+                .literal("second", factor)
+                .id();
     }
 
     /**

@@ -16,6 +16,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -25,6 +27,9 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootContext;
+import org.bukkit.loot.LootTable;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
@@ -33,6 +38,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 /**
@@ -106,6 +112,39 @@ public final class BukkitRuntime {
         context.at(location, () -> {
             if (effectOnly) world.strikeLightningEffect(location);
             else world.strikeLightning(location);
+        });
+    }
+
+    /**
+     * Deals damage of a kind, such as {@code bloodnight:blood_curse}; with a source, it counts as dealt by it.
+     */
+    public static void damage(LivingEntity target, double amount, @Nullable Entity source, DamageType type) {
+        DamageSource.Builder damage = DamageSource.builder(type);
+        if (source != null) damage.withCausingEntity(source).withDirectEntity(source);
+        target.damage(amount, damage.build());
+    }
+
+    /**
+     * Rolls a loot table and drops what it gives at a location, on the thread owning it. The mob counts as the looted
+     * entity and the player, if any, as its killer, for tables whose conditions ask. Unknown tables drop nothing.
+     *
+     * @param table  key of the loot table, e.g. {@code bloodnight:blood_night/reward}
+     * @param looter the player the loot is for, or {@code null}
+     */
+    public static void dropLoot(
+            MobContext context, World world, Location location, String table, @Nullable Player looter) {
+        NamespacedKey key = NamespacedKey.fromString(table);
+        LootTable loot = key == null ? null : Bukkit.getLootTable(key);
+        if (loot == null) return;
+        Location at = location.clone();
+        at.setWorld(world);
+        LivingEntity mob = context.entity();
+        context.at(at, () -> {
+            LootContext.Builder builder = new LootContext.Builder(at).lootedEntity(mob);
+            if (looter != null) builder.killer(looter);
+            for (ItemStack item : loot.populateLoot(ThreadLocalRandom.current(), builder.build())) {
+                world.dropItemNaturally(at, item);
+            }
         });
     }
 

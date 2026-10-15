@@ -10,6 +10,7 @@ import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.TypeName;
 import de.eldoria.bloodnight.api.MovementPreset;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
+import de.eldoria.bloodnight.graph.runtime.Carrying;
 import de.eldoria.bloodnight.graph.runtime.Displays;
 import de.eldoria.bloodnight.graph.runtime.MarkerShape;
 import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
@@ -30,6 +31,7 @@ import org.bukkit.Particle;
 import org.bukkit.Vibration;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
@@ -59,6 +61,11 @@ public final class BukkitNodes {
     private static final String NEXT = "next";
     private static final String FIRST = "first";
     private static final String SECOND = "second";
+    /**
+     * The blood night reward loot table, which the plugin rolls for special mobs and {@link #DROP_LOOT} drops by
+     * default.
+     */
+    public static final String REWARD_LOOT = "bloodnight:blood_night/reward";
 
     public static final ExpressionDefinition CREATE_LOCATION = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.LOCATION_CREATE, NodeKind.PURE)
@@ -226,17 +233,41 @@ public final class BukkitNodes {
     public static final StatementDefinition DAMAGE = new StatementDefinition(
             NodeDescriptor.builder(BloodNightNodes.LIVING_ENTITY_DAMAGE, NodeKind.ACTION)
                     .category("living_entity")
-                    .description("Deals damage to an entity; with a source, the damage counts as dealt by it")
+                    .description("Deals damage to an entity; with a source, the damage counts as dealt by it, and"
+                            + " with a type, it is that kind of damage, such as bloodnight:blood_curse")
                     .input("target", "Living Entity", PortType.of(LivingEntity.class), false)
                     .input("amount", double.class)
                     .input("source", "Source", PortType.of(Entity.class), true)
+                    .input("type", "Damage Type", PortType.of(DamageType.class), true)
                     .execution(NEXT)
                     .describe("target", "Who takes the damage")
                     .describe("amount", "The damage, in half hearts")
                     .describe("source", "Who deals it; without, the damage has no source")
+                    .describe(
+                            "type",
+                            "The kind of damage, which decides armor, resistances and the death message; an"
+                                    + " ordinary attack when not given")
                     .build(),
             ctx -> CodeBlock.builder()
-                    .addStatement("$L.damage($L)", ctx.input("target"), arguments(ctx, "amount", "source"))
+                    .add(
+                            ctx.connected("type")
+                                    ? CodeBlock.builder()
+                                            .addStatement(
+                                                    "$T.damage($L, $L, $L, $L)",
+                                                    BukkitRuntime.class,
+                                                    ctx.input("target"),
+                                                    ctx.input("amount"),
+                                                    ctx.connected("source")
+                                                            ? ctx.input("source")
+                                                            : CodeBlock.of("null"),
+                                                    ctx.input("type"))
+                                            .build()
+                                    : CodeBlock.builder()
+                                            .addStatement(
+                                                    "$L.damage($L)",
+                                                    ctx.input("target"),
+                                                    arguments(ctx, "amount", "source"))
+                                            .build())
                     .add(ctx.chain(NEXT))
                     .build());
 
@@ -300,6 +331,34 @@ public final class BukkitNodes {
                             ctx.input("target"),
                             ctx.input("location"),
                             ctx.connected("effect_only") ? ctx.input("effect_only") : CodeBlock.of("false"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition DROP_LOOT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_DROP_LOOT, NodeKind.ACTION)
+                    .category("world")
+                    .description("Rolls a loot table and drops what it gives at a location; server owners change the"
+                            + " blood night reward with a data pack of their own")
+                    .input("target", "World", PortType.of(World.class), false)
+                    .input("location", Location.class)
+                    .optionalInput("table", String.class)
+                    .input("looter", "Player", PortType.of(Player.class), true)
+                    .execution(NEXT)
+                    .describe("target", "The world to drop in")
+                    .describe("location", "Where the loot drops")
+                    .describe(
+                            "table", "Key of the loot table; the blood night reward " + REWARD_LOOT + " when not given")
+                    .describe("looter", "Who the loot is for, which counts for luck and the table's conditions")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.dropLoot($L, $L, $L, $L, $L)",
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("target"),
+                            ctx.input("location"),
+                            ctx.connected("table") ? ctx.input("table") : CodeBlock.of("$S", REWARD_LOOT),
+                            ctx.connected("looter") ? ctx.input("looter") : CodeBlock.of("null"))
                     .add(ctx.chain(NEXT))
                     .build());
 
@@ -761,6 +820,66 @@ public final class BukkitNodes {
                     .add(ctx.chain(NEXT))
                     .build());
 
+    public static final StatementDefinition CARRY = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.ENTITY_CARRY, NodeKind.ACTION)
+                    .category("entity")
+                    .description("Puts an entity on the carrier; it cannot get off on its own, e.g. by sneaking, until"
+                            + " it is dropped or the carrier dies")
+                    .input("target", "Carrier", PortType.of(Entity.class), false)
+                    .input("passenger", "Passenger", PortType.of(Entity.class), false)
+                    .output(RESULT, boolean.class)
+                    .execution(NEXT)
+                    .describe("target", "Who carries")
+                    .describe("passenger", "Who is carried")
+                    .describe("result", "True: the carrier now carries it")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "final boolean $L = $T.carry($L, $L)",
+                            ctx.bind(RESULT, NEXT),
+                            Carrying.class,
+                            ctx.input("target"),
+                            ctx.input("passenger"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition DROP_PASSENGERS = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.ENTITY_DROP_PASSENGERS, NodeKind.ACTION)
+                    .category("entity")
+                    .description("Lets go of everything an entity carries")
+                    .input("target", "Carrier", PortType.of(Entity.class), false)
+                    .execution(NEXT)
+                    .describe("target", "Who lets go")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement("$T.drop($L)", Carrying.class, ctx.input("target"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition LIFT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.ENTITY_LIFT, NodeKind.ACTION)
+                    .category("entity")
+                    .description("Moves an entity straight up with everything it carries, a little each tick; a mob"
+                            + " does not steer while it rises. Goes on right away, the rise takes its time")
+                    .input("target", "Entity", PortType.of(Entity.class), false)
+                    .input("height", double.class)
+                    .input("seconds", double.class)
+                    .execution(NEXT)
+                    .describe("target", "Who rises")
+                    .describe("height", "How far up, in blocks; it stops early below a block")
+                    .describe("seconds", "How long the rise takes")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "$T.lift($L, $L, $L, $L)",
+                            Carrying.class,
+                            ctx.context(),
+                            ctx.input("target"),
+                            ctx.input("height"),
+                            ctx.input("seconds"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
     public static final ExpressionDefinition ENTITY_NEARBY_ENTITIES = new ExpressionDefinition(
             NodeDescriptor.builder(BloodNightNodes.ENTITY_NEARBY_ENTITIES, NodeKind.PURE)
                     .category("entity")
@@ -820,6 +939,9 @@ public final class BukkitNodes {
     public static List<NodeDefinition> all() {
         return List.of(
                 TELEPORT,
+                CARRY,
+                DROP_PASSENGERS,
+                LIFT,
                 ENTITY_NEARBY_ENTITIES,
                 HAS_LINE_OF_SIGHT,
                 BLOCK_AT,
@@ -828,6 +950,7 @@ public final class BukkitNodes {
                 DAMAGE,
                 SPAWN_PARTICLE,
                 STRIKE_LIGHTNING,
+                DROP_LOOT,
                 SPAWN_TNT,
                 SHOW_MARKER,
                 SHOW_TEXT,

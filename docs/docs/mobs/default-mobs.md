@@ -57,6 +57,7 @@ Husks, drowned, zombie villagers and zombified piglins can become these too, whe
 | `fearful_phantom` | Glows. Its hits slow you down. |
 | `fire_phantom` | Carries a blaze. |
 | `phantom_soul` | Glows but is invisible. Its hits blind you. |
+| `carrier_phantom` | Grabs you, carries you 20 blocks up and drops you. Hit it on its way in to stop the grab. Press sneak five times to break loose. |
 
 ## Witches
 
@@ -91,7 +92,7 @@ Cave spiders can become these too.
 | `volley_pillager` | Fires two extra arrows every 4 seconds while it sees you. |
 | `tide_drowned` | Throws a trident every 3 seconds while you are in water. |
 | `swarm_silverfish` | Fast. When you hit it, every silverfish nearby comes for you. |
-| `assassin_spider` | Leaps onto you from up to 12 blocks away, even up into trees. Takes no fall damage. |
+| `assassin_spider` | Leaps onto you from up to 16 blocks away, even up into trees. Below you, it hops back first to leap from the side. Takes no fall damage. |
 
 ## The End
 

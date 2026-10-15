@@ -114,6 +114,21 @@ Data for the vibration particle: travels to a location within some ticks
 |---|---|---|
 | Vibration | Vibration | The vibration, as data for the vibration particle |
 
+## Drop Loot
+
+`world.drop_loot`
+
+Rolls a loot table and drops what it gives at a location; server owners change the blood night reward with a data pack of their own
+
+| In | Type | What it is |
+|---|---|---|
+| World | World | The world to drop in |
+| Location | Location | Where the loot drops |
+| Table (optional) | Text | Key of the loot table; the blood night reward bloodnight:blood_night/reward when not given |
+| Player (optional) | Player | Who the loot is for, which counts for luck and the table's conditions |
+
+Goes on with: **Next**
+
 ## Entities Near Location
 
 `world.nearby_entities`

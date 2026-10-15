@@ -34,6 +34,7 @@ import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.EntityMock;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
 import java.nio.file.Path;
@@ -183,6 +185,45 @@ class DefaultMobsRunTest {
         assertTrue(creeper.isIgnited());
         assertFalse(creeper.isDead());
         assertFalse(world.getEntitiesByClass(BlockDisplay.class).isEmpty());
+    }
+
+    @Test
+    void assassinSpiderHopsBackFromBelowATargetUpHigh() {
+        Spider spider = spawn("assassin_spider", Spider.class);
+        ((EntityMock) spider).setOnGround(true);
+        PlayerMock player = server.addPlayer();
+        player.teleport(new Location(world, 1, 74, 0));
+        spider.setTarget(player);
+
+        server.getScheduler().performOneTick();
+
+        assertTrue(spider.getVelocity().getX() < 0, spider.getVelocity().toString());
+        assertTrue(spider.getVelocity().getY() > 0, spider.getVelocity().toString());
+    }
+
+    @Test
+    void assassinSpiderLeapsAtATargetUpHighFromTheSide() {
+        Spider spider = spawn("assassin_spider", Spider.class);
+        ((EntityMock) spider).setOnGround(true);
+        PlayerMock player = server.addPlayer();
+        player.teleport(new Location(world, 6, 74, 0));
+        spider.setTarget(player);
+
+        server.getScheduler().performOneTick();
+
+        assertTrue(spider.getVelocity().getX() > 0, spider.getVelocity().toString());
+        assertTrue(spider.getVelocity().getY() > 1, spider.getVelocity().toString());
+    }
+
+    @Test
+    void assassinSpiderTakesNoFallDamage() {
+        Spider spider = spawn("assassin_spider", Spider.class);
+        EntityDamageEvent fall = new EntityDamageEvent(
+                spider, DamageCause.FALL, DamageSource.builder(DamageType.FALL).build(), 4);
+
+        server.getPluginManager().callEvent(fall);
+
+        assertTrue(fall.isCancelled());
     }
 
     @Test

@@ -26,6 +26,7 @@ public class ConfigFile {
     private StoreSettings store = new StoreSettings();
     private ForeignMobSettings foreignMobs = new ForeignMobSettings();
     private SetupSettings setup = new SetupSettings();
+    private boolean advancements = true;
 
     /**
      * @return how blood nights are announced
@@ -81,5 +82,12 @@ public class ConfigFile {
      */
     public SetupSettings setup() {
         return setup;
+    }
+
+    /**
+     * @return whether players earn the advancements of the Blood Night tab
+     */
+    public boolean advancements() {
+        return advancements;
     }
 }

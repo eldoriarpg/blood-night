@@ -74,6 +74,9 @@ public interface BloodNightNodes extends StdNodes {
 
     String ENTITY_REMOVE = "entity.remove";
     String ENTITY_TELEPORT = "entity.teleport";
+    String ENTITY_CARRY = "entity.carry";
+    String ENTITY_DROP_PASSENGERS = "entity.drop_passengers";
+    String ENTITY_LIFT = "entity.lift";
     String ENTITY_NEARBY_ENTITIES = "entity.nearby_entities";
     String LIVING_ENTITY_REMOVE_POTION_EFFECT = "living_entity.remove_potion_effect";
     String LIVING_ENTITY_DAMAGE = "living_entity.damage";
@@ -85,6 +88,7 @@ public interface BloodNightNodes extends StdNodes {
     String WORLD_BLOCK_AT = "world.block_at";
     String WORLD_SPAWN_PARTICLE = "world.spawn_particle";
     String WORLD_STRIKE_LIGHTNING = "world.strike_lightning";
+    String WORLD_DROP_LOOT = "world.drop_loot";
     String SERVER_RUN_COMMAND = "server.run_command";
     String WORLD_SPAWN_TNT = "world.spawn_tnt";
     String WORLD_SHOW_MARKER = "world.show_marker";

@@ -1,0 +1,22 @@
+{
+  "clock": "bloodnight:creakings_wake",
+  "tracks": {
+    "minecraft:gameplay/creaking_active": {
+      "modifier": "or",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": false
+        },
+        {
+          "ticks": 1,
+          "value": true
+        },
+        {
+          "ticks": 1000200,
+          "value": false
+        }
+      ]
+    }
+  }
+}

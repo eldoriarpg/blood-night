@@ -18,6 +18,7 @@ import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
 import org.bukkit.entity.Enemy;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,7 +26,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -39,6 +42,9 @@ import java.util.random.RandomGenerator;
  * {@link VanillaLoot} decides whether that loot stays, is multiplied or is dropped. During a blood night, ordinary
  * enemies drop more loot and experience as their world's {@link VanillaDrops} say, unless their kind or spawn reason
  * is excluded or another plugin owns them. Unknown item ids are left out.
+ * <p>
+ * A special mob killed during a blood night also drops the blood night reward where its world's drops say so: a roll
+ * of the loot table {@code bloodnight:blood_night/reward}.
  */
 public final class DropHandler implements Listener {
     private final Function<String, @Nullable CustomMob> mobs;
@@ -49,6 +55,7 @@ public final class DropHandler implements Listener {
     private final ForeignMobs foreign;
     private final RandomGenerator random;
     private final RegionRules regions;
+    private final BiFunction<LivingEntity, Player, Collection<ItemStack>> reward;
 
     /**
      * @param mobs       the custom mob of an id, if defined
@@ -59,6 +66,7 @@ public final class DropHandler implements Listener {
      * @param foreign    tells mobs of other plugins, whose drops stay as they are
      * @param random     the source of chance
      * @param regions    where regions switch the extra loot of ordinary enemies off
+     * @param reward     rolls the blood night reward for a mob and the player who killed it
      */
     public DropHandler(
             Function<String, @Nullable CustomMob> mobs,
@@ -68,8 +76,10 @@ public final class DropHandler implements Listener {
             Predicate<World> bloodNight,
             ForeignMobs foreign,
             RandomGenerator random,
-            RegionRules regions) {
+            RegionRules regions,
+            BiFunction<LivingEntity, Player, Collection<ItemStack>> reward) {
         this.regions = regions;
+        this.reward = reward;
         this.mobs = mobs;
         this.worlds = worlds;
         this.global = global;
@@ -103,6 +113,11 @@ public final class DropHandler implements Listener {
         }
         DropRules rules = DropRules.of(drops, world, global.get());
         addRolled(event, rules);
+        LivingEntity entity = event.getEntity();
+        Player killer = entity.getKiller();
+        if (killer != null && world.rewardLoot() && bloodNight.test(entity.getWorld())) {
+            event.getDrops().addAll(reward.apply(entity, killer));
+        }
         event.setDroppedExp(rules.experience(event.getDroppedExp()));
     }
 

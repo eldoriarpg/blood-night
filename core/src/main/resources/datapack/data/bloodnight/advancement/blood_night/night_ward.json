@@ -1,0 +1,30 @@
+{
+  "parent": "bloodnight:blood_night/survive",
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.bloodnight.night_ward.description",
+      "fallback": "Wear armor with Night Ward V"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:netherite_chestplate"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.bloodnight.night_ward.title",
+      "fallback": "Warded"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ]
+}

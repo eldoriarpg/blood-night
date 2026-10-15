@@ -18,6 +18,10 @@ They live in `atmosphere` in the world file:
 ```yaml
 atmosphere:
   sky: true
+  redDawn: true
+  thickFog: false
+  darkness: false
+  worldParticles: true
   vignette: true
   darknessPulses: true
   rain: false
@@ -45,6 +49,20 @@ begins and fades out when it ends.
 BloodNight brings its own small data pack for this. It loads by itself, you don't need to install anything. It works
 in every world of the normal overworld kind. The Nether and the End keep their sky.
 
+## More from the data pack
+
+The data pack can do a few more things for the whole world. Each one is its own switch.
+
+| Setting | What happens | At first |
+|---|---|---|
+| `redDawn` | The sunrise after a blood night glows red. | on |
+| `thickFog` | The fog closes in more and more during the night. | off |
+| `darkness` | The night gets darker. More monsters spawn, because they like the dark. | off |
+| `worldParticles` | Ash and spores float through the world. The game draws them, so the server sends nothing. | on |
+
+With `worldParticles` on, the `particles` around each player (see below) are not sent. Switch it off to use your own
+particles instead.
+
 ## For each player
 
 | Setting | What the player gets |
@@ -52,8 +70,8 @@ in every world of the normal overworld kind. The Nether and the End keep their s
 | `vignette` | The edge of the screen glows red. |
 | `darknessPulses` | Every minute or so the screen goes dark for a moment. |
 | `rain` | It rains for them, even if the weather is clear. Off by default. |
-| `heartbeat` | They hear a heartbeat when a monster is within `heartbeatRange` blocks (30). Far away it is slow and faint. The closer the monster gets, the faster and louder it beats, up to its loudest within `heartbeatLoudestWithin` blocks (5). Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. |
-| `particles` | Ash and spores drift around them. Add or remove particles as you like. |
+| `heartbeat` | They hear a heartbeat when a monster is within `heartbeatRange` blocks (30). Far away it is slow and faint. The closer the monster gets, the faster and louder it beats, up to its loudest within `heartbeatLoudestWithin` blocks (5). Good armor keeps players calm: their heart beats slower and quieter. Damaged armor calms less. Armor with [Night Ward](../mobs/drops-and-items.md#the-blood-night-reward) calms twice as much. |
+| `particles` | Ash and spores drift around them. Add or remove particles as you like. Only used with `worldParticles: false`. |
 
 Only the player sees and hears these. The world itself does not change.
 

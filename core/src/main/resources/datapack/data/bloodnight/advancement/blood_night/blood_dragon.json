@@ -1,0 +1,30 @@
+{
+  "parent": "bloodnight:blood_night/slayer",
+  "criteria": {
+    "granted": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.bloodnight.blood_dragon.description",
+      "fallback": "Slay the Blood Dragon"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "minecraft:dragon_head"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.bloodnight.blood_dragon.title",
+      "fallback": "Dragon's Blood"
+    }
+  },
+  "requirements": [
+    [
+      "granted"
+    ]
+  ]
+}

@@ -1,5 +1,13 @@
 {
   "values": [
-    "bloodnight:blood_night"
+    "bloodnight:sky",
+    "bloodnight:red_dawn",
+    "bloodnight:thick_fog",
+    "bloodnight:darkness",
+    "bloodnight:world_particles",
+    "bloodnight:monsters_dont_burn",
+    "bloodnight:creakings_wake",
+    "bloodnight:raids_allowed",
+    "bloodnight:raids_denied"
   ]
 }

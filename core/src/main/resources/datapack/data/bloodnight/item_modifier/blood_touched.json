@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:set_lore",
+  "lore": [
+    {
+      "translate": "item.bloodnight.blood_touched",
+      "fallback": "Blood touched",
+      "color": "dark_red",
+      "italic": false
+    }
+  ],
+  "mode": "append"
+}

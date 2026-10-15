@@ -1,5 +1,5 @@
 {
-  "clock": "bloodnight:blood_night",
+  "clock": "bloodnight:sky",
   "tracks": {
     "minecraft:visual/sky_color": {
       "ease": "in_out_sine",

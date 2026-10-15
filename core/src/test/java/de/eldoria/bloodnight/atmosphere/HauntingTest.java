@@ -10,7 +10,10 @@ import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Location;
 import org.bukkit.WeatherType;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HauntingTest extends AtmosphereTest {
     private Haunting haunting;
     private PlayerMock player;
+    private boolean steady;
 
     @BeforeEach
     void setUp() {
         haunting = new Haunting(
-                server, nights, ignored -> atmosphere, new Tasks(plugin), HauntingTest::border, RegionRules.NONE);
+                server,
+                nights,
+                ignored -> atmosphere,
+                new Tasks(plugin),
+                HauntingTest::border,
+                RegionRules.NONE,
+                ignored -> steady);
         server.getPluginManager().registerEvents(haunting, plugin);
         player = new BorderedPlayer(server);
         server.addPlayer(player);
@@ -71,6 +81,38 @@ class HauntingTest extends AtmosphereTest {
         assertFalse(player.getHeardSounds().isEmpty());
     }
 
+    @Test
+    void theClientIsToldWhenADarknessPulseIsOver() {
+        bloodNight();
+        BorderedPlayer bordered = (BorderedPlayer) player;
+        while (bordered.pulses == 0) haunting.tick();
+        assertTrue(bordered.dark);
+
+        for (int i = 0; i < 40 / Haunting.STEP; i++) haunting.tick();
+        assertFalse(bordered.dark);
+    }
+
+    @Test
+    void leavingTheNightEndsARunningPulse() {
+        bloodNight();
+        BorderedPlayer bordered = (BorderedPlayer) player;
+        while (bordered.pulses == 0) haunting.tick();
+
+        day();
+        haunting.tick();
+        assertFalse(bordered.dark);
+    }
+
+    @Test
+    void aSteadyHeartHearsNoHeartbeat() {
+        steady = true;
+        bloodNight();
+        world.spawn(player.getLocation().add(3, 0, 0), Zombie.class);
+        for (int i = 0; i < 20; i++) haunting.tick();
+        assertTrue(player.getHeardSounds().isEmpty());
+        assertNotNull(player.getWorldBorder());
+    }
+
     /**
      * A world border that only keeps its centre; MockBukkit cannot create borders.
      */
@@ -98,6 +140,20 @@ class HauntingTest extends AtmosphereTest {
      */
     private static final class BorderedPlayer extends PlayerMock {
         private @Nullable WorldBorder border;
+        private int pulses;
+        private boolean dark;
+
+        @Override
+        public void sendPotionEffectChange(LivingEntity entity, PotionEffect effect) {
+            if (!effect.getType().equals(PotionEffectType.DARKNESS)) return;
+            pulses++;
+            dark = true;
+        }
+
+        @Override
+        public void sendPotionEffectChangeRemove(LivingEntity entity, PotionEffectType type) {
+            if (type.equals(PotionEffectType.DARKNESS)) dark = false;
+        }
 
         private BorderedPlayer(ServerMock server) {
             super(server, "Haunted");

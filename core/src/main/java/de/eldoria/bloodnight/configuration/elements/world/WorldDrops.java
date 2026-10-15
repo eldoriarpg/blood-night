@@ -27,6 +27,8 @@ import java.util.Map;
  * @param xpModifier   how the experience changes
  * @param xpValue      the number it changes by
  * @param vanilla      what ordinary enemies a player kills during a blood night drop
+ * @param rewardLoot   whether a custom mob a player kills during a blood night also drops a roll of the loot table
+ *                     {@code bloodnight:blood_night/reward}, which a data pack can replace
  */
 public record WorldDrops(
         ConfigurationScope weightsScope,
@@ -36,12 +38,14 @@ public record WorldDrops(
         ConfigurationScope xpScope,
         ValueModifier xpModifier,
         double xpValue,
-        VanillaDrops vanilla) {
+        VanillaDrops vanilla,
+        Boolean rewardLoot) {
     /**
-     * Fills in the vanilla drop settings when a file has none.
+     * Fills in the vanilla drop settings and the reward when a file has none.
      */
     public WorldDrops {
         if (vanilla == null) vanilla = VanillaDrops.defaultDrops();
+        if (rewardLoot == null) rewardLoot = true;
     }
 
     public static WorldDrops defaultDrops() {
@@ -66,6 +70,7 @@ public record WorldDrops(
                 ConfigurationScope.GLOBAL,
                 ValueModifier.MULTIPLY,
                 4,
-                VanillaDrops.defaultDrops());
+                VanillaDrops.defaultDrops(),
+                true);
     }
 }

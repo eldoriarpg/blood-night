@@ -13,7 +13,7 @@ All commands start with `/bloodnight`. The short form is `/bn`.
 | `/bn night [world]` | Shows how the world picks blood nights, the chance for the coming night and the next blood night | `bloodnight.command.night` |
 | `/bn night force [world]` | Makes the coming night a blood night. Starts it now if it is night already. | `bloodnight.command.night.manage` |
 | `/bn night cancel [world]` | Keeps the coming night normal. Ends a running blood night. | `bloodnight.command.night.manage` |
-| `/bn spawn <mob>` | Spawns a special mob where you stand | `bloodnight.command.spawn` |
+| `/bn spawn <mob>` | Spawns a special mob on the block you look at, or where you stand when you look at none | `bloodnight.command.spawn` |
 | `/bn editor` | Opens the web editor or joins the open session | `bloodnight.command.editor` |
 | `/bn editor new` | Starts a fresh editor session | `bloodnight.command.editor` |
 | `/bn editor apply [force]` | Applies what you made in the editor | `bloodnight.command.editor` |

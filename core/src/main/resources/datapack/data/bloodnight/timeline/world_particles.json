@@ -1,0 +1,53 @@
+{
+  "clock": "bloodnight:world_particles",
+  "tracks": {
+    "minecraft:visual/ambient_particles": {
+      "ease": "in_out_sine",
+      "modifier": "append",
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": []
+        },
+        {
+          "ticks": 200,
+          "value": [
+            {
+              "particle": {
+                "type": "minecraft:ash"
+              },
+              "probability": 0.02
+            },
+            {
+              "particle": {
+                "type": "minecraft:crimson_spore"
+              },
+              "probability": 0.006
+            }
+          ]
+        },
+        {
+          "ticks": 1000000,
+          "value": [
+            {
+              "particle": {
+                "type": "minecraft:ash"
+              },
+              "probability": 0.02
+            },
+            {
+              "particle": {
+                "type": "minecraft:crimson_spore"
+              },
+              "probability": 0.006
+            }
+          ]
+        },
+        {
+          "ticks": 1000200,
+          "value": []
+        }
+      ]
+    }
+  }
+}

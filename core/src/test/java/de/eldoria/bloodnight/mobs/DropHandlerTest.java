@@ -68,7 +68,8 @@ class DropHandlerTest {
                 world -> bloodNight,
                 new ForeignMobs(ForeignMobSettings::new, () -> null),
                 RandomGenerator.of("L64X128MixRandom"),
-                RegionRules.NONE);
+                RegionRules.NONE,
+                (mob, killer) -> List.of(new ItemStack(Material.NETHER_STAR)));
     }
 
     @AfterEach
@@ -121,6 +122,31 @@ class DropHandlerTest {
         assertEquals(
                 List.of(new ItemStack(Material.ROTTEN_FLESH), new ItemStack(Material.DIAMOND, 3)), event.getDrops());
         assertEquals(10, event.getDroppedExp());
+    }
+
+    @Test
+    void specialMobsDropTheRewardDuringBloodNights() {
+        bloodNight = true;
+
+        EntityDeathEvent event = death(true);
+
+        assertEquals(
+                List.of(
+                        new ItemStack(Material.ROTTEN_FLESH),
+                        new ItemStack(Material.DIAMOND, 3),
+                        new ItemStack(Material.NETHER_STAR)),
+                event.getDrops());
+    }
+
+    @Test
+    void worldsCanTurnTheRewardOff() {
+        bloodNight = true;
+        worldDrops = withoutReward();
+
+        EntityDeathEvent event = death(true);
+
+        assertEquals(
+                List.of(new ItemStack(Material.ROTTEN_FLESH), new ItemStack(Material.DIAMOND, 3)), event.getDrops());
     }
 
     @Test
@@ -207,7 +233,8 @@ class DropHandlerTest {
                 worldDrops.xpScope(),
                 worldDrops.xpModifier(),
                 worldDrops.xpValue(),
-                worldDrops.vanilla());
+                worldDrops.vanilla(),
+                worldDrops.rewardLoot());
 
         EntityDeathEvent event = die(zombie(), true, new ItemStack(Material.ROTTEN_FLESH));
 
@@ -225,6 +252,21 @@ class DropHandlerTest {
                 drops.xpScope(),
                 drops.xpModifier(),
                 drops.xpValue(),
-                vanilla);
+                vanilla,
+                drops.rewardLoot());
+    }
+
+    private static WorldDrops withoutReward() {
+        WorldDrops drops = WorldDrops.defaultDrops();
+        return new WorldDrops(
+                drops.weightsScope(),
+                drops.weights(),
+                drops.dropTables(),
+                drops.dropList(),
+                drops.xpScope(),
+                drops.xpModifier(),
+                drops.xpValue(),
+                drops.vanilla(),
+                false);
     }
 }

@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "BloodNight: the blood night sky",
+    "description": "BloodNight: blood night timelines, damage type, enchantments and loot",
     "min_format": [107, 1],
     "max_format": 121
   }
