@@ -639,6 +639,12 @@
             "type" : "string"
           }
         },
+        "stackSizes" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          }
+        },
         "enchantments" : {
           "type" : "array",
           "items" : {
@@ -694,7 +700,7 @@
           }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "enchantments", "entityClasses", "mobTypes", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands" ]
+      "required" : [ "minecraftVersion", "materials", "stackSizes", "enchantments", "entityClasses", "mobTypes", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -719,6 +725,9 @@
           "additionalProperties" : {
             "type" : "integer"
           }
+        },
+        "stackSize" : {
+          "type" : "integer"
         }
       },
       "required" : [ "kind", "material", "lore", "enchantments" ]

@@ -637,6 +637,9 @@ export default {
                 weightOf: 'Weight of {amount}',
                 remove: 'Remove {amount}',
                 add: 'Add an amount',
+                single: 'Always one: this item does not stack.',
+                tooMany: 'More than one stack ({size}).',
+                cap: 'Lower to {size}',
             },
             asBroader: {
                 mob: 'As the world or the server',

@@ -877,6 +877,9 @@ export default {
                 weightOf: 'Poids de {amount}',
                 remove: 'Retirer {amount}',
                 add: 'Ajouter une quantité',
+                single: 'Toujours un : cet objet ne s\'empile pas.',
+                tooMany: 'Plus d\'une pile ({size}).',
+                cap: 'Ramener à {size}',
             },
             asBroader: {
                 mob: 'Comme le monde ou le serveur',

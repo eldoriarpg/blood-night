@@ -641,6 +641,9 @@ export default {
                 weightOf: 'Gewicht von {amount}',
                 remove: '{amount} entfernen',
                 add: 'Menge hinzufügen',
+                single: 'Immer eins: dieses Item stapelt sich nicht.',
+                tooMany: 'Mehr als ein Stapel ({size}).',
+                cap: 'Auf {size} senken',
             },
             asBroader: {
                 mob: 'Wie Welt oder Server',

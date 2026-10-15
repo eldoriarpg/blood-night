@@ -316,3 +316,36 @@ export function mobLevels(payload: EditorPayload | null | undefined, mobId: stri
     levels.push({source: 'server', tables: server?.tables ?? [], slots: server?.slots, replaceSame: false})
     return levels
 }
+
+/**
+ * @param item an item id or material key
+ * @param payload the payload
+ * @returns how many of it fit in one stack: a registered item's own size, else its material's, else 64
+ */
+export function stackSize(item: string, payload: EditorPayload | null | undefined): number {
+    const own = payload?.items?.[item]
+    if (own?.stackSize) return own.stackSize
+    return payload?.choices?.stackSizes?.[own?.material ?? item] ?? 64
+}
+
+/**
+ * @param amount an entry's amount
+ * @param size how many of the item fit in one stack
+ * @returns the amount with every number lowered to at most one stack; choices above it are dropped, and when none is
+ *     left, one stack is the only choice
+ */
+export function withinStack(amount: LootAmount, size: number): LootAmount {
+    const min = Math.min(Math.max(1, amount.min), size)
+    const max = Math.min(Math.max(min, amount.max), size)
+    const choices = Object.fromEntries(Object.entries(amount.choices).filter(([value]) => Number(value) <= size))
+    return {...amount, min, max, choices: Object.keys(choices).length > 0 || amount.mode !== 'CHOICES' ? choices : {[String(size)]: 1}}
+}
+
+/**
+ * @param amount an entry's amount
+ * @param size how many of the item fit in one stack
+ * @returns whether any amount it can roll is more than one stack
+ */
+export function exceedsStack(amount: LootAmount, size: number): boolean {
+    return amountChances(amount).some(choice => choice.amount > size)
+}

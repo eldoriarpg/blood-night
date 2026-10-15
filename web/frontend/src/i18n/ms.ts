@@ -877,6 +877,9 @@ export default {
                 weightOf: 'Pemberat untuk {amount}',
                 remove: 'Buang {amount}',
                 add: 'Tambah jumlah',
+                single: 'Sentiasa satu: item ini tidak boleh ditindan.',
+                tooMany: 'Lebih daripada satu tindanan ({size}).',
+                cap: 'Turunkan ke {size}',
             },
             asBroader: {
                 mob: 'Seperti dunia atau pelayan',

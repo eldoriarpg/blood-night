@@ -573,6 +573,7 @@ export interface EditorItem {
   enchantments: {
     [k: string]: number;
   };
+  stackSize?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1112,6 +1113,9 @@ export interface NightRuleSettings {
 export interface EditorChoices {
   minecraftVersion: string;
   materials: string[];
+  stackSizes: {
+    [k: string]: number;
+  };
   enchantments: string[];
   entityClasses: {
     [k: string]: string;
