@@ -56,7 +56,7 @@ final class NightCommand {
         Replies.send(
                 sender,
                 plugin.bloodNights().running(world).isPresent() ? "night.running" : "night.not_running",
-                arg("world", world.getName()),
+                arg("world", plugin.worldNames().name(world)),
                 arg("selection", selection(sender, world)));
         Replies.send(
                 sender,
@@ -85,7 +85,11 @@ final class NightCommand {
     private void force(CommandSender sender, World world) {
         plugin.tasks().globalNow(() -> {
             long night = plugin.bloodNights().force(world);
-            Replies.send(sender, "night.forced", arg("night", night), arg("world", world.getName()));
+            Replies.send(
+                    sender,
+                    "night.forced",
+                    arg("night", night),
+                    arg("world", plugin.worldNames().name(world)));
         });
     }
 
@@ -104,7 +108,11 @@ final class NightCommand {
     private void cancel(CommandSender sender, World world) {
         plugin.tasks().globalNow(() -> {
             long night = plugin.bloodNights().cancel(world);
-            Replies.send(sender, "night.cancelled", arg("night", night), arg("world", world.getName()));
+            Replies.send(
+                    sender,
+                    "night.cancelled",
+                    arg("night", night),
+                    arg("world", plugin.worldNames().name(world)));
         });
     }
 

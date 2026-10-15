@@ -749,6 +749,7 @@ export interface WorldPayload {
   environment: string;
   dayCycle: boolean;
   settings: WorldSettings;
+  alias: string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1121,6 +1122,9 @@ export interface EditorChoices {
     [k: string]: string;
   };
   mobTypes: string[];
+  spawnReasons: {
+    [k: string]: string[];
+  };
   mythicTypes: string[];
   attributes: string[];
   biomes: string[];

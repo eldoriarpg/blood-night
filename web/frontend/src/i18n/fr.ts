@@ -953,6 +953,9 @@ export default {
                 enabled: 'Modifier les ennemis ordinaires',
                 tables: 'Tables de butin en plus',
             },
+            settings: {
+                displayName: 'Nom vu par les joueurs',
+            },
         },
         helpIn: {
             attributes: {name: 'Les joueurs voient le nom dans leur langue. S\'il manque, ils voient celui de la langue de secours du serveur.'},
@@ -978,6 +981,9 @@ export default {
             },
             ordinary: {
                 tables: 'Les tables de butin dont les ennemis ordinaires font aussi tomber pendant les nuits de sang. Celles du monde s\'ajoutent à celles du serveur.',
+            },
+            settings: {
+                displayName: 'Affiché dans les messages, les placeholders et ici dans l\'éditeur. Les couleurs MiniMessage fonctionnent. Vide : le nom du monde dans Multiverse ou Hyperverse, sinon le nom de son dossier.',
             },
         },
         soundLists: {

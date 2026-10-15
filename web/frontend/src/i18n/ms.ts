@@ -953,6 +953,9 @@ export default {
                 enabled: 'Ubah musuh biasa',
                 tables: 'Jadual harta rampasan tambahan',
             },
+            settings: {
+                displayName: 'Nama yang dilihat pemain',
+            },
         },
         helpIn: {
             attributes: {name: 'Pemain melihat nama dalam bahasa mereka. Jika tiada, mereka melihat nama dalam bahasa sandaran pelayan.'},
@@ -978,6 +981,9 @@ export default {
             },
             ordinary: {
                 tables: 'Jadual harta rampasan yang turut dijatuhkan oleh musuh biasa semasa blood night. Jadual dunia ditambah kepada jadual pelayan.',
+            },
+            settings: {
+                displayName: 'Ditunjukkan dalam mesej, placeholder dan di sini dalam editor. Warna MiniMessage boleh digunakan. Kosong: nama dunia dalam Multiverse atau Hyperverse, jika tidak nama foldernya.',
             },
         },
         soundLists: {

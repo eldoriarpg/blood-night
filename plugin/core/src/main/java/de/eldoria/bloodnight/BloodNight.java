@@ -608,6 +608,13 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     }
 
     /**
+     * @return the names players see for worlds
+     */
+    public WorldNames worldNames() {
+        return worldNames;
+    }
+
+    /**
      * @return runs work on the thread owning what it touches
      */
     public Tasks tasks() {

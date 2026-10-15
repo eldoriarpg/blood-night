@@ -24,13 +24,18 @@ public record SettingsPayload(ConfigFile main, Map<String, WorldPayload> worlds)
      *                    only the settings that matter in it, e.g. the dragon fight in the End
      * @param dayCycle    whether its time goes on, which decides between night times and timed blood nights
      * @param settings    its settings
+     * @param alias       its name in Multiverse-Core or Hyperverse, empty when it has none; players see it unless the
+     *                    settings give the world a {@code displayName}
      */
-    public record WorldPayload(String name, String environment, boolean dayCycle, WorldSettings settings) {
+    public record WorldPayload(
+            String name, String environment, boolean dayCycle, WorldSettings settings, String alias) {
         /**
+         * @param alias the world's name in a world plugin, empty for none
          * @return the world's entry
          */
-        public static WorldPayload of(World world, WorldSettings settings) {
-            return new WorldPayload(world.getName(), world.getEnvironment().name(), !world.isFixedTime(), settings);
+        public static WorldPayload of(World world, WorldSettings settings, String alias) {
+            return new WorldPayload(
+                    world.getName(), world.getEnvironment().name(), !world.isFixedTime(), settings, alias);
         }
     }
 }

@@ -663,6 +663,15 @@
             "type" : "string"
           }
         },
+        "spawnReasons" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
         "mythicTypes" : {
           "type" : "array",
           "items" : {
@@ -700,7 +709,7 @@
           }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "stackSizes", "enchantments", "entityClasses", "mobTypes", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands" ]
+      "required" : [ "minecraftVersion", "materials", "stackSizes", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -2425,9 +2434,12 @@
         },
         "settings" : {
           "$ref" : "#/$defs/WorldSettings"
+        },
+        "alias" : {
+          "type" : "string"
         }
       },
-      "required" : [ "name", "environment", "dayCycle", "settings" ]
+      "required" : [ "name", "environment", "dayCycle", "settings", "alias" ]
     },
     "WorldSettings" : {
       "type" : "object",

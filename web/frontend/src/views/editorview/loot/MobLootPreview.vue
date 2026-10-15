@@ -10,6 +10,7 @@ import MutedText from '@/components/typography/MutedText.vue'
 import SectionLabel from '@/components/typography/SectionLabel.vue'
 import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
 import LootItem from '~/views/editorview/loot/LootItem.vue'
+import {worldLabel} from '~/util/settings/worldNames'
 import {mobLevels, pool, pooledKey, roll, simulate, slotChances, slotsOf, usualAmount, type Rolled} from '~/util/loot/lootTables'
 
 /**
@@ -30,7 +31,7 @@ const kill = ref<Rolled[] | null>(null)
 
 const choices = assets.choices(true)
 const worlds = computed(() => Object.entries(session.payload.value?.settings?.worlds ?? {})
-  .map(([uid, entry]) => ({uid, name: entry.name}))
+  .map(([uid, entry]) => ({uid, name: worldLabel(entry)}))
   .sort((a, b) => a.name.localeCompare(b.name)))
 const worldNames = computed(() => Object.fromEntries(worlds.value.map(entry => [entry.uid, entry.name])))
 const chosenWorld = computed(() => world.value ?? worlds.value[0]?.uid)

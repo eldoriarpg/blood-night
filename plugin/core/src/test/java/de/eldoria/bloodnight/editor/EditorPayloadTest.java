@@ -66,6 +66,7 @@ class EditorPayloadTest {
                         List.of("minecraft:sharpness"),
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
                         List.of("CREEPER"),
+                        Map.of("CREEPER", List.of("NATURAL")),
                         List.of("SkeletalKnight"),
                         List.of("minecraft:max_health"),
                         List.of("minecraft:desert"),

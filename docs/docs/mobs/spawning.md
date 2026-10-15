@@ -45,7 +45,7 @@ spawn:
 | `weight` | How often this mob is picked. 0 means it never spawns by itself. |
 | `nightOnly` | `true`: only during blood nights. `false`: at any time. |
 | `nightEnd` | What happens when the blood night ends. See below. |
-| `reasons` | Only for these spawn reasons, like `NATURAL` or `SPAWNER`. Empty means any reason. |
+| `reasons` | Only for these spawn reasons, like `NATURAL` or `SPAWNER`. Empty means any reason. The editor offers only reasons the mob's type can spawn by: `SLIME_SPLIT` only for slimes and magma cubes, `BREEDING` only for animals that breed. |
 | `worlds` | Only in these worlds. Empty means all worlds. |
 | `biomes` | Only in these biomes, like `minecraft:desert`. A tag works too: `#minecraft:is_forest`. |
 | `minY`, `maxY` | Only between these heights. |

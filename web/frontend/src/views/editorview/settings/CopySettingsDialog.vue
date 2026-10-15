@@ -4,6 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script setup lang="ts">
+import {worldLabel} from '~/util/settings/worldNames'
 import InfoBadge from '@/components/badge/InfoBadge.vue'
 import Modal from '@/components/feedback/Modal.vue'
 import SubHeader from '@/components/typography/SubHeader.vue'
@@ -45,7 +46,7 @@ watch(open, now => {
 })
 
 const worlds = computed(() => Object.entries(session.payload.value?.settings?.worlds ?? {})
-  .map(([uid, world]) => ({uid, name: world.name, heldBy: locks.heldByOther(section.world(uid))}))
+  .map(([uid, world]) => ({uid, name: worldLabel(world), heldBy: locks.heldByOther(section.world(uid))}))
   .sort((a, b) => a.name.localeCompare(b.name)))
 
 function toggle(list: string[], value: string, on: boolean): string[] {
@@ -78,7 +79,7 @@ async function copy(): Promise<void> {
           <legend><SectionLabel>{{ t('editor.copy.to') }}</SectionLabel></legend>
           <label v-for="world in worlds.filter(candidate => candidate.uid !== source)" :key="world.uid" class="flex min-h-10 items-center gap-2 px-2 text-sm">
             <CheckboxInput :disabled="world.heldBy !== null" :model-value="targets.includes(world.uid)" @update:model-value="on => targets = toggle(targets, world.uid, on)"/>
-            <span class="flex-1 font-mono">{{ world.name }}</span>
+            <span class="flex-1">{{ world.name }}</span>
             <InfoBadge v-if="world.heldBy">{{ t('editor.copy.editing', {name: world.heldBy}) }}</InfoBadge>
           </label>
         </fieldset>

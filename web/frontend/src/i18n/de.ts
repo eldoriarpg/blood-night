@@ -702,6 +702,9 @@ export default {
                 enabled: 'Normale Gegner verändern',
                 tables: 'Zusätzliche Beutetabellen',
             },
+            settings: {
+                displayName: 'Name für Spieler',
+            },
         },
         helpIn: {
             attributes: {name: 'Spieler sehen den Namen in ihrer Sprache. Fehlt sie, sehen sie den in der Ausweichsprache des Servers.'},
@@ -719,6 +722,9 @@ export default {
             },
             ordinary: {
                 tables: 'Beutetabellen, aus denen normale Gegner in Blutnächten zusätzlich fallen lassen. Die der Welt kommen zu denen des Servers dazu.',
+            },
+            settings: {
+                displayName: 'Erscheint in Nachrichten, Platzhaltern und hier im Editor. MiniMessage-Farben gehen. Leer: der Name der Welt in Multiverse oder Hyperverse, sonst ihr Ordnername.',
             },
         },
         soundLists: {begin: 'Wenn eine Blutnacht beginnt', end: 'Wenn sie endet', ambience: 'Während der Nacht'},
