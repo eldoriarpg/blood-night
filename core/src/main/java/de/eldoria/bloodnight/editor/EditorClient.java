@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.configuration.elements.EditorSettings;
 import de.eldoria.bloodnight.web.api.editor.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.AppliedReport;
 import de.eldoria.bloodnight.web.api.editor.CreateSession;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
@@ -20,6 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -112,6 +114,24 @@ public final class EditorClient {
                     }
                     if (response.statusCode() == 404) throw new EditorException("The session expired or was closed");
                     return MAPPER.readValue(expectSuccess(response).body(), SessionView.class);
+                });
+    }
+
+    /**
+     * Tells the service that the server applied the session and keeps it open.
+     *
+     * @param session  the session
+     * @param revision the revision the server applied
+     * @param hashes   the server's file hashes after the apply, which the next apply is checked against
+     * @return completes once the service recorded it
+     */
+    public CompletableFuture<Void> applied(SessionCreated session, int revision, Map<String, String> hashes) {
+        String body = MAPPER.writeValueAsString(new AppliedReport(revision, hashes));
+        return send(authorized(EditorRoutes.path(EditorRoutes.APPLIED, session.id()), session)
+                        .POST(HttpRequest.BodyPublishers.ofString(body)))
+                .thenAccept(response -> {
+                    if (response.statusCode() == 404) throw new EditorException("The session expired or was closed");
+                    expectSuccess(response);
                 });
     }
 

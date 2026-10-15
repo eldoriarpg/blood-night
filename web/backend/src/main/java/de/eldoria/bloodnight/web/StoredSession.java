@@ -5,7 +5,9 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.api.editor.LastApplied;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 
@@ -19,8 +21,10 @@ import java.time.Instant;
  * @param catalog       version of the server's catalog
  * @param payload       the payload at the current revision, JSON
  * @param problems      the problems last found, JSON
- * @param created       when the server opened it
- * @param expires       when it is deleted unless used again
+ * @param created         when the server opened it
+ * @param expires         when it is deleted unless used again
+ * @param appliedRevision the revision the server last applied; none before the first apply
+ * @param appliedAt       when the server last applied it; none before the first apply
  */
 record StoredSession(
         String id,
@@ -31,4 +35,16 @@ record StoredSession(
         String payload,
         String problems,
         Instant created,
-        Instant expires) {}
+        Instant expires,
+        @Nullable Integer appliedRevision,
+        @Nullable Instant appliedAt) {
+    /**
+     * @return when the server last applied the session; null before the first apply
+     */
+    @Nullable
+    LastApplied lastApplied() {
+        Integer revision = appliedRevision;
+        Instant at = appliedAt;
+        return revision == null || at == null ? null : new LastApplied(revision, at);
+    }
+}

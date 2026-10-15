@@ -34,7 +34,11 @@ public enum StreamEventType {
      */
     SUBMITTED,
     /**
-     * The server applied or cancelled the session; it is gone.
+     * The server applied the session and keeps it open: the applied revision.
+     */
+    APPLIED,
+    /**
+     * The server cancelled the session, or replaced it with a new one; it is gone.
      */
     CLOSED
 }

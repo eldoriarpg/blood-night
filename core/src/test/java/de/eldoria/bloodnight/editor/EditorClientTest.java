@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
 
@@ -43,6 +44,7 @@ class EditorClientTest {
     private EditorClient client;
     private int resultStatus = 409;
     private boolean sessionGone;
+    private String applied = "";
 
     @BeforeEach
     void setUp() throws IOException {
@@ -67,6 +69,9 @@ class EditorClientTest {
                 }
             } else if (path.endsWith("/result")) {
                 status = resultStatus;
+            } else if (path.endsWith("/applied")) {
+                status = sessionGone ? 404 : 204;
+                applied = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             } else if (path.equals("/api/v1/editor/sessions/id")
                     && exchange.getRequestMethod().equals("GET")) {
                 status = sessionGone ? 404 : 200;
@@ -77,6 +82,7 @@ class EditorClientTest {
                                     "id",
                                     SessionState.EDITING,
                                     3,
+                                    null,
                                     "v1",
                                     JsonMapper.builder().build().readTree("{}"),
                                     List.of(),
@@ -130,6 +136,23 @@ class EditorClientTest {
         assertInstanceOf(EditorException.class, error.getCause());
         assertTrue(error.getCause().getMessage().contains("not marked as done"));
         assertEquals(List.of("GET /api/v1/editor/sessions/id/result Bearer token"), requests);
+    }
+
+    @Test
+    void anApplyIsReportedWithTheRevisionAndTheNewHashes() {
+        client.applied(SESSION, 4, Map.of("mobs.yml", "abc")).join();
+
+        assertEquals(List.of("POST /api/v1/editor/sessions/id/applied Bearer token"), requests);
+        assertTrue(applied.contains("\"revision\":4"), applied);
+        assertTrue(applied.contains("\"mobs.yml\":\"abc\""), applied);
+    }
+
+    @Test
+    void reportingAnApplyToAGoneSessionSaysSo() {
+        sessionGone = true;
+        var error = assertThrows(CompletionException.class, () -> client.applied(SESSION, 1, Map.of())
+                .join());
+        assertTrue(error.getCause().getMessage().contains("expired or was closed"));
     }
 
     @Test

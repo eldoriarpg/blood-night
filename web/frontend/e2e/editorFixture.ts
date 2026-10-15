@@ -211,7 +211,7 @@ export async function stageEditor(page: Page, holders: Record<string, string> = 
         },
     }
     await page.route(`**/api/v1/editor/sessions/${SESSION}`, route => route.fulfill({json: {
-        id: SESSION, state: 'EDITING', revision, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'DROPS'], expires: '2026-10-20T00:00:00Z',
+        id: SESSION, state: 'EDITING', revision, lastApplied: null, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'DROPS'], expires: '2026-10-20T00:00:00Z',
     }}))
     await page.route('**/api/v1/editor/catalogs/e2e', route => route.fulfill({json: catalog}))
     await page.route(`**/api/v1/editor/sessions/${SESSION}/locks`, route => route.fulfill({status: 204}))

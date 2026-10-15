@@ -17,6 +17,7 @@ import de.eldoria.bloodnight.editor.SettingsPayload;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.SessionState;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
 import de.eldoria.graph.payload.CatalogGenerator;
 import net.kyori.adventure.text.Component;
@@ -40,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
@@ -47,9 +49,11 @@ import static de.eldoria.bloodnight.command.Replies.arg;
 
 /**
  * {@code /bloodnight editor [new | apply [force] | cancel]}: opens a web editor session with the server's mobs,
- * macros, items and settings, applies the session once it is marked as done in the editor, or closes it.
+ * macros, items and settings, applies the session each time it is marked as done in the editor, or closes it.
  * <p>
- * A server keeps its session until it is applied or cancelled. Everyone who runs {@code /bloodnight editor} while it is
+ * A server keeps its session until it is cancelled, replaced or expires; applying keeps it open, so it can be edited
+ * and applied again. After an apply the server tells the service the applied revision and its file hashes, which the
+ * next apply's conflict check uses. Everyone who runs {@code /bloodnight editor} while it is
  * open joins it with a personal link under their name, so several players can edit at once, each holding the sections
  * they work on; they are told about files that changed on the server since it was opened. {@code new} replaces the
  * session with a fresh one.
@@ -232,16 +236,39 @@ final class EditorCommand {
             return;
         }
         Replies.send(sender, "editor.pulling");
-        client().pull(session.get())
+        client().view(session.get())
+                .thenCompose(current -> current.filter(view -> view.state() == SessionState.APPLIED)
+                                .isPresent()
+                        ? CompletableFuture.<@Nullable SessionView>completedFuture(null)
+                        : client().pull(session.get()))
                 .whenComplete((view, error) -> sync(() -> {
                     if (error != null) {
                         Replies.send(sender, "editor.failed", arg("error", reason(error)));
                         return;
                     }
-                    if (apply(sender, view, force)) {
-                        client().close(session.get());
-                        sessions().clear();
+                    if (view == null) {
+                        Replies.send(sender, "editor.nothing_new");
+                        return;
                     }
+                    if (apply(sender, view, force)) applied(sender, session.get(), view.revision());
+                }));
+    }
+
+    /**
+     * Tells the service what this apply wrote, so the session stays open for the next one.
+     */
+    private void applied(CommandSender sender, SessionCreated session, int revision) {
+        Map<String, String> hashes;
+        try {
+            hashes = plugin.configuration().fileHashes(plugin.getServer().getWorlds());
+        } catch (IOException e) {
+            Replies.send(sender, "editor.unreadable", arg("error", String.valueOf(e.getMessage())));
+            return;
+        }
+        client().applied(session, revision, hashes)
+                .whenComplete((ignored, error) -> sync(() -> {
+                    if (error != null) Replies.send(sender, "editor.failed", arg("error", reason(error)));
+                    else Replies.send(sender, "editor.stays_open");
                 }));
     }
 

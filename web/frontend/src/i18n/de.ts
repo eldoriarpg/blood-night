@@ -44,7 +44,10 @@ export default {
             saving: 'Wird gespeichert',
             submit: 'Als fertig markieren',
             submitAgain: 'Erneut als fertig markieren',
-            submitted: 'Als fertig markiert. Führe /bloodnight editor apply auf dem Server aus, um es zu übernehmen.',
+            submitted: 'Als fertig markiert. Führe /bloodnight editor apply auf dem Server aus, um es zu übernehmen. Die Sitzung bleibt danach offen.',
+            applied: 'Übernommen {when} (Revision {revision})',
+            changeSince: '1 Änderung seitdem',
+            changesSince: '{count} Änderungen seitdem',
         },
         changes: {
             held: '{names} bearbeitet das gerade.',

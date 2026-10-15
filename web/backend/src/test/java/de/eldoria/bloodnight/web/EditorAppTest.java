@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EditorAppTest {
@@ -273,6 +274,73 @@ class EditorAppTest {
     }
 
     @Test
+    void anAppliedSessionStaysOpenAndCanBeAppliedAgain() throws Exception {
+        SessionCreated session = open("Steve");
+        String steve = token(session.editorUrl());
+        String submit = EditorRoutes.path(EditorRoutes.SUBMIT, session.id());
+        String result = EditorRoutes.path(EditorRoutes.RESULT, session.id());
+        String applied = EditorRoutes.path(EditorRoutes.APPLIED, session.id());
+        assertNull(view(session, steve).lastApplied());
+
+        change(session, steve, entityType("hot", "HUSK"));
+        send("POST", submit, null, steve);
+        assertEquals(200, send("GET", result, null, session.pullToken()).statusCode());
+        String report = "{\"revision\":1,\"hashes\":{\"mobs.yml\":\"after-first\"}}";
+        assertEquals(401, send("POST", applied, report, steve).statusCode());
+        assertEquals(
+                400,
+                send("POST", applied, "{\"revision\":2,\"hashes\":{}}", session.pullToken())
+                        .statusCode());
+        assertEquals(204, send("POST", applied, report, session.pullToken()).statusCode());
+
+        SessionView first = view(session, steve);
+        assertEquals(SessionState.APPLIED, first.state());
+        assertEquals(1, first.lastApplied().revision());
+        assertEquals("after-first", first.payload().at("/hashes/mobs.yml").asString());
+        assertEquals(409, send("GET", result, null, session.pullToken()).statusCode());
+
+        change(session, steve, entityType("hot", "STRAY"));
+        assertEquals(SessionState.EDITING, view(session, steve).state());
+        assertEquals(
+                "after-first",
+                view(session, steve).payload().at("/hashes/mobs.yml").asString());
+        send("POST", submit, null, steve);
+        SessionView again = EditorApp.MAPPER.readValue(
+                send("GET", result, null, session.pullToken()).body(), SessionView.class);
+        assertEquals(
+                "STRAY", again.payload().at("/mobs/hot/attributes/entityType").asString());
+        assertEquals(
+                204,
+                send(
+                                "POST",
+                                applied,
+                                "{\"revision\":2,\"hashes\":{\"mobs.yml\":\"after-second\"}}",
+                                session.pullToken())
+                        .statusCode());
+        assertEquals(2, view(session, steve).lastApplied().revision());
+    }
+
+    @Test
+    void anApplyOfAnOlderRevisionKeepsNewerChangesOpen() throws Exception {
+        SessionCreated session = open("Steve");
+        String steve = token(session.editorUrl());
+        change(session, steve, entityType("hot", "HUSK"));
+        send("POST", EditorRoutes.path(EditorRoutes.SUBMIT, session.id()), null, steve);
+        change(session, steve, entityType("hot", "STRAY"));
+
+        send(
+                "POST",
+                EditorRoutes.path(EditorRoutes.APPLIED, session.id()),
+                "{\"revision\":1,\"hashes\":{}}",
+                session.pullToken());
+
+        SessionView view = view(session, steve);
+        assertEquals(SessionState.EDITING, view.state());
+        assertEquals(1, view.lastApplied().revision());
+        assertEquals(2, view.revision());
+    }
+
+    @Test
     void participantsWorkOnDifferentSectionsAtOnce() throws Exception {
         SessionCreated session = open("Steve");
         String steve = token(session.editorUrl());
@@ -404,6 +472,15 @@ class EditorAppTest {
         assertEquals(StreamEventType.CHANGE, change.type());
         assertEquals(1, change.revision());
         assertEquals("Steve", change.author());
+
+        send(
+                "POST",
+                EditorRoutes.path(EditorRoutes.APPLIED, session.id()),
+                "{\"revision\":1,\"hashes\":{}}",
+                session.pullToken());
+        StreamEvent applied = heard.poll(5, TimeUnit.SECONDS);
+        assertEquals(StreamEventType.APPLIED, applied.type());
+        assertEquals(1, applied.revision());
 
         send("DELETE", EditorRoutes.path(EditorRoutes.SESSION, session.id()), null, session.pullToken());
         assertEquals(StreamEventType.CLOSED, heard.poll(5, TimeUnit.SECONDS).type());

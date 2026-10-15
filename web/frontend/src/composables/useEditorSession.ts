@@ -45,6 +45,7 @@ export function useEditorSession() {
         data.value.online = view.online
         data.value.problems = view.problems
         data.value.state = view.state
+        data.value.lastApplied = view.lastApplied ?? null
         data.value.you = view.you ?? data.value.you
         data.value.areas = view.areas
     }
@@ -67,11 +68,17 @@ export function useEditorSession() {
         const operations = (event.operations ?? []) as PatchOperation[]
         data.value.confirmed = applyPatch(data.value.confirmed, operations)
         data.value.revision = revision
+        data.value.state = 'EDITING'
         if (event.author === data.value.you) {
             const sent = JSON.stringify(operations)
             const index = data.value.pending.findIndex(change => JSON.stringify(change.operations) === sent)
             if (index >= 0) data.value.pending.splice(index, 1)
         }
+    }
+
+    function applied(revision: number): void {
+        data.value.lastApplied = {revision, at: new Date().toISOString()}
+        if (revision === data.value.revision) data.value.state = 'APPLIED'
     }
 
     function heard(event: StreamEvent): void {
@@ -86,6 +93,7 @@ export function useEditorSession() {
             case 'UNLOCK': data.value.locks = data.value.locks.filter(lock => lock.section !== event.section); break
             case 'PRESENCE': data.value.online = event.participants ?? []; break
             case 'SUBMITTED': data.value.state = 'SUBMITTED'; break
+            case 'APPLIED': applied(event.revision ?? 0); break
             case 'CLOSED': data.value.status = 'gone'; break
         }
     }
