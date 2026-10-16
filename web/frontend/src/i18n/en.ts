@@ -370,6 +370,12 @@ export default {
             newEnchantment: 'Enchantment, e.g. minecraft:sharpness',
             delete: 'Delete item',
             confirm: 'Delete the item {id}?',
+            fromGame: {
+                title: 'Items from the game',
+                hold: 'Hold an item in game and run {command}. It keeps everything: name, enchantments and data of other plugins.',
+                chest: 'Run {command} with an empty hand to open a chest. Put in all the items you want, then close it; you get them back. The same item is only added once.',
+                session: 'Items registered in game show up here in the next editor session.',
+            },
         },
         settings: {
             world: 'World settings',

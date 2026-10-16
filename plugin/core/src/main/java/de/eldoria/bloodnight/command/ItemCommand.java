@@ -24,7 +24,8 @@ import static de.eldoria.bloodnight.command.Replies.arg;
 
 /**
  * {@code /bloodnight item register}: keeps the item in the player's main hand, with all its data, under a generated id
- * that mob equipment and drops can name; the same item always gets the same id. {@code /bloodnight item remove <id>}
+ * that mob equipment and drops can name; the same item always gets the same id. With an empty hand it opens an
+ * {@link ItemDropBox} to register many items at once. {@code /bloodnight item remove <id>}
  * forgets such an item. Both write {@code items.yml} at once, on the global region; items made in the editor are
  * changed there instead.
  */
@@ -50,7 +51,7 @@ final class ItemCommand {
         }
         ItemStack held = player.getInventory().getItemInMainHand();
         if (held.isEmpty()) {
-            Replies.send(sender, "item.hold");
+            ItemDropBox.open(player);
             return;
         }
         ItemStack item = held.clone();
@@ -82,7 +83,7 @@ final class ItemCommand {
         Replies.send(sender, "item.removed", arg("id", id));
     }
 
-    private static ItemRegistry copy(ItemRegistry items) {
+    static ItemRegistry copy(ItemRegistry items) {
         return new ItemRegistry(Map.copyOf(items.registrations()), Map.copyOf(items.definitions()));
     }
 }

@@ -57,4 +57,19 @@ class ItemRegistryTest {
         assertFalse(items.unregister("axe"));
         assertTrue(items.knows("axe"));
     }
+
+    @Test
+    void anItemAlreadyRegisteredKeepsItsIdAndOthersNeverTakeOne() {
+        ItemStack stone = ItemStack.of(Material.STONE);
+        ItemStack other = ItemStack.of(Material.DIRT);
+        String taken = Integer.toHexString(stone.hashCode());
+        ItemRegistry items = new ItemRegistry(Map.of(taken, other, "kept", ItemStack.of(Material.COBBLESTONE)), null);
+
+        String id = items.register(stone);
+
+        assertEquals(Integer.toHexString(stone.hashCode() + 1), id);
+        assertEquals("kept", items.register(ItemStack.of(Material.COBBLESTONE, 12)));
+        assertEquals(taken, items.find(ItemStack.of(Material.DIRT)));
+        assertNull(items.find(ItemStack.of(Material.SAND)));
+    }
 }

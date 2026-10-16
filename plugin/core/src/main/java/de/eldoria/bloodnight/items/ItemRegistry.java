@@ -71,17 +71,33 @@ public class ItemRegistry {
     }
 
     /**
-     * Keeps a copy of an item from the game, with all its data, as a single item.
+     * Keeps a copy of an item from the game, with all its data, as a single item. An item already registered keeps its
+     * id; a new one gets an id made from its hash, the next free one when another item has that id.
      *
      * @param stack the item
-     * @return its generated id; the same item always gets the same id
+     * @return its id; the same item always gets the same id
      */
     public String register(ItemStack stack) {
+        String known = find(stack);
+        if (known != null) return known;
         ItemStack single = stack.clone();
         single.setAmount(1);
-        String id = Integer.toHexString(single.hashCode());
+        int hash = single.hashCode();
+        String id = Integer.toHexString(hash);
+        while (registrations.containsKey(id)) id = Integer.toHexString(++hash);
         registrations.put(id, single);
         return id;
+    }
+
+    /**
+     * @param stack an item from the game
+     * @return the id it is registered under, none when no registered item is the same, amounts aside
+     */
+    public @Nullable String find(ItemStack stack) {
+        for (Map.Entry<String, ItemStack> entry : registrations.entrySet()) {
+            if (entry.getValue().isSimilar(stack)) return entry.getKey();
+        }
+        return null;
     }
 
     /**

@@ -10,6 +10,7 @@ import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import SectionLabel from '@/components/typography/SectionLabel.vue'
 import EmptyState from '@/components/feedback/EmptyState.vue'
 import SearchInput from '@/components/input/text/SearchInput.vue'
+import MutedText from '@/components/typography/MutedText.vue'
 import ItemForm from '~/views/editorview/items/ItemForm.vue'
 import NewItemDialog from '~/views/editorview/items/NewItemDialog.vue'
 import {section} from '~/util/session/sections'
@@ -17,7 +18,8 @@ import {itemEntries} from '~/util/session/itemEntries'
 import {searchChoices} from '~/util/items/itemChoices'
 
 /**
- * The items mobs wear and drop: the items in a sidebar and the picked one's form. Opening an item takes its section;
+ * The items mobs wear and drop: the items in a sidebar, with how to bring items over from the game, and the picked
+ * one's form. Opening an item takes its section;
  * an item someone else holds is shown read only.
  */
 const session = useEditorSession()
@@ -27,6 +29,7 @@ const assets = useItemAssets()
 const picked = ref('')
 const creating = ref(false)
 const query = ref('')
+const REGISTER = '/bloodnight item register'
 const searchable = assets.choices(true, false)
 
 const items = computed(() => itemEntries(session.payload.value))
@@ -70,6 +73,12 @@ onBeforeUnmount(() => {
         <InfoBadge v-if="locks.heldByOther(section.item(candidate.id))">{{ locks.heldByOther(section.item(candidate.id)) }}</InfoBadge>
       </BareButton>
       <SecondaryButton class="mt-2" compact icon="plus" @click="creating = true">{{ t('editor.items.new') }}</SecondaryButton>
+      <section :aria-label="t('editor.items.fromGame.title')" class="mt-4 flex flex-col gap-1 rounded-panel border border-line-soft p-3 text-sm">
+        <SectionLabel>{{ t('editor.items.fromGame.title') }}</SectionLabel>
+        <MutedText size="sm" tag="p">{{ t('editor.items.fromGame.hold', {command: REGISTER}) }}</MutedText>
+        <MutedText size="sm" tag="p">{{ t('editor.items.fromGame.chest', {command: REGISTER}) }}</MutedText>
+        <MutedText size="sm" tag="p">{{ t('editor.items.fromGame.session') }}</MutedText>
+      </section>
     </nav>
     <ItemForm v-if="entry" :key="entry.id" :entry="entry" class="min-w-0 flex-1" @deleted="picked = ''"/>
     <EmptyState v-else :message="t('editor.items.empty')" class="flex-1"/>

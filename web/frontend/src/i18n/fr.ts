@@ -537,6 +537,12 @@ export default {
             newEnchantment: 'Enchantement, par ex. minecraft:sharpness',
             delete: 'Supprimer l\'objet',
             confirm: 'Supprimer l\'objet {id} ?',
+            fromGame: {
+                title: 'Objets du jeu',
+                hold: 'Tiens un objet en jeu et lance {command}. Il garde tout : nom, enchantements et données d\'autres plugins.',
+                chest: 'Lance {command} la main vide pour ouvrir un coffre. Mets-y tous les objets voulus, puis ferme-le ; tu les récupères. Un même objet n\'est ajouté qu\'une fois.',
+                session: 'Les objets enregistrés en jeu apparaissent ici à la prochaine session de l\'éditeur.',
+            },
         },
         settings: {
             world: 'Paramètres du monde',

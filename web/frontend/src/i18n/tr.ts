@@ -537,6 +537,12 @@ export default {
             newEnchantment: 'Büyü, örneğin minecraft:sharpness',
             delete: 'Eşyayı sil',
             confirm: '{id} eşyası silinsin mi?',
+            fromGame: {
+                title: 'Oyundan eşyalar',
+                hold: 'Oyunda bir eşyayı tut ve {command} komutunu çalıştır. Her şeyini korur: adı, büyüleri ve diğer eklentilerin verileri.',
+                chest: 'Bir sandık açmak için eli boşken {command} komutunu çalıştır. İstediğin tüm eşyaları koy ve kapat; hepsini geri alırsın. Aynı eşya yalnızca bir kez eklenir.',
+                session: 'Oyunda kaydedilen eşyalar bir sonraki düzenleyici oturumunda burada görünür.',
+            },
         },
         settings: {
             world: 'Dünya ayarları',
