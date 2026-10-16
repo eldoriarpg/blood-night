@@ -8,15 +8,18 @@ import type {EditorPayload, LootEntry, LootTable} from '~/api/generated/payload'
 import {
     amountChances,
     entryShares,
+    exceedsStack,
     mobLevels,
     pool,
     removeTable,
     roll,
     simulate,
+    stackSize,
     slotsOf,
     tableId,
     usesOf,
     usualAmount,
+    withinStack,
     type LootLevel,
 } from '~/util/loot/lootTables'
 
@@ -113,5 +116,27 @@ describe('mobLevels', () => {
     it('stops where a level does not inherit', () => {
         expect(mobLevels(payload, 'zombie', undefined).map(entry => entry.source)).toEqual(['mob', 'world', 'server'])
         expect(mobLevels(payload, 'zombie', 'w').map(entry => entry.source)).toEqual(['mob', 'world'])
+    })
+})
+
+describe('stack sizes', () => {
+    const stacked = {
+        items: {blade: {kind: 'REGISTERED', material: 'minecraft:stick', lore: [], enchantments: {}, stackSize: 1}, wand: {kind: 'DEFINED', material: 'minecraft:diamond_sword', lore: [], enchantments: {}}},
+        choices: {stackSizes: {'minecraft:diamond_sword': 1, 'minecraft:ender_pearl': 16}},
+    } as unknown as EditorPayload
+
+    it('finds an item\'s stack size', () => {
+        expect(stackSize('blade', stacked)).toBe(1)
+        expect(stackSize('wand', stacked)).toBe(1)
+        expect(stackSize('minecraft:ender_pearl', stacked)).toBe(16)
+        expect(stackSize('minecraft:stone', stacked)).toBe(64)
+    })
+
+    it('keeps amounts within one stack', () => {
+        expect(withinStack({mode: 'RANGE', min: 4, max: 40, choices: {}}, 16)).toEqual({mode: 'RANGE', min: 4, max: 16, choices: {}})
+        expect(withinStack({mode: 'CHOICES', min: 1, max: 1, choices: {8: 3, 32: 1}}, 16).choices).toEqual({8: 3})
+        expect(withinStack({mode: 'CHOICES', min: 1, max: 1, choices: {5: 1}}, 1).choices).toEqual({1: 1})
+        expect(exceedsStack({mode: 'RANGE', min: 1, max: 3, choices: {}}, 1)).toBe(true)
+        expect(exceedsStack({mode: 'RANGE', min: 1, max: 1, choices: {}}, 1)).toBe(false)
     })
 })

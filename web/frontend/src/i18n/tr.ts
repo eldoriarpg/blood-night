@@ -883,6 +883,9 @@ export default {
                 weightOf: '{amount} için ağırlık',
                 remove: '{amount} kaldır',
                 add: 'Miktar ekle',
+                single: 'Her zaman bir: bu eşya yığılmaz.',
+                tooMany: 'Bir yığından fazla ({size}).',
+                cap: '{size} değerine indir',
             },
             asBroader: {
                 mob: 'Dünya ya da sunucu gibi',

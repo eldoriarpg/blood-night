@@ -41,7 +41,8 @@ tables:
   - `CHOICES` drops one of a few numbers. Each has its own weight. Here one diamond drops 9 times as often as two.
 - `repeatable`: whether the entry can be picked again in the same kill. With `false`, it drops at most once.
 
-A big amount is split into full stacks. So 100 iron nuggets drop as one stack of 64 and one of 36.
+An amount fits in one stack: at most 64 iron nuggets, 16 ender pearls, and always one sword, since swords do not stack.
+The editor keeps amounts within that.
 
 The tables live in `loot_tables.yml`. The editor shows each entry's chance and usual amount. A **Roll** button shows
 one pick.

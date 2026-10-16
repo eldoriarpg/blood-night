@@ -10,16 +10,20 @@ import RangeSlider from '@/components/input/range/RangeSlider.vue'
 import MutedIconButton from '@/components/button/MutedIconButton.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
+import MutedText from '@/components/typography/MutedText.vue'
 import type {LootAmount} from '~/api/generated/payload'
-import {amountChances} from '~/util/loot/lootTables'
+import {amountChances, exceedsStack, withinStack} from '~/util/loot/lootTables'
 
 /**
  * How many of an entry's item drop when it is picked: any amount from one number to another, drawn as a range slider
- * up to a stack (further when the range already reaches beyond), or one of a few amounts, each with a weight and the
- * chance it gives. Saved once a handle is let go or a number left.
+ * up to one stack of the item, or one of a few amounts, each with a weight and the chance it gives. Saved once a handle
+ * is let go or a number left, never above one stack. An item that does not stack, such as a sword, always drops one.
+ * An amount stored above one stack is pointed out and can be lowered to it.
  */
 const props = defineProps<{
   value: LootAmount
+  /** How many of the item fit in one stack. */
+  stackSize: number
   readOnly: boolean
 }>()
 
@@ -28,7 +32,6 @@ const emit = defineEmits<{
 }>()
 
 const {t} = useI18n()
-const STACK = 64
 const range = ref<[number, number]>([1, 1])
 const choices = ref<{amount: number | undefined, weight: number | undefined}[]>([])
 
@@ -39,7 +42,7 @@ watch(() => props.value, value => {
     .sort((a, b) => a.amount - b.amount)
 }, {immediate: true, deep: true})
 
-const top = computed(() => Math.max(STACK, range.value[1]))
+const too = computed(() => exceedsStack(props.value, props.stackSize))
 const modes = computed(() => ({RANGE: t('editor.loot.amount.range'), CHOICES: t('editor.loot.amount.choices')}))
 const chances = computed(() => new Map(amountChances({...props.value, mode: 'CHOICES', choices: chosen()}).map(choice => [choice.amount, choice.chance])))
 
@@ -58,17 +61,18 @@ function mode(next: string | undefined): void {
 
 function saveRange(value: [number, number]): void {
   const [min, max] = [Math.max(1, Math.round(value[0])), Math.max(1, Math.round(value[1]))]
-  emit('save', {...props.value, min: Math.min(min, max), max: Math.max(min, max)})
+  emit('save', withinStack({...props.value, min: Math.min(min, max), max: Math.max(min, max)}, props.stackSize))
 }
 
 function saveChoices(): void {
-  emit('save', {...props.value, choices: chosen()})
+  emit('save', withinStack({...props.value, choices: chosen()}, props.stackSize))
 }
 
 function addChoice(): void {
   const taken = new Set(choices.value.map(choice => choice.amount))
   let next = 1
   while (taken.has(next)) next++
+  if (next > props.stackSize) return
   choices.value.push({amount: next, weight: 1})
   saveChoices()
 }
@@ -82,34 +86,41 @@ function removeChoice(index: number): void {
 <template>
   <fieldset class="flex flex-col gap-2">
     <legend class="contents"><FieldLabel>{{ t('editor.loot.amount.label') }}</FieldLabel></legend>
-    <ChoicePicker :label="t('editor.loot.amount.label')" :labels="modes" :model-value="value.mode" :options="['RANGE', 'CHOICES']" :read-only="readOnly" class="max-w-64" @update:model-value="mode"/>
-    <div v-if="value.mode === 'RANGE'" class="flex flex-wrap items-center gap-3">
-      <RangeSlider
-          v-model="range"
-          :disabled="readOnly"
-          :from-label="t('editor.loot.amount.from')"
-          :max="top"
-          :min="1"
-          :step="1"
-          :to-label="t('editor.loot.amount.to')"
-          class="min-w-48 flex-1"
-          @commit="saveRange"
-      />
-      <div class="flex items-center gap-1 text-sm">
-        <div class="w-20"><NumberInput v-model="range[0]" :aria-label="t('editor.loot.amount.from')" :disabled="readOnly" @focusout="saveRange(range)"/></div>
-        <span class="text-ink-muted">{{ t('editor.loot.amount.toWord') }}</span>
-        <div class="w-20"><NumberInput v-model="range[1]" :aria-label="t('editor.loot.amount.to')" :disabled="readOnly" @focusout="saveRange(range)"/></div>
-      </div>
-    </div>
+    <MutedText v-if="stackSize === 1" size="sm" tag="p">{{ t('editor.loot.amount.single') }}</MutedText>
     <template v-else>
-      <div v-for="(choice, index) in choices" :key="index" class="flex items-center gap-3">
-        <div class="w-20"><NumberInput v-model="choice.amount" :aria-label="t('editor.loot.amount.amount')" :disabled="readOnly" @focusout="saveChoices"/></div>
-        <span class="text-sm text-ink-muted">{{ t('editor.loot.amount.weight') }}</span>
-        <div class="w-20"><NumberInput v-model="choice.weight" :aria-label="t('editor.loot.amount.weightOf', {amount: choice.amount ?? 0})" :disabled="readOnly" @focusout="saveChoices"/></div>
-        <span class="text-sm text-ink-muted">{{ t('editor.dropWeights.share', {percent: Math.round((chances.get(choice.amount ?? 0) ?? 0) * 100)}) }}</span>
-        <MutedIconButton v-if="!readOnly" :label="t('editor.loot.amount.remove', {amount: choice.amount ?? 0})" class="ml-auto" hover="error" icon="xmark" @click="removeChoice(index)"/>
+      <ChoicePicker :label="t('editor.loot.amount.label')" :labels="modes" :model-value="value.mode" :options="['RANGE', 'CHOICES']" :read-only="readOnly" class="max-w-64" @update:model-value="mode"/>
+      <div v-if="value.mode === 'RANGE'" class="flex flex-wrap items-center gap-3">
+        <RangeSlider
+            v-model="range"
+            :disabled="readOnly"
+            :from-label="t('editor.loot.amount.from')"
+            :max="stackSize"
+            :min="1"
+            :step="1"
+            :to-label="t('editor.loot.amount.to')"
+            class="min-w-48 flex-1"
+            @commit="saveRange"
+        />
+        <div class="flex items-center gap-1 text-sm">
+          <div class="w-20"><NumberInput v-model="range[0]" :aria-label="t('editor.loot.amount.from')" :disabled="readOnly" @focusout="saveRange(range)"/></div>
+          <span class="text-ink-muted">{{ t('editor.loot.amount.toWord') }}</span>
+          <div class="w-20"><NumberInput v-model="range[1]" :aria-label="t('editor.loot.amount.to')" :disabled="readOnly" @focusout="saveRange(range)"/></div>
+        </div>
       </div>
-      <div v-if="!readOnly"><SecondaryButton compact icon="plus" @click="addChoice">{{ t('editor.loot.amount.add') }}</SecondaryButton></div>
+      <template v-else>
+        <div v-for="(choice, index) in choices" :key="index" class="flex items-center gap-3">
+          <div class="w-20"><NumberInput v-model="choice.amount" :aria-label="t('editor.loot.amount.amount')" :disabled="readOnly" @focusout="saveChoices"/></div>
+          <span class="text-sm text-ink-muted">{{ t('editor.loot.amount.weight') }}</span>
+          <div class="w-20"><NumberInput v-model="choice.weight" :aria-label="t('editor.loot.amount.weightOf', {amount: choice.amount ?? 0})" :disabled="readOnly" @focusout="saveChoices"/></div>
+          <span class="text-sm text-ink-muted">{{ t('editor.dropWeights.share', {percent: Math.round((chances.get(choice.amount ?? 0) ?? 0) * 100)}) }}</span>
+          <MutedIconButton v-if="!readOnly" :label="t('editor.loot.amount.remove', {amount: choice.amount ?? 0})" class="ml-auto" hover="error" icon="xmark" @click="removeChoice(index)"/>
+        </div>
+        <div v-if="!readOnly && choices.length < stackSize"><SecondaryButton compact icon="plus" @click="addChoice">{{ t('editor.loot.amount.add') }}</SecondaryButton></div>
+      </template>
     </template>
+    <div v-if="too" class="flex flex-wrap items-center gap-2">
+      <span class="text-sm text-problem">{{ t('editor.loot.amount.tooMany', {size: stackSize}) }}</span>
+      <SecondaryButton v-if="!readOnly" compact @click="emit('save', withinStack(value, stackSize))">{{ t('editor.loot.amount.cap', {size: stackSize}) }}</SecondaryButton>
+    </div>
   </fieldset>
 </template>
