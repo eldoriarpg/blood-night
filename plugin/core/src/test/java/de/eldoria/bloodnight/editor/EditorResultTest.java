@@ -62,13 +62,14 @@ class EditorResultTest {
                 Map.of(),
                 new SettingsPayload(
                         new ConfigFile(),
-                        Map.of("uid", new SettingsPayload.WorldPayload("world", "NORMAL", true, world))),
+                        Map.of("uid", new SettingsPayload.WorldPayload("world", "NORMAL", true, world, "Overworld"))),
                 new EditorChoices(
                         "26.3",
                         List.of("minecraft:stone"),
                         List.of("minecraft:sharpness"),
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
                         List.of("CREEPER"),
+                        Map.of("CREEPER", List.of("NATURAL")),
                         List.of("SkeletalKnight"),
                         List.of("minecraft:max_health"),
                         List.of("minecraft:desert"),
@@ -91,6 +92,7 @@ class EditorResultTest {
         WorldSettings back = result.settings().worlds().get("uid").settings();
         assertEquals(false, back.enabled());
         assertEquals(12000, back.nightSettings().begin());
+        assertEquals("Overworld", result.settings().worlds().get("uid").alias());
         assertEquals(
                 "<dark_red>[<red>BN</red>]</dark_red> ",
                 result.settings().main().announcements().prefix());

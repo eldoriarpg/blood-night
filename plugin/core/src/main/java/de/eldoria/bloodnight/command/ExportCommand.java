@@ -42,7 +42,8 @@ final class ExportCommand {
                                     plugin.behaviours(),
                                     plugin.catalog().version(),
                                     plugin.getServer().getWorlds(),
-                                    plugin.store())
+                                    plugin.store(),
+                                    plugin.worldNames()::alias)
                             .asJson());
             Files.writeString(directory.resolve("catalog.json"), CatalogGenerator.write(plugin.catalog()));
             Replies.send(sender, "export.written", arg("directory", directory));

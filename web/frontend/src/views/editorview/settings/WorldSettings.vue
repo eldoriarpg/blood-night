@@ -19,6 +19,7 @@ import CopySettingsDialog from '~/views/editorview/settings/CopySettingsDialog.v
 import {section} from '~/util/session/sections'
 import {pointer} from '~/util/patch/jsonPointer'
 import {WORLD_SECTIONS} from '~/util/settings/settingsSections'
+import {worldLabel} from '~/util/settings/worldNames'
 import {WORLD_KIND, worldSectionShows, type WorldKind} from '~/util/settings/worldKind'
 
 /**
@@ -39,10 +40,11 @@ const worlds = computed(() => Object.entries(session.payload.value?.settings?.wo
   .map(([uid, world]) => ({
     uid,
     name: world.name,
+    label: worldLabel(world),
     enabled: (world.settings as {enabled?: boolean} | undefined)?.enabled !== false,
     kind: {dayCycle: world.dayCycle !== false, environment: world.environment ?? 'NORMAL'},
   }))
-  .sort((a, b) => a.name.localeCompare(b.name)))
+  .sort((a, b) => a.label.localeCompare(b.label)))
 const world = computed(() => worlds.value.find(candidate => candidate.uid === picked.value) ?? worlds.value[0])
 const heldBy = computed(() => world.value ? locks.heldByOther(section.world(world.value.uid)) : null)
 const denied = computed(() => !locks.mayChange(world.value ? section.world(world.value.uid) : ''))
@@ -82,7 +84,8 @@ function copy(sections: string[]): void {
           @click="picked = entry.uid"
       >
         <span class="min-w-0 flex-1">
-          <span class="block truncate font-mono text-sm">{{ entry.name }}</span>
+          <span class="block truncate text-sm">{{ entry.label }}</span>
+          <span v-if="entry.label !== entry.name" class="block truncate font-mono text-xs text-ink-faint">{{ entry.name }}</span>
           <span class="text-xs text-ink-faint">{{ entry.enabled ? t('editor.settings.on') : t('editor.settings.off') }}</span>
         </span>
         <InfoBadge v-if="locks.heldByOther(`settings/worlds/${entry.uid}`)">{{ locks.heldByOther(`settings/worlds/${entry.uid}`) }}</InfoBadge>
@@ -90,7 +93,7 @@ function copy(sections: string[]): void {
     </nav>
     <main v-if="world && current" class="min-w-0 flex-1 overflow-y-auto px-6 py-5">
       <div class="flex flex-wrap items-center gap-3">
-        <PageHeader class="flex-1 font-mono">{{ world.name }}</PageHeader>
+        <PageHeader class="flex-1">{{ world.label }}<span v-if="world.label !== world.name" class="ml-2 font-mono text-sm font-normal text-ink-faint">{{ world.name }}</span></PageHeader>
         <SecondaryButton icon="copy" @click="copy(WORLD_SECTIONS.map(entry => entry.key))">{{ t('editor.copy.open') }}</SecondaryButton>
       </div>
       <Alert v-if="heldBy" class="mt-3" variant="held">{{ t('editor.settings.heldBy', {name: heldBy}) }}</Alert>

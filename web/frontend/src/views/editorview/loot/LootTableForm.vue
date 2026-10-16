@@ -25,6 +25,7 @@ import type {LootEntry} from '~/api/generated/payload'
 import {pointer} from '~/util/patch/jsonPointer'
 import {section} from '~/util/session/sections'
 import {mobLabel} from '~/util/mobs/mobName'
+import {worldLabel} from '~/util/settings/worldNames'
 import {entryShares, newEntry, removeTable, usesOf, type TableEntry, type TableUse} from '~/util/loot/lootTables'
 
 /**
@@ -96,7 +97,8 @@ function useLabel(use: TableUse): string {
 }
 
 function worldName(uid: string): string {
-  return session.payload.value?.settings?.worlds?.[uid]?.name ?? uid
+  const world = session.payload.value?.settings?.worlds?.[uid]
+  return world ? worldLabel(world) : uid
 }
 
 function mobName(id: string): string {

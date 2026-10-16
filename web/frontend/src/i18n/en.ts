@@ -695,6 +695,9 @@ export default {
                 enabled: 'Change ordinary enemies',
                 tables: 'Extra loot tables',
             },
+            settings: {
+                displayName: 'Name players see',
+            },
         },
         helpIn: {
             attributes: {name: 'Players see the name in their own language. Where it has none, they see the one in the server\'s fallback language.'},
@@ -712,6 +715,9 @@ export default {
             },
             ordinary: {
                 tables: 'Loot tables ordinary enemies also drop from during blood nights. A world\'s tables join the server\'s.',
+            },
+            settings: {
+                displayName: 'Shown in messages, placeholders and here in the editor. MiniMessage colours work. Empty: the world\'s name in Multiverse or Hyperverse, else its folder name.',
             },
         },
         soundLists: {begin: 'When a blood night begins', end: 'When it ends', ambience: 'During the night'},

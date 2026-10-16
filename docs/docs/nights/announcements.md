@@ -167,3 +167,7 @@ displayName: "<red>The Nether"
 
 Without a `displayName`, BloodNight uses the world's alias from [Multiverse-Core](https://modrinth.com/plugin/multiverse-core)
 or Hyperverse, if you have one of them.
+
+In the web editor, set it as **Name players see** on a world's **General** tab. The editor then lists the world by that
+name, with the folder name below it. `/bloodnight night` uses it too. Commands you set up keep the folder name for
+`{world}`, since other plugins need the real name.

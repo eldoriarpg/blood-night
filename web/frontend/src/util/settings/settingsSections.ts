@@ -14,7 +14,7 @@ export interface SettingsSection {
  * tabs.
  */
 export const WORLD_SECTIONS: readonly SettingsSection[] = [
-    {key: 'general', properties: ['enabled']},
+    {key: 'general', properties: ['enabled', 'displayName']},
     {key: 'night', properties: ['nightSettings']},
     {key: 'selection', properties: ['nightSelection']},
     {key: 'mobs', properties: ['mobSettings']},

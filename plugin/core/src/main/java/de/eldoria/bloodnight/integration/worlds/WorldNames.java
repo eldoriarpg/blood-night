@@ -49,7 +49,7 @@ public final class WorldNames {
     public Component name(World world) {
         String own = displayNames.apply(world);
         if (!own.isBlank()) return MiniMessage.miniMessage().deserialize(own);
-        String alias = alias(world);
+        String alias = rawAlias(world);
         if (alias != null) return LegacyComponentSerializer.legacyAmpersand().deserialize(alias);
         return Component.text(world.getName());
     }
@@ -61,7 +61,17 @@ public final class WorldNames {
         return PlainTextComponentSerializer.plainText().serialize(name(world));
     }
 
-    private @Nullable String alias(World world) {
+    /**
+     * @return the world's alias in Multiverse-Core or Hyperverse without colours, empty when it has none
+     */
+    public String alias(World world) {
+        String alias = rawAlias(world);
+        if (alias == null) return "";
+        return PlainTextComponentSerializer.plainText()
+                .serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(alias));
+    }
+
+    private @Nullable String rawAlias(World world) {
         String alias = multiverseAlias(world);
         if (alias == null) alias = hyperverseAlias(world);
         return alias == null || alias.isBlank() ? null : alias;
