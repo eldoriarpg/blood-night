@@ -26,5 +26,11 @@ tasks.javadoc {
         addFileOption("-add-stylesheet", styling.file("bloodnight.css").asFile)
         addFileOption("-add-script", styling.file("bloodnight.js").asFile)
         bottom = "<a class=\"bn-docs-link\" href=\"/\">BloodNight documentation</a>"
+        links(
+            "https://docs.oracle.com/en/java/javase/25/docs/api/",
+            "https://jd.papermc.io/paper/${libs.versions.paper.get().substringBefore(".build")}/",
+            "https://jspecify.dev/docs/api/",
+            "https://javadoc.io/static/org.jetbrains/annotations/${libs.versions.jetbrains.annotations.get()}/",
+        )
     }
 }
