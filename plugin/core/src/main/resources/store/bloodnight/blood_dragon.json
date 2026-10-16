@@ -368,7 +368,8 @@
           "max" : 5,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:emerald",
         "weight" : 6,
@@ -378,7 +379,8 @@
           "max" : 10,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:experience_bottle",
         "weight" : 6,
@@ -391,7 +393,8 @@
             "16" : 1
           }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:netherite_scrap",
         "weight" : 2,
@@ -401,7 +404,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:enchanted_golden_apple",
         "weight" : 1,
@@ -411,7 +415,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

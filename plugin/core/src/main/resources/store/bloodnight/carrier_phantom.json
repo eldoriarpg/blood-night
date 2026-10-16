@@ -333,7 +333,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:feather",
         "weight" : 6,
@@ -343,7 +344,8 @@
           "max" : 5,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

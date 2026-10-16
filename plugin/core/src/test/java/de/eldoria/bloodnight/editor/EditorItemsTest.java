@@ -5,10 +5,14 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import de.eldoria.bloodnight.items.ItemAttribute;
 import de.eldoria.bloodnight.items.ItemDefinition;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.items.ItemSlot;
 import de.eldoria.bloodnight.items.ItemTexts;
+import de.eldoria.bloodnight.items.TooltipPart;
 import org.bukkit.Material;
+import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +46,21 @@ class EditorItemsTest {
         stored.editMeta(meta -> meta.setCustomModelData(7));
         ItemRegistry current = new ItemRegistry(Map.of("abc", stored), null);
         EditorItem edit = new EditorItem(
-                ItemKind.REGISTERED, "minecraft:stick", "<red>Edge", List.of("<gray>Sharp"), Map.of(), false, true, 64);
+                ItemKind.REGISTERED,
+                "minecraft:stick",
+                "<red>Edge",
+                List.of("<gray>Sharp"),
+                Map.of(),
+                false,
+                null,
+                7,
+                true,
+                0.5,
+                null,
+                null,
+                List.of(new ItemAttribute("minecraft:attack_damage", 3, Operation.ADD_NUMBER, ItemSlot.MAINHAND)),
+                Set.of(TooltipPart.ENCHANTMENTS, TooltipPart.ATTRIBUTES),
+                64);
 
         ItemRegistry applied = EditorItems.apply(current, Map.of("abc", edit));
 
@@ -50,23 +68,36 @@ class EditorItemsTest {
         assertNotNull(item);
         assertEquals(Material.DIAMOND_SWORD, item.getType());
         assertEquals(7, item.getItemMeta().getCustomModelData());
-        assertEquals("<!italic><red>Edge", ItemTexts.name(item));
-        assertEquals(List.of("<!italic><gray>Sharp"), ItemTexts.lore(item));
-        assertEquals(false, ItemTexts.glint(item));
-        assertTrue(ItemTexts.hidesEnchantments(item));
+        ItemDefinition read = ItemTexts.read(item);
+        assertEquals("<!italic><red>Edge", read.name());
+        assertEquals(List.of("<!italic><gray>Sharp"), read.lore());
+        assertEquals(false, read.glint());
+        assertTrue(read.unbreakable());
+        assertEquals(0.5, read.wear(), 0.01);
+        assertEquals(edit.attributes(), read.attributes());
+        assertEquals(Set.of(TooltipPart.ENCHANTMENTS, TooltipPart.ATTRIBUTES), read.hidden());
     }
 
     @Test
     void itemsMadeInTheEditorBecomeDefinitions() {
-        EditorItem sword = new EditorItem(
-                ItemKind.DEFINED, "minecraft:golden_axe", "<gold>Axe", List.of(), Map.of(), null, false, null);
+        ItemDefinition axe = new ItemDefinition(
+                "minecraft:golden_axe",
+                "<gold>Axe",
+                List.of(),
+                Map.of(),
+                null,
+                "myserver:blood_axe",
+                null,
+                false,
+                null,
+                null,
+                null,
+                List.of(),
+                Set.of());
+        EditorItem sword = EditorItem.defined(axe);
         ItemRegistry applied = EditorItems.apply(new ItemRegistry(), Map.of("knight_axe", sword));
 
-        assertEquals(
-                Map.of(
-                        "knight_axe",
-                        new ItemDefinition("minecraft:golden_axe", "<gold>Axe", List.of(), Map.of(), null, false)),
-                applied.definitions());
+        assertEquals(Map.of("knight_axe", axe), applied.definitions());
         assertEquals(Material.GOLDEN_AXE, applied.item("knight_axe").getType());
         assertEquals(
                 Material.DIAMOND_HELMET,

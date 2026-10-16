@@ -417,7 +417,8 @@
           "max" : 6,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:iron_ingot",
         "weight" : 3,
@@ -427,7 +428,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:chainmail_chestplate",
         "weight" : 1,
@@ -437,7 +439,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

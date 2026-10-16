@@ -30,7 +30,8 @@ import java.util.stream.Stream;
  *
  * @param minecraftVersion the server's Minecraft version, e.g. {@code 26.3}
  * @param materials        material keys, sorted
- * @param stackSizes       how many of a material fit in one stack, by key, for the materials that do not stack to 64
+ * @param materialInfo     what the editor needs to know about a material, by key, for the materials that are no plain
+ *                         item (see {@link MaterialInfo})
  * @param enchantments     the highest level each enchantment reaches in survival, by its key, sorted by key
  * @param entityClasses    the Bukkit interface of each entity type, by type name, e.g. {@code CREEPER} to
  *                         {@code org.bukkit.entity.Creeper}; the editor types Self and Extension of a mob by it
@@ -44,11 +45,13 @@ import java.util.stream.Stream;
  *                         {@code minecraft:spawn_phantoms}
  * @param commands         the server's commands by their name and aliases, without namespace or slash, sorted; the
  *                         editor suggests them in command lists
+ * @param trimPatterns     the armour trim patterns, by key, sorted
+ * @param trimMaterials    the armour trim materials, by key, sorted
  */
 public record EditorChoices(
         String minecraftVersion,
         List<String> materials,
-        Map<String, Integer> stackSizes,
+        Map<String, MaterialInfo> materialInfo,
         Map<String, Integer> enchantments,
         Map<String, String> entityClasses,
         List<String> mobTypes,
@@ -58,7 +61,9 @@ public record EditorChoices(
         List<String> biomes,
         List<String> effects,
         Map<String, GameRuleChoice> gameRules,
-        List<String> commands) {
+        List<String> commands,
+        List<String> trimPatterns,
+        List<String> trimMaterials) {
     /**
      * @param type           {@code boolean} or {@code integer}, what the rule's value is
      * @param translationKey the key of the rule's name in Minecraft's language files, e.g. {@code gamerule.doInsomnia}
@@ -74,11 +79,11 @@ public record EditorChoices(
                 .map(material -> material.getKey().asString())
                 .sorted()
                 .toList();
-        Map<String, Integer> stackSizes = new TreeMap<>();
+        Map<String, MaterialInfo> materialInfo = new TreeMap<>();
         for (Material material : Material.values()) {
-            if (!material.isLegacy() && material.isItem() && !material.isAir() && material.getMaxStackSize() != 64) {
-                stackSizes.put(material.getKey().asString(), material.getMaxStackSize());
-            }
+            if (material.isLegacy() || !material.isItem() || material.isAir()) continue;
+            MaterialInfo info = MaterialInfo.of(material);
+            if (info != null) materialInfo.put(material.getKey().asString(), info);
         }
         Map<String, Integer> enchantments = new TreeMap<>();
         RegistryAccess.registryAccess()
@@ -92,7 +97,7 @@ public record EditorChoices(
         return new EditorChoices(
                 Bukkit.getMinecraftVersion(),
                 materials,
-                stackSizes,
+                materialInfo,
                 enchantments,
                 entityClasses,
                 MobTypes.all(),
@@ -102,7 +107,9 @@ public record EditorChoices(
                 biomeKeys(),
                 keys(RegistryKey.MOB_EFFECT),
                 serverGameRules(),
-                serverCommands());
+                serverCommands(),
+                keys(RegistryKey.TRIM_PATTERN),
+                keys(RegistryKey.TRIM_MATERIAL));
     }
 
     private static List<String> keys(RegistryKey<? extends Keyed> key) {

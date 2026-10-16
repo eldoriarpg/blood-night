@@ -273,7 +273,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:glow_ink_sac",
         "weight" : 3,
@@ -283,7 +284,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

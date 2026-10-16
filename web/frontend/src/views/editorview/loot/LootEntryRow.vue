@@ -10,13 +10,15 @@ import NumberInput from '@/components/input/number/NumberInput.vue'
 import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
 import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
 import LootAmountField from '~/views/editorview/loot/LootAmountField.vue'
-import type {LootAmount, LootEntry} from '~/api/generated/payload'
+import type {LootAmount, LootEntry, LootWear} from '~/api/generated/payload'
 import type {ItemChoice} from '~/util/items/itemChoices'
 import {stackSize, withinStack} from '~/util/loot/lootTables'
+import {materialInfo} from '~/util/items/itemLook'
+import LootWearField from '~/views/editorview/loot/LootWearField.vue'
 
 /**
- * One entry of a loot table: its item, its weight with the chance that gives it to fill a slot, how many drop, and
- * whether it can drop more than once in one kill. Each change is saved as the whole entry.
+ * One entry of a loot table: its item, its weight with the chance that gives it to fill a slot, how many drop, how
+ * worn it drops where the item wears out, and whether it can drop more than once in one kill. Each change is saved as the whole entry.
  */
 const props = defineProps<{
   entry: LootEntry
@@ -34,6 +36,7 @@ const emit = defineEmits<{
 const {t} = useI18n()
 const session = useEditorSession()
 const size = computed(() => stackSize(props.entry.item, session.payload.value))
+const durable = computed(() => materialInfo(session.payload.value?.items?.[props.entry.item]?.material ?? props.entry.item, session.payload.value).durability > 0)
 const weight = ref<number | undefined>(undefined)
 
 watch(() => props.entry.weight, value => {
@@ -67,6 +70,7 @@ function saveWeight(): void {
       <MutedIconButton v-if="!readOnly" :label="t('editor.loot.removeEntry')" class="mb-1 ml-auto" hover="error" icon="trash" @click="emit('remove')"/>
     </div>
     <LootAmountField :read-only="readOnly" :stack-size="size" :value="entry.amount" @save="(amount: LootAmount) => save({amount})"/>
+    <LootWearField v-if="durable" :read-only="readOnly" :value="entry.wear" @save="(wear: LootWear | undefined) => save({wear})"/>
     <ToggleSetting :disabled="readOnly" :hint="t('editor.loot.repeatableHint')" :label="t('editor.loot.repeatable')" :model-value="entry.repeatable" @update:model-value="repeatable => save({repeatable})"/>
   </li>
 </template>

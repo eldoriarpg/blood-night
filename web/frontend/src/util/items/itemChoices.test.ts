@@ -13,7 +13,7 @@ const names = {
     },
     enchantments: {'minecraft:sharpness': {en_us: 'Sharpness', de_de: 'Schärfe'}},
 }
-const knight = {kind: 'DEFINED' as const, material: 'minecraft:diamond_sword', name: '<gold>Knight', lore: ['<gray>Forged in blood'], enchantments: {'minecraft:sharpness': 5}, hideEnchantments: false}
+const knight = {kind: 'DEFINED' as const, material: 'minecraft:diamond_sword', name: '<gold>Knight', lore: ['<gray>Forged in blood'], enchantments: {'minecraft:sharpness': 5}, unbreakable: false, attributes: [], hidden: []}
 
 describe('item choices', () => {
     it('names materials and enchantments in the editor language, falling back to English and the key', () => {

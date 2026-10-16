@@ -10,10 +10,12 @@ import de.eldoria.bloodnight.api.event.BloodNightLootEvent;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.items.ItemTexts;
 import de.eldoria.bloodnight.loot.Experience;
 import de.eldoria.bloodnight.loot.LootAmount;
 import de.eldoria.bloodnight.loot.LootEntry;
 import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.LootWear;
 import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.loot.OrdinaryLoot;
 import de.eldoria.bloodnight.loot.ServerLoot;
@@ -57,7 +59,16 @@ class DropHandlerTest {
     private static final Map<String, LootTable> TABLES = Map.of(
             "gems", table("minecraft:diamond", LootAmount.exactly(3)),
             "emeralds", table("minecraft:emerald", LootAmount.exactly(1)),
-            "pearls", table("minecraft:ender_pearl", LootAmount.exactly(40)));
+            "pearls", table("minecraft:ender_pearl", LootAmount.exactly(40)),
+            "worn",
+                    new LootTable(
+                            "Worn",
+                            List.of(new LootEntry(
+                                    "minecraft:diamond_sword",
+                                    1,
+                                    LootAmount.exactly(1),
+                                    false,
+                                    new LootWear(0.5, 0.5)))));
 
     private ServerMock server;
     private WorldMock world;
@@ -154,6 +165,17 @@ class DropHandlerTest {
         EntityDeathEvent event = death(true);
 
         assertEquals(20, event.getDroppedExp());
+    }
+
+    @Test
+    void entriesDropTheirItemAsWornAsTheyRoll() {
+        gemmy = Mobs.zombie("gemmy", Graph.builder().build())
+                .withLoot(new MobLoot(List.of("worn"), Map.of(1, 1), false, true, VanillaLoot.CLEAR, null));
+
+        ItemStack sword = death(true).getDrops().getFirst();
+
+        assertEquals(Material.DIAMOND_SWORD, sword.getType());
+        assertEquals(0.5, ItemTexts.read(sword).wear(), 0.01);
     }
 
     @Test

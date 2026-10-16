@@ -245,7 +245,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:prismarine_crystals",
         "weight" : 6,
@@ -255,7 +256,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:copper_ingot",
         "weight" : 4,
@@ -265,7 +267,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:nautilus_shell",
         "weight" : 1,
@@ -275,7 +278,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

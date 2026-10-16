@@ -21,9 +21,23 @@ Mobs wear items, and [loot tables](loot-tables.md) drop them. There are three ki
 3. **Items made in the editor**, with a material, a name, lore and enchantments.
 
 In the editor, an enchantment's level goes up to the highest level players can reach, like Sharpness V. Switch on
-**Allow levels above the maximum** for stronger ones. **Glint** decides whether the item shimmers: as the game does when
-it is enchanted, always, or never. **Hide the enchantments in the tooltip** keeps them working but leaves them out of
-the item's text.
+**Allow levels above the maximum** for stronger ones.
+
+You can change more than the text, for items made in the editor and for registered ones alike. The **In game** preview
+shows the item as players see it.
+
+- **Look:** **Glint** decides whether the item shimmers: as the game does when it is enchanted, always, or never.
+  **Model** takes an item model from your resource pack, like `myserver:blood_blade`. **Custom model data** is a number
+  for packs that pick a model by number. Leather armour gets a **dye colour**, and armour that takes a trim gets a
+  **trim pattern** and **trim material**.
+- **Durability:** **Unbreakable** items never wear out. **Worn** sets how used the item already is. A mob's sword at
+  half durability is worn 50 %.
+- **Attributes:** what the item gives whoever holds or wears it, like `+3 Attack Damage` in the main hand. Each row has
+  the attribute, the amount, how it applies (add, add a share of the base, multiply) and where the item has to be.
+  Minecraft drops a material's own attributes once an item has any. So the first row you add brings them along as
+  rows, and you can change them.
+- **Hide in the tooltip:** leaves parts out of the item's text, like the enchantments or the attributes. The item still
+  has them.
 
 Remove a registered item with `/bloodnight item remove <id>`.
 

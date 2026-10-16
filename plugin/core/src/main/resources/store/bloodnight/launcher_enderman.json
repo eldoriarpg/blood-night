@@ -554,7 +554,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:feather",
         "weight" : 6,
@@ -564,7 +565,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:slime_ball",
         "weight" : 6,
@@ -574,7 +576,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

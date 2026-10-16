@@ -639,10 +639,10 @@
             "type" : "string"
           }
         },
-        "stackSizes" : {
+        "materialInfo" : {
           "type" : "object",
           "additionalProperties" : {
-            "type" : "integer"
+            "$ref" : "#/$defs/MaterialInfo"
           }
         },
         "enchantments" : {
@@ -707,9 +707,21 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "trimPatterns" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "trimMaterials" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "stackSizes", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands" ]
+      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -738,14 +750,42 @@
         "glint" : {
           "type" : "boolean"
         },
-        "hideEnchantments" : {
+        "model" : {
+          "type" : "string"
+        },
+        "modelData" : {
+          "type" : "integer"
+        },
+        "unbreakable" : {
           "type" : "boolean"
+        },
+        "wear" : {
+          "type" : "number"
+        },
+        "color" : {
+          "type" : "string"
+        },
+        "trim" : {
+          "$ref" : "#/$defs/ItemTrim"
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/ItemAttribute"
+          }
+        },
+        "hidden" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/TooltipPart"
+          },
+          "uniqueItems" : true
         },
         "stackSize" : {
           "type" : "integer"
         }
       },
-      "required" : [ "kind", "material", "lore", "enchantments", "hideEnchantments" ]
+      "required" : [ "kind", "material", "lore", "enchantments", "unbreakable", "attributes", "hidden" ]
     },
     "EditorLegacy" : {
       "type" : "object",
@@ -1052,9 +1092,43 @@
         }
       }
     },
+    "ItemAttribute" : {
+      "type" : "object",
+      "properties" : {
+        "attribute" : {
+          "type" : "string"
+        },
+        "amount" : {
+          "type" : "number"
+        },
+        "operation" : {
+          "$ref" : "#/$defs/Operation"
+        },
+        "slot" : {
+          "$ref" : "#/$defs/ItemSlot"
+        }
+      },
+      "required" : [ "attribute", "amount", "operation", "slot" ]
+    },
     "ItemKind" : {
       "type" : "string",
       "enum" : [ "REGISTERED", "DEFINED" ]
+    },
+    "ItemSlot" : {
+      "type" : "string",
+      "enum" : [ "ANY", "MAINHAND", "OFFHAND", "HAND", "HEAD", "CHEST", "LEGS", "FEET", "ARMOR", "BODY", "SADDLE" ]
+    },
+    "ItemTrim" : {
+      "type" : "object",
+      "properties" : {
+        "pattern" : {
+          "type" : "string"
+        },
+        "material" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "pattern", "material" ]
     },
     "Language" : {
       "type" : "string",
@@ -1120,6 +1194,9 @@
         },
         "repeatable" : {
           "type" : "boolean"
+        },
+        "wear" : {
+          "$ref" : "#/$defs/LootWear"
         }
       },
       "required" : [ "item", "weight", "amount", "repeatable" ]
@@ -1138,6 +1215,18 @@
         }
       },
       "required" : [ "name", "entries" ]
+    },
+    "LootWear" : {
+      "type" : "object",
+      "properties" : {
+        "min" : {
+          "type" : "number"
+        },
+        "max" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "min", "max" ]
     },
     "Macro" : {
       "type" : "object",
@@ -1171,6 +1260,30 @@
         }
       },
       "required" : [ "macro", "node" ]
+    },
+    "MaterialInfo" : {
+      "type" : "object",
+      "properties" : {
+        "stackSize" : {
+          "type" : "integer"
+        },
+        "durability" : {
+          "type" : "integer"
+        },
+        "dyeable" : {
+          "type" : "boolean"
+        },
+        "trimmable" : {
+          "type" : "boolean"
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/ItemAttribute"
+          }
+        }
+      },
+      "required" : [ "stackSize", "durability", "dyeable", "trimmable", "attributes" ]
     },
     "Method" : {
       "type" : "string",
@@ -2310,6 +2423,10 @@
           "default" : "blood_dragon"
         }
       }
+    },
+    "TooltipPart" : {
+      "type" : "string",
+      "enum" : [ "ENCHANTMENTS", "ATTRIBUTES", "UNBREAKABLE", "DYE", "TRIM" ]
     },
     "TypeInfo" : {
       "type" : "object",

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,9 +47,7 @@ class ItemRegistryTest {
 
     @Test
     void onlyRegistrationsCanBeRemoved() {
-        ItemRegistry items = new ItemRegistry(
-                null,
-                Map.of("axe", new ItemDefinition("minecraft:golden_axe", null, List.of(), Map.of(), null, false)));
+        ItemRegistry items = new ItemRegistry(null, Map.of("axe", ItemDefinition.of("minecraft:golden_axe")));
         String id = items.register(ItemStack.of(Material.STONE));
 
         assertTrue(items.unregister(id));

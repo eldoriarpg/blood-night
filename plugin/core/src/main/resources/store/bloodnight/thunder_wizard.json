@@ -652,7 +652,8 @@
           "max" : 5,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:copper_ingot",
         "weight" : 6,
@@ -662,7 +663,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:lapis_lazuli",
         "weight" : 4,
@@ -672,7 +674,8 @@
           "max" : 5,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:lightning_rod",
         "weight" : 1,
@@ -682,7 +685,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

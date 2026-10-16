@@ -325,7 +325,7 @@ export function mobLevels(payload: EditorPayload | null | undefined, mobId: stri
 export function stackSize(item: string, payload: EditorPayload | null | undefined): number {
     const own = payload?.items?.[item]
     if (own?.stackSize) return own.stackSize
-    return payload?.choices?.stackSizes?.[own?.material ?? item] ?? 64
+    return payload?.choices?.materialInfo?.[own?.material ?? item]?.stackSize ?? 64
 }
 
 /**
