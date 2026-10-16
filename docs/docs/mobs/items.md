@@ -15,9 +15,14 @@ Mobs wear items, and [loot tables](loot-tables.md) drop them. There are three ki
 1. **Plain items** by name, like `minecraft:golden_apple`.
 2. **Items registered in game.** Hold any item and run `/bloodnight item register`. You get an ID. Click it to copy
    it. The item keeps everything: name, enchantments, custom data from other plugins.
+   To register many items at once, run the command with an empty hand. A chest opens. Put in all the items you want
+   and close it. You get every item back. Each item is registered once, even if you put it in twice, and an item you
+   registered before keeps its ID.
 3. **Items made in the editor**, with a material, a name, lore and enchantments.
 
 Remove a registered item with `/bloodnight item remove <id>`.
+
+Items you register show up in the editor's **Items** tab the next time you open an editor session.
 
 ## The blood night reward
 

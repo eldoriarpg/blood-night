@@ -24,6 +24,7 @@ import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.command.BloodNightCommandBrigadier;
+import de.eldoria.bloodnight.command.ItemDropBox;
 import de.eldoria.bloodnight.command.MobIds;
 import de.eldoria.bloodnight.command.StoreIds;
 import de.eldoria.bloodnight.configuration.Configuration;
@@ -270,6 +271,7 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         plugins.registerEvents(new HeldPassengers(), this);
         plugins.registerEvents(new MobLifecycle(coordinator), this);
         plugins.registerEvents(new MobDeaths(plugins), this);
+        plugins.registerEvents(ItemDropBox.closing(this), this);
         ForeignMobs foreign =
                 new ForeignMobs(() -> configuration.main().foreignMobs(), () -> pluginLoader("MythicMobs"));
         plugins.registerEvents(

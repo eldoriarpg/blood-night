@@ -370,6 +370,12 @@ export default {
             newEnchantment: 'Verzauberung, z. B. minecraft:sharpness',
             delete: 'Item löschen',
             confirm: 'Das Item {id} löschen?',
+            fromGame: {
+                title: 'Items aus dem Spiel',
+                hold: 'Halte ein Item im Spiel und führe {command} aus. Es behält alles: Name, Verzauberungen und Daten anderer Plugins.',
+                chest: 'Führe {command} mit leerer Hand aus, um eine Kiste zu öffnen. Lege alle gewünschten Items hinein und schließe sie; du bekommst sie zurück. Dasselbe Item wird nur einmal aufgenommen.',
+                session: 'Im Spiel registrierte Items erscheinen hier in der nächsten Editor-Sitzung.',
+            },
         },
         settings: {
             world: 'Welteinstellungen',

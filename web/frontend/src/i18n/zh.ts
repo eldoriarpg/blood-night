@@ -537,6 +537,12 @@ export default {
             newEnchantment: '魔咒，例如 minecraft:sharpness',
             delete: '删除物品',
             confirm: '删除物品 {id}？',
+            fromGame: {
+                title: '来自游戏的物品',
+                hold: '在游戏中手持物品并运行 {command}。它会保留一切：名称、附魔和其他插件的数据。',
+                chest: '空手运行 {command} 会打开一个箱子。放入所有想要的物品后关闭箱子，物品会还给你。相同的物品只会添加一次。',
+                session: '在游戏中注册的物品会在下一次编辑器会话中出现在这里。',
+            },
         },
         settings: {
             world: '世界设置',

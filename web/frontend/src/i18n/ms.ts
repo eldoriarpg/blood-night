@@ -537,6 +537,12 @@ export default {
             newEnchantment: 'Pesona, contohnya minecraft:sharpness',
             delete: 'Padam item',
             confirm: 'Padam item {id}?',
+            fromGame: {
+                title: 'Item dari permainan',
+                hold: 'Pegang item dalam permainan dan jalankan {command}. Ia menyimpan segalanya: nama, pesona dan data plugin lain.',
+                chest: 'Jalankan {command} dengan tangan kosong untuk membuka peti. Masukkan semua item yang anda mahu, kemudian tutupnya; anda akan mendapatnya kembali. Item yang sama hanya ditambah sekali.',
+                session: 'Item yang didaftarkan dalam permainan muncul di sini dalam sesi editor seterusnya.',
+            },
         },
         settings: {
             world: 'Tetapan dunia',
