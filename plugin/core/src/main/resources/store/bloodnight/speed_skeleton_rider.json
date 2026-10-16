@@ -557,7 +557,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:arrow",
         "weight" : 8,
@@ -567,7 +568,8 @@
           "max" : 10,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:leather",
         "weight" : 4,
@@ -577,7 +579,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:saddle",
         "weight" : 1,
@@ -587,7 +590,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

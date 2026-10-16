@@ -268,7 +268,8 @@
             "16" : 1
           }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:emerald",
         "weight" : 4,
@@ -278,7 +279,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:crossbow",
         "weight" : 1,
@@ -288,7 +290,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

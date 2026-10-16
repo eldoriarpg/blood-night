@@ -303,7 +303,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:iron_nugget",
         "weight" : 3,
@@ -313,7 +314,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

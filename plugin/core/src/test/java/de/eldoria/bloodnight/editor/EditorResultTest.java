@@ -66,7 +66,7 @@ class EditorResultTest {
                 new EditorChoices(
                         "26.3",
                         List.of("minecraft:stone"),
-                        Map.of("minecraft:diamond_sword", 1),
+                        Map.of("minecraft:diamond_sword", new MaterialInfo(1, 1561, false, false, List.of())),
                         Map.of("minecraft:sharpness", 5),
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
                         List.of("CREEPER"),
@@ -78,7 +78,9 @@ class EditorResultTest {
                         Map.of(
                                 "minecraft:spawn_phantoms",
                                 new EditorChoices.GameRuleChoice("boolean", "gamerule.doInsomnia")),
-                        List.of("home", "spawn")),
+                        List.of("home", "spawn"),
+                        List.of("minecraft:silence"),
+                        List.of("minecraft:iron")),
                 Map.of("mobs.yml", "abc"),
                 EditorStore.empty(),
                 false,

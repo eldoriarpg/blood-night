@@ -173,6 +173,36 @@ test('a loot table is made, filled, previewed and followed to its uses', async (
     await expect(page.locator('main').getByRole('button', {name: 'Zombie scraps', exact: true})).toBeVisible()
 })
 
+/** An item gets a trim, wear and attributes; the first attribute keeps the material's own, and the preview shows them. */
+test('an item takes a trim, wear and attributes', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Items'}).click()
+    const preview = page.getByRole('figure', {name: 'In game'})
+    await expect(preview).toContainText('+2 Armor')
+
+    await page.getByRole('button', {name: 'Trim pattern'}).click()
+    await page.getByRole('option', {name: 'Silence'}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/items/guard_helmet/trim', value: {pattern: 'minecraft:silence', material: 'minecraft:iron'}}])
+    await expect(preview).toContainText('Silence Armor Trim')
+
+    await page.getByRole('switch', {name: 'Unbreakable'}).click()
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    await expect(preview).toContainText('Unbreakable')
+
+    await page.getByRole('button', {name: 'Add a modifier'}).click()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+    expect(stage.changes[2]).toEqual([{op: 'add', path: '/items/guard_helmet/attributes', value: [
+        {attribute: 'minecraft:armor', amount: 2, operation: 'ADD_NUMBER', slot: 'HEAD'},
+        {attribute: 'minecraft:max_health', amount: 1, operation: 'ADD_NUMBER', slot: 'MAINHAND'},
+    ]}])
+
+    await page.getByRole('checkbox', {name: 'Attributes'}).click()
+    await expect(page.getByText('Saved, revision 4')).toBeVisible()
+    await expect(preview).not.toContainText('+2 Armor')
+})
+
 /** A new item is made from a material and gets its own section. */
 test('an item is created from a material', async ({page}) => {
     const stage = await stageEditor(page)
@@ -191,7 +221,7 @@ test('an item is created from a material', async ({page}) => {
     await dialog.getByRole('button', {name: 'Create'}).click()
 
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
-    expect(stage.changes).toEqual([[{op: 'add', path: '/items/knight_axe', value: {kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}, hideEnchantments: false}}]])
+    expect(stage.changes).toEqual([[{op: 'add', path: '/items/knight_axe', value: {kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}, unbreakable: false, attributes: [], hidden: []}}]])
 })
 
 /** A wire let go on the empty canvas offers the nodes that take it and adds the one picked, wired. */

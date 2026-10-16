@@ -4,7 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script setup lang="ts">
-import FieldLabel from '@/components/typography/FieldLabel.vue'
+import SectionHeader from '@/components/typography/SectionHeader.vue'
 import SuggestInput from '@/components/input/text/SuggestInput.vue'
 import NumberInput from '@/components/input/number/NumberInput.vue'
 import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
@@ -71,7 +71,7 @@ function remove(key: string): void {
 
 <template>
   <fieldset class="flex flex-col gap-2">
-    <legend><FieldLabel>{{ t('editor.items.enchantments') }}</FieldLabel></legend>
+    <legend class="pb-1"><SectionHeader>{{ t('editor.items.enchantments') }}</SectionHeader></legend>
     <div v-for="[key, current] in entries" :key="key" class="flex items-center gap-3 border-b border-line-soft py-1">
       <span class="min-w-0 flex-1 truncate text-sm">
         {{ assets.enchantment(key) }} <span class="font-mono text-xs text-ink-faint">{{ key }}</span>

@@ -266,6 +266,17 @@ export type MovementPreset =
 export type ItemKind = 'REGISTERED' | 'DEFINED';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ItemSlot".
+ */
+export type ItemSlot =
+  'ANY' | 'MAINHAND' | 'OFFHAND' | 'HAND' | 'HEAD' | 'CHEST' | 'LEGS' | 'FEET' | 'ARMOR' | 'BODY' | 'SADDLE';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "TooltipPart".
+ */
+export type TooltipPart = 'ENCHANTMENTS' | 'ATTRIBUTES' | 'UNBREAKABLE' | 'DYE' | 'TRIM';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "AmountMode".
  */
 export type AmountMode = 'RANGE' | 'CHOICES';
@@ -574,8 +585,33 @@ export interface EditorItem {
     [k: string]: number;
   };
   glint?: boolean;
-  hideEnchantments: boolean;
+  model?: string;
+  modelData?: number;
+  unbreakable: boolean;
+  wear?: number;
+  color?: string;
+  trim?: ItemTrim;
+  attributes: ItemAttribute[];
+  hidden: TooltipPart[];
   stackSize?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ItemTrim".
+ */
+export interface ItemTrim {
+  pattern: string;
+  material: string;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ItemAttribute".
+ */
+export interface ItemAttribute {
+  attribute: string;
+  amount: number;
+  operation: Operation;
+  slot: ItemSlot;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -594,6 +630,7 @@ export interface LootEntry {
   weight: number;
   amount: LootAmount;
   repeatable: boolean;
+  wear?: LootWear;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -606,6 +643,14 @@ export interface LootAmount {
   choices: {
     [k: string]: number;
   };
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "LootWear".
+ */
+export interface LootWear {
+  min: number;
+  max: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1116,8 +1161,8 @@ export interface NightRuleSettings {
 export interface EditorChoices {
   minecraftVersion: string;
   materials: string[];
-  stackSizes: {
-    [k: string]: number;
+  materialInfo: {
+    [k: string]: MaterialInfo;
   };
   enchantments: {
     [k: string]: number;
@@ -1137,6 +1182,19 @@ export interface EditorChoices {
     [k: string]: GameRuleChoice;
   };
   commands: string[];
+  trimPatterns: string[];
+  trimMaterials: string[];
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MaterialInfo".
+ */
+export interface MaterialInfo {
+  stackSize: number;
+  durability: number;
+  dyeable: boolean;
+  trimmable: boolean;
+  attributes: ItemAttribute[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1537,6 +1595,20 @@ export const ItemKind = {
     REGISTERED: "REGISTERED",
 } as const;
 
+export const ItemSlot = {
+    ANY: "ANY",
+    ARMOR: "ARMOR",
+    BODY: "BODY",
+    CHEST: "CHEST",
+    FEET: "FEET",
+    HAND: "HAND",
+    HEAD: "HEAD",
+    LEGS: "LEGS",
+    MAINHAND: "MAINHAND",
+    OFFHAND: "OFFHAND",
+    SADDLE: "SADDLE",
+} as const;
+
 export const Language = {
     de_DE: "de_DE",
     en_US: "en_US",
@@ -1700,6 +1772,14 @@ export const Surface = {
     ANY: "ANY",
     SKY_VISIBLE: "SKY_VISIBLE",
     UNDERGROUND: "UNDERGROUND",
+} as const;
+
+export const TooltipPart = {
+    ATTRIBUTES: "ATTRIBUTES",
+    DYE: "DYE",
+    ENCHANTMENTS: "ENCHANTMENTS",
+    TRIM: "TRIM",
+    UNBREAKABLE: "UNBREAKABLE",
 } as const;
 
 export const ValueModifier = {

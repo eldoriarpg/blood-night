@@ -13,7 +13,6 @@ import Alert from '@/components/feedback/Alert.vue'
 import Modal from '@/components/feedback/Modal.vue'
 import LabelledField from '@/components/input/LabelledField.vue'
 import FieldHint from '@/components/typography/FieldHint.vue'
-import MiniMessageText from '@/components/display/MiniMessageText.vue'
 import MiniMessageInput from '~/views/editorview/form/MiniMessageInput.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import PageHeader from '@/components/typography/PageHeader.vue'
@@ -21,18 +20,19 @@ import SubHeader from '@/components/typography/SubHeader.vue'
 import FieldTexts from '~/views/editorview/form/FieldTexts.vue'
 import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
 import ItemEnchantments from '~/views/editorview/items/ItemEnchantments.vue'
-import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
-import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
-import {ItemKind} from '~/api/generated/payload'
+import ItemTooltip from '~/views/editorview/items/ItemTooltip.vue'
+import ItemProperties from '~/views/editorview/items/ItemProperties.vue'
+import {ItemKind, type EditorItem} from '~/api/generated/payload'
 import {pointer} from '~/util/patch/jsonPointer'
 import {section} from '~/util/session/sections'
 import {nameItem, type ItemEntry} from '~/util/session/itemEntries'
-import {enchantmentLines} from '~/util/items/enchantmentLines'
+import {materialInfo} from '~/util/items/itemLook'
 
 /**
  * One item: its material, its MiniMessage name and lore with a preview of the item's tooltip as players see it while
- * they are typed, its enchantments, whether it glints and whether its tooltip lists the enchantments. An item the server registered keeps
- * its material and everything else it carries; only an item made in the editor can change its material or be deleted.
+ * they are typed, its enchantments, how it looks, wears and what attributes it gives, and which tooltip parts it hides.
+ * An item the server registered keeps its material and everything else it carries; only an item made in the editor
+ * can change its material or be deleted. A field set back to empty is removed, so the item takes the material's.
  */
 const props = defineProps<{
   entry: ItemEntry
@@ -47,10 +47,6 @@ const changes = useEditorChanges()
 const {t} = useI18n()
 const name = ref('')
 const lore = ref<string[]>([])
-const NAME_COLOR = '#ffffff'
-const LORE_COLOR = '#aa00aa'
-const ENCHANTMENT_COLOR = '#aaaaaa'
-const CURSE_COLOR = '#ff5555'
 const confirming = ref(false)
 const MINI_MESSAGE_EXAMPLE = '<red>Blood <bold>Blade'
 
@@ -61,9 +57,7 @@ const defined = computed(() => props.entry.item.kind === ItemKind.DEFINED)
 const assets = useItemAssets()
 const materialChoices = assets.choices(false)
 const session = useEditorSession()
-const glint = computed(() => props.entry.item.glint === true ? 'ON' : props.entry.item.glint === false ? 'OFF' : 'GAME')
-const glintLabels = computed(() => ({GAME: t('editor.items.glint.GAME'), ON: t('editor.items.glint.ON'), OFF: t('editor.items.glint.OFF')}))
-const enchanted = computed(() => enchantmentLines(props.entry.item.enchantments, key => assets.enchantment(key), session.payload.value?.choices?.enchantments ?? {}))
+const info = computed(() => materialInfo(props.entry.item.material, session.payload.value))
 const materialName = computed(() => materialChoices.value.find(choice => choice.key === props.entry.item.material)?.name ?? props.entry.item.material)
 
 watch(() => props.entry.item, item => {
@@ -86,15 +80,14 @@ function saveMaterial(value: string | undefined): void {
   void changes.apply([{op: 'replace', path: path('material'), value}])
 }
 
-function save(key: 'lore' | 'enchantments' | 'hideEnchantments', value: unknown): void {
-  if (readOnly.value || JSON.stringify(value) === JSON.stringify(props.entry.item[key])) return
+function save(key: keyof EditorItem, value: unknown): void {
+  const current = props.entry.item[key]
+  if (readOnly.value || JSON.stringify(value) === JSON.stringify(current)) return
+  if (value === undefined) {
+    if (current !== undefined && current !== null) void changes.apply([{op: 'remove', path: path(key)}])
+    return
+  }
   void changes.apply([{op: 'add', path: path(key), value}])
-}
-
-function saveGlint(choice: string | undefined): void {
-  const glint = choice === 'ON' ? true : choice === 'OFF' ? false : undefined
-  if (readOnly.value || glint === (props.entry.item.glint ?? undefined)) return
-  void changes.apply([glint === undefined ? {op: 'remove', path: path('glint')} : {op: 'add', path: path('glint'), value: glint}])
 }
 
 function remove(): void {
@@ -129,19 +122,9 @@ function remove(): void {
         <FieldHint>{{ t('editor.items.miniMessage', {example: MINI_MESSAGE_EXAMPLE}) }}</FieldHint>
       </LabelledField>
       <FieldTexts :label="t('editor.items.lore')" :read-only="readOnly" :value="entry.item.lore" mini-message @edit="lore = $event" @save="value => save('lore', value)"/>
-      <figure :aria-label="t('editor.items.tooltip')" class="flex flex-col gap-1">
-        <figcaption class="text-xs text-ink-muted">{{ t('editor.items.tooltip') }}</figcaption>
-        <div class="w-fit min-w-48 max-w-full rounded-sm border-2 border-[#25015b] bg-[#100010f0] px-2 py-1.5 text-sm leading-snug">
-          <div><MiniMessageText :base="NAME_COLOR" :text="name || materialName"/></div>
-          <div v-for="line in entry.item.hideEnchantments ? [] : enchanted" :key="line.text" :style="{color: line.curse ? CURSE_COLOR : ENCHANTMENT_COLOR}" class="font-[Minecraft,monospace]">{{ line.text }}</div>
-          <div v-for="(line, index) in lore" :key="index"><MiniMessageText :base="LORE_COLOR" :text="line"/></div>
-        </div>
-      </figure>
+      <ItemTooltip :info="info" :item="entry.item" :lore="lore" :name="name || materialName"/>
       <ItemEnchantments :read-only="readOnly" :value="entry.item.enchantments" @save="value => save('enchantments', value)"/>
-      <LabelledField :label="t('editor.items.glint.label')">
-        <ChoicePicker :label="t('editor.items.glint.label')" :labels="glintLabels" :model-value="glint" :options="['GAME', 'ON', 'OFF']" :read-only="readOnly" @update:model-value="saveGlint"/>
-      </LabelledField>
-      <ToggleSetting :disabled="readOnly" :label="t('editor.items.hideEnchantments')" :model-value="Boolean(entry.item.hideEnchantments)" @update:model-value="value => save('hideEnchantments', value)"/>
+      <ItemProperties :info="info" :item="entry.item" :read-only="readOnly" @save="save"/>
       <div v-if="defined && !readOnly"><ErrorButton compact icon="trash" @click="confirming = true">{{ t('editor.items.delete') }}</ErrorButton></div>
     </div>
     <Modal v-model="confirming" size="sm">

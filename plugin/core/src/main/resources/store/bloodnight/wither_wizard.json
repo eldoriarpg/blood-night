@@ -588,7 +588,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:nether_wart",
         "weight" : 6,
@@ -598,7 +599,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:lapis_lazuli",
         "weight" : 4,
@@ -608,7 +610,8 @@
           "max" : 5,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:wither_rose",
         "weight" : 2,
@@ -618,7 +621,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

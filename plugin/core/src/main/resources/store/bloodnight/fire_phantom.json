@@ -298,7 +298,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:blaze_powder",
         "weight" : 6,
@@ -308,7 +309,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:fire_charge",
         "weight" : 4,
@@ -318,7 +320,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

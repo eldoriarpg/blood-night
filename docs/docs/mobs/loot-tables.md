@@ -40,6 +40,8 @@ tables:
   - `RANGE` drops any number from `min` to `max`. All are equally likely.
   - `CHOICES` drops one of a few numbers. Each has its own weight. Here one diamond drops 9 times as often as two.
 - `repeatable`: whether the entry can be picked again in the same kill. With `false`, it drops at most once.
+- `wear`: for items that wear out, how worn they drop, rolled for every drop. `{min: 0.4, max: 0.9}` drops a sword
+  between 40 % and 90 % worn. Leave it out to drop the item as worn as it is.
 
 An amount fits in one stack: at most 64 iron nuggets, 16 ender pearls, and always one sword, since swords do not stack.
 The editor keeps amounts within that.

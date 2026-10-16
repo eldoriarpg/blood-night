@@ -22,7 +22,7 @@ describe('item entries', () => {
     it('adds items to a payload without any', () => {
         const empty = {} as EditorPayload
         const added = applyPatch(empty, addItem(empty, 'axe', newItem('minecraft:golden_axe')))
-        expect(added.items?.axe).toEqual({kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}, hideEnchantments: false})
+        expect(added.items?.axe).toEqual({kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}, unbreakable: false, attributes: [], hidden: []})
     })
 
     it('names items and removes empty names', () => {

@@ -122,7 +122,7 @@ describe('mobLevels', () => {
 describe('stack sizes', () => {
     const stacked = {
         items: {blade: {kind: 'REGISTERED', material: 'minecraft:stick', lore: [], enchantments: {}, stackSize: 1}, wand: {kind: 'DEFINED', material: 'minecraft:diamond_sword', lore: [], enchantments: {}}},
-        choices: {stackSizes: {'minecraft:diamond_sword': 1, 'minecraft:ender_pearl': 16}},
+        choices: {materialInfo: {'minecraft:diamond_sword': {stackSize: 1}, 'minecraft:ender_pearl': {stackSize: 16}}},
     } as unknown as EditorPayload
 
     it('finds an item\'s stack size', () => {

@@ -263,7 +263,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:red_mushroom",
         "weight" : 6,
@@ -273,7 +274,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:brown_mushroom",
         "weight" : 6,
@@ -283,7 +285,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:arrow",
         "weight" : 4,
@@ -293,7 +296,8 @@
           "max" : 6,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

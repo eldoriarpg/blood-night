@@ -471,7 +471,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:string",
         "weight" : 6,
@@ -481,7 +482,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:lead",
         "weight" : 4,
@@ -491,7 +493,8 @@
           "max" : 1,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }

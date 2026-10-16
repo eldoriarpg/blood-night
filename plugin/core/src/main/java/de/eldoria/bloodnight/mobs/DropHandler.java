@@ -8,10 +8,12 @@ package de.eldoria.bloodnight.mobs;
 import de.eldoria.bloodnight.api.event.BloodNightLootEvent;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
+import de.eldoria.bloodnight.items.ItemTexts;
 import de.eldoria.bloodnight.loot.Experience;
 import de.eldoria.bloodnight.loot.LootLevel;
 import de.eldoria.bloodnight.loot.LootRoll;
 import de.eldoria.bloodnight.loot.LootTable;
+import de.eldoria.bloodnight.loot.LootWear;
 import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.loot.OrdinaryLoot;
 import de.eldoria.bloodnight.loot.ServerLoot;
@@ -58,7 +60,8 @@ import java.util.random.RandomGenerator;
  * {@link OrdinaryLoot} says, unless their kind or spawn reason is excluded or another plugin owns them.
  * <p>
  * The rolled loot passes through {@link BloodNightLootEvent} first. Amounts above an item's stack size are split into
- * full stacks; unknown item ids are left out and unknown table ids are skipped, logged once each.
+ * full stacks, each as worn as its entry rolls where the entry sets a wear; unknown item ids are left out and unknown
+ * table ids are skipped, logged once each.
  * <p>
  * A special mob killed during a blood night also drops the blood night reward where its world says so: a roll of the
  * data pack loot table {@code bloodnight:blood_night/reward}.
@@ -183,7 +186,10 @@ public final class DropHandler implements Listener {
         for (LootRoll.Rolled rolled : LootRoll.roll(levels, this::table, random)) {
             ItemStack item = items.apply(rolled.entry().item());
             if (item == null) continue;
-            loot.computeIfAbsent(rolled.table(), table -> new ArrayList<>()).addAll(stacks(item, rolled.amount()));
+            List<ItemStack> stacks = stacks(item, rolled.amount());
+            LootWear wear = rolled.entry().wear();
+            if (wear != null) stacks.forEach(stack -> ItemTexts.wear(stack, wear.roll(random)));
+            loot.computeIfAbsent(rolled.table(), table -> new ArrayList<>()).addAll(stacks);
         }
         if (loot.isEmpty()) return;
         BloodNightLootEvent lootEvent = new BloodNightLootEvent(event.getEntity(), id, killer, loot);

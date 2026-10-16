@@ -553,7 +553,8 @@
           "max" : 4,
           "choices" : { }
         },
-        "repeatable" : true
+        "repeatable" : true,
+        "wear" : null
       }, {
         "item" : "minecraft:lapis_lazuli",
         "weight" : 6,
@@ -563,7 +564,8 @@
           "max" : 6,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:amethyst_shard",
         "weight" : 4,
@@ -573,7 +575,8 @@
           "max" : 3,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       }, {
         "item" : "minecraft:experience_bottle",
         "weight" : 2,
@@ -583,7 +586,8 @@
           "max" : 2,
           "choices" : { }
         },
-        "repeatable" : false
+        "repeatable" : false,
+        "wear" : null
       } ]
     }
   }
