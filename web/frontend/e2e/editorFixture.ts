@@ -160,7 +160,7 @@ const payload = {
     items: {
         guard_helmet: {kind: 'REGISTERED', material: 'minecraft:iron_helmet', lore: ['<gray>Worn by the night watch'], enchantments: {'minecraft:protection': 2}},
     },
-    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], stackSizes: {'minecraft:iron_helmet': 1, 'minecraft:golden_axe': 1}, enchantments: ['minecraft:protection', 'minecraft:sharpness'], mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['#minecraft:is_ocean', 'minecraft:desert'], effects: ['minecraft:darkness', 'minecraft:nausea'], gameRules: {'minecraft:spawn_phantoms': {type: 'boolean', translationKey: 'gamerule.doInsomnia'}, 'minecraft:max_entity_cramming': {type: 'integer', translationKey: 'gamerule.maxEntityCramming'}}, commands: ['home', 'spawn', 'tpa']},
+    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], stackSizes: {'minecraft:iron_helmet': 1, 'minecraft:golden_axe': 1}, enchantments: {'minecraft:protection': 4, 'minecraft:sharpness': 5}, mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['#minecraft:is_ocean', 'minecraft:desert'], effects: ['minecraft:darkness', 'minecraft:nausea'], gameRules: {'minecraft:spawn_phantoms': {type: 'boolean', translationKey: 'gamerule.doInsomnia'}, 'minecraft:max_entity_cramming': {type: 'integer', translationKey: 'gamerule.maxEntityCramming'}}, commands: ['home', 'spawn', 'tpa']},
     problems: {},
     macroProblems: {},
     configProblems: {},

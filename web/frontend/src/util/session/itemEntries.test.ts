@@ -11,7 +11,7 @@ import {applyPatch} from '~/util/patch/jsonPatch'
 describe('item entries', () => {
     const payload = {
         items: {b: newItem('minecraft:stick'), a: {...newItem('minecraft:stone'), kind: 'REGISTERED'}},
-        choices: {materials: ['minecraft:stone'], enchantments: []},
+        choices: {materials: ['minecraft:stone'], enchantments: {}},
     } as unknown as EditorPayload
 
     it('lists items by id', () => {
@@ -22,7 +22,7 @@ describe('item entries', () => {
     it('adds items to a payload without any', () => {
         const empty = {} as EditorPayload
         const added = applyPatch(empty, addItem(empty, 'axe', newItem('minecraft:golden_axe')))
-        expect(added.items?.axe).toEqual({kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}})
+        expect(added.items?.axe).toEqual({kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}, hideEnchantments: false})
     })
 
     it('names items and removes empty names', () => {

@@ -543,6 +543,16 @@ export default {
                 chest: 'Lance {command} la main vide pour ouvrir un coffre. Mets-y tous les objets voulus, puis ferme-le ; tu les récupères. Un même objet n\'est ajouté qu\'une fois.',
                 session: 'Les objets enregistrés en jeu apparaissent ici à la prochaine session de l\'éditeur.',
             },
+            maxLevel: 'max {max}',
+            beyond: 'Autoriser les niveaux au-dessus du maximum',
+            beyondHint: 'Des niveaux impossibles en survie, par ex. Tranchant X. Désactivé : un niveau est ramené au maximum.',
+            glint: {
+                label: 'Scintillement',
+                GAME: 'Si enchanté, comme dans le jeu',
+                ON: 'Toujours',
+                OFF: 'Jamais',
+            },
+            hideEnchantments: 'Masquer les enchantements dans l\'infobulle',
         },
         settings: {
             world: 'Paramètres du monde',

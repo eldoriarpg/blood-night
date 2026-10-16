@@ -22,6 +22,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EditorItemsTest {
     @BeforeEach
@@ -41,7 +42,7 @@ class EditorItemsTest {
         stored.editMeta(meta -> meta.setCustomModelData(7));
         ItemRegistry current = new ItemRegistry(Map.of("abc", stored), null);
         EditorItem edit = new EditorItem(
-                ItemKind.REGISTERED, "minecraft:stick", "<red>Edge", List.of("<gray>Sharp"), Map.of(), 64);
+                ItemKind.REGISTERED, "minecraft:stick", "<red>Edge", List.of("<gray>Sharp"), Map.of(), false, true, 64);
 
         ItemRegistry applied = EditorItems.apply(current, Map.of("abc", edit));
 
@@ -51,16 +52,20 @@ class EditorItemsTest {
         assertEquals(7, item.getItemMeta().getCustomModelData());
         assertEquals("<!italic><red>Edge", ItemTexts.name(item));
         assertEquals(List.of("<!italic><gray>Sharp"), ItemTexts.lore(item));
+        assertEquals(false, ItemTexts.glint(item));
+        assertTrue(ItemTexts.hidesEnchantments(item));
     }
 
     @Test
     void itemsMadeInTheEditorBecomeDefinitions() {
-        EditorItem sword =
-                new EditorItem(ItemKind.DEFINED, "minecraft:golden_axe", "<gold>Axe", List.of(), Map.of(), null);
+        EditorItem sword = new EditorItem(
+                ItemKind.DEFINED, "minecraft:golden_axe", "<gold>Axe", List.of(), Map.of(), null, false, null);
         ItemRegistry applied = EditorItems.apply(new ItemRegistry(), Map.of("knight_axe", sword));
 
         assertEquals(
-                Map.of("knight_axe", new ItemDefinition("minecraft:golden_axe", "<gold>Axe", List.of(), Map.of())),
+                Map.of(
+                        "knight_axe",
+                        new ItemDefinition("minecraft:golden_axe", "<gold>Axe", List.of(), Map.of(), null, false)),
                 applied.definitions());
         assertEquals(Material.GOLDEN_AXE, applied.item("knight_axe").getType());
         assertEquals(

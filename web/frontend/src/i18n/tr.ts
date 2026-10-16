@@ -543,6 +543,16 @@ export default {
                 chest: 'Bir sandık açmak için eli boşken {command} komutunu çalıştır. İstediğin tüm eşyaları koy ve kapat; hepsini geri alırsın. Aynı eşya yalnızca bir kez eklenir.',
                 session: 'Oyunda kaydedilen eşyalar bir sonraki düzenleyici oturumunda burada görünür.',
             },
+            maxLevel: 'en çok {max}',
+            beyond: 'Azami seviyenin üstüne izin ver',
+            beyondHint: 'Hayatta kalmada ulaşılamayan seviyeler, ör. Keskinlik X. Kapalı: seviye azamiye indirilir.',
+            glint: {
+                label: 'Parıltı',
+                GAME: 'Büyülüyse, oyundaki gibi',
+                ON: 'Her zaman',
+                OFF: 'Asla',
+            },
+            hideEnchantments: 'Büyüleri ipucunda gizle',
         },
         settings: {
             world: 'Dünya ayarları',

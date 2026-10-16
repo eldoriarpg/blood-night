@@ -13,6 +13,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jspecify.annotations.Nullable;
@@ -38,29 +39,53 @@ public final class ItemTexts {
         Material material = Material.matchMaterial(definition.material());
         if (material == null || !material.isItem()) return null;
         ItemStack item = ItemStack.of(material);
-        apply(item, definition.name(), definition.lore(), definition.enchantments());
+        apply(item, definition);
         return item;
     }
 
     /**
-     * Gives an item a name, lore and enchantments, keeping everything else it carries.
+     * Gives an item the name, lore and enchantments of a definition and shows them as it says, keeping everything else
+     * the item carries, its material included.
      *
      * @param item the item, changed in place
-     * @param name the name, MiniMessage; none removes a custom name
-     * @param lore the lore lines, MiniMessage
-     * @param enchantments enchantment levels by key; unknown keys are left out
+     * @param look the name (none removes a custom name), lore, enchantments (unknown keys are left out), glint and
+     *             whether the tooltip hides the enchantments
      */
-    public static void apply(
-            ItemStack item, @Nullable String name, List<String> lore, Map<String, Integer> enchantments) {
+    public static void apply(ItemStack item, ItemDefinition look) {
         item.editMeta(meta -> {
+            String name = look.name();
             meta.displayName(name == null || name.isBlank() ? null : text(name));
-            meta.lore(lore.isEmpty() ? null : lore.stream().map(ItemTexts::text).toList());
+            meta.lore(
+                    look.lore().isEmpty()
+                            ? null
+                            : look.lore().stream().map(ItemTexts::text).toList());
             meta.getEnchants().keySet().forEach(meta::removeEnchant);
-            enchantments.forEach((key, level) -> {
+            look.enchantments().forEach((key, level) -> {
                 Enchantment enchantment = enchantment(key);
                 if (enchantment != null) meta.addEnchant(enchantment, Math.max(level, 1), true);
             });
+            meta.setEnchantmentGlintOverride(look.glint());
+            if (look.hideEnchantments()) meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            else meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
         });
+    }
+
+    /**
+     * @param item an item
+     * @return whether it always or never glints, none when the game decides by its enchantments
+     */
+    public static @Nullable Boolean glint(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && meta.hasEnchantmentGlintOverride() ? meta.getEnchantmentGlintOverride() : null;
+    }
+
+    /**
+     * @param item an item
+     * @return whether its tooltip leaves out the enchantments
+     */
+    public static boolean hidesEnchantments(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS);
     }
 
     /**

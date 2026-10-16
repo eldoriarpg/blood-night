@@ -646,9 +646,9 @@
           }
         },
         "enchantments" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
           }
         },
         "entityClasses" : {
@@ -735,11 +735,17 @@
             "type" : "integer"
           }
         },
+        "glint" : {
+          "type" : "boolean"
+        },
+        "hideEnchantments" : {
+          "type" : "boolean"
+        },
         "stackSize" : {
           "type" : "integer"
         }
       },
-      "required" : [ "kind", "material", "lore", "enchantments" ]
+      "required" : [ "kind", "material", "lore", "enchantments", "hideEnchantments" ]
     },
     "EditorLegacy" : {
       "type" : "object",

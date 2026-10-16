@@ -543,6 +543,16 @@ export default {
                 chest: '空手运行 {command} 会打开一个箱子。放入所有想要的物品后关闭箱子，物品会还给你。相同的物品只会添加一次。',
                 session: '在游戏中注册的物品会在下一次编辑器会话中出现在这里。',
             },
+            maxLevel: '最高 {max}',
+            beyond: '允许超过最高等级',
+            beyondHint: '生存模式中无法达到的等级，例如锋利 X。关闭时，等级会被降到最高等级。',
+            glint: {
+                label: '附魔光效',
+                GAME: '有附魔时显示，与游戏一致',
+                ON: '总是',
+                OFF: '从不',
+            },
+            hideEnchantments: '在提示框中隐藏附魔',
         },
         settings: {
             world: '世界设置',

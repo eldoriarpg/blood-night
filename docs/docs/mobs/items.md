@@ -20,6 +20,11 @@ Mobs wear items, and [loot tables](loot-tables.md) drop them. There are three ki
    registered before keeps its ID.
 3. **Items made in the editor**, with a material, a name, lore and enchantments.
 
+In the editor, an enchantment's level goes up to the highest level players can reach, like Sharpness V. Switch on
+**Allow levels above the maximum** for stronger ones. **Glint** decides whether the item shimmers: as the game does when
+it is enchanted, always, or never. **Hide the enchantments in the tooltip** keeps them working but leaves them out of
+the item's text.
+
 Remove a registered item with `/bloodnight item remove <id>`.
 
 Items you register show up in the editor's **Items** tab the next time you open an editor session.

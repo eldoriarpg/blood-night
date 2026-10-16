@@ -17,7 +17,7 @@ import java.util.TreeMap;
 
 /**
  * Applies the items of an editor result to the item registry: items made in the editor replace the definitions;
- * registered items take the name, lore and enchantments the editor gave them and keep everything else. Registered
+ * registered items take the name, lore, enchantments and how those show that the editor gave them and keep everything else. Registered
  * items are never removed or created by the editor.
  */
 public final class EditorItems {
@@ -33,8 +33,7 @@ public final class EditorItems {
         current.registrations().forEach((id, stored) -> {
             ItemStack item = stored.clone();
             EditorItem edit = edited.get(id);
-            if (edit != null && edit.kind() == ItemKind.REGISTERED)
-                ItemTexts.apply(item, edit.name(), edit.lore(), edit.enchantments());
+            if (edit != null && edit.kind() == ItemKind.REGISTERED) ItemTexts.apply(item, edit.definition());
             registrations.put(id, item);
         });
         Map<String, ItemDefinition> definitions = new TreeMap<>();

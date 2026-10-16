@@ -63,7 +63,7 @@ class EditorPayloadTest {
                         "26.3",
                         List.of("minecraft:stone"),
                         Map.of("minecraft:diamond_sword", 1),
-                        List.of("minecraft:sharpness"),
+                        Map.of("minecraft:sharpness", 5),
                         Map.of("CREEPER", "org.bukkit.entity.Creeper"),
                         List.of("CREEPER"),
                         Map.of("CREEPER", List.of("NATURAL")),

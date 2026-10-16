@@ -376,6 +376,16 @@ export default {
                 chest: 'Run {command} with an empty hand to open a chest. Put in all the items you want, then close it; you get them back. The same item is only added once.',
                 session: 'Items registered in game show up here in the next editor session.',
             },
+            maxLevel: 'max {max}',
+            beyond: 'Allow levels above the maximum',
+            beyondHint: 'Levels players cannot reach in survival, e.g. Sharpness X. Off: a level is lowered to the maximum.',
+            glint: {
+                label: 'Glint',
+                GAME: 'When enchanted, as in the game',
+                ON: 'Always',
+                OFF: 'Never',
+            },
+            hideEnchantments: 'Hide the enchantments in the tooltip',
         },
         settings: {
             world: 'World settings',

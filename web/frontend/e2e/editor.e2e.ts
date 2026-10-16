@@ -100,18 +100,30 @@ test('an item takes a name and an enchantment', async ({page}) => {
     const stage = await stageEditor(page)
     await page.goto(stage.link)
     await page.getByRole('tab', {name: 'Items'}).click()
+    await expect(page.getByRole('group', {name: 'Enchantments'})).toContainText('Protection')
+    await expect(page.getByRole('figure', {name: 'In game'})).toContainText('Protection II')
+
+    const level = page.getByLabel('Level of minecraft:protection')
+    await level.fill('-3')
+    await level.blur()
+    await expect(level).toHaveValue('1')
+    await level.fill('9')
+    await level.blur()
+    await expect(level).toHaveValue('4')
 
     const name = page.getByLabel('Name', {exact: true})
     await name.fill('<gray>Guard Helmet')
     await name.blur()
-    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
     await page.getByLabel('Enchantment, e.g. minecraft:sharpness').fill('minecraft:sharpness')
     await page.getByRole('group').getByRole('button', {name: 'Add', exact: true}).click()
 
-    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    await expect(page.getByText('Saved, revision 4')).toBeVisible()
     expect(stage.changes).toEqual([
+        [{op: 'add', path: '/items/guard_helmet/enchantments', value: {'minecraft:protection': 1}}],
+        [{op: 'add', path: '/items/guard_helmet/enchantments', value: {'minecraft:protection': 4}}],
         [{op: 'add', path: '/items/guard_helmet/name', value: '<gray>Guard Helmet'}],
-        [{op: 'add', path: '/items/guard_helmet/enchantments', value: {'minecraft:protection': 2, 'minecraft:sharpness': 1}}],
+        [{op: 'add', path: '/items/guard_helmet/enchantments', value: {'minecraft:protection': 4, 'minecraft:sharpness': 1}}],
     ])
 })
 
@@ -179,7 +191,7 @@ test('an item is created from a material', async ({page}) => {
     await dialog.getByRole('button', {name: 'Create'}).click()
 
     await expect(page.getByText('Saved, revision 1')).toBeVisible()
-    expect(stage.changes).toEqual([[{op: 'add', path: '/items/knight_axe', value: {kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}}}]])
+    expect(stage.changes).toEqual([[{op: 'add', path: '/items/knight_axe', value: {kind: 'DEFINED', material: 'minecraft:golden_axe', lore: [], enchantments: {}, hideEnchantments: false}}]])
 })
 
 /** A wire let go on the empty canvas offers the nodes that take it and adds the one picked, wired. */

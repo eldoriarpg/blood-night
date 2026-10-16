@@ -376,6 +376,16 @@ export default {
                 chest: 'Führe {command} mit leerer Hand aus, um eine Kiste zu öffnen. Lege alle gewünschten Items hinein und schließe sie; du bekommst sie zurück. Dasselbe Item wird nur einmal aufgenommen.',
                 session: 'Im Spiel registrierte Items erscheinen hier in der nächsten Editor-Sitzung.',
             },
+            maxLevel: 'max. {max}',
+            beyond: 'Stufen über dem Maximum erlauben',
+            beyondHint: 'Stufen, die Spieler im Überleben nicht erreichen, z. B. Schärfe X. Aus: eine Stufe wird aufs Maximum gesenkt.',
+            glint: {
+                label: 'Glanz',
+                GAME: 'Wenn verzaubert, wie im Spiel',
+                ON: 'Immer',
+                OFF: 'Nie',
+            },
+            hideEnchantments: 'Verzauberungen im Tooltip ausblenden',
         },
         settings: {
             world: 'Welteinstellungen',
