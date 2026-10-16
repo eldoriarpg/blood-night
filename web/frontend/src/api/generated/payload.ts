@@ -573,6 +573,8 @@ export interface EditorItem {
   enchantments: {
     [k: string]: number;
   };
+  glint?: boolean;
+  hideEnchantments: boolean;
   stackSize?: number;
 }
 /**
@@ -1117,7 +1119,9 @@ export interface EditorChoices {
   stackSizes: {
     [k: string]: number;
   };
-  enchantments: string[];
+  enchantments: {
+    [k: string]: number;
+  };
   entityClasses: {
     [k: string]: string;
   };

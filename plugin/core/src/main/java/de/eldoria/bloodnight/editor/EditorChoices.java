@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * @param minecraftVersion the server's Minecraft version, e.g. {@code 26.3}
  * @param materials        material keys, sorted
  * @param stackSizes       how many of a material fit in one stack, by key, for the materials that do not stack to 64
- * @param enchantments     enchantment keys, sorted
+ * @param enchantments     the highest level each enchantment reaches in survival, by its key, sorted by key
  * @param entityClasses    the Bukkit interface of each entity type, by type name, e.g. {@code CREEPER} to
  *                         {@code org.bukkit.entity.Creeper}; the editor types Self and Extension of a mob by it
  * @param mobTypes         the entity types a custom mob or its extension can be, by name, sorted; see {@link MobTypes}
@@ -49,7 +49,7 @@ public record EditorChoices(
         String minecraftVersion,
         List<String> materials,
         Map<String, Integer> stackSizes,
-        List<String> enchantments,
+        Map<String, Integer> enchantments,
         Map<String, String> entityClasses,
         List<String> mobTypes,
         Map<String, List<String>> spawnReasons,
@@ -80,10 +80,10 @@ public record EditorChoices(
                 stackSizes.put(material.getKey().asString(), material.getMaxStackSize());
             }
         }
-        List<String> enchantments = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).stream()
-                .map(enchantment -> enchantment.getKey().asString())
-                .sorted()
-                .toList();
+        Map<String, Integer> enchantments = new TreeMap<>();
+        RegistryAccess.registryAccess()
+                .getRegistry(RegistryKey.ENCHANTMENT)
+                .forEach(enchantment -> enchantments.put(enchantment.getKey().asString(), enchantment.getMaxLevel()));
         Map<String, String> entityClasses = new TreeMap<>();
         for (EntityType type : EntityType.values()) {
             Class<?> entityClass = type.getEntityClass();

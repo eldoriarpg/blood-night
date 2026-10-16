@@ -49,7 +49,8 @@ class ItemRegistryTest {
     @Test
     void onlyRegistrationsCanBeRemoved() {
         ItemRegistry items = new ItemRegistry(
-                null, Map.of("axe", new ItemDefinition("minecraft:golden_axe", null, List.of(), Map.of())));
+                null,
+                Map.of("axe", new ItemDefinition("minecraft:golden_axe", null, List.of(), Map.of(), null, false)));
         String id = items.register(ItemStack.of(Material.STONE));
 
         assertTrue(items.unregister(id));

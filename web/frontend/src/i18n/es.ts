@@ -543,6 +543,16 @@ export default {
                 chest: 'Ejecuta {command} con la mano vacía para abrir un cofre. Pon todos los objetos que quieras y ciérralo; te los devuelve. El mismo objeto solo se añade una vez.',
                 session: 'Los objetos registrados en el juego aparecen aquí en la próxima sesión del editor.',
             },
+            maxLevel: 'máx. {max}',
+            beyond: 'Permitir niveles por encima del máximo',
+            beyondHint: 'Niveles que no se alcanzan en supervivencia, p. ej. Filo X. Apagado: el nivel se baja al máximo.',
+            glint: {
+                label: 'Brillo',
+                GAME: 'Si está encantado, como en el juego',
+                ON: 'Siempre',
+                OFF: 'Nunca',
+            },
+            hideEnchantments: 'Ocultar los encantamientos en la descripción',
         },
         settings: {
             world: 'Ajustes del mundo',

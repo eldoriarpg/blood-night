@@ -32,7 +32,7 @@ export function itemEntries(payload: EditorPayload | null | undefined): ItemEntr
  * @returns a new item defined in the editor, without name, lore or enchantments
  */
 export function newItem(material: string): EditorItem {
-    return {kind: ItemKind.DEFINED, material, lore: [], enchantments: {}}
+    return {kind: ItemKind.DEFINED, material, lore: [], enchantments: {}, hideEnchantments: false}
 }
 
 /**

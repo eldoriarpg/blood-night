@@ -543,6 +543,16 @@ export default {
                 chest: 'Jalankan {command} dengan tangan kosong untuk membuka peti. Masukkan semua item yang anda mahu, kemudian tutupnya; anda akan mendapatnya kembali. Item yang sama hanya ditambah sekali.',
                 session: 'Item yang didaftarkan dalam permainan muncul di sini dalam sesi editor seterusnya.',
             },
+            maxLevel: 'maks {max}',
+            beyond: 'Benarkan tahap melebihi maksimum',
+            beyondHint: 'Tahap yang tidak dapat dicapai dalam survival, cth. Ketajaman X. Mati: tahap diturunkan ke maksimum.',
+            glint: {
+                label: 'Kilauan',
+                GAME: 'Jika berpesona, seperti dalam permainan',
+                ON: 'Sentiasa',
+                OFF: 'Tidak pernah',
+            },
+            hideEnchantments: 'Sembunyikan pesona dalam petua alat',
         },
         settings: {
             world: 'Tetapan dunia',
