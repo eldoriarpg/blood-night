@@ -312,10 +312,14 @@ public final class GraphEmitter {
                 .addModifiers(Modifier.PRIVATE)
                 .returns(boolean.class)
                 .addParameter(int.class, "state");
-        allowed.beginControlFlow("switch (state)");
-        conditionMethods.forEach(
-                (state, method) -> allowed.addStatement("case $L: return $N()", layout.number(state), method));
-        allowed.addStatement("default: return true").endControlFlow();
+        if (conditionMethods.isEmpty()) {
+            allowed.addStatement("return true");
+        } else {
+            allowed.beginControlFlow("switch (state)");
+            conditionMethods.forEach(
+                    (state, method) -> allowed.addStatement("case $L: return $N()", layout.number(state), method));
+            allowed.addStatement("default: return true").endControlFlow();
+        }
         methods.add(allowed.build());
         fieldInitializers.addStatement(
                 "this.$N = new $T(new String[] {$L}, new int[] {$L}, new int[] {$L}, new int[] {$L}, $L,"
@@ -421,13 +425,17 @@ public final class GraphEmitter {
         MethodSpec.Builder builder = override(method, parameters);
         boolean returnsNothing = method.getReturnType() == void.class;
         List<ExecutionPort> ports = definition.descriptor().executions();
-        if (layout != null) builder.addStatement("this.$N.start()", machineField);
+        boolean clock = graph.platform().clock().map(method::equals).orElse(false);
+        if (layout != null && !clock) builder.addStatement("this.$N.start()", machineField);
         for (String entry : entries) {
             Scope root = Scope.root(entry, methodNames);
             builder.addCode(marker(entry));
             String state = graph.nodes().get(entry).instance().state();
+            boolean ownBlock = entries.size() > 1;
             if (state != null && layout != null) {
                 builder.beginControlFlow("if (this.$N.in($L))", machineField, layout.number(state));
+            } else if (ownBlock) {
+                builder.addCode("{\n$>");
             }
             Optional<CodeBlock> guard =
                     definition.guard().condition(new Entry(graph.nodes().get(entry), root, CodeBlock.builder()));
@@ -441,6 +449,7 @@ public final class GraphEmitter {
             }
             guard.ifPresent(condition -> builder.endControlFlow());
             if (state != null && layout != null) builder.endControlFlow();
+            else if (ownBlock) builder.addCode("$<}\n");
         }
         return builder.addCode(sourceMap.boundary()).build();
     }

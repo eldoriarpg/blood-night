@@ -22,6 +22,7 @@ import de.eldoria.bloodnight.mob.spawn.NightEnd;
 import de.eldoria.bloodnight.mob.spawn.SpawnConditions;
 import de.eldoria.bloodnight.mob.spawn.SpawnRules;
 import de.eldoria.bloodnight.mob.spawn.Surface;
+import de.eldoria.graph.compiler.emit.States;
 import de.eldoria.graph.compiler.validate.Graphs;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
@@ -2014,48 +2015,20 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob bloodDragon() {
         CustomMob dragon = mob(BLOOD_DRAGON, EntityType.ENDER_DRAGON, graph -> {
-            String nearest = graph.node(WORLD_NEAREST_PLAYER)
-                    .input("location", graph.selfRead(), "location")
-                    .literal("radius", 128.0)
-                    .id();
-            String fireball = graph.node(LIVING_ENTITY_LAUNCH_PROJECTILE)
-                    .config("projectile", ProjectileKind.DRAGON_FIREBALL)
-                    .input("shooter", graph.self(), "entity")
-                    .input(TARGET, nearest, "player")
-                    .literal("speed", 2.0)
-                    .id();
-            String victim =
-                    graph.node(ENTITY_READ).input(TARGET, nearest, "player").id();
-            String lightning = graph.node(WORLD_STRIKE_LIGHTNING)
-                    .input(TARGET, graph.selfRead(), "world")
-                    .input("location", victim, "location")
-                    .id();
-            String bolt = graph.playEffect("bloodnight:lightning_bolt", victim, "location")
-                    .id();
-            String pierce = graph.node(LIVING_ENTITY_DAMAGE)
-                    .input(TARGET, nearest, "player")
-                    .literal("amount", 6.0)
-                    .input("source", graph.self(), "entity")
-                    .id();
-            String spear = graph.playEffect("bloodnight:blood_spear", graph.self(), "entity")
-                    .input("target", nearest, "player")
-                    .chain("arrived", graph.present(nearest, "player", pierce))
-                    .id();
-            String seesNearest = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
-                    .input(TARGET, graph.self(), "entity")
-                    .input("other", nearest, "player")
-                    .id();
-            graph.on(
-                    MOB_TICK,
-                    graph.unless(
-                            casting(graph),
-                            VALUE,
-                            graph.every(6000, graph.present(nearest, "player", fireball)),
-                            graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
-                            graph.every(8000, graph.present(nearest, "player", graph.when(seesNearest, RESULT, spear))),
-                            ai(graph, true),
-                            stopHovering(graph)),
-                    arcaneSeal(graph));
+            graph.state("fighting", null, true);
+            graph.state("calm", "fighting", true);
+            graph.state("raging", "fighting", false);
+            graph.state("casting", null, false);
+            graph.inState("fighting", () -> dragonAttacks(graph));
+            graph.inState("calm", () -> graph.on(MOB_TICK, healthBelow(graph, SEAL_HEALTH, graph.goTo("raging"))));
+            graph.inState("raging", () -> {
+                String near = graph.node(WORLD_NEAREST_PLAYER)
+                        .input("location", graph.selfRead(), "location")
+                        .literal("radius", SEAL_REACH)
+                        .id();
+                graph.on(MOB_TICK, graph.present(near, "player", graph.every(SEAL_COOLDOWN, graph.goTo("casting"))));
+            });
+            graph.inState("casting", () -> arcaneSeal(graph));
             String hit = graph.entry(EVENT_HIT);
             String hitPlayer = graph.as("player", hit, "entity");
             String seesHit = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
@@ -2096,15 +2069,57 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * The Blood Dragon's arcane seal, once a minute while a player is within {@value #SEAL_REACH} blocks: it roars,
-     * rises {@value #SEAL_RISE_HEIGHT} blocks, turns its head to the nearest player and hovers in place in an arcane
-     * aura, draws a magic circle {@value #SEAL_BELOW} blocks below itself, or just above the ground when that is
-     * closer, and, once the circle is complete, throws every player in that reach it can see about 30 blocks away. A
-     * player behind a pillar is safe. It only casts once its health is below {@value #SEAL_HEALTH} of its maximum.
-     *
-     * @return the chain that casts it
+     * What the Blood Dragon does while it fights: fireballs, lightning and blood spears at the nearest player. Entering
+     * the fight switches its AI back on and sends it circling, e.g. after a restart cut a seal short.
      */
-    private static String arcaneSeal(MobGraph graph) {
+    private static void dragonAttacks(MobGraph graph) {
+        String nearest = graph.node(WORLD_NEAREST_PLAYER)
+                .input("location", graph.selfRead(), "location")
+                .literal("radius", 128.0)
+                .id();
+        String fireball = graph.node(LIVING_ENTITY_LAUNCH_PROJECTILE)
+                .config("projectile", ProjectileKind.DRAGON_FIREBALL)
+                .input("shooter", graph.self(), "entity")
+                .input(TARGET, nearest, "player")
+                .literal("speed", 2.0)
+                .id();
+        String victim = graph.node(ENTITY_READ).input(TARGET, nearest, "player").id();
+        String lightning = graph.node(WORLD_STRIKE_LIGHTNING)
+                .input(TARGET, graph.selfRead(), "world")
+                .input("location", victim, "location")
+                .id();
+        String bolt = graph.playEffect("bloodnight:lightning_bolt", victim, "location")
+                .id();
+        String pierce = graph.node(LIVING_ENTITY_DAMAGE)
+                .input(TARGET, nearest, "player")
+                .literal("amount", 6.0)
+                .input("source", graph.self(), "entity")
+                .id();
+        String spear = graph.playEffect("bloodnight:blood_spear", graph.self(), "entity")
+                .input("target", nearest, "player")
+                .chain("arrived", graph.present(nearest, "player", pierce))
+                .id();
+        String sees = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
+                .input(TARGET, graph.self(), "entity")
+                .input("other", nearest, "player")
+                .id();
+        graph.on(States.ENTER, ai(graph, true), stopHovering(graph));
+        graph.on(
+                MOB_TICK,
+                graph.every(6000, graph.present(nearest, "player", fireball)),
+                graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
+                graph.every(8000, graph.present(nearest, "player", graph.when(sees, RESULT, spear))));
+    }
+
+    /**
+     * The Blood Dragon's state {@code casting}, its arcane seal: it roars, rises {@value #SEAL_RISE_HEIGHT} blocks,
+     * turns its head to the nearest player and hovers in place in an arcane aura, draws a magic circle
+     * {@value #SEAL_BELOW} blocks below itself, or just above the ground when that is closer, and, once the circle is
+     * complete, throws every player within {@value #SEAL_REACH} blocks it can see about 30 blocks away and goes back to
+     * raging. A player behind a pillar is safe. Leaving the state, however it is left, gives the dragon its AI back and
+     * sends it circling.
+     */
+    private static void arcaneSeal(MobGraph graph) {
         String nearest = graph.node(WORLD_NEAREST_PLAYER)
                 .input("location", graph.selfRead(), "location")
                 .literal("radius", SEAL_REACH)
@@ -2142,8 +2157,7 @@ public final class DefaultMobs implements BloodNightNodes {
                         "next",
                         playersAround(graph, SEAL_REACH, player -> throwAway(graph, player)),
                         roar(graph),
-                        phase(graph, "CIRCLING"),
-                        casting(graph, false))
+                        graph.goTo("raging"))
                 .id();
         String hover = graph.node(FLOW_DELAY)
                 .literal("duration", SEAL_RISE + 0.1)
@@ -2160,7 +2174,6 @@ public final class DefaultMobs implements BloodNightNodes {
                 .id();
         trace.chain(
                 "next",
-                casting(graph, true),
                 ai(graph, false),
                 roar(graph),
                 rise,
@@ -2168,8 +2181,8 @@ public final class DefaultMobs implements BloodNightNodes {
                 graph.effectOnSelf("bloodnight:seal_aura"),
                 hover,
                 release);
-        return graph.present(
-                nearest, "player", healthBelow(graph, SEAL_HEALTH, graph.every(SEAL_COOLDOWN, trace.id())));
+        graph.on(States.ENTER, trace.id());
+        graph.on(States.EXIT, ai(graph, true), phase(graph, "CIRCLING"));
     }
 
     /**
@@ -2292,25 +2305,6 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * @return the node whose {@code value} tells whether the dragon is casting its arcane seal; it is not kept over a
-     *     restart, so a dragon frozen by a cast that a restart cut off moves again
-     */
-    private static String casting(MobGraph graph) {
-        return graph.node(VARIABLE_GET)
-                .config("name", "casting")
-                .config("type", "boolean")
-                .id();
-    }
-
-    private static String casting(MobGraph graph, boolean casting) {
-        return graph.node(VARIABLE_SET)
-                .config("name", "casting")
-                .config("type", "boolean")
-                .literal(VALUE, casting)
-                .id();
-    }
-
-    /**
      * @return a node switching the mob's AI on or off; off, a dragon hangs still in the air
      */
     private static String ai(MobGraph graph, boolean on) {
@@ -2327,56 +2321,69 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob blinkWither() {
         return boss(mob("blink_wither", EntityType.WITHER, graph -> {
-            String target = graph.living(graph.selfRead(), TARGET);
-            String direction = graph.node(VECTOR_READ)
-                    .input(
-                            TARGET,
-                            graph.node(LOCATION_READ)
-                                    .input(TARGET, target, "location")
-                                    .id(),
-                            "direction")
-                    .id();
-            String behind = graph.node(LOCATION_CREATE)
-                    .input("world", target, "world")
-                    .input("x", behindAxis(graph, target, direction, "x"), RESULT)
-                    .input(
-                            "y",
-                            graph.node(MATH_ADD)
-                                    .input("first", target, "y")
-                                    .literal("second", 1.0)
-                                    .id(),
-                            RESULT)
-                    .input("z", behindAxis(graph, target, direction, "z"), RESULT)
-                    .id();
-            String blink = graph.present(graph.selfRead(), TARGET, graph.every(6000, blinkTo(graph, behind)));
+            graph.state("charging", null, true);
+            graph.state("hunting", null, false);
             String nearest = graph.node(WORLD_NEAREST_PLAYER)
                     .input("location", graph.selfRead(), "location")
                     .literal("radius", BLINK_WATCH)
                     .id();
-            String last = graph.node(VARIABLE_GET)
-                    .config("name", "last")
-                    .config("type", "location")
-                    .id();
-            String moved = graph.node(LOCATION_DISTANCE)
-                    .input(TARGET, graph.selfRead(), "location")
-                    .input("other", last, VALUE)
-                    .id();
-            String still = graph.node(LOGIC_LESS)
-                    .input("first", moved, RESULT)
-                    .literal("second", 1.0)
-                    .id();
-            String remember = graph.node(VARIABLE_SET)
-                    .config("name", "last")
-                    .config("type", "location")
-                    .input(VALUE, graph.selfRead(), "location")
-                    .id();
-            String stuck = graph.every(
-                    3000,
-                    graph.present(
-                            nearest,
-                            "player",
-                            graph.present(last, VALUE, graph.when(still, RESULT, escape(graph, nearest)))),
-                    remember);
+            graph.inState(
+                    "charging",
+                    () -> graph.on(
+                            States.ENTER,
+                            graph.node(FLOW_DELAY)
+                                    .literal("duration", BLINK_AWAKE)
+                                    .chain("next", graph.goTo("hunting"))
+                                    .id()));
+            graph.inState("hunting", () -> {
+                String target = graph.living(graph.selfRead(), TARGET);
+                String direction = graph.node(VECTOR_READ)
+                        .input(
+                                TARGET,
+                                graph.node(LOCATION_READ)
+                                        .input(TARGET, target, "location")
+                                        .id(),
+                                "direction")
+                        .id();
+                String behind = graph.node(LOCATION_CREATE)
+                        .input("world", target, "world")
+                        .input("x", behindAxis(graph, target, direction, "x"), RESULT)
+                        .input(
+                                "y",
+                                graph.node(MATH_ADD)
+                                        .input("first", target, "y")
+                                        .literal("second", 1.0)
+                                        .id(),
+                                RESULT)
+                        .input("z", behindAxis(graph, target, direction, "z"), RESULT)
+                        .id();
+                String blink = graph.present(graph.selfRead(), TARGET, graph.every(6000, blinkTo(graph, behind)));
+                String last = graph.node(VARIABLE_GET)
+                        .config("name", "last")
+                        .config("type", "location")
+                        .id();
+                String moved = graph.node(LOCATION_DISTANCE)
+                        .input(TARGET, graph.selfRead(), "location")
+                        .input("other", last, VALUE)
+                        .id();
+                String still = graph.node(LOGIC_LESS)
+                        .input("first", moved, RESULT)
+                        .literal("second", 1.0)
+                        .id();
+                String remember = graph.node(VARIABLE_SET)
+                        .config("name", "last")
+                        .config("type", "location")
+                        .input(VALUE, graph.selfRead(), "location")
+                        .id();
+                String stuck = graph.every(
+                        3000,
+                        graph.present(
+                                nearest,
+                                "player",
+                                graph.present(last, VALUE, graph.when(still, RESULT, escape(graph, nearest)))),
+                        remember);
+                graph.on(MOB_TICK, blink, stuck);
+            });
             String vehicle = graph.node(ENTITY_DROP_PASSENGERS)
                     .input(TARGET, graph.selfRead(), "vehicle")
                     .id();
@@ -2384,7 +2391,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.selfRead(),
                     "inside_vehicle",
                     graph.every(1000, vehicle, graph.present(nearest, "player", escape(graph, nearest))));
-            graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.after("awake", BLINK_AWAKE, blink, stuck), riding);
+            graph.on(MOB_TICK, graph.targetNearestPlayer(), riding);
             String damage = graph.entry(EVENT_DAMAGE);
             String trapped = graph.node(LOGIC_OR)
                     .input("first", causeIs(graph, damage, "SUFFOCATION"), RESULT)
@@ -2486,30 +2493,23 @@ public final class DefaultMobs implements BloodNightNodes {
                             "matches",
                             graph.present(attribute, RESULT, heal),
                             graph.effectAt("bloodnight:drain_beam", victim, RESULT)));
-            String enraged = graph.node(VARIABLE_GET)
-                    .config("name", "enraged")
-                    .config("type", "boolean")
-                    .id();
-            String enrage = graph.node(FLOW_DO_ONCE)
-                    .chain(
-                            "next",
-                            graph.node(VARIABLE_SET)
-                                    .config("name", "enraged")
-                                    .config("type", "boolean")
-                                    .literal(VALUE, true)
-                                    .id(),
-                            guard(graph, 3, 0),
-                            guard(graph, -3, 0),
-                            guard(graph, 0, 3),
-                            guard(graph, 0, -3),
-                            graph.effectOnSelf("bloodnight:death_burst"))
-                    .id();
-            String volley = graph.every(5000, playersAround(graph, 32, player -> spearAt(graph, player)));
-            graph.on(
-                    MOB_TICK,
-                    graph.targetNearestPlayer(),
-                    healthBelow(graph, 0.5, enrage),
-                    graph.when(enraged, VALUE, graph.keepEffect("minecraft:speed", 1, false), volley));
+            graph.state("feeding", null, true);
+            graph.state("raging", null, false);
+            graph.on(MOB_TICK, graph.targetNearestPlayer());
+            graph.inState("feeding", () -> graph.on(MOB_TICK, healthBelow(graph, 0.5, graph.goTo("raging"))));
+            graph.inState("raging", () -> {
+                graph.on(
+                        States.ENTER,
+                        guard(graph, 3, 0),
+                        guard(graph, -3, 0),
+                        guard(graph, 0, 3),
+                        guard(graph, 0, -3),
+                        graph.effectOnSelf("bloodnight:death_burst"));
+                graph.on(
+                        MOB_TICK,
+                        graph.keepEffect("minecraft:speed", 1, false),
+                        graph.every(5000, playersAround(graph, 32, player -> spearAt(graph, player))));
+            });
         }));
     }
 

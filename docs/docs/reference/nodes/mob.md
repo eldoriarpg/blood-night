@@ -1,7 +1,7 @@
 ---
 title: The mob
 description: "The mob: every node of this group, with its inputs and outputs."
-sidebar_position: 19
+sidebar_position: 20
 ---
 
 {/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}

@@ -17,7 +17,9 @@ import de.eldoria.graph.definition.port.Port;
 import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
+import de.eldoria.graph.model.State;
 import de.eldoria.graph.platform.GraphPlatform;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.BooleanNode;
 import tools.jackson.databind.node.DoubleNode;
@@ -25,6 +27,7 @@ import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.LongNode;
 import tools.jackson.databind.node.StringNode;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,7 @@ public final class Graphs {
     private final boolean macroBody;
     private final Map<String, NodeDefinition> extra;
     private final Map<String, NodeBuilder> nodes = new LinkedHashMap<>();
+    private final List<State> states = new ArrayList<>();
     private Map<String, PortType> bindings = Map.of();
 
     private Graphs(GraphPlatform platform, MacroLibrary macros, boolean macroBody) {
@@ -133,11 +137,23 @@ public final class Graphs {
     }
 
     /**
+     * Adds a state; a parent is added before its children.
+     *
+     * @param state the state
+     * @return this
+     */
+    public Graphs state(State state) {
+        states.add(state);
+        return this;
+    }
+
+    /**
      * @return the graph
      * @throws IllegalArgumentException listing every problem when the graph is not valid
      */
     public Graph build() {
         Graph.Builder graph = Graph.builder();
+        states.forEach(graph::state);
         nodes.forEach((id, node) -> graph.node(id, node.instance));
         Graph built = graph.build();
         if (macroBody) return built;
@@ -235,6 +251,17 @@ public final class Graphs {
          */
         public NodeBuilder editor(JsonNode editor) {
             instance.editor(editor);
+            return this;
+        }
+
+        /**
+         * Puts the node into a state of the graph.
+         *
+         * @param state the state's name, or {@code null} for the part that always runs
+         * @return this
+         */
+        public NodeBuilder state(@Nullable String state) {
+            instance.state(state);
             return this;
         }
 

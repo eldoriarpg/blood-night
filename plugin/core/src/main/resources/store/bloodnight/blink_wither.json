@@ -49,62 +49,78 @@
     },
     "behaviour" : {
       "nodes" : {
-        "add_26" : {
+        "add_12" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_23",
-              "port" : "x"
-            },
-            "second" : {
-              "node" : "random_number_25",
-              "port" : "result"
-            }
-          }
-        },
-        "add_27" : {
-          "type" : "math.add",
-          "inputs" : {
-            "first" : {
-              "node" : "read_23",
+              "node" : "read_6",
               "port" : "y"
             }
           },
           "literals" : {
-            "second" : 4.0
-          }
+            "second" : 1.0
+          },
+          "state" : "hunting"
         },
         "add_29" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_23",
-              "port" : "z"
+              "node" : "read_26",
+              "port" : "x"
             },
             "second" : {
               "node" : "random_number_28",
               "port" : "result"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "add_44" : {
+        "add_30" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_41",
+              "node" : "read_26",
+              "port" : "y"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          },
+          "state" : "hunting"
+        },
+        "add_32" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_26",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "random_number_31",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "add_48" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_45",
               "port" : "x"
             },
             "second" : {
-              "node" : "random_number_43",
+              "node" : "random_number_47",
               "port" : "result"
             }
           }
         },
-        "add_45" : {
+        "add_49" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_41",
+              "node" : "read_45",
               "port" : "y"
             }
           },
@@ -112,28 +128,15 @@
             "second" : 4.0
           }
         },
-        "add_47" : {
+        "add_51" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_41",
+              "node" : "read_45",
               "port" : "z"
             },
             "second" : {
-              "node" : "random_number_46",
-              "port" : "result"
-            }
-          }
-        },
-        "add_76" : {
-          "type" : "math.add",
-          "inputs" : {
-            "first" : {
-              "node" : "read_73",
-              "port" : "x"
-            },
-            "second" : {
-              "node" : "random_number_75",
+              "node" : "random_number_50",
               "port" : "result"
             }
           }
@@ -142,7 +145,20 @@
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_73",
+              "node" : "read_74",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "random_number_76",
+              "port" : "result"
+            }
+          }
+        },
+        "add_78" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_74",
               "port" : "y"
             }
           },
@@ -150,230 +166,214 @@
             "second" : 4.0
           }
         },
-        "add_79" : {
+        "add_80" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
-              "node" : "read_73",
+              "node" : "read_74",
               "port" : "z"
             },
             "second" : {
-              "node" : "random_number_78",
+              "node" : "random_number_79",
               "port" : "result"
             }
           }
         },
-        "add_8" : {
-          "type" : "math.add",
-          "inputs" : {
-            "first" : {
-              "node" : "read_2",
-              "port" : "y"
-            }
-          },
-          "literals" : {
-            "second" : 1.0
-          }
-        },
-        "branch_15" : {
+        "branch_19" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_14",
+              "node" : "cooldown_18",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "play_effect_11", "teleport_12", "play_effect_13" ]
-          }
+            "true" : [ "play_effect_15", "teleport_16", "play_effect_17" ]
+          },
+          "state" : "hunting"
         },
-        "branch_17" : {
+        "branch_21" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_16",
+              "node" : "is_null_20",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_15" ]
-          }
+            "false" : [ "branch_19" ]
+          },
+          "state" : "hunting"
         },
-        "branch_33" : {
+        "branch_36" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "less_21",
+              "node" : "less_24",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "play_effect_30", "teleport_31", "play_effect_32" ]
-          }
+            "true" : [ "play_effect_33", "teleport_34", "play_effect_35" ]
+          },
+          "state" : "hunting"
         },
-        "branch_35" : {
+        "branch_38" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_34",
+              "node" : "is_null_37",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_33" ]
-          }
+            "false" : [ "branch_36" ]
+          },
+          "state" : "hunting"
         },
-        "branch_37" : {
+        "branch_40" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_36",
+              "node" : "is_null_39",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_35" ]
-          }
+            "false" : [ "branch_38" ]
+          },
+          "state" : "hunting"
         },
-        "branch_39" : {
+        "branch_42" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_38",
+              "node" : "cooldown_41",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_37", "set_22" ]
-          }
+            "true" : [ "branch_40", "set_25" ]
+          },
+          "state" : "hunting"
         },
-        "branch_52" : {
+        "branch_56" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_51",
+              "node" : "is_null_55",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "play_effect_48", "teleport_49", "play_effect_50" ]
+            "false" : [ "play_effect_52", "teleport_53", "play_effect_54" ]
           }
         },
-        "branch_54" : {
+        "branch_58" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_53",
+              "node" : "cooldown_57",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "drop_passengers_40", "branch_52" ]
+            "true" : [ "drop_passengers_44", "branch_56" ]
           }
         },
-        "branch_55" : {
+        "branch_59" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "inside_vehicle"
             }
           },
           "executions" : {
-            "true" : [ "branch_54" ]
-          }
-        },
-        "branch_60" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_59",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "false" : [ "mutate_57" ]
-          }
-        },
-        "branch_61" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_58",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_60" ]
+            "true" : [ "branch_58" ]
           }
         },
         "branch_64" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "greater_or_equal_63",
+              "node" : "is_null_63",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_17", "branch_39" ]
+            "false" : [ "mutate_61" ]
           }
         },
-        "branch_84" : {
+        "branch_65" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_83",
+              "node" : "is_null_62",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "play_effect_80", "teleport_81", "play_effect_82" ]
+            "true" : [ "branch_64" ]
           }
         },
-        "branch_86" : {
+        "branch_85" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_85",
+              "node" : "cooldown_84",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_84" ]
+            "true" : [ "play_effect_81", "teleport_82", "play_effect_83" ]
           }
         },
         "branch_87" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "or_67",
+              "node" : "is_null_86",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "mutate_72", "branch_86" ]
+            "false" : [ "branch_85" ]
           }
         },
-        "cooldown_14" : {
+        "branch_88" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "or_68",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_73", "branch_87" ]
+          }
+        },
+        "cooldown_18" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
             "duration" : 6000
-          }
+          },
+          "state" : "hunting"
         },
-        "cooldown_38" : {
+        "cooldown_41" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
             "duration" : 3000
-          }
+          },
+          "state" : "hunting"
         },
-        "cooldown_53" : {
+        "cooldown_57" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -382,7 +382,7 @@
             "duration" : 1000
           }
         },
-        "cooldown_83" : {
+        "cooldown_84" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -391,286 +391,302 @@
             "duration" : 1000
           }
         },
-        "create_24" : {
+        "create_27" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
-              "node" : "read_23",
+              "node" : "read_26",
               "port" : "world"
             },
             "x" : {
-              "node" : "add_26",
-              "port" : "result"
-            },
-            "y" : {
-              "node" : "add_27",
-              "port" : "result"
-            },
-            "z" : {
               "node" : "add_29",
               "port" : "result"
-            }
-          }
-        },
-        "create_42" : {
-          "type" : "location.create",
-          "inputs" : {
-            "world" : {
-              "node" : "read_41",
-              "port" : "world"
-            },
-            "x" : {
-              "node" : "add_44",
-              "port" : "result"
             },
             "y" : {
-              "node" : "add_45",
+              "node" : "add_30",
               "port" : "result"
             },
             "z" : {
-              "node" : "add_47",
+              "node" : "add_32",
               "port" : "result"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "create_5" : {
+        "create_46" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
-              "node" : "read_2",
+              "node" : "read_45",
               "port" : "world"
             },
             "x" : {
-              "node" : "subtract_6",
+              "node" : "add_48",
               "port" : "result"
             },
             "y" : {
-              "node" : "add_8",
+              "node" : "add_49",
               "port" : "result"
             },
             "z" : {
-              "node" : "subtract_9",
+              "node" : "add_51",
               "port" : "result"
             }
           }
         },
-        "create_74" : {
+        "create_75" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
-              "node" : "read_73",
+              "node" : "read_74",
               "port" : "world"
             },
             "x" : {
-              "node" : "add_76",
-              "port" : "result"
-            },
-            "y" : {
               "node" : "add_77",
               "port" : "result"
             },
+            "y" : {
+              "node" : "add_78",
+              "port" : "result"
+            },
             "z" : {
-              "node" : "add_79",
+              "node" : "add_80",
               "port" : "result"
             }
           }
         },
-        "damage_66" : {
+        "create_9" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_6",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "subtract_10",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "add_12",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "subtract_13",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "damage_67" : {
           "type" : "event.damage",
           "executions" : {
-            "next" : [ "branch_87" ]
+            "next" : [ "branch_88" ]
           }
         },
-        "distance_20" : {
+        "delay_3" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 12.0
+          },
+          "executions" : {
+            "next" : [ "go_to_4" ]
+          },
+          "state" : "charging"
+        },
+        "distance_23" : {
           "type" : "location.distance",
           "inputs" : {
             "other" : {
-              "node" : "get_19",
+              "node" : "get_22",
               "port" : "value"
             },
             "target" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "location"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "drop_passengers_40" : {
+        "drop_passengers_44" : {
           "type" : "entity.drop_passengers",
           "inputs" : {
             "target" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "vehicle"
             }
           }
         },
-        "elapsed_62" : {
-          "type" : "timer.elapsed",
-          "config" : {
-            "timer" : "awake"
-          }
+        "enter_5" : {
+          "type" : "state.enter",
+          "executions" : {
+            "next" : [ "delay_3" ]
+          },
+          "state" : "charging"
         },
-        "equal_69" : {
+        "equal_70" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "damage_66",
+              "node" : "damage_67",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_68",
+              "node" : "value_69",
               "port" : "value"
             }
           }
         },
-        "equal_71" : {
+        "equal_72" : {
           "type" : "logic.equal",
           "inputs" : {
             "first" : {
-              "node" : "damage_66",
+              "node" : "damage_67",
               "port" : "cause"
             },
             "second" : {
-              "node" : "value_70",
+              "node" : "value_71",
               "port" : "value"
             }
           }
         },
-        "get_19" : {
+        "get_22" : {
           "type" : "variable.get",
           "config" : {
             "name" : "last",
             "type" : "location"
-          }
+          },
+          "state" : "hunting"
         },
-        "greater_or_equal_63" : {
-          "type" : "logic.greater_or_equal",
+        "go_to_4" : {
+          "type" : "state.go_to",
+          "config" : {
+            "state" : "hunting"
+          },
+          "state" : "charging"
+        },
+        "is_null_20" : {
+          "type" : "logic.is_null",
           "inputs" : {
-            "first" : {
-              "node" : "elapsed_62",
-              "port" : "elapsed"
+            "value" : {
+              "node" : "read_1",
+              "port" : "target"
             }
           },
-          "literals" : {
-            "second" : 12.0
-          }
+          "state" : "hunting"
         },
-        "is_null_16" : {
+        "is_null_37" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "read_0",
-              "port" : "target"
-            }
-          }
-        },
-        "is_null_34" : {
-          "type" : "logic.is_null",
-          "inputs" : {
-            "value" : {
-              "node" : "get_19",
+              "node" : "get_22",
               "port" : "value"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "is_null_36" : {
+        "is_null_39" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "nearest_player_18",
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          },
+          "state" : "hunting"
+        },
+        "is_null_55" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
               "port" : "player"
             }
           }
         },
-        "is_null_51" : {
+        "is_null_62" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "nearest_player_18",
-              "port" : "player"
-            }
-          }
-        },
-        "is_null_58" : {
-          "type" : "logic.is_null",
-          "inputs" : {
-            "value" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "target"
             }
           }
         },
-        "is_null_59" : {
+        "is_null_63" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "nearest_player_56",
+              "node" : "nearest_player_60",
               "port" : "player"
             }
           }
         },
-        "is_null_85" : {
+        "is_null_86" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "nearest_player_18",
+              "node" : "nearest_player_0",
               "port" : "player"
             }
           }
         },
-        "less_21" : {
+        "less_24" : {
           "type" : "logic.less",
           "inputs" : {
             "first" : {
-              "node" : "distance_20",
+              "node" : "distance_23",
               "port" : "result"
             }
           },
           "literals" : {
             "second" : 1.0
-          }
-        },
-        "multiply_10" : {
-          "type" : "math.multiply",
-          "inputs" : {
-            "first" : {
-              "node" : "read_3",
-              "port" : "z"
-            }
           },
-          "literals" : {
-            "second" : 8.0
-          }
+          "state" : "hunting"
         },
-        "multiply_7" : {
+        "multiply_11" : {
           "type" : "math.multiply",
           "inputs" : {
             "first" : {
-              "node" : "read_3",
+              "node" : "read_7",
               "port" : "x"
             }
           },
           "literals" : {
             "second" : 8.0
-          }
+          },
+          "state" : "hunting"
         },
-        "mutate_57" : {
+        "multiply_14" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 8.0
+          },
+          "state" : "hunting"
+        },
+        "mutate_61" : {
           "type" : "mob.mutate",
           "inputs" : {
             "target" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             },
             "target_value" : {
-              "node" : "nearest_player_56",
+              "node" : "nearest_player_60",
               "port" : "player"
             }
           }
         },
-        "mutate_72" : {
+        "mutate_73" : {
           "type" : "cancellable.mutate",
           "inputs" : {
             "target" : {
-              "node" : "damage_66",
+              "node" : "damage_67",
               "port" : "event"
             }
           },
@@ -678,11 +694,11 @@
             "cancelled" : true
           }
         },
-        "nearest_player_18" : {
+        "nearest_player_0" : {
           "type" : "world.nearest_player",
           "inputs" : {
             "location" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "location"
             }
           },
@@ -690,11 +706,11 @@
             "radius" : 32.0
           }
         },
-        "nearest_player_56" : {
+        "nearest_player_60" : {
           "type" : "world.nearest_player",
           "inputs" : {
             "location" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "location"
             }
           },
@@ -702,120 +718,117 @@
             "radius" : 16.0
           }
         },
-        "or_67" : {
+        "or_68" : {
           "type" : "logic.or",
           "inputs" : {
             "first" : {
-              "node" : "equal_69",
+              "node" : "equal_70",
               "port" : "result"
             },
             "second" : {
-              "node" : "equal_71",
+              "node" : "equal_72",
               "port" : "result"
             }
           }
         },
-        "play_effect_11" : {
+        "play_effect_15" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:teleport_puff"
           },
           "inputs" : {
             "source" : {
-              "node" : "self_1",
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_17" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_9",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_33" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_35" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_27",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_52" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
               "port" : "entity"
             }
           }
         },
-        "play_effect_13" : {
+        "play_effect_54" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:teleport_puff"
           },
           "inputs" : {
             "source" : {
-              "node" : "create_5",
+              "node" : "create_46",
               "port" : "result"
             }
           }
         },
-        "play_effect_30" : {
+        "play_effect_81" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:teleport_puff"
           },
           "inputs" : {
             "source" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             }
           }
         },
-        "play_effect_32" : {
+        "play_effect_83" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:teleport_puff"
           },
           "inputs" : {
             "source" : {
-              "node" : "create_24",
+              "node" : "create_75",
               "port" : "result"
             }
-          }
-        },
-        "play_effect_48" : {
-          "type" : "world.play_effect",
-          "config" : {
-            "effect" : "bloodnight:teleport_puff"
-          },
-          "inputs" : {
-            "source" : {
-              "node" : "self_1",
-              "port" : "entity"
-            }
-          }
-        },
-        "play_effect_50" : {
-          "type" : "world.play_effect",
-          "config" : {
-            "effect" : "bloodnight:teleport_puff"
-          },
-          "inputs" : {
-            "source" : {
-              "node" : "create_42",
-              "port" : "result"
-            }
-          }
-        },
-        "play_effect_80" : {
-          "type" : "world.play_effect",
-          "config" : {
-            "effect" : "bloodnight:teleport_puff"
-          },
-          "inputs" : {
-            "source" : {
-              "node" : "self_1",
-              "port" : "entity"
-            }
-          }
-        },
-        "play_effect_82" : {
-          "type" : "world.play_effect",
-          "config" : {
-            "effect" : "bloodnight:teleport_puff"
-          },
-          "inputs" : {
-            "source" : {
-              "node" : "create_74",
-              "port" : "result"
-            }
-          }
-        },
-        "random_number_25" : {
-          "type" : "function.random_number",
-          "literals" : {
-            "lower" : -8.0,
-            "upper" : 8.0
           }
         },
         "random_number_28" : {
@@ -823,103 +836,116 @@
           "literals" : {
             "lower" : -8.0,
             "upper" : 8.0
-          }
+          },
+          "state" : "hunting"
         },
-        "random_number_43" : {
+        "random_number_31" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          },
+          "state" : "hunting"
+        },
+        "random_number_47" : {
           "type" : "function.random_number",
           "literals" : {
             "lower" : -8.0,
             "upper" : 8.0
           }
         },
-        "random_number_46" : {
+        "random_number_50" : {
           "type" : "function.random_number",
           "literals" : {
             "lower" : -8.0,
             "upper" : 8.0
           }
         },
-        "random_number_75" : {
+        "random_number_76" : {
           "type" : "function.random_number",
           "literals" : {
             "lower" : -8.0,
             "upper" : 8.0
           }
         },
-        "random_number_78" : {
+        "random_number_79" : {
           "type" : "function.random_number",
           "literals" : {
             "lower" : -8.0,
             "upper" : 8.0
           }
         },
-        "read_0" : {
+        "read_1" : {
           "type" : "mob.read",
           "inputs" : {
             "target" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             }
           }
         },
-        "read_2" : {
+        "read_26" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          },
+          "state" : "hunting"
+        },
+        "read_45" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "read_6" : {
           "type" : "living_entity.read",
           "inputs" : {
             "target" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "target"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "read_23" : {
-          "type" : "entity.read",
-          "inputs" : {
-            "target" : {
-              "node" : "nearest_player_18",
-              "port" : "player"
-            }
-          }
-        },
-        "read_3" : {
+        "read_7" : {
           "type" : "vector.read",
           "inputs" : {
             "target" : {
-              "node" : "read_4",
+              "node" : "read_8",
               "port" : "direction"
+            }
+          },
+          "state" : "hunting"
+        },
+        "read_74" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
             }
           }
         },
-        "read_4" : {
+        "read_8" : {
           "type" : "location.read",
           "inputs" : {
             "target" : {
-              "node" : "read_2",
+              "node" : "read_6",
               "port" : "location"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "read_41" : {
-          "type" : "entity.read",
-          "inputs" : {
-            "target" : {
-              "node" : "nearest_player_18",
-              "port" : "player"
-            }
-          }
-        },
-        "read_73" : {
-          "type" : "entity.read",
-          "inputs" : {
-            "target" : {
-              "node" : "nearest_player_18",
-              "port" : "player"
-            }
-          }
-        },
-        "self_1" : {
+        "self_2" : {
           "type" : "mob.self"
         },
-        "set_22" : {
+        "set_25" : {
           "type" : "variable.set",
           "config" : {
             "name" : "last",
@@ -927,110 +953,128 @@
           },
           "inputs" : {
             "value" : {
-              "node" : "read_0",
+              "node" : "read_1",
               "port" : "location"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "subtract_6" : {
+        "subtract_10" : {
           "type" : "math.subtract",
           "inputs" : {
             "first" : {
-              "node" : "read_2",
+              "node" : "read_6",
               "port" : "x"
             },
             "second" : {
-              "node" : "multiply_7",
+              "node" : "multiply_11",
               "port" : "result"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "subtract_9" : {
+        "subtract_13" : {
           "type" : "math.subtract",
           "inputs" : {
             "first" : {
-              "node" : "read_2",
+              "node" : "read_6",
               "port" : "z"
             },
             "second" : {
-              "node" : "multiply_10",
+              "node" : "multiply_14",
               "port" : "result"
             }
-          }
+          },
+          "state" : "hunting"
         },
-        "teleport_12" : {
+        "teleport_16" : {
           "type" : "entity.teleport",
           "inputs" : {
             "location" : {
-              "node" : "create_5",
+              "node" : "create_9",
               "port" : "result"
             },
             "target" : {
-              "node" : "self_1",
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "teleport_34" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_27",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "teleport_53" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_46",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
               "port" : "entity"
             }
           }
         },
-        "teleport_31" : {
+        "teleport_82" : {
           "type" : "entity.teleport",
           "inputs" : {
             "location" : {
-              "node" : "create_24",
+              "node" : "create_75",
               "port" : "result"
             },
             "target" : {
-              "node" : "self_1",
+              "node" : "self_2",
               "port" : "entity"
             }
           }
         },
-        "teleport_49" : {
-          "type" : "entity.teleport",
-          "inputs" : {
-            "location" : {
-              "node" : "create_42",
-              "port" : "result"
-            },
-            "target" : {
-              "node" : "self_1",
-              "port" : "entity"
-            }
-          }
-        },
-        "teleport_81" : {
-          "type" : "entity.teleport",
-          "inputs" : {
-            "location" : {
-              "node" : "create_74",
-              "port" : "result"
-            },
-            "target" : {
-              "node" : "self_1",
-              "port" : "entity"
-            }
-          }
-        },
-        "tick_65" : {
+        "tick_43" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_61", "branch_64", "branch_55" ]
+            "next" : [ "branch_21", "branch_42" ]
+          },
+          "state" : "hunting"
+        },
+        "tick_66" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_65", "branch_59" ]
           }
         },
-        "value_68" : {
+        "value_69" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",
             "value" : "SUFFOCATION"
           }
         },
-        "value_70" : {
+        "value_71" : {
           "type" : "value",
           "config" : {
             "type" : "damage_cause",
             "value" : "CRAMMING"
           }
         }
-      }
+      },
+      "states" : [ {
+        "name" : "charging",
+        "initial" : true
+      }, {
+        "name" : "hunting"
+      } ]
     },
     "loot" : {
       "tables" : [ "blink_wither" ],

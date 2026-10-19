@@ -1,7 +1,7 @@
 ---
 title: Triggers and events
 description: "Triggers and events: every node of this group, with its inputs and outputs."
-sidebar_position: 22
+sidebar_position: 23
 ---
 
 {/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}

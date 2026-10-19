@@ -1,7 +1,7 @@
 ---
 title: Timers
 description: "Timers: every node of this group, with its inputs and outputs."
-sidebar_position: 21
+sidebar_position: 22
 ---
 
 {/* Made by docs/scripts/generate.mjs. Change the plugin, then run ./toolchain.sh docs-generate. */}

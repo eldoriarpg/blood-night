@@ -89,6 +89,7 @@ again, or double click the box, to open it. A closed frame can't be deleted: ope
 | Switch | Picks one of several ways by a number |
 | Timers | Remember when something happened, shared by the whole mob |
 | Variables | Remember a value, shared by the whole mob |
+| Go To State | Moves the mob into another of its [states](states.md) |
 | Mutate | Reads and changes the properties of something, like a creeper's fuse or a damage amount |
 | Run Command | Runs a command as the console. This is how a mob uses other plugins, like giving money. |
 | Broadcast | Sends a message to the players in the world or on the server |
@@ -136,4 +137,4 @@ On Paper all of these work right away, as always.
 ## Problems
 
 If a graph has a mistake, the editor shows it in the **Problems** panel, next to the node it belongs to. A mob with
-problems does not get its behaviour until they are fixed.
+problems does not get its behaviour until they are fixed. Click a problem to open the node, in the state it lies in.

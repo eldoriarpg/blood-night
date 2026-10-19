@@ -49,7 +49,7 @@
     },
     "behaviour" : {
       "nodes" : {
-        "add_17" : {
+        "add_30" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -59,9 +59,10 @@
           },
           "literals" : {
             "second" : 3.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_18" : {
+        "add_31" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -71,9 +72,10 @@
           },
           "literals" : {
             "second" : 0.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_26" : {
+        "add_39" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -83,9 +85,10 @@
           },
           "literals" : {
             "second" : -3.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_27" : {
+        "add_40" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -95,9 +98,10 @@
           },
           "literals" : {
             "second" : 0.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_35" : {
+        "add_48" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -107,9 +111,10 @@
           },
           "literals" : {
             "second" : 0.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_36" : {
+        "add_49" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -119,9 +124,10 @@
           },
           "literals" : {
             "second" : 3.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_44" : {
+        "add_57" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -131,9 +137,10 @@
           },
           "literals" : {
             "second" : 0.0
-          }
+          },
+          "state" : "raging"
         },
-        "add_45" : {
+        "add_58" : {
           "type" : "math.add",
           "inputs" : {
             "first" : {
@@ -143,7 +150,8 @@
           },
           "literals" : {
             "second" : -3.0
-          }
+          },
+          "state" : "raging"
         },
         "add_6" : {
           "type" : "math.add",
@@ -157,11 +165,11 @@
             "second" : 4.0
           }
         },
-        "apply_effect_22" : {
+        "apply_effect_35" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_21",
+              "node" : "cast_34",
               "port" : "result"
             }
           },
@@ -169,13 +177,14 @@
             "amplifier" : 1,
             "effect" : "minecraft:strength",
             "seconds" : 600.0
-          }
+          },
+          "state" : "raging"
         },
-        "apply_effect_31" : {
+        "apply_effect_44" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_30",
+              "node" : "cast_43",
               "port" : "result"
             }
           },
@@ -183,13 +192,14 @@
             "amplifier" : 1,
             "effect" : "minecraft:strength",
             "seconds" : 600.0
-          }
+          },
+          "state" : "raging"
         },
-        "apply_effect_40" : {
+        "apply_effect_53" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_39",
+              "node" : "cast_52",
               "port" : "result"
             }
           },
@@ -197,13 +207,14 @@
             "amplifier" : 1,
             "effect" : "minecraft:strength",
             "seconds" : 600.0
-          }
+          },
+          "state" : "raging"
         },
-        "apply_effect_49" : {
+        "apply_effect_62" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_48",
+              "node" : "cast_61",
               "port" : "result"
             }
           },
@@ -211,9 +222,10 @@
             "amplifier" : 1,
             "effect" : "minecraft:strength",
             "seconds" : 600.0
-          }
+          },
+          "state" : "raging"
         },
-        "apply_effect_78" : {
+        "apply_effect_67" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
@@ -226,7 +238,8 @@
             "effect" : "minecraft:speed",
             "seconds" : 60.0,
             "visible" : false
-          }
+          },
+          "state" : "raging"
         },
         "attribute_2" : {
           "type" : "living_entity.attribute",
@@ -240,7 +253,7 @@
             "attribute" : "minecraft:max_health"
           }
         },
-        "attribute_71" : {
+        "attribute_21" : {
           "type" : "living_entity.attribute",
           "inputs" : {
             "target" : {
@@ -250,7 +263,8 @@
           },
           "literals" : {
             "attribute" : "minecraft:max_health"
-          }
+          },
+          "state" : "feeding"
         },
         "branch_10" : {
           "type" : "flow.branch",
@@ -276,137 +290,120 @@
             "true" : [ "branch_10", "play_effect_11" ]
           }
         },
-        "branch_24" : {
+        "branch_17" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cast_21",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "apply_effect_22", "play_effect_23" ]
-          }
-        },
-        "branch_33" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_30",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "apply_effect_31", "play_effect_32" ]
-          }
-        },
-        "branch_42" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_39",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "apply_effect_40", "play_effect_41" ]
-          }
-        },
-        "branch_51" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_48",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "apply_effect_49", "play_effect_50" ]
-          }
-        },
-        "branch_60" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_59",
+              "node" : "is_null_16",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "damage_57" ]
+            "false" : [ "mutate_14" ]
           }
         },
-        "branch_61" : {
+        "branch_18" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "has_line_of_sight_56",
+              "node" : "is_null_15",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "play_effect_58" ]
+            "true" : [ "branch_17" ]
           }
         },
-        "branch_62" : {
+        "branch_25" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cast_55",
+              "node" : "less_24",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "go_to_20" ]
+          },
+          "state" : "feeding"
+        },
+        "branch_27" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_26",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_25" ]
+          },
+          "state" : "feeding"
+        },
+        "branch_37" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_34",
               "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "branch_61" ]
-          }
+            "true" : [ "apply_effect_35", "play_effect_36" ]
+          },
+          "state" : "raging"
+        },
+        "branch_46" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_43",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_44", "play_effect_45" ]
+          },
+          "state" : "raging"
+        },
+        "branch_55" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_52",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_53", "play_effect_54" ]
+          },
+          "state" : "raging"
         },
         "branch_64" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_63",
-              "port" : "result"
+              "node" : "cast_61",
+              "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "for_each_54" ]
-          }
+            "true" : [ "apply_effect_62", "play_effect_63" ]
+          },
+          "state" : "raging"
         },
         "branch_69" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_68",
+              "node" : "cooldown_68",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "mutate_66" ]
-          }
-        },
-        "branch_70" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_67",
-              "port" : "result"
-            }
+            "true" : [ "apply_effect_67" ]
           },
-          "executions" : {
-            "true" : [ "branch_69" ]
-          }
-        },
-        "branch_75" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "less_74",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "do_once_14" ]
-          }
+          "state" : "raging"
         },
         "branch_77" : {
           "type" : "flow.branch",
@@ -417,32 +414,48 @@
             }
           },
           "executions" : {
-            "false" : [ "branch_75" ]
-          }
+            "false" : [ "damage_74" ]
+          },
+          "state" : "raging"
         },
-        "branch_80" : {
+        "branch_78" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_79",
+              "node" : "has_line_of_sight_73",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "apply_effect_78" ]
-          }
+            "true" : [ "play_effect_75" ]
+          },
+          "state" : "raging"
+        },
+        "branch_79" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_72",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_78" ]
+          },
+          "state" : "raging"
         },
         "branch_81" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "get_13",
-              "port" : "value"
+              "node" : "cooldown_80",
+              "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_80", "branch_64" ]
-          }
+            "true" : [ "for_each_71" ]
+          },
+          "state" : "raging"
         },
         "cast_1" : {
           "type" : "cast",
@@ -456,65 +469,70 @@
             }
           }
         },
-        "cast_21" : {
+        "cast_34" : {
           "type" : "cast",
           "config" : {
             "type" : "living_entity"
           },
           "inputs" : {
             "value" : {
-              "node" : "spawn_entity_19",
+              "node" : "spawn_entity_32",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "cast_30" : {
+        "cast_43" : {
           "type" : "cast",
           "config" : {
             "type" : "living_entity"
           },
           "inputs" : {
             "value" : {
-              "node" : "spawn_entity_28",
+              "node" : "spawn_entity_41",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "cast_39" : {
+        "cast_52" : {
           "type" : "cast",
           "config" : {
             "type" : "living_entity"
           },
           "inputs" : {
             "value" : {
-              "node" : "spawn_entity_37",
+              "node" : "spawn_entity_50",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "cast_48" : {
+        "cast_61" : {
           "type" : "cast",
           "config" : {
             "type" : "living_entity"
           },
           "inputs" : {
             "value" : {
-              "node" : "spawn_entity_46",
+              "node" : "spawn_entity_59",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "cast_55" : {
+        "cast_72" : {
           "type" : "cast",
           "config" : {
             "type" : "player"
           },
           "inputs" : {
             "value" : {
-              "node" : "for_each_54",
+              "node" : "for_each_71",
               "port" : "element"
             }
-          }
+          },
+          "state" : "raging"
         },
         "clamp_5" : {
           "type" : "math.clamp",
@@ -532,25 +550,27 @@
             "lower" : 0.0
           }
         },
-        "cooldown_63" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 5000
-          }
-        },
-        "cooldown_79" : {
+        "cooldown_68" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
             "duration" : 30000
-          }
+          },
+          "state" : "raging"
         },
-        "create_16" : {
+        "cooldown_80" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 5000
+          },
+          "state" : "raging"
+        },
+        "create_29" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
@@ -558,7 +578,7 @@
               "port" : "world"
             },
             "x" : {
-              "node" : "add_17",
+              "node" : "add_30",
               "port" : "result"
             },
             "y" : {
@@ -566,12 +586,13 @@
               "port" : "y"
             },
             "z" : {
-              "node" : "add_18",
+              "node" : "add_31",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "create_25" : {
+        "create_38" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
@@ -579,7 +600,7 @@
               "port" : "world"
             },
             "x" : {
-              "node" : "add_26",
+              "node" : "add_39",
               "port" : "result"
             },
             "y" : {
@@ -587,12 +608,13 @@
               "port" : "y"
             },
             "z" : {
-              "node" : "add_27",
+              "node" : "add_40",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "create_34" : {
+        "create_47" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
@@ -600,7 +622,7 @@
               "port" : "world"
             },
             "x" : {
-              "node" : "add_35",
+              "node" : "add_48",
               "port" : "result"
             },
             "y" : {
@@ -608,12 +630,13 @@
               "port" : "y"
             },
             "z" : {
-              "node" : "add_36",
+              "node" : "add_49",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "create_43" : {
+        "create_56" : {
           "type" : "location.create",
           "inputs" : {
             "world" : {
@@ -621,7 +644,7 @@
               "port" : "world"
             },
             "x" : {
-              "node" : "add_44",
+              "node" : "add_57",
               "port" : "result"
             },
             "y" : {
@@ -629,12 +652,13 @@
               "port" : "y"
             },
             "z" : {
-              "node" : "add_45",
+              "node" : "add_58",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "damage_57" : {
+        "damage_74" : {
           "type" : "living_entity.damage",
           "inputs" : {
             "source" : {
@@ -642,51 +666,55 @@
               "port" : "entity"
             },
             "target" : {
-              "node" : "cast_55",
+              "node" : "cast_72",
               "port" : "result"
             }
           },
           "literals" : {
             "amount" : 6.0
-          }
+          },
+          "state" : "raging"
         },
-        "do_once_14" : {
-          "type" : "flow.do_once",
+        "enter_66" : {
+          "type" : "state.enter",
           "executions" : {
-            "next" : [ "set_15", "spawn_entity_19", "spawn_entity_28", "spawn_entity_37", "spawn_entity_46", "play_effect_52" ]
-          }
+            "next" : [ "spawn_entity_32", "spawn_entity_41", "spawn_entity_50", "spawn_entity_59", "play_effect_65" ]
+          },
+          "state" : "raging"
         },
-        "for_each_54" : {
+        "for_each_71" : {
           "type" : "flow.for_each",
           "inputs" : {
             "list" : {
-              "node" : "nearby_entities_53",
+              "node" : "nearby_entities_70",
               "port" : "result"
             }
           },
           "executions" : {
-            "body" : [ "branch_62" ]
-          }
+            "body" : [ "branch_79" ]
+          },
+          "state" : "raging"
         },
-        "get_13" : {
-          "type" : "variable.get",
+        "go_to_20" : {
+          "type" : "state.go_to",
           "config" : {
-            "name" : "enraged",
-            "type" : "boolean"
-          }
+            "state" : "raging"
+          },
+          "state" : "feeding"
         },
-        "has_line_of_sight_56" : {
+        "has_line_of_sight_73" : {
           "type" : "living_entity.has_line_of_sight",
           "inputs" : {
             "other" : {
-              "node" : "cast_55",
+              "node" : "cast_72",
               "port" : "result"
             },
             "target" : {
               "node" : "self_3",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "raging"
         },
         "hit_0" : {
           "type" : "event.hit",
@@ -694,16 +722,7 @@
             "next" : [ "branch_12" ]
           }
         },
-        "is_null_59" : {
-          "type" : "logic.is_null",
-          "inputs" : {
-            "value" : {
-              "node" : "cast_55",
-              "port" : "result"
-            }
-          }
-        },
-        "is_null_67" : {
+        "is_null_15" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -712,23 +731,34 @@
             }
           }
         },
-        "is_null_68" : {
+        "is_null_16" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "nearest_player_65",
+              "node" : "nearest_player_13",
               "port" : "player"
             }
           }
+        },
+        "is_null_26" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_21",
+              "port" : "result"
+            }
+          },
+          "state" : "feeding"
         },
         "is_null_76" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "attribute_71",
+              "node" : "cast_72",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
         "is_null_9" : {
           "type" : "logic.is_null",
@@ -739,7 +769,7 @@
             }
           }
         },
-        "less_74" : {
+        "less_24" : {
           "type" : "logic.less",
           "inputs" : {
             "first" : {
@@ -747,24 +777,26 @@
               "port" : "health"
             },
             "second" : {
-              "node" : "multiply_73",
+              "node" : "multiply_23",
               "port" : "result"
             }
-          }
+          },
+          "state" : "feeding"
         },
-        "multiply_73" : {
+        "multiply_23" : {
           "type" : "math.multiply",
           "inputs" : {
             "first" : {
-              "node" : "read_72",
+              "node" : "read_22",
               "port" : "value"
             }
           },
           "literals" : {
             "second" : 0.5
-          }
+          },
+          "state" : "feeding"
         },
-        "mutate_66" : {
+        "mutate_14" : {
           "type" : "mob.mutate",
           "inputs" : {
             "target" : {
@@ -772,7 +804,7 @@
               "port" : "entity"
             },
             "target_value" : {
-              "node" : "nearest_player_65",
+              "node" : "nearest_player_13",
               "port" : "player"
             }
           }
@@ -790,7 +822,7 @@
             }
           }
         },
-        "nearby_entities_53" : {
+        "nearby_entities_70" : {
           "type" : "entity.nearby_entities",
           "inputs" : {
             "target" : {
@@ -802,9 +834,10 @@
             "x" : 32.0,
             "y" : 16.0,
             "z" : 32.0
-          }
+          },
+          "state" : "raging"
         },
-        "nearest_player_65" : {
+        "nearest_player_13" : {
           "type" : "world.nearest_player",
           "inputs" : {
             "location" : {
@@ -832,55 +865,59 @@
             }
           }
         },
-        "play_effect_23" : {
+        "play_effect_36" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:spawn_rise"
           },
           "inputs" : {
             "source" : {
-              "node" : "cast_21",
+              "node" : "cast_34",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "play_effect_32" : {
+        "play_effect_45" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:spawn_rise"
           },
           "inputs" : {
             "source" : {
-              "node" : "cast_30",
+              "node" : "cast_43",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "play_effect_41" : {
+        "play_effect_54" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:spawn_rise"
           },
           "inputs" : {
             "source" : {
-              "node" : "cast_39",
+              "node" : "cast_52",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "play_effect_50" : {
+        "play_effect_63" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:spawn_rise"
           },
           "inputs" : {
             "source" : {
-              "node" : "cast_48",
+              "node" : "cast_61",
               "port" : "result"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "play_effect_52" : {
+        "play_effect_65" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:death_burst"
@@ -890,9 +927,10 @@
               "node" : "self_3",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "raging"
         },
-        "play_effect_58" : {
+        "play_effect_75" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:blood_spear"
@@ -903,13 +941,24 @@
               "port" : "entity"
             },
             "target" : {
-              "node" : "cast_55",
+              "node" : "cast_72",
               "port" : "result"
             }
           },
           "executions" : {
-            "arrived" : [ "branch_60" ]
-          }
+            "arrived" : [ "branch_77" ]
+          },
+          "state" : "raging"
+        },
+        "read_22" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_21",
+              "port" : "result"
+            }
+          },
+          "state" : "feeding"
         },
         "read_4" : {
           "type" : "attribute.read",
@@ -929,127 +978,136 @@
             }
           }
         },
-        "read_72" : {
-          "type" : "attribute.read",
-          "inputs" : {
-            "target" : {
-              "node" : "attribute_71",
-              "port" : "result"
-            }
-          }
-        },
         "self_3" : {
           "type" : "mob.self"
         },
-        "set_15" : {
-          "type" : "variable.set",
-          "config" : {
-            "name" : "enraged",
-            "type" : "boolean"
-          },
-          "literals" : {
-            "value" : true
-          }
-        },
-        "spawn_entity_19" : {
+        "spawn_entity_32" : {
           "type" : "world.spawn_entity",
           "inputs" : {
             "location" : {
-              "node" : "create_16",
+              "node" : "create_29",
               "port" : "result"
             },
             "type" : {
-              "node" : "value_20",
+              "node" : "value_33",
               "port" : "value"
             }
           },
           "executions" : {
-            "next" : [ "branch_24" ]
-          }
+            "next" : [ "branch_37" ]
+          },
+          "state" : "raging"
         },
-        "spawn_entity_28" : {
+        "spawn_entity_41" : {
           "type" : "world.spawn_entity",
           "inputs" : {
             "location" : {
-              "node" : "create_25",
+              "node" : "create_38",
               "port" : "result"
             },
             "type" : {
-              "node" : "value_29",
+              "node" : "value_42",
               "port" : "value"
             }
           },
           "executions" : {
-            "next" : [ "branch_33" ]
-          }
+            "next" : [ "branch_46" ]
+          },
+          "state" : "raging"
         },
-        "spawn_entity_37" : {
+        "spawn_entity_50" : {
           "type" : "world.spawn_entity",
           "inputs" : {
             "location" : {
-              "node" : "create_34",
+              "node" : "create_47",
               "port" : "result"
             },
             "type" : {
-              "node" : "value_38",
+              "node" : "value_51",
               "port" : "value"
             }
           },
           "executions" : {
-            "next" : [ "branch_42" ]
-          }
+            "next" : [ "branch_55" ]
+          },
+          "state" : "raging"
         },
-        "spawn_entity_46" : {
+        "spawn_entity_59" : {
           "type" : "world.spawn_entity",
           "inputs" : {
             "location" : {
-              "node" : "create_43",
+              "node" : "create_56",
               "port" : "result"
             },
             "type" : {
-              "node" : "value_47",
+              "node" : "value_60",
               "port" : "value"
             }
           },
           "executions" : {
-            "next" : [ "branch_51" ]
+            "next" : [ "branch_64" ]
+          },
+          "state" : "raging"
+        },
+        "tick_19" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_18" ]
           }
+        },
+        "tick_28" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_27" ]
+          },
+          "state" : "feeding"
         },
         "tick_82" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_70", "branch_77", "branch_81" ]
-          }
+            "next" : [ "branch_69", "branch_81" ]
+          },
+          "state" : "raging"
         },
-        "value_20" : {
+        "value_33" : {
           "type" : "value",
           "config" : {
             "type" : "entity_type",
             "value" : "minecraft:wither_skeleton"
-          }
+          },
+          "state" : "raging"
         },
-        "value_29" : {
+        "value_42" : {
           "type" : "value",
           "config" : {
             "type" : "entity_type",
             "value" : "minecraft:wither_skeleton"
-          }
+          },
+          "state" : "raging"
         },
-        "value_38" : {
+        "value_51" : {
           "type" : "value",
           "config" : {
             "type" : "entity_type",
             "value" : "minecraft:wither_skeleton"
-          }
+          },
+          "state" : "raging"
         },
-        "value_47" : {
+        "value_60" : {
           "type" : "value",
           "config" : {
             "type" : "entity_type",
             "value" : "minecraft:wither_skeleton"
-          }
+          },
+          "state" : "raging"
         }
-      }
+      },
+      "states" : [ {
+        "name" : "feeding",
+        "initial" : true
+      }, {
+        "name" : "raging"
+      } ]
     },
     "loot" : {
       "tables" : [ "blood_wither" ],

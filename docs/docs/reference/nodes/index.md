@@ -8,7 +8,7 @@ sidebar_position: 0
 
 # Nodes
 
-These are all 179 nodes you can use in a mob's graph. Each group has its own page.
+These are all 187 nodes you can use in a mob's graph. Each group has its own page.
 
 | Group | Nodes |
 |---|---|
@@ -30,6 +30,7 @@ These are all 179 nodes you can use in a mob's graph. Each group has its own pag
 | [Projectiles](./projectile.md) | 2 |
 | [Routines](./routine.md) | 2 |
 | [server](./server.md) | 2 |
+| [state](./state.md) | 8 |
 | [The mob](./mob.md) | 9 |
 | [The world](./world.md) | 28 |
 | [Timers](./timer.md) | 2 |
