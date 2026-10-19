@@ -13,6 +13,7 @@ const PAGES: Record<EditorArea, string> = {
     macros: '/editor/macros-and-routines',
     items: '/mobs/items',
     loot: '/mobs/loot-tables',
+    particles: '/mobs/particle-effects',
     settings: '/reference/settings',
     revisions: '/editor/sessions#revisions',
 }
@@ -47,6 +48,7 @@ const SERVER_SECTION_PAGES: Readonly<Record<string, string>> = {
     plugins: '/placeholders',
     updates: '/reference/settings',
     loot: '/mobs/loot-tables#worlds-and-the-server',
+    particles: '/mobs/particle-effects#limits',
 }
 
 /** Other places of the editor the documentation explains. */

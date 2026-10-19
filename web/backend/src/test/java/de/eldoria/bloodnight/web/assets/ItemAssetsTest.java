@@ -9,6 +9,7 @@ import de.eldoria.bloodnight.web.EditorApp;
 import de.eldoria.bloodnight.web.MojangFixture;
 import de.eldoria.bloodnight.web.api.assets.ItemAsset;
 import de.eldoria.bloodnight.web.api.assets.ItemIndex;
+import de.eldoria.bloodnight.web.api.assets.ParticleIndex;
 import de.eldoria.bloodnight.web.api.assets.SoundAsset;
 import de.eldoria.bloodnight.web.api.assets.SoundIndex;
 import org.junit.jupiter.api.AfterEach;
@@ -76,6 +77,20 @@ class ItemAssetsTest {
         assertArrayEquals(
                 MojangFixture.STONE_PNG,
                 Files.readAllBytes(assets.texture("1.0", "block", "stone.png").orElseThrow()));
+    }
+
+    @Test
+    void particlesGetTheSpritesTheJarHolds() throws Exception {
+        ItemAssets assets = mojang.assets(cache);
+
+        ParticleIndex index =
+                EditorApp.MAPPER.readValue(Files.readAllBytes(assets.particles("1.0")), ParticleIndex.class);
+
+        assertEquals(Map.of("minecraft:flame", List.of("particle/flame")), index.particles());
+        assertArrayEquals(
+                MojangFixture.STONE_PNG,
+                Files.readAllBytes(
+                        assets.texture("1.0", "particle", "flame.png").orElseThrow()));
     }
 
     @Test

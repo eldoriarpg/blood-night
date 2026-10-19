@@ -124,6 +124,23 @@ public final class Tasks {
     }
 
     /**
+     * Runs work on the thread owning a location every tick, starting with the next one, for as long as it returns
+     * true. Each run schedules the next one, so stopping needs no handle to cancel.
+     *
+     * @param work one step; false stops the loop
+     */
+    public void locationLoop(Location location, BooleanSupplier work) {
+        server.getRegionScheduler()
+                .runDelayed(
+                        plugin,
+                        location,
+                        task -> {
+                            if (work.getAsBoolean()) locationLoop(location, work);
+                        },
+                        1);
+    }
+
+    /**
      * Runs work on the thread owning a location: right away when the current thread owns it, otherwise on that
      * region's next tick.
      */

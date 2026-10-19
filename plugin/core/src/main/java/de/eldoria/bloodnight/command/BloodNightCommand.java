@@ -90,6 +90,9 @@ final class BloodNightCommand {
     @Subcommand
     final SetupCommand setup;
 
+    @Subcommand
+    final ParticlesCommand particles;
+
     BloodNightCommand(BloodNight plugin) {
         this.plugin = plugin;
         reload = new ReloadCommand(plugin);
@@ -107,6 +110,7 @@ final class BloodNightCommand {
         pack = new PackCommand(plugin);
         convert = new ConvertCommand(plugin);
         setup = new SetupCommand(editor);
+        particles = new ParticlesCommand(plugin);
     }
 
     /**
@@ -131,8 +135,8 @@ final class BloodNightCommand {
         Map<String, String> subcommands = new LinkedHashMap<>();
         subcommands.put("setup", "setup");
         subcommands.put("night", "night [force | cancel] [world]");
-        subcommands.put("editor", "editor [new | apply [force] | cancel]");
-        subcommands.put("store", "store [list <pack> | install <pack | mob> | update [pack | mob]]");
+        subcommands.put("editor", "editor [new | apply [force] | cancel | preview <effect>]");
+        subcommands.put("store", "store [list <pack> | install <pack | mob> | update [--particles] [pack | mob]]");
         subcommands.put("spawn", "spawn <mob>");
         subcommands.put("item", "item <register | remove <id>>");
         subcommands.put("settings", "settings <server | world> <path> [value]");
@@ -144,6 +148,7 @@ final class BloodNightCommand {
         subcommands.put("trigger", "trigger [mob]");
         subcommands.put("debug", "debug");
         subcommands.put("export", "export");
+        subcommands.put("particles", "particles [on | off]");
         return subcommands;
     }
 }

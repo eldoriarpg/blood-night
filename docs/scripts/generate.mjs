@@ -308,14 +308,16 @@ function permissionsPage(descriptor) {
     '',
     '# Permissions',
     '',
-    'Only operators have these permissions at first. Give them to other players with your permissions plugin.',
+    'Only operators have these permissions at first, except those every player has. Give them to other players with',
+    'your permissions plugin.',
     '',
     '| Permission | What it allows | Includes |',
     '|---|---|---|',
   ]
   for (const [name, permission] of Object.entries(descriptor.permissions ?? {}).sort(([a], [b]) => a.localeCompare(b))) {
     const children = Object.keys(permission.children ?? {}).map(child => `\`${child}\``).join(', ')
-    lines.push(`| \`${name}\` | ${cell(permission.description)} | ${children} |`)
+    const everyone = String(permission.default) === 'true' ? ' (every player has it)' : ''
+    lines.push(`| \`${name}\` | ${cell(permission.description)}${everyone} | ${children} |`)
   }
   lines.push('')
   return lines.join('\n')

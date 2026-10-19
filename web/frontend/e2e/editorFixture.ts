@@ -157,10 +157,16 @@ const payload = {
     lootTables: {
         zombie_scraps: {name: 'Zombie scraps', entries: [{item: 'minecraft:iron_helmet', weight: 10, amount: {mode: 'RANGE', min: 1, max: 1, choices: {}}, repeatable: false}]},
     },
+    particleEffects: {
+        blood_glow: {name: 'Blood glow', duration: 20, emitters: [{particle: 'minecraft:dust', data: {color: '#aa0000', size: 1}, anchor: {at: 'CENTER', on: 'SOURCE', piece: 0}, shape: {type: 'POINT'}, count: 1, every: 2}], pieces: [], self: true},
+    },
+    builtInEffects: {
+        'bloodnight:blood_aura': {name: 'Blood aura', duration: 40, emitters: [{particle: 'minecraft:dust', data: {color: '#8a0303', size: 1.2}, anchor: {at: 'FEET', on: 'SOURCE', piece: 0}, shape: {type: 'RING', radius: 0.8, points: 14}, count: 1, every: 3}], pieces: [], self: true},
+    },
     items: {
         guard_helmet: {kind: 'REGISTERED', material: 'minecraft:iron_helmet', lore: ['<gray>Worn by the night watch'], enchantments: {'minecraft:protection': 2}},
     },
-    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], materialInfo: {'minecraft:iron_helmet': {stackSize: 1, durability: 165, dyeable: false, trimmable: true, attributes: [{attribute: 'minecraft:armor', amount: 2, operation: 'ADD_NUMBER', slot: 'HEAD'}]}, 'minecraft:golden_axe': {stackSize: 1, durability: 32, dyeable: false, trimmable: false, attributes: []}}, trimPatterns: ['minecraft:silence', 'minecraft:wild'], trimMaterials: ['minecraft:iron', 'minecraft:redstone'], enchantments: {'minecraft:protection': 4, 'minecraft:sharpness': 5}, mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['#minecraft:is_ocean', 'minecraft:desert'], effects: ['minecraft:darkness', 'minecraft:nausea'], gameRules: {'minecraft:spawn_phantoms': {type: 'boolean', translationKey: 'gamerule.doInsomnia'}, 'minecraft:max_entity_cramming': {type: 'integer', translationKey: 'gamerule.maxEntityCramming'}}, commands: ['home', 'spawn', 'tpa']},
+    choices: {minecraftVersion: '26.3', materials: ['minecraft:iron_helmet', 'minecraft:golden_axe'], materialInfo: {'minecraft:iron_helmet': {stackSize: 1, durability: 165, dyeable: false, trimmable: true, attributes: [{attribute: 'minecraft:armor', amount: 2, operation: 'ADD_NUMBER', slot: 'HEAD'}]}, 'minecraft:golden_axe': {stackSize: 1, durability: 32, dyeable: false, trimmable: false, attributes: []}}, trimPatterns: ['minecraft:silence', 'minecraft:wild'], trimMaterials: ['minecraft:iron', 'minecraft:redstone'], enchantments: {'minecraft:protection': 4, 'minecraft:sharpness': 5}, mobTypes: ['CREEPER', 'SKELETON', 'ZOMBIE'], attributes: ['minecraft:max_health'], biomes: ['#minecraft:is_ocean', 'minecraft:desert'], effects: ['minecraft:darkness', 'minecraft:nausea'], gameRules: {'minecraft:spawn_phantoms': {type: 'boolean', translationKey: 'gamerule.doInsomnia'}, 'minecraft:max_entity_cramming': {type: 'integer', translationKey: 'gamerule.maxEntityCramming'}}, commands: ['home', 'spawn', 'tpa'], particles: {'minecraft:dust': 'DUST', 'minecraft:flame': 'NONE', 'minecraft:vibration': 'UNSUPPORTED'}},
     problems: {},
     macroProblems: {},
     configProblems: {},
@@ -225,7 +231,7 @@ export async function stageEditor(page: Page, holders: Record<string, string> = 
         },
     }
     await page.route(`**/api/v1/editor/sessions/${SESSION}`, route => route.fulfill({json: {
-        id: SESSION, state: 'EDITING', revision, lastApplied: null, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'LOOT'], expires: '2026-10-20T00:00:00Z',
+        id: SESSION, state: 'EDITING', revision, lastApplied: null, catalog: 'e2e', payload: {...unplaced ? withoutPositions() : payload, setup}, problems: [], locks, online: ['Steve', ...Object.values(holders)], you: 'Steve', areas: ['MOBS', 'MACROS', 'ITEMS', 'WORLDS', 'SERVER', 'LOOT', 'PARTICLES'], expires: '2026-10-20T00:00:00Z',
     }}))
     await page.route('**/api/v1/editor/catalogs/e2e', route => route.fulfill({json: catalog}))
     await page.route(`**/api/v1/editor/sessions/${SESSION}/locks`, route => route.fulfill({status: 204}))
@@ -239,6 +245,7 @@ export async function stageEditor(page: Page, holders: Record<string, string> = 
         biome: {'minecraft:desert': {en_us: 'Desert', de_de: 'Wüste'}},
         game_rule: {'minecraft:doInsomnia': {en_us: 'Spawn phantoms', de_de: 'Phantome erscheinen'}, 'minecraft:maxEntityCramming': {en_us: 'Entity cramming threshold', de_de: 'Gedrängegrenze'}},
     }}}))
+    await page.route('**/api/v1/assets/26.3/particles', route => route.fulfill({json: {version: '26.3', particles: {'minecraft:dust': ['particle/generic_0'], 'minecraft:flame': ['particle/flame']}}}))
     await page.route('**/api/v1/assets/26.3/textures/**', route => route.fulfill({contentType: 'image/png', body: PIXEL}))
     await page.route('**/api/v1/assets/26.3/sounds', route => route.fulfill({json: {version: '26.3', sounds: {
         'entity.lightning_bolt.thunder': {group: 'entity', subtitles: {en_us: 'Thunder roars', de_de: 'Donner grollt'}, playable: true},

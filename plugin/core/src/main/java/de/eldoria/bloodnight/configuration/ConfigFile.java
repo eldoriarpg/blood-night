@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.configuration;
 
 import de.eldoria.bloodnight.configuration.server.Announcements;
 import de.eldoria.bloodnight.configuration.server.EditorSettings;
+import de.eldoria.bloodnight.configuration.server.ParticleSettings;
 import de.eldoria.bloodnight.configuration.server.PlaceholderSettings;
 import de.eldoria.bloodnight.configuration.server.ResourcePackSettings;
 import de.eldoria.bloodnight.configuration.server.UpdateSettings;
@@ -28,6 +29,7 @@ public class ConfigFile {
     private StoreSettings store = new StoreSettings();
     private ForeignMobSettings foreignMobs = new ForeignMobSettings();
     private SetupSettings setup = new SetupSettings();
+    private ParticleSettings particles = new ParticleSettings();
     private boolean advancements = true;
     private ServerLoot loot = ServerLoot.defaults();
 
@@ -92,6 +94,13 @@ public class ConfigFile {
 
     public SetupSettings setup() {
         return setup;
+    }
+
+    /**
+     * @return how far particle effects show and how many the server sends
+     */
+    public ParticleSettings particles() {
+        return particles;
     }
 
     /**

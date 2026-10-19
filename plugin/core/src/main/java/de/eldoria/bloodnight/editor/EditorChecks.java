@@ -6,13 +6,19 @@
 package de.eldoria.bloodnight.editor;
 
 import de.eldoria.bloodnight.editor.payload.SettingsPayload;
+import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.loot.LootEntry;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.loot.assign.ServerLoot;
 import de.eldoria.bloodnight.loot.assign.WorldLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.MobTypes;
 import de.eldoria.bloodnight.mob.equipment.Equipment;
+import de.eldoria.bloodnight.particles.BuiltInEffects;
+import de.eldoria.bloodnight.particles.EffectChecks;
+import de.eldoria.graph.model.Graph;
+import de.eldoria.graph.model.Macro;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.jspecify.annotations.Nullable;
@@ -26,12 +32,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Checks a result from the editor against the server before it is applied: each mob is stored under its own id, mobs
  * and their extensions are entity types a mob can be ({@link MobTypes}), mobs and loot tables only use registered items
- * or item materials, mobs, worlds and the server only assign loot tables the result holds, and the files it replaces
- * did not change since the session opened.
+ * or item materials, mobs, worlds and the server only assign loot tables the result holds, graphs only play particle
+ * effects that exist, the result's own particle effects pass {@link EffectChecks}, and the files it replaces did not
+ * change since the session opened.
  * Worlds the server does not know are reported separately; they are skipped.
  */
 public final class EditorChecks {
@@ -65,7 +73,28 @@ public final class EditorChecks {
             }
             unknownTables(result, mob.loot().tables())
                     .forEach(table -> problems.add("Mob %s uses unknown loot table %s".formatted(mob.id(), table)));
+            List<String> effects = new ArrayList<>(effectsOf(mob.behaviour()));
+            MobParticles looks = mob.particles();
+            if (looks != null) {
+                Stream.of(looks.ambient(), looks.spawn(), looks.death())
+                        .filter(Objects::nonNull)
+                        .forEach(effects::add);
+            }
+            unknownEffects(result, effects)
+                    .forEach(effect ->
+                            problems.add("Mob %s uses unknown particle effect %s".formatted(mob.id(), effect)));
         }
+        for (Macro macro : result.macros()) {
+            unknownEffects(result, effectsOf(macro.body()))
+                    .forEach(effect ->
+                            problems.add("Macro %s uses unknown particle effect %s".formatted(macro.id(), effect)));
+        }
+        result.particleEffects().forEach((id, effect) -> {
+            if (BuiltInEffects.builtIn(id)) {
+                problems.add("Particle effect %s cannot use the built-in namespace".formatted(id));
+            }
+            problems.addAll(EffectChecks.problems(id, effect, item -> knows(result, items, item)));
+        });
         for (Map.Entry<String, LootTable> table : result.lootTables().entrySet()) {
             table.getValue().entries().stream()
                     .map(LootEntry::item)
@@ -95,6 +124,26 @@ public final class EditorChecks {
 
     private static boolean knows(EditorResult result, Predicate<String> items, String item) {
         return items.test(item) || result.items().containsKey(item) || isMaterial(item);
+    }
+
+    /**
+     * @return the ids of the particle effects a graph plays
+     */
+    static List<String> effectsOf(Graph graph) {
+        return graph.nodes().values().stream()
+                .filter(node -> node.type().equals(BloodNightNodes.WORLD_PLAY_EFFECT))
+                .map(node -> node.config().get("effect"))
+                .filter(value -> value != null && value.isString())
+                .map(JsonNode::asString)
+                .toList();
+    }
+
+    private static List<String> unknownEffects(EditorResult result, List<String> effects) {
+        return effects.stream()
+                .distinct()
+                .filter(effect -> !BuiltInEffects.all().containsKey(effect)
+                        && !result.particleEffects().containsKey(effect))
+                .toList();
     }
 
     private static List<String> unknownTables(EditorResult result, List<String> tables) {

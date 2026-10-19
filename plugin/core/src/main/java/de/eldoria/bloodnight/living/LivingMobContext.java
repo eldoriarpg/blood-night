@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.living;
 import de.eldoria.bloodnight.api.internal.MobContext;
 import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.particles.play.Effects;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,13 +29,15 @@ import java.util.function.Supplier;
  * @param items     the current item registry
  * @param tasks     runs work on the owning thread
  * @param movement  switches the mob's movement, keeping its numbers
+ * @param effects   plays particle effects
  */
 record LivingMobContext(
         LivingEntity entity,
         @Nullable Entity extension,
         Supplier<ItemRegistry> items,
         Tasks tasks,
-        Consumer<MovementPreset> movement)
+        Consumer<MovementPreset> movement,
+        Effects effects)
         implements MobContext {
     @Override
     public void movement(MovementPreset preset) {
@@ -70,6 +73,11 @@ record LivingMobContext(
     @Override
     public void later(Entity entity, long ticks, Runnable work, Runnable retired) {
         tasks.entityLater(entity, ticks, work, retired);
+    }
+
+    @Override
+    public long effect(String id, Object source, @Nullable Object target, @Nullable Player viewer) {
+        return effects.play(id, source, target, viewer, entity.getUniqueId());
     }
 
     @Override

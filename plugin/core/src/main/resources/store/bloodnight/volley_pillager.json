@@ -49,19 +49,19 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_10" : {
+        "branch_11" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_9",
+              "node" : "is_null_10",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_8" ]
+            "false" : [ "branch_9" ]
           }
         },
-        "branch_6" : {
+        "branch_7" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -70,22 +70,22 @@
             }
           },
           "executions" : {
-            "true" : [ "launch_projectile_4", "launch_projectile_5" ]
+            "true" : [ "play_effect_4", "launch_projectile_5", "launch_projectile_6" ]
           }
         },
-        "branch_8" : {
+        "branch_9" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_7",
+              "node" : "cooldown_8",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_6" ]
+            "true" : [ "branch_7" ]
           }
         },
-        "cooldown_7" : {
+        "cooldown_8" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -107,7 +107,7 @@
             }
           }
         },
-        "is_null_9" : {
+        "is_null_10" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -116,7 +116,7 @@
             }
           }
         },
-        "launch_projectile_4" : {
+        "launch_projectile_5" : {
           "type" : "living_entity.launch_projectile",
           "config" : {
             "projectile" : "ARROW"
@@ -135,7 +135,7 @@
             "speed" : 2.5
           }
         },
-        "launch_projectile_5" : {
+        "launch_projectile_6" : {
           "type" : "living_entity.launch_projectile",
           "config" : {
             "projectile" : "ARROW"
@@ -166,10 +166,38 @@
             "fall_distance" : 0.0
           }
         },
-        "night_end_13" : {
+        "night_end_14" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_12" ]
+            "next" : [ "play_effect_13" ]
+          }
+        },
+        "play_effect_13" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "play_effect_4" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:blood_spear"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "read_2",
+              "port" : "target"
+            }
           }
         },
         "read_2" : {
@@ -184,30 +212,10 @@
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_12" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_2",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_2",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
-        },
-        "tick_11" : {
+        "tick_12" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "mutate_3", "branch_10" ]
+            "next" : [ "mutate_3", "branch_11" ]
           }
         }
       }
@@ -252,6 +260,11 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    },
+    "particles" : {
+      "ambient" : "bloodnight:dread_shadow",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
     }
   },
   "lootTables" : {
@@ -295,5 +308,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

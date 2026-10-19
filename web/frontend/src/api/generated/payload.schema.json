@@ -20,6 +20,20 @@
       "type" : "string",
       "enum" : [ "RANGE", "CHOICES" ]
     },
+    "Anchor" : {
+      "type" : "object",
+      "properties" : {
+        "at" : {
+          "$ref" : "#/$defs/BodyPoint"
+        },
+        "on" : {
+          "$ref" : "#/$defs/EffectEnd"
+        },
+        "piece" : {
+          "type" : "integer"
+        }
+      }
+    },
     "AnnouncementSettings" : {
       "type" : "object",
       "properties" : {
@@ -254,6 +268,10 @@
       },
       "required" : [ "name", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes", "mythicType", "mythicLevel" ]
     },
+    "BodyPoint" : {
+      "type" : "string",
+      "enum" : [ "FEET", "CENTER", "EYES", "ABOVE" ]
+    },
     "BossBarSettings" : {
       "type" : "object",
       "properties" : {
@@ -437,6 +455,18 @@
             "done" : false
           }
         },
+        "particles" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ParticleSettings"
+          } ],
+          "default" : {
+            "ambient" : true,
+            "budgetPerTick" : 2000,
+            "enabled" : true,
+            "perMob" : 4,
+            "viewDistance" : 32
+          }
+        },
         "advancements" : {
           "type" : "boolean",
           "default" : true
@@ -553,9 +583,16 @@
         },
         "movement" : {
           "$ref" : "#/$defs/Movement"
+        },
+        "particles" : {
+          "$ref" : "#/$defs/MobParticles"
         }
       },
       "required" : [ "id", "attributes", "behaviour", "loot", "extension", "spawn", "movement" ]
+    },
+    "DataKind" : {
+      "type" : "string",
+      "enum" : [ "NONE", "DUST", "DUST_TRANSITION", "SPELL", "COLOR", "POWER", "DELAY", "BLOCK", "ITEM", "TRAIL", "UNSUPPORTED" ]
     },
     "DeathActionSettings" : {
       "type" : "object",
@@ -650,6 +687,10 @@
     "DifficultyChange" : {
       "type" : "string",
       "enum" : [ "UNCHANGED", "PEACEFUL", "EASY", "NORMAL", "HARD" ]
+    },
+    "Ease" : {
+      "type" : "string",
+      "enum" : [ "LINEAR", "IN", "OUT" ]
     },
     "Edge" : {
       "type" : "object",
@@ -758,9 +799,15 @@
         },
         "economy" : {
           "type" : "boolean"
+        },
+        "particles" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/DataKind"
+          }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials", "economy" ]
+      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials", "economy", "particles" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -889,6 +936,18 @@
             "$ref" : "#/$defs/LootTable"
           }
         },
+        "particleEffects" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/ParticleEffect"
+          }
+        },
+        "builtInEffects" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/ParticleEffect"
+          }
+        },
         "problems" : {
           "type" : "object",
           "additionalProperties" : {
@@ -935,7 +994,7 @@
           "$ref" : "#/$defs/EditorLegacy"
         }
       },
-      "required" : [ "catalog", "mobs", "macros", "items", "lootTables", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
+      "required" : [ "catalog", "mobs", "macros", "items", "lootTables", "particleEffects", "builtInEffects", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
     },
     "EditorSettings" : {
       "type" : "object",
@@ -973,6 +1032,51 @@
         }
       },
       "required" : [ "packs", "offers", "states" ]
+    },
+    "EffectEnd" : {
+      "type" : "string",
+      "enum" : [ "SOURCE", "TARGET", "PIECE" ]
+    },
+    "Emitter" : {
+      "type" : "object",
+      "properties" : {
+        "particle" : {
+          "type" : "string"
+        },
+        "data" : {
+          "$ref" : "#/$defs/ParticleDataSpec"
+        },
+        "anchor" : {
+          "$ref" : "#/$defs/Anchor"
+        },
+        "offset" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "shape" : {
+          "$ref" : "#/$defs/Shape"
+        },
+        "motion" : {
+          "$ref" : "#/$defs/Motion"
+        },
+        "count" : {
+          "type" : "integer"
+        },
+        "spread" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "speed" : {
+          "type" : "number"
+        },
+        "every" : {
+          "type" : "integer"
+        },
+        "delay" : {
+          "type" : "integer"
+        },
+        "chance" : {
+          "type" : "number"
+        }
+      }
     },
     "EntityType" : {
       "type" : "string",
@@ -1046,9 +1150,25 @@
       "type" : "string",
       "enum" : [ "NONE", "RIDER", "CARRIER" ]
     },
+    "Facing" : {
+      "type" : "string",
+      "enum" : [ "UP", "LOOK", "BODY", "PATH" ]
+    },
     "Flag" : {
       "type" : "string",
       "enum" : [ "DARKEN_SCREEN", "PLAY_BOSS_MUSIC", "CREATE_WORLD_FOG" ]
+    },
+    "Flap" : {
+      "type" : "object",
+      "properties" : {
+        "degrees" : {
+          "type" : "number"
+        },
+        "ticks" : {
+          "type" : "integer"
+        }
+      },
+      "required" : [ "degrees", "ticks" ]
     },
     "ForeignMobSettings" : {
       "type" : "object",
@@ -1397,6 +1517,20 @@
       },
       "required" : [ "store", "entry", "hash" ]
     },
+    "MobParticles" : {
+      "type" : "object",
+      "properties" : {
+        "ambient" : {
+          "type" : "string"
+        },
+        "spawn" : {
+          "type" : "string"
+        },
+        "death" : {
+          "type" : "string"
+        }
+      }
+    },
     "MobSettings" : {
       "type" : "object",
       "properties" : {
@@ -1500,6 +1634,27 @@
           }
         }
       }
+    },
+    "Motion" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "$ref" : "#/$defs/MotionType"
+        },
+        "ticks" : {
+          "type" : "integer"
+        },
+        "through" : {
+          "type" : "number"
+        },
+        "ease" : {
+          "$ref" : "#/$defs/Ease"
+        }
+      }
+    },
+    "MotionType" : {
+      "type" : "string",
+      "enum" : [ "TRAVEL" ]
     },
     "Movement" : {
       "type" : "object",
@@ -1866,9 +2021,15 @@
           "additionalProperties" : {
             "$ref" : "#/$defs/LootTable"
           }
+        },
+        "particleEffects" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/ParticleEffect"
+          }
         }
       },
-      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob", "lootTables" ]
+      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob", "lootTables", "particleEffects" ]
     },
     "Operation" : {
       "type" : "string",
@@ -1943,6 +2104,89 @@
       "type" : "string",
       "enum" : [ "PROGRESS", "NOTCHED_6", "NOTCHED_10", "NOTCHED_12", "NOTCHED_20" ]
     },
+    "ParticleDataSpec" : {
+      "type" : "object",
+      "properties" : {
+        "color" : {
+          "type" : "string"
+        },
+        "to" : {
+          "type" : "string"
+        },
+        "size" : {
+          "type" : "number"
+        },
+        "power" : {
+          "type" : "number"
+        },
+        "delay" : {
+          "type" : "integer"
+        },
+        "block" : {
+          "type" : "string"
+        },
+        "item" : {
+          "type" : "string"
+        },
+        "ticks" : {
+          "type" : "integer"
+        },
+        "toward" : {
+          "$ref" : "#/$defs/Vec3"
+        }
+      }
+    },
+    "ParticleEffect" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "duration" : {
+          "type" : "integer"
+        },
+        "emitters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Emitter"
+          }
+        },
+        "pieces" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Piece"
+          }
+        },
+        "self" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "ParticleSettings" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "ambient" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "viewDistance" : {
+          "type" : "integer",
+          "default" : 32
+        },
+        "budgetPerTick" : {
+          "type" : "integer",
+          "default" : 2000
+        },
+        "perMob" : {
+          "type" : "integer",
+          "default" : 4
+        }
+      }
+    },
     "Phase" : {
       "type" : "object",
       "properties" : {
@@ -1955,6 +2199,57 @@
           "default" : [ 50, 50, 50 ]
         }
       }
+    },
+    "Piece" : {
+      "type" : "object",
+      "properties" : {
+        "kind" : {
+          "$ref" : "#/$defs/PieceKind"
+        },
+        "item" : {
+          "type" : "string"
+        },
+        "block" : {
+          "type" : "string"
+        },
+        "scale" : {
+          "type" : "number"
+        },
+        "rotation" : {
+          "$ref" : "#/$defs/Rotation"
+        },
+        "anchor" : {
+          "$ref" : "#/$defs/Anchor"
+        },
+        "offset" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "facing" : {
+          "$ref" : "#/$defs/Facing"
+        },
+        "motion" : {
+          "$ref" : "#/$defs/Motion"
+        },
+        "stick" : {
+          "type" : "integer"
+        },
+        "glow" : {
+          "type" : "boolean"
+        },
+        "color" : {
+          "type" : "string"
+        },
+        "width" : {
+          "type" : "number"
+        },
+        "grow" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "PieceKind" : {
+      "type" : "string",
+      "enum" : [ "ITEM", "BLOCK", "SPAN" ]
     },
     "PlaceholderSettings" : {
       "type" : "object",
@@ -2100,6 +2395,21 @@
         }
       }
     },
+    "Rotation" : {
+      "type" : "object",
+      "properties" : {
+        "pitch" : {
+          "type" : "number"
+        },
+        "yaw" : {
+          "type" : "number"
+        },
+        "roll" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "pitch", "yaw", "roll" ]
+    },
     "Scare" : {
       "type" : "string",
       "enum" : [ "FLINCH", "SCREAM", "GUARDIAN" ]
@@ -2179,6 +2489,72 @@
     "Severity" : {
       "type" : "string",
       "enum" : [ "ERROR", "WARNING" ]
+    },
+    "Shape" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "$ref" : "#/$defs/ShapeType"
+        },
+        "radius" : {
+          "type" : "number"
+        },
+        "points" : {
+          "type" : "integer"
+        },
+        "to" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "height" : {
+          "type" : "number"
+        },
+        "turns" : {
+          "type" : "number"
+        },
+        "strands" : {
+          "type" : "integer"
+        },
+        "density" : {
+          "type" : "number"
+        },
+        "jitter" : {
+          "type" : "number"
+        },
+        "bend" : {
+          "type" : "number"
+        },
+        "twist" : {
+          "type" : "number"
+        },
+        "rows" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "scale" : {
+          "type" : "number"
+        },
+        "mirror" : {
+          "type" : "boolean"
+        },
+        "flap" : {
+          "$ref" : "#/$defs/Flap"
+        },
+        "spin" : {
+          "type" : "number"
+        },
+        "grow" : {
+          "type" : "boolean"
+        },
+        "facing" : {
+          "$ref" : "#/$defs/Facing"
+        }
+      }
+    },
+    "ShapeType" : {
+      "type" : "string",
+      "enum" : [ "POINT", "RING", "SPHERE", "LINE", "SPIRAL", "BEAM", "ARC", "PATTERN" ]
     },
     "ShockwaveSettings" : {
       "type" : "object",
@@ -2571,6 +2947,21 @@
     "VanillaLoot" : {
       "type" : "string",
       "enum" : [ "KEEP", "MULTIPLY", "CLEAR" ]
+    },
+    "Vec3" : {
+      "type" : "object",
+      "properties" : {
+        "x" : {
+          "type" : "number"
+        },
+        "y" : {
+          "type" : "number"
+        },
+        "z" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "x", "y", "z" ]
     },
     "WeatherChange" : {
       "type" : "string",

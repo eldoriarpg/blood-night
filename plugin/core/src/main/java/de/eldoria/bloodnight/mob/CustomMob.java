@@ -19,7 +19,8 @@ import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * A custom mob as configured: looks, attributes, drops, extension and the node graph of its behaviour.
+ * A custom mob as configured: looks, attributes, drops, extension, the node graph of its behaviour and the particle
+ * effects it wears.
  *
  * @param id        unique lower-case id
  * @param equipment item ids per slot; none keeps what the entity spawned with
@@ -30,6 +31,7 @@ import java.util.Objects;
  * @param spawn     when the mob takes over spawning entities and when it goes again
  * @param origin    the store entry the mob was installed from; {@code null} for the user's own mobs
  * @param movement  how it moves on top of its vanilla AI
+ * @param particles the particle effects it wears without a graph; none wears none
  */
 public record CustomMob(
         String id,
@@ -40,7 +42,8 @@ public record CustomMob(
         Extension extension,
         SpawnRules spawn,
         @Nullable MobOrigin origin,
-        Movement movement) {
+        Movement movement,
+        @Nullable MobParticles particles) {
     public CustomMob {
         Objects.requireNonNull(id, "Mob id can not be null");
         if (!id.equals(id.toLowerCase())) throw new IllegalArgumentException("Mob id must be lower case.");
@@ -49,6 +52,22 @@ public record CustomMob(
         Objects.requireNonNull(spawn, "Spawn rules can not be null");
         loot = Objects.requireNonNullElseGet(loot, MobLoot::inherited);
         movement = Movement.orVanilla(movement);
+    }
+
+    /**
+     * A mob without particle effects.
+     */
+    public CustomMob(
+            String id,
+            @Nullable Equipment equipment,
+            Attributes attributes,
+            Graph behaviour,
+            MobLoot loot,
+            Extension extension,
+            SpawnRules spawn,
+            @Nullable MobOrigin origin,
+            Movement movement) {
+        this(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, null);
     }
 
     /**
@@ -84,35 +103,42 @@ public record CustomMob(
      * @return the same mob with other attributes
      */
     public CustomMob withAttributes(Attributes attributes) {
-        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, particles);
     }
 
     /**
      * @return the same mob with other loot settings
      */
     public CustomMob withLoot(MobLoot loot) {
-        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, particles);
     }
 
     /**
      * @return the same mob with another origin
      */
     public CustomMob withOrigin(@Nullable MobOrigin origin) {
-        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, particles);
     }
 
     /**
      * @return the same mob, tuning and origin kept, with another behaviour, extension and movement
      */
     public CustomMob withLogic(Graph behaviour, Extension extension, Movement movement) {
-        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, particles);
     }
 
     /**
      * @return the same mob moving another way
      */
     public CustomMob withMovement(Movement movement) {
-        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement);
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, particles);
+    }
+
+    /**
+     * @return the same mob wearing other particle effects
+     */
+    public CustomMob withParticles(@Nullable MobParticles particles) {
+        return new CustomMob(id, equipment, attributes, behaviour, loot, extension, spawn, origin, movement, particles);
     }
 
     /**
@@ -129,7 +155,8 @@ public record CustomMob(
             @JsonProperty("extension") Extension extension,
             @JsonProperty("spawn") @Nullable SpawnRules spawn,
             @JsonProperty("origin") @Nullable MobOrigin origin,
-            @JsonProperty("movement") @Nullable Movement movement) {
+            @JsonProperty("movement") @Nullable Movement movement,
+            @JsonProperty("particles") @Nullable MobParticles particles) {
         return new CustomMob(
                 id,
                 equipment,
@@ -139,6 +166,7 @@ public record CustomMob(
                 extension,
                 Objects.requireNonNullElseGet(spawn, SpawnRules::defaults),
                 origin,
-                Movement.orVanilla(movement));
+                Movement.orVanilla(movement),
+                particles);
     }
 }

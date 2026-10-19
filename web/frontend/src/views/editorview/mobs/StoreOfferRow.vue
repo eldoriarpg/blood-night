@@ -8,15 +8,17 @@ import InfoBadge from '@/components/badge/InfoBadge.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import type {Offer} from '~/api/generated/payload'
-import {localized, offerState} from '~/util/session/storeOffers'
+import {localized, looksDiffer, offerState} from '~/util/session/storeOffers'
 import {section} from '~/util/session/sections'
 
 /**
- * One mob of the store: name, id and what it does, where it stands for this session, and installing or updating it
- * when the participant may change mobs.
+ * One mob of the store: name, id and what it does, where it stands for this session, whether the particle effects it
+ * wears differ from the store's, and installing or updating it when the participant may change mobs.
  */
 const props = defineProps<{
   offer: Offer
+  /** Whether updates take the store's particle effects too, so a mob whose looks differ can be updated. */
+  particles: boolean
 }>()
 
 const emit = defineEmits<{
@@ -29,10 +31,12 @@ const locks = useEditorLocks()
 const {t, locale} = useI18n()
 const state = computed(() => session.payload.value ? offerState(props.offer, session.payload.value) : 'available')
 const allowed = computed(() => locks.mayChange(section.mob(props.offer.id)))
+const differ = computed(() => session.payload.value ? looksDiffer(props.offer, session.payload.value) : false)
 const action = computed(() => {
   if (!allowed.value) return null
   if (state.value === 'available') return {label: 'editor.store.install', icon: 'download', event: 'install'} as const
   if (state.value === 'update' || state.value === 'changed') return {label: 'editor.store.update', icon: 'arrows-rotate', event: 'update'} as const
+  if (props.particles && differ.value) return {label: 'editor.store.takeLooks', icon: 'arrows-rotate', event: 'update'} as const
   return null
 })
 
@@ -49,6 +53,7 @@ function run(event: 'install' | 'update'): void {
       <MutedText size="sm" tag="p">{{ localized(offer.descriptions, locale, '') }}</MutedText>
     </div>
     <InfoBadge v-if="state !== 'available'">{{ t(`editor.store.state.${state}`) }}</InfoBadge>
+    <InfoBadge v-if="differ">{{ t('editor.store.looksDiffer') }}</InfoBadge>
     <SecondaryButton v-if="action" :icon="action.icon" compact @click="run(action.event)">{{ t(action.label) }}</SecondaryButton>
   </div>
 </template>

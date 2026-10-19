@@ -82,6 +82,17 @@ public interface MobContext {
     void later(Entity entity, long ticks, Runnable work, Runnable retired);
 
     /**
+     * Plays a particle effect of the library once, on the mob's account: it counts against the mob's limits.
+     *
+     * @param id     the effect's id, e.g. {@code bloodnight:blood_spear}
+     * @param source where it plays: an entity, which it follows, or a location
+     * @param target the other end, an entity or a location, or {@code null}
+     * @param viewer the only player who sees it, or {@code null} for everyone near
+     * @return ticks until what travels in it reaches the target, 0 when nothing travels; -1 when it does not play
+     */
+    long effect(String id, Object source, @Nullable Object target, @Nullable Player viewer);
+
+    /**
      * Shows an entity that is hidden by default to one player.
      *
      * @param entity the hidden entity

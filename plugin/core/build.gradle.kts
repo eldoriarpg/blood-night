@@ -96,7 +96,9 @@ paper {
         register("bloodnight.admin") {
             description = "Every blood night command"
             default = BukkitPluginDescription.Permission.Default.OP
-            children = subcommands.keys.map { "bloodnight.command.$it" } + "bloodnight.command.night.manage"
+            children = subcommands.keys.map { "bloodnight.command.$it" } +
+                "bloodnight.command.night.manage" +
+                "bloodnight.command.particles"
         }
         val areas = mapOf(
             "mobs" to "the mobs",
@@ -105,6 +107,7 @@ paper {
             "worlds" to "the settings of the worlds",
             "server" to "the server-wide settings",
             "loot" to "the loot tables",
+            "particles" to "the particle effects",
         )
         areas.forEach { (area, what) ->
             register("bloodnight.editor.$area") {
@@ -119,6 +122,10 @@ paper {
         register("bloodnight.updates") {
             description = "Hear about new BloodNight versions on join"
             default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("bloodnight.command.particles") {
+            description = "/bloodnight particles, switches the particle effects of mobs off or on for the player"
+            default = BukkitPluginDescription.Permission.Default.TRUE
         }
         register("bloodnight.command.night.manage") {
             description = "/bloodnight night force and cancel, decides the coming night of a world"

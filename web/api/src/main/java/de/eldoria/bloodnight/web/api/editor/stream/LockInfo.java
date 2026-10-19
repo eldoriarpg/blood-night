@@ -9,7 +9,7 @@ package de.eldoria.bloodnight.web.api.editor.stream;
  * A section of the payload held by a participant; others cannot change it until it is released.
  * <p>
  * Sections are {@code mobs/<id>}, {@code macros/<id>}, {@code items/<id>}, {@code settings/main},
- * {@code lootTables/<id>} and {@code settings/worlds/<uid>}.
+ * {@code lootTables/<id>}, {@code particleEffects/<id>} and {@code settings/worlds/<uid>}.
  *
  * @param section the section
  * @param holder  the name of the participant holding it

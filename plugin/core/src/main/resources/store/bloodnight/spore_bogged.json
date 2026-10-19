@@ -49,11 +49,11 @@
     },
     "behaviour" : {
       "nodes" : {
-        "apply_effect_8" : {
+        "apply_effect_2" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_7",
+              "node" : "cast_1",
               "port" : "result"
             }
           },
@@ -63,11 +63,11 @@
             "seconds" : 6.0
           }
         },
-        "apply_effect_9" : {
+        "apply_effect_3" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_7",
+              "node" : "cast_1",
               "port" : "result"
             }
           },
@@ -77,82 +77,52 @@
             "seconds" : 4.0
           }
         },
-        "branch_10" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_7",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "apply_effect_8", "apply_effect_9" ]
-          }
-        },
         "branch_4" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_3",
-              "port" : "result"
+              "node" : "cast_1",
+              "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "spawn_particle_2" ]
+            "true" : [ "apply_effect_2", "apply_effect_3" ]
           }
         },
-        "cast_7" : {
+        "cast_1" : {
           "type" : "cast",
           "config" : {
             "type" : "living_entity"
           },
           "inputs" : {
             "value" : {
-              "node" : "projectile_hit_6",
+              "node" : "projectile_hit_0",
               "port" : "hit_entity"
             }
           }
         },
-        "cooldown_3" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
-          }
-        },
-        "death_11" : {
+        "death_5" : {
           "type" : "event.death",
           "executions" : {
-            "next" : [ "spawn_potion_cloud_13" ]
+            "next" : [ "spawn_potion_cloud_7" ]
           }
         },
-        "projectile_hit_6" : {
+        "projectile_hit_0" : {
           "type" : "event.projectile_hit",
           "executions" : {
-            "next" : [ "branch_10" ]
+            "next" : [ "branch_4" ]
           }
         },
-        "read_0" : {
-          "type" : "mob.read",
-          "inputs" : {
-            "target" : {
-              "node" : "self_1",
-              "port" : "entity"
-            }
-          }
-        },
-        "read_12" : {
+        "read_6" : {
           "type" : "living_entity.read",
           "inputs" : {
             "target" : {
-              "node" : "death_11",
+              "node" : "death_5",
               "port" : "entity"
             }
           }
         },
-        "rgb_14" : {
+        "rgb_8" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 60,
@@ -160,38 +130,15 @@
             "red" : 110
           }
         },
-        "self_1" : {
-          "type" : "mob.self"
-        },
-        "spawn_particle_2" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 3,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:crimson_spore"
-          }
-        },
-        "spawn_potion_cloud_13" : {
+        "spawn_potion_cloud_7" : {
           "type" : "world.spawn_potion_cloud",
           "inputs" : {
             "color" : {
-              "node" : "rgb_14",
+              "node" : "rgb_8",
               "port" : "result"
             },
             "location" : {
-              "node" : "read_12",
+              "node" : "read_6",
               "port" : "location"
             }
           },
@@ -200,12 +147,6 @@
             "radius" : 3.0,
             "radius_per_tick" : 0.01,
             "seconds" : 6
-          }
-        },
-        "tick_5" : {
-          "type" : "mob.tick",
-          "executions" : {
-            "next" : [ "branch_4" ]
           }
         }
       }
@@ -250,6 +191,11 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    },
+    "particles" : {
+      "ambient" : "bloodnight:spore_cloud",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
     }
   },
   "lootTables" : {
@@ -301,5 +247,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

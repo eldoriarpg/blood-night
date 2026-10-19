@@ -290,6 +290,20 @@ Data for particles that take a strength, such as dragon breath and sculk charge
 |---|---|---|
 | Power | Float | The strength the particle shows, e.g. of dragon breath |
 
+## Play Effect
+
+`world.play_effect`
+
+Plays a particle effect of the library at an entity or a place, or between two ends, e.g. a beam from the mob to a player; on Arrived, what flies in it has reached the target
+
+| In | Type | What it is |
+|---|---|---|
+| Source | Object | Where it plays: an entity, which it follows, or a location |
+| Target (optional) | Object | The other end, an entity or a location, for beams, arcs and what flies |
+| For (optional) | Player | The only player who sees it; everyone near when not given |
+
+Goes on with: **Next**, **Arrived**
+
 ## Read Dust
 
 `dust.read`
@@ -471,6 +485,7 @@ Spawns particles around a location; particles such as dust need data, connected 
 | Offset Y | Number | Spread up and down |
 | Offset Z | Number | Spread north and south |
 | Data (optional) | Object | What particles such as dust need, from a node like Dust; leave empty for others |
+| Speed (optional) | Number | How fast they fly off, the meaning depends on the particle; 1 when not given |
 
 Goes on with: **Next**
 

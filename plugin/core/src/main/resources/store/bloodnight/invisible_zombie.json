@@ -403,7 +403,8 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
-    }
+    },
+    "particles" : null
   },
   "lootTables" : {
     "invisible_zombie" : {
@@ -443,5 +444,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

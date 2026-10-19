@@ -13,6 +13,8 @@ import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.MobOrigin;
+import de.eldoria.bloodnight.particles.ParticleEffects;
+import de.eldoria.bloodnight.particles.effect.ParticleEffect;
 import de.eldoria.bloodnight.store.MobStore;
 import de.eldoria.bloodnight.store.StoreEntry;
 import de.eldoria.bloodnight.store.files.StorePack;
@@ -30,7 +32,8 @@ import java.util.Map;
 
 /**
  * {@code /bloodnight store}: lists the store's packs and mobs, installs them and takes their updates. Installed and
- * updated mobs are written to {@code mobs.yml} and built at once.
+ * updated mobs are written to {@code mobs.yml} and built at once. An update keeps the particle effects a mob wears;
+ * {@code update --particles} takes the store's as well.
  */
 @Subcommand("store")
 @Permission("bloodnight.command.store")
@@ -91,6 +94,7 @@ public final class StoreCommand {
             MobStore.Change change = store().install(
                             plugin.configuration().mobs().all(),
                             plugin.configuration().lootTables().tables().keySet(),
+                            plugin.configuration().particleEffects().effects().keySet(),
                             packOrEntry);
             change.skipped().forEach(id -> Replies.send(sender, "store.taken", Replies.arg("id", id)));
             apply(sender, change, "store.installed");
@@ -99,20 +103,46 @@ public final class StoreCommand {
 
     @Executes("update")
     public void updateAll(CommandSender sender) {
-        plugin.tasks()
-                .globalNow(() -> apply(
-                        sender, store().update(plugin.configuration().mobs().all(), mob -> true), "store.updated"));
+        updateAll(sender, false);
     }
 
     @Executes("update")
     public void update(CommandSender sender, @StoreSuggestions String packOrEntry) {
+        update(sender, packOrEntry, false);
+    }
+
+    /**
+     * Updates every store mob and takes the particle effects its store entry wears, too.
+     */
+    @Executes("update --particles")
+    public void updateAllWithParticles(CommandSender sender) {
+        updateAll(sender, true);
+    }
+
+    /**
+     * Updates the mobs of a pack or one mob and takes the particle effects their store entries wear, too.
+     */
+    @Executes("update --particles")
+    public void updateWithParticles(CommandSender sender, @StoreSuggestions String packOrEntry) {
+        update(sender, packOrEntry, true);
+    }
+
+    private void updateAll(CommandSender sender, boolean particles) {
+        plugin.tasks()
+                .globalNow(() -> apply(
+                        sender,
+                        store().update(plugin.configuration().mobs().all(), mob -> true, particles),
+                        "store.updated"));
+    }
+
+    private void update(CommandSender sender, String packOrEntry, boolean particles) {
         plugin.tasks().globalNow(() -> {
             List<String> ids = store().store().resolve(packOrEntry).stream()
                     .map(StoreEntry::id)
                     .toList();
             apply(
                     sender,
-                    store().update(plugin.configuration().mobs().all(), mob -> fromAny(mob, ids)),
+                    store().update(plugin.configuration().mobs().all(), mob -> fromAny(mob, ids), particles),
                     "store.updated");
         });
     }
@@ -128,6 +158,12 @@ public final class StoreCommand {
                     new HashMap<>(plugin.configuration().lootTables().tables());
             tables.putAll(change.tables());
             plugin.configuration().replaceLootTables(new LootTables(tables));
+        }
+        if (!change.effects().isEmpty()) {
+            Map<String, ParticleEffect> effects =
+                    new HashMap<>(plugin.configuration().particleEffects().effects());
+            effects.putAll(change.effects());
+            plugin.configuration().replaceParticleEffects(new ParticleEffects(effects));
         }
         Replies.send(sender, done, Replies.arg("mobs", String.join(", ", change.done())));
         ReloadCommand.reload(plugin, sender, SettingsChangeCause.STORE);

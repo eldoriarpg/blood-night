@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.editor.payload;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.MobOrigin;
+import de.eldoria.bloodnight.particles.effect.ParticleEffect;
 import de.eldoria.bloodnight.store.MobStore;
 import de.eldoria.bloodnight.store.StoreEntry;
 import de.eldoria.bloodnight.store.StoreState;
@@ -20,7 +21,8 @@ import java.util.TreeMap;
 
 /**
  * The store as the editor shows it: what can be installed, and how the installed store mobs stood to it when the
- * session opened. Read only in the session; installing adds the offered mob, updating takes its logic.
+ * session opened. Read only in the session; installing adds the offered mob, updating takes its logic, and on request
+ * its particle effects.
  *
  * @param packs  the packs
  * @param offers the mobs, ready to install
@@ -59,6 +61,8 @@ public record EditorStore(List<StorePack> packs, List<Offer> offers, Map<String,
      * @param hash         the hash of its logic; an installed mob with another origin hash is outdated
      * @param mob          the mob as it installs, with its origin
      * @param lootTables   the loot tables the mob assigns, by id; installing adds those the session lacks
+     * @param particleEffects the particle effects of its own the mob plays, by id; installing adds those the session
+     *                     lacks, taking the store's looks writes them all
      */
     public record Offer(
             String id,
@@ -68,7 +72,8 @@ public record EditorStore(List<StorePack> packs, List<Offer> offers, Map<String,
             List<String> requires,
             String hash,
             CustomMob mob,
-            Map<String, LootTable> lootTables) {
+            Map<String, LootTable> lootTables,
+            Map<String, ParticleEffect> particleEffects) {
         static Offer of(StoreEntry entry, String store) {
             var mobPackage = entry.mobPackage();
             return new Offer(
@@ -79,7 +84,8 @@ public record EditorStore(List<StorePack> packs, List<Offer> offers, Map<String,
                     mobPackage.requires(),
                     entry.hash(),
                     entry.mob().withOrigin(new MobOrigin(store, entry.id(), entry.hash())),
-                    mobPackage.lootTables());
+                    mobPackage.lootTables(),
+                    mobPackage.particleEffects());
         }
     }
 }

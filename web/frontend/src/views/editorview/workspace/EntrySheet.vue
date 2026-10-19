@@ -64,13 +64,13 @@ const mythic = computed(() => {
   return typeof type === 'string' && type.trim() !== ''
 })
 const parts = computed(() => props.kind === 'mobs'
-  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'loot']
+  ? ['attributes', 'movement', 'spawn', 'equipment', 'extension', 'loot', 'particles']
       .filter(key => !mythic.value || (key !== 'equipment' && key !== 'extension'))
       .map(key => ({key, fields: fieldsOf(document, definitionOf(key))}))
   : [{key: 'macro', fields: fieldsOf(document, 'Macro').filter(field => field.key !== 'id' && field.key !== 'body')}])
 
 function definitionOf(key: string): string {
-  return {attributes: 'Attributes', spawn: 'SpawnRules', equipment: 'Equipment', extension: 'Extension', loot: 'MobLoot', movement: 'Movement'}[key] ?? key
+  return {attributes: 'Attributes', spawn: 'SpawnRules', equipment: 'Equipment', extension: 'Extension', loot: 'MobLoot', movement: 'Movement', particles: 'MobParticles'}[key] ?? key
 }
 
 function partValue(key: string): Record<string, unknown> | undefined {

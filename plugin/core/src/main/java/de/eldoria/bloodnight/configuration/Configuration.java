@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.living.MobRegistry;
 import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.particles.ParticleEffects;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import dev.chojo.ocular.Configurations;
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
 /**
  * All configuration files of the plugin.
  * <p>
- * Files holding what users wrote (mobs, items, macros, loot tables) use strict keys: a file that cannot be read is never replaced
+ * Files holding what users wrote (mobs, items, macros, loot tables, particle effects) use strict keys: a file that cannot be read is never replaced
  * by a default. It is reported in {@link #problems()}, treated as empty and left untouched until it reads again on a
  * later {@link #reload()}. Keys are reloaded one by one, so a broken file does not stop the others from reloading.
  * <p>
@@ -69,13 +70,18 @@ public class Configuration {
             .name("loot tables")
             .strict()
             .build();
+    public static final Key<ParticleEffects> PARTICLE_EFFECTS = Key.builder(
+                    Path.of("particle_effects.yml"), ParticleEffects::new)
+            .name("particle effects")
+            .strict()
+            .build();
     public static final Key<MacroFile> MACROS = Key.builder(Path.of("macros.yml"), MacroFile::new)
             .name("macros")
             .strict()
             .build();
     private static final Key<ConfigFile> MAIN =
             Key.builder(Path.of("config.yml"), ConfigFile::new).name("config").build();
-    private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS, LOOT_TABLES);
+    private static final List<Key<?>> USER_DATA = List.of(MOBS, ITEMS, MACROS, LOOT_TABLES, PARTICLE_EFFECTS);
 
     public static final String MISSING = "missing";
     private static final DateTimeFormatter BACKUP_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
@@ -146,7 +152,14 @@ public class Configuration {
     public synchronized Path backup() throws IOException {
         Path base = configurations.base();
         Path target = base.resolve("backups").resolve(BACKUP_TIME.format(LocalDateTime.now()));
-        for (String file : List.of("config.yml", "mobs.yml", "items.yml", "macros.yml", "loot_tables.yml", "worlds")) {
+        for (String file : List.of(
+                "config.yml",
+                "mobs.yml",
+                "items.yml",
+                "macros.yml",
+                "loot_tables.yml",
+                "particle_effects.yml",
+                "worlds")) {
             Path source = base.resolve(file);
             if (!Files.exists(source)) continue;
             try (Stream<Path> files = Files.walk(source)) {
@@ -162,16 +175,16 @@ public class Configuration {
 
     /**
      * Hashes the files an editor session replaces, to tell later whether they changed: {@code config.yml},
-     * {@code mobs.yml}, {@code items.yml}, {@code macros.yml}, {@code loot_tables.yml} and the files of the given
-     * worlds.
+     * {@code mobs.yml}, {@code items.yml}, {@code macros.yml}, {@code loot_tables.yml},
+     * {@code particle_effects.yml} and the files of the given worlds.
      *
      * @param worlds the worlds whose settings are covered
      * @return SHA-256 per file, by path relative to the data folder; {@value #MISSING} for a file that does not exist
      */
     public synchronized Map<String, String> fileHashes(Collection<? extends World> worlds) throws IOException {
         Path base = configurations.base();
-        List<String> files =
-                new ArrayList<>(List.of("config.yml", "mobs.yml", "items.yml", "macros.yml", "loot_tables.yml"));
+        List<String> files = new ArrayList<>(List.of(
+                "config.yml", "mobs.yml", "items.yml", "macros.yml", "loot_tables.yml", "particle_effects.yml"));
         worlds.forEach(world -> files.add("worlds/" + world.getUID() + ".yml"));
         Map<String, String> hashes = new TreeMap<>();
         for (String file : files) {
@@ -227,6 +240,13 @@ public class Configuration {
     }
 
     /**
+     * Replaces the server's own particle effects and writes {@code particle_effects.yml}.
+     */
+    public void replaceParticleEffects(ParticleEffects effects) {
+        replace(PARTICLE_EFFECTS, effects);
+    }
+
+    /**
      * Replaces a world's settings and writes its file.
      */
     public void replaceWorld(World world, WorldSettings settings) {
@@ -255,6 +275,10 @@ public class Configuration {
 
     public LootTables lootTables() {
         return cached(LOOT_TABLES, () -> userData(LOOT_TABLES, LootTables::new));
+    }
+
+    public ParticleEffects particleEffects() {
+        return cached(PARTICLE_EFFECTS, () -> userData(PARTICLE_EFFECTS, ParticleEffects::new));
     }
 
     /**

@@ -26,7 +26,9 @@ public final class MobLifecycle implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(EntityDeathEvent event) {
-        if (!event.isCancelled()) coordinator.remove(event.getEntity());
+        if (event.isCancelled()) return;
+        coordinator.died(event.getEntity());
+        coordinator.remove(event.getEntity());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

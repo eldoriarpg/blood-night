@@ -20,6 +20,8 @@ import de.eldoria.bloodnight.editor.payload.EditorPayload;
 import de.eldoria.bloodnight.editor.payload.SettingsPayload;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.loot.LootTables;
+import de.eldoria.bloodnight.particles.ParticleEffects;
+import de.eldoria.bloodnight.particles.effect.ParticleEffect;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
@@ -126,6 +128,40 @@ public final class EditorCommand {
                     client().view(open.get())
                             .thenAccept(view -> view.ifPresent(found -> sync(() -> warnChanged(sender, found))));
                 }));
+    }
+
+    /**
+     * Plays an effect at the player as the open session holds it, so it can be judged in game before applying.
+     */
+    @Executes("preview")
+    public void preview(CommandSender sender, String effect) {
+        if (!(sender instanceof Player player)) {
+            Replies.send(sender, "editor.preview_players");
+            return;
+        }
+        plugin.tasks().globalNow(() -> {
+            Optional<SessionCreated> open = sessions().load();
+            if (open.isEmpty()) {
+                Replies.send(sender, "editor.none_open");
+                return;
+            }
+            client().view(open.get())
+                    .whenComplete((view, error) -> sync(() -> {
+                        if (error != null) {
+                            Replies.send(sender, "editor.failed", Replies.arg("reason", reason(error)));
+                            return;
+                        }
+                        ParticleEffect found = view.map(session -> EffectPreview.effect(session.payload(), effect))
+                                .orElse(null);
+                        if (found == null) {
+                            Replies.send(sender, "editor.preview_unknown", Replies.arg("effect", effect));
+                            return;
+                        }
+                        plugin.tasks().entityNow(player, () -> plugin.effects()
+                                .play(found, EffectPreview.spot(player), player, player, null));
+                        Replies.send(sender, "editor.preview_playing", Replies.arg("effect", effect));
+                    }));
+        });
     }
 
     @Executes("new")
@@ -323,6 +359,7 @@ public final class EditorCommand {
         plugin.configuration().replaceMacros(result.macros());
         plugin.configuration().replaceItems(EditorItems.apply(items, result.items()));
         plugin.configuration().replaceLootTables(new LootTables(result.lootTables()));
+        plugin.configuration().replaceParticleEffects(new ParticleEffects(result.particleEffects()));
         SettingsPayload settings = result.settings();
         if (settings != null) {
             plugin.configuration().replaceMain(settings.main());

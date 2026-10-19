@@ -268,7 +268,19 @@
         "night_end_34" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_33" ]
+            "next" : [ "play_effect_33" ]
+          }
+        },
+        "play_effect_33" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
           }
         },
         "projectile_hit_8" : {
@@ -430,26 +442,6 @@
             "particle" : "minecraft:dust"
           }
         },
-        "spawn_particle_33" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_13",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_13",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
-        },
         "switch_6" : {
           "type" : "flow.switch",
           "config" : {
@@ -540,6 +532,11 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
+    },
+    "particles" : {
+      "ambient" : "bloodnight:arcane_glow",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
     }
   },
   "lootTables" : {
@@ -591,5 +588,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

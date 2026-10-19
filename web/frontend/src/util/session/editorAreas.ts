@@ -17,6 +17,7 @@ export function areaOf(section: string): EditorArea | null {
     if (section.startsWith('macros/')) return 'MACROS'
     if (section.startsWith('items/')) return 'ITEMS'
     if (section.startsWith('lootTables/')) return 'LOOT'
+    if (section.startsWith('particleEffects/')) return 'PARTICLES'
     if (section.startsWith('settings/worlds/')) return 'WORLDS'
     if (section === 'settings/main') return 'SERVER'
     return null

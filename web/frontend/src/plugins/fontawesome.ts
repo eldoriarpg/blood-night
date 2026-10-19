@@ -9,7 +9,7 @@ import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 import {
     faCheck, faChevronDown, faChevronRight, faCircleCheck, faCircleInfo, faCircleQuestion, faCopy, faDiagramProject, faEllipsisVertical, faExpand, faKeyboard, faPlay,
     faMagnifyingGlass, faMinus, faPen, faPlus, faSliders, faSpinner, faTrash, faTriangleExclamation, faXmark,
-    faArrowLeft, faArrowRight, faArrowsRotate, faDownload, faStore, faSun, faMoon, faLanguage, faBookOpen, faDice, faNoteSticky,
+    faArrowLeft, faArrowRight, faArrowsRotate, faDownload, faStore, faSun, faMoon, faLanguage, faBookOpen, faDice, faNoteSticky, faPause,
 } from '@fortawesome/free-solid-svg-icons'
 
 /**
@@ -21,7 +21,7 @@ config.autoAddCss = false
 library.add(
     faCheck, faChevronDown, faChevronRight, faCircleCheck, faCircleInfo, faCircleQuestion, faCopy, faDiagramProject, faEllipsisVertical, faExpand, faKeyboard, faPlay,
     faMagnifyingGlass, faMinus, faPen, faPlus, faSliders, faSpinner, faTrash, faTriangleExclamation, faXmark,
-    faArrowLeft, faArrowRight, faArrowsRotate, faDownload, faStore, faSun, faMoon, faLanguage, faBookOpen, faDice, faNoteSticky,
+    faArrowLeft, faArrowRight, faArrowsRotate, faDownload, faStore, faSun, faMoon, faLanguage, faBookOpen, faDice, faNoteSticky, faPause,
 )
 
 export default defineNuxtPlugin((nuxtApp) => {

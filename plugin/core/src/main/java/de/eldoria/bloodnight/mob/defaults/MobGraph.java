@@ -281,6 +281,31 @@ final class MobGraph implements BloodNightNodes {
     }
 
     /**
+     * Plays a particle effect of the library at a node's output, an entity or a location.
+     *
+     * @return the play node, to give it a target or chain what runs once the effect arrives
+     */
+    Graphs.NodeBuilder playEffect(String effect, String source, String sourcePort) {
+        return node(WORLD_PLAY_EFFECT).config("effect", effect).input("source", source, sourcePort);
+    }
+
+    /**
+     * Plays a particle effect of the library on the mob.
+     */
+    String effectOnSelf(String effect) {
+        return playEffect(effect, self(), "entity").id();
+    }
+
+    /**
+     * Plays a particle effect of the library from the mob to another entity or location.
+     */
+    String effectAt(String effect, String target, String targetPort) {
+        return playEffect(effect, self(), "entity")
+                .input("target", target, targetPort)
+                .id();
+    }
+
+    /**
      * Data for particles that take a strength.
      */
     String power(double power) {

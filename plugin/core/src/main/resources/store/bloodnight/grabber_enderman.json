@@ -144,7 +144,7 @@
             }
           },
           "executions" : {
-            "true" : [ "for_each_11", "spawn_particle_27" ]
+            "true" : [ "for_each_11", "play_effect_27" ]
           }
         },
         "branch_31" : {
@@ -322,6 +322,18 @@
             "radius" : 16.0
           }
         },
+        "play_effect_27" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_5",
+              "port" : "result"
+            }
+          }
+        },
         "read_0" : {
           "type" : "mob.read",
           "inputs" : {
@@ -369,26 +381,6 @@
         },
         "self_1" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_27" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "create_5",
-              "port" : "result"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:portal"
-          }
         },
         "teleport_16" : {
           "type" : "entity.teleport",
@@ -458,7 +450,8 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
-    }
+    },
+    "particles" : null
   },
   "lootTables" : {
     "grabber_enderman" : {
@@ -498,5 +491,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

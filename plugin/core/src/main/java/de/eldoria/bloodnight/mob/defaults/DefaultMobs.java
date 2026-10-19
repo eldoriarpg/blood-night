@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
 import de.eldoria.bloodnight.loot.assign.MobLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.attributes.Attributes;
 import de.eldoria.bloodnight.mob.attributes.MobName;
 import de.eldoria.bloodnight.mob.attributes.Movement;
@@ -29,6 +30,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -95,6 +97,41 @@ public final class DefaultMobs implements BloodNightNodes {
      * Id of the blood dragon, the ender dragon of a dragon fight during a blood night.
      */
     public static final String BLOOD_DRAGON = "blood_dragon";
+
+    private static final Set<String> INVISIBLE = Set.of("invisible_zombie", "invisible_skeleton", "ghost_creeper");
+    private static final Map<String, String> AMBIENT = Map.ofEntries(
+            Map.entry("blood_dragon", "blood_aura"),
+            Map.entry("knight_zombie", "blood_aura"),
+            Map.entry("armored_zombie", "blood_aura"),
+            Map.entry("toxic_creeper", "toxic_haze"),
+            Map.entry("toxic_enderman", "toxic_haze"),
+            Map.entry("toxic_slime", "toxic_haze"),
+            Map.entry("ender_creeper", "void_shimmer"),
+            Map.entry("launcher_enderman", "void_shimmer"),
+            Map.entry("grabber_enderman", "void_shimmer"),
+            Map.entry("blaze_rider", "ember_crown"),
+            Map.entry("fire_wizard", "ember_crown"),
+            Map.entry("fire_phantom", "ember_crown"),
+            Map.entry("thunder_wizard", "storm_charge"),
+            Map.entry("storm_breeze", "storm_charge"),
+            Map.entry("nervous_powered_creeper", "storm_charge"),
+            Map.entry("wither_wizard", "soul_mist"),
+            Map.entry("wither_skeleton_rider", "soul_mist"),
+            Map.entry("phantom_soul", "soul_mist"),
+            Map.entry("carrier_phantom", "soul_mist"),
+            Map.entry("tide_drowned", "tide_drip"),
+            Map.entry("spore_bogged", "spore_cloud"),
+            Map.entry("fuse_enderman", "fuse_glow"),
+            Map.entry("unstable_creeper", "fuse_glow"),
+            Map.entry("speed_zombie", "speed_trail"),
+            Map.entry("speed_creeper", "speed_trail"),
+            Map.entry("speed_skeleton_rider", "speed_trail"),
+            Map.entry("swarm_silverfish", "speed_trail"),
+            Map.entry("fearful_enderman", "dread_shadow"),
+            Map.entry("fearful_phantom", "dread_shadow"),
+            Map.entry("assassin_spider", "dread_shadow"),
+            Map.entry("volley_pillager", "dread_shadow"),
+            Map.entry("magic_skeleton", "arcane_glow"));
 
     private final GraphPlatform platform;
     private final Function<String, String> names;
@@ -548,7 +585,6 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(MOB_SPAWN, graph.creeper("max_fuse_ticks", 20));
             graph.on(
                     MOB_TICK,
-                    graph.dust(0, 128, 0, 2, 5),
                     graph.every(
                             3000, graph.cloud(graph.selfRead(), "location", "minecraft:poison", 3, 1.5, 0, 128, 0)));
             String explode = graph.entry(EVENT_EXPLODE);
@@ -567,7 +603,6 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.creeper("explosion_radius", 5),
                     graph.creeper("powered", true),
                     graph.creeper("max_fuse_ticks", 50));
-            graph.on(MOB_TICK, graph.particles("minecraft:end_rod", 2));
             String warn = graph.node(WORLD_SHOW_MARKER)
                     .config("shape", "CIRCLE")
                     .input("location", graph.selfRead(), "location")
@@ -627,7 +662,7 @@ public final class DefaultMobs implements BloodNightNodes {
     private CustomMob enderCreeper() {
         return mob("ender_creeper", EntityType.CREEPER, graph -> {
             defineTeleportNear(graph);
-            graph.on(MOB_TICK, graph.dust(128, 0, 128, 2, 5), teleportNear(graph, graph.selfRead(), TARGET));
+            graph.on(MOB_TICK, teleportNear(graph, graph.selfRead(), TARGET));
             graph.on(EVENT_TARGET_CHANGE, teleportNear(graph, graph.entry(EVENT_TARGET_CHANGE), TARGET));
             for (String trigger : List.of(EVENT_DAMAGE_BY_ENTITY, EVENT_DAMAGE_BY_PLAYER)) {
                 String attacker = graph.as("living_entity", graph.entry(trigger), "attacker");
@@ -746,7 +781,6 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(
                     MOB_TICK,
                     graph.targetNearestPlayer(),
-                    graph.particles("minecraft:witch", 10),
                     graph.present(graph.selfRead(), TARGET, graph.every(12000, scream, gaze)));
             blindPlayersOnHit(graph, 7, 1);
             graph.on(MOB_NIGHT_END, graph.particlesAroundWith("minecraft:dragon_breath", 10, graph.power(1), "power"));
@@ -775,7 +809,7 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob toxicEnderman() {
         return mob("toxic_enderman", EntityType.ENDERMAN, graph -> {
-            graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.dust(0, 128, 0, 2, 5));
+            graph.on(MOB_TICK, graph.targetNearestPlayer());
             String teleport = graph.entry(EVENT_TELEPORT);
             graph.on(EVENT_TELEPORT, graph.cloud(teleport, "from", "minecraft:strong_poison", 10, 4, 0, 128, 0));
             graph.on(MOB_NIGHT_END, graph.particlesAroundWith("minecraft:dragon_breath", 10, graph.power(1), "power"));
@@ -905,6 +939,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             carry.id(),
                             RESULT,
                             graph.sound(victim, RESULT, "minecraft:entity.phantom.swoop", 1, 0.6),
+                            graph.effectAt("bloodnight:shadow_wings", victim, RESULT),
                             lift,
                             release));
             graph.on(EVENT_HIT, graph.when(victim, "matches", graph.after("hurt", 3, graph.every(15000, carry.id()))));
@@ -935,7 +970,12 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.present(
                             graph.selfRead(),
                             TARGET,
-                            graph.every(5000, graph.particlesAround("minecraft:dripping_lava", 40), throwIt)));
+                            graph.every(
+                                    5000,
+                                    graph.particlesAround("minecraft:dripping_lava", 40),
+                                    graph.effectOnSelf("bloodnight:rune_circle"),
+                                    graph.effectAt("bloodnight:arcane_lines", graph.selfRead(), TARGET),
+                                    throwIt)));
             onlyShoot(graph, "minecraft:fireball");
             String struck = graph.entry(EVENT_DAMAGE_BY_ENTITY);
             String damager =
@@ -989,11 +1029,12 @@ public final class DefaultMobs implements BloodNightNodes {
                     .id();
             graph.on(
                     MOB_TICK,
-                    graph.every(
-                            250,
-                            graph.particlesAroundWith(
-                                    "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
-                    graph.present(graph.selfRead(), TARGET, graph.every(4000, graph.when(sees, RESULT, first))));
+                    graph.present(
+                            graph.selfRead(),
+                            TARGET,
+                            graph.every(
+                                    4000,
+                                    graph.when(sees, RESULT, graph.effectOnSelf("bloodnight:rune_circle"), first))));
             String shoot = graph.entry(EVENT_PROJECTILE_SHOOT);
             graph.on(EVENT_PROJECTILE_SHOOT, graph.cancel(shoot));
             smokeAtNightEnd(graph);
@@ -1017,9 +1058,11 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input(TARGET, graph.selfRead(), "world")
                 .input("location", marked, VALUE)
                 .id();
+        String bolt =
+                graph.playEffect("bloodnight:lightning_bolt", marked, VALUE).id();
         String wait = graph.node(FLOW_DELAY)
                 .literal("duration", 1.5)
-                .chain("next", strike)
+                .chain("next", strike, bolt)
                 .id();
         Graphs.NodeBuilder mark = graph.node(VARIABLE_SET)
                 .config("name", name)
@@ -1064,14 +1107,15 @@ public final class DefaultMobs implements BloodNightNodes {
             }
             graph.on(
                     MOB_TICK,
-                    graph.every(
-                            250,
-                            graph.particlesAroundWith(
-                                    "minecraft:instant_effect", 15, graph.spell(255, 255, 255, 1), RESULT)),
                     graph.present(
                             graph.selfRead(),
                             TARGET,
-                            graph.every(8000, graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4), volley)));
+                            graph.every(
+                                    8000,
+                                    graph.effectOnSelf("bloodnight:rune_circle"),
+                                    graph.effectAt("bloodnight:arcane_lines", graph.selfRead(), TARGET),
+                                    graph.shootAtTarget(ProjectileKind.WITHER_SKULL, 4),
+                                    volley)));
             onlyShoot(graph, "minecraft:wither_skull");
             String damage = graph.entry(EVENT_DAMAGE);
             String attribute = graph.node(LIVING_ENTITY_ATTRIBUTE)
@@ -1096,7 +1140,7 @@ public final class DefaultMobs implements BloodNightNodes {
                     .chain(
                             "next",
                             graph.effect(graph.self(), "entity", "minecraft:regeneration", 6, 2),
-                            graph.particles("minecraft:heart", 8))
+                            graph.effectOnSelf("bloodnight:heal_burst"))
                     .id();
             graph.on(EVENT_DAMAGE, graph.present(attribute, RESULT, graph.when(low, RESULT, heal)));
             smokeAtNightEnd(graph);
@@ -1111,14 +1155,10 @@ public final class DefaultMobs implements BloodNightNodes {
                 EntityType.BLAZE,
                 false,
                 graph -> graph.on(
-                        MOB_TICK,
-                        graph.every(
-                                1000,
-                                graph.particles("minecraft:flame", 6),
-                                playersAround(graph, 2.5, player -> graph.node(ENTITY_MUTATE)
-                                        .input(TARGET, player, RESULT)
-                                        .literal("fire_ticks", 60)
-                                        .id()))));
+                        MOB_TICK, graph.every(1000, playersAround(graph, 2.5, player -> graph.node(ENTITY_MUTATE)
+                                .input(TARGET, player, RESULT)
+                                .literal("fire_ticks", 60)
+                                .id()))));
     }
     /**
      * A fast spider carrying a skeleton; when its target comes close, the spider leaps away so the skeleton can shoot.
@@ -1217,7 +1257,6 @@ public final class DefaultMobs implements BloodNightNodes {
                 EntityType.BREEZE,
                 graph -> graph.on(
                         MOB_TICK,
-                        graph.particles("minecraft:cloud", 1),
                         graph.present(
                                 graph.selfRead(),
                                 TARGET,
@@ -1233,7 +1272,6 @@ public final class DefaultMobs implements BloodNightNodes {
      */
     private CustomMob sporeBogged() {
         return mob("spore_bogged", EntityType.BOGGED, graph -> {
-            graph.on(MOB_TICK, graph.particles("minecraft:crimson_spore", 3));
             String hit = graph.entry(EVENT_PROJECTILE_HIT);
             String victim = graph.as("living_entity", hit, "hit_entity");
             graph.on(
@@ -1269,6 +1307,7 @@ public final class DefaultMobs implements BloodNightNodes {
                                     graph.when(
                                             sees,
                                             RESULT,
+                                            graph.effectAt("bloodnight:blood_spear", graph.selfRead(), TARGET),
                                             graph.shootAtTarget(ProjectileKind.ARROW, 2.5),
                                             graph.shootAtTarget(ProjectileKind.ARROW, 2.2)))));
             smokeAtNightEnd(graph);
@@ -1283,7 +1322,6 @@ public final class DefaultMobs implements BloodNightNodes {
             String target = graph.living(graph.selfRead(), TARGET);
             graph.on(
                     MOB_TICK,
-                    graph.particles("minecraft:dripping_water", 2),
                     graph.present(
                             graph.selfRead(),
                             TARGET,
@@ -1409,7 +1447,7 @@ public final class DefaultMobs implements BloodNightNodes {
                             graph.when(
                                     inReach,
                                     RESULT,
-                                    graph.every(4000, leap, graph.particlesAround("minecraft:crit", 15))))
+                                    graph.every(4000, leap, graph.effectOnSelf("bloodnight:shock_wave"))))
                     .id();
             graph.on(
                     MOB_TICK, graph.present(graph.selfRead(), TARGET, graph.when(graph.selfRead(), "on_ground", move)));
@@ -1528,7 +1566,9 @@ public final class DefaultMobs implements BloodNightNodes {
                             "sneaking",
                             teleport(graph, held, RESULT, sky, RESULT),
                             teleport(graph, graph.self(), "entity", sky, RESULT),
-                            graph.particlesAt("minecraft:portal", 40, sky, RESULT),
+                            graph.playEffect("bloodnight:teleport_puff", sky, RESULT)
+                                    .id(),
+                            graph.effectAt("bloodnight:shadow_wings", held, RESULT),
                             back));
             String wait = graph.node(FLOW_DELAY)
                     .literal("duration", 1.0)
@@ -1545,7 +1585,7 @@ public final class DefaultMobs implements BloodNightNodes {
                                     graph.effect(victim, RESULT, "minecraft:slowness", 1, 4),
                                     graph.sound(victim, RESULT, "minecraft:entity.enderman.scream", 1, 0.7),
                                     wait)));
-            graph.on(MOB_TICK, graph.targetNearestPlayer(), graph.particles("minecraft:reverse_portal", 3));
+            graph.on(MOB_TICK, graph.targetNearestPlayer());
         });
     }
 
@@ -1592,7 +1632,11 @@ public final class DefaultMobs implements BloodNightNodes {
                     graph.present(
                             graph.selfRead(),
                             TARGET,
-                            graph.every(10000, each.id(), graph.particlesAt("minecraft:portal", 30, front, RESULT))));
+                            graph.every(
+                                    10000,
+                                    each.id(),
+                                    graph.playEffect("bloodnight:teleport_puff", front, RESULT)
+                                            .id())));
         });
     }
 
@@ -1610,7 +1654,6 @@ public final class DefaultMobs implements BloodNightNodes {
             graph.on(
                     MOB_TICK,
                     graph.targetNearestPlayer(),
-                    graph.dust(200, 40, 0, 1, 3),
                     graph.present(graph.selfRead(), TARGET, graph.every(6000, tnt)));
         });
     }
@@ -1760,7 +1803,8 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input(TARGET, graph.self(), "entity")
                 .input("location", landed, VALUE)
                 .id();
-        String puff = graph.particlesAt("minecraft:portal", 10, target, "location");
+        String puff =
+                graph.playEffect("bloodnight:teleport_puff", target, "location").id();
         String arrive = graph.node(FLOW_DELAY)
                 .literal("duration", 1.0)
                 .chain("next", teleport, puff)
@@ -1816,7 +1860,7 @@ public final class DefaultMobs implements BloodNightNodes {
      * Puffs smoke around the mob when the night ends.
      */
     private static void smokeAtNightEnd(MobGraph graph) {
-        graph.on(MOB_NIGHT_END, graph.particlesAround("minecraft:campfire_cosy_smoke", 30));
+        graph.on(MOB_NIGHT_END, graph.effectOnSelf("bloodnight:night_end_smoke"));
     }
 
     /**
@@ -1895,16 +1939,31 @@ public final class DefaultMobs implements BloodNightNodes {
                     .input(TARGET, graph.selfRead(), "world")
                     .input("location", victim, "location")
                     .id();
+            String bolt = graph.playEffect("bloodnight:lightning_bolt", victim, "location")
+                    .id();
+            String pierce = graph.node(LIVING_ENTITY_DAMAGE)
+                    .input(TARGET, nearest, "player")
+                    .literal("amount", 6.0)
+                    .input("source", graph.self(), "entity")
+                    .id();
+            String spear = graph.playEffect("bloodnight:blood_spear", graph.self(), "entity")
+                    .input("target", nearest, "player")
+                    .chain("arrived", graph.present(nearest, "player", pierce))
+                    .id();
             graph.on(
                     MOB_TICK,
-                    graph.dust(160, 0, 0, 4, 30),
                     graph.every(6000, graph.present(nearest, "player", fireball)),
-                    graph.every(10000, graph.present(nearest, "player", lightning)));
+                    graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
+                    graph.every(8000, graph.present(nearest, "player", spear)));
             String hit = graph.entry(EVENT_HIT);
             String hitPlayer = graph.as("player", hit, "entity");
             graph.on(
                     EVENT_HIT,
-                    graph.when(hitPlayer, "matches", graph.effect(hitPlayer, RESULT, "minecraft:wither", 5, 1)));
+                    graph.when(
+                            hitPlayer,
+                            "matches",
+                            graph.effect(hitPlayer, RESULT, "minecraft:wither", 5, 1),
+                            graph.effectAt("bloodnight:drain_beam", hitPlayer, RESULT)));
         });
         Attributes base = dragon.attributes();
         return new CustomMob(
@@ -1922,7 +1981,10 @@ public final class DefaultMobs implements BloodNightNodes {
                 dragon.behaviour(),
                 dragon.loot(),
                 dragon.extension(),
-                new SpawnRules(0, false, NightEnd.KEEP, Set.of(), SpawnConditions.any()));
+                new SpawnRules(0, false, NightEnd.KEEP, Set.of(), SpawnConditions.any()),
+                null,
+                dragon.movement(),
+                dragon.particles());
     }
 
     private CustomMob mob(String id, EntityType type, Consumer<MobGraph> behaviour) {
@@ -1946,13 +2008,25 @@ public final class DefaultMobs implements BloodNightNodes {
         MobGraph graph = new MobGraph(platform, type, extension.entityType());
         behaviour.accept(graph);
         return new CustomMob(
-                id,
-                equipment,
-                new Attributes(translated(id), type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
-                built(id, graph),
-                MobLoot.inherited(),
-                extension,
-                SpawnRules.defaults());
+                        id,
+                        equipment,
+                        new Attributes(translated(id), type, true, ValueModifier.DEFAULT, 2, ValueModifier.DEFAULT, 2),
+                        built(id, graph),
+                        MobLoot.inherited(),
+                        extension,
+                        SpawnRules.defaults())
+                .withParticles(looks(id));
+    }
+
+    /**
+     * The particle effects a default mob wears: an effect of its own while it lives, souls rising when it spawns and a
+     * burst where it dies. Invisible mobs wear none, so nothing gives them away.
+     */
+    private static @Nullable MobParticles looks(String id) {
+        if (INVISIBLE.contains(id)) return null;
+        String ambient = AMBIENT.get(id);
+        return new MobParticles(
+                ambient == null ? null : "bloodnight:" + ambient, "bloodnight:spawn_rise", "bloodnight:death_burst");
     }
 
     /**

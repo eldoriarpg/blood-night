@@ -9,7 +9,9 @@ import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.editor.payload.EditorPayload;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.spawn.SpawnRules;
+import de.eldoria.bloodnight.particles.effect.ParticleEffect;
 import de.eldoria.bloodnight.store.files.MobPackage;
 import de.eldoria.bloodnight.store.files.StoreFiles;
 import de.eldoria.bloodnight.store.files.StorePack;
@@ -52,6 +54,25 @@ class MobStoreTest {
         CustomMob mob = Mobs.zombie("runner", behaviour);
         MobPackage mobPackage = new MobPackage(
                 StoreFiles.FORMAT, "runner", "classic", Map.of("en", "Runner"), Map.of(), List.of(), mob, TABLES);
+        return new MobStore(new Store(
+                "test", List.of(new StorePack("classic", Map.of(), Map.of())), List.of(StoreEntry.of(mobPackage))));
+    }
+
+    private static final MobParticles STORE_LOOKS = new MobParticles("store_glow", null, null);
+    private static final ParticleEffect GLOW = new ParticleEffect("Glow", null, null, null, null);
+
+    private static MobStore looking(Graph behaviour) {
+        CustomMob mob = Mobs.zombie("runner", behaviour).withParticles(STORE_LOOKS);
+        MobPackage mobPackage = new MobPackage(
+                StoreFiles.FORMAT,
+                "runner",
+                "classic",
+                Map.of("en", "Runner"),
+                Map.of(),
+                List.of(),
+                mob,
+                Map.of(),
+                Map.of("store_glow", GLOW));
         return new MobStore(new Store(
                 "test", List.of(new StorePack("classic", Map.of(), Map.of())), List.of(StoreEntry.of(mobPackage))));
     }
@@ -134,5 +155,33 @@ class MobStoreTest {
         assertEquals(StoreState.CHANGED_OUTDATED, newer.state(edited));
         assertEquals(List.of(), newer.autoUpdate(List.of(edited)).done());
         assertEquals(NEW, only(newer.update(List.of(edited), mob -> true)).behaviour());
+    }
+
+    @Test
+    void installBringsTheEffectsTheServerLacks() {
+        assertEquals(
+                Map.of("store_glow", GLOW),
+                looking(OLD).install(List.of(), Set.of(), Set.of(), "runner").effects());
+        assertEquals(
+                Map.of(),
+                looking(OLD)
+                        .install(List.of(), Set.of(), Set.of("store_glow"), "runner")
+                        .effects());
+    }
+
+    @Test
+    void updatesKeepTheOwnLooksUnlessAskedToTakeTheStores() {
+        CustomMob installed = only(looking(OLD).install(List.of(), Set.of(), "classic"));
+        CustomMob restyled = installed.withParticles(new MobParticles("mine", null, null));
+        MobStore store = looking(OLD);
+
+        assertTrue(store.looksDiffer(restyled));
+        assertEquals(List.of(), store.update(List.of(restyled), mob -> true).done());
+        MobStore.Change taken = store.update(List.of(restyled), mob -> true, true);
+        assertEquals(STORE_LOOKS, only(taken).particles());
+        assertEquals(Map.of("store_glow", GLOW), taken.effects());
+        assertEquals(
+                new MobParticles("mine", null, null),
+                only(looking(NEW).autoUpdate(List.of(restyled))).particles());
     }
 }

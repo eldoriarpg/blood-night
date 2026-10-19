@@ -32,17 +32,19 @@ import java.util.Optional;
 public final class ParticleData {
     private static final String PARTICLE = "particle";
     private static final String DATA = "data";
-    private static final Map<Class<?>, String> SOURCES = Map.of(
-            Float.class, "Particle Power",
-            Integer.class, "Particle Delay",
-            Particle.DustOptions.class, "Dust",
-            Particle.DustTransition.class, "Dust Transition",
-            Particle.Spell.class, "Spell",
-            Particle.Trail.class, "Trail",
-            Vibration.class, "Vibration",
-            BlockData.class, "Block Type: Create Block Data",
-            ItemStack.class, "an item",
-            Color.class, "Color");
+    private static final Map<Class<?>, String> SOURCES = Map.ofEntries(
+            Map.entry(Float.class, "Particle Power"),
+            Map.entry(Integer.class, "Particle Delay"),
+            Map.entry(Particle.DustOptions.class, "Dust"),
+            Map.entry(Particle.DustTransition.class, "Dust Transition"),
+            Map.entry(Particle.Spell.class, "Spell"),
+            Map.entry(Particle.Trail.class, "Trail"),
+            Map.entry(Vibration.class, "Vibration"),
+            Map.entry(BlockData.class, "Block Type: Create Block Data"),
+            Map.entry(ItemStack.class, "an item"),
+            Map.entry(Color.class, "Color"),
+            Map.entry(Particle.Geyser.class, "Geyser data, which no node makes yet"),
+            Map.entry(Particle.GeyserBase.class, "Geyser base data, which no node makes yet"));
 
     public static final NodeRule RULE = (node, report) -> particle(node).ifPresent(particle -> {
         Class<?> needed = particle.getDataType();

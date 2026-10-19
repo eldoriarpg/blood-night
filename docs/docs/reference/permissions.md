@@ -8,20 +8,22 @@ sidebar_position: 2
 
 # Permissions
 
-Only operators have these permissions at first. Give them to other players with your permissions plugin.
+Only operators have these permissions at first, except those every player has. Give them to other players with
+your permissions plugin.
 
 | Permission | What it allows | Includes |
 |---|---|---|
-| `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.trigger`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.store`, `bloodnight.command.pack`, `bloodnight.command.convert`, `bloodnight.command.setup`, `bloodnight.command.night.manage` |
+| `bloodnight.admin` | Every blood night command | `bloodnight.command.reload`, `bloodnight.command.spawn`, `bloodnight.command.problems`, `bloodnight.command.source`, `bloodnight.command.trigger`, `bloodnight.command.debug`, `bloodnight.command.export`, `bloodnight.command.night`, `bloodnight.command.editor`, `bloodnight.command.item`, `bloodnight.command.settings`, `bloodnight.command.store`, `bloodnight.command.pack`, `bloodnight.command.convert`, `bloodnight.command.setup`, `bloodnight.command.night.manage`, `bloodnight.command.particles` |
 | `bloodnight.bypass.commands` | Use commands blocked during blood nights |  |
 | `bloodnight.command.convert` | /bloodnight convert, takes over the settings of the old BloodNight |  |
 | `bloodnight.command.debug` | /bloodnight debug, uploads a debug report to Lyna |  |
-| `bloodnight.command.editor` | /bloodnight editor, opens, applies or closes a web editor session | `bloodnight.editor.mobs`, `bloodnight.editor.macros`, `bloodnight.editor.items`, `bloodnight.editor.worlds`, `bloodnight.editor.server`, `bloodnight.editor.loot` |
+| `bloodnight.command.editor` | /bloodnight editor, opens, applies or closes a web editor session | `bloodnight.editor.mobs`, `bloodnight.editor.macros`, `bloodnight.editor.items`, `bloodnight.editor.worlds`, `bloodnight.editor.server`, `bloodnight.editor.loot`, `bloodnight.editor.particles` |
 | `bloodnight.command.export` | /bloodnight export, writes the editor payload and catalog to the debug folder |  |
 | `bloodnight.command.item` | /bloodnight item, registers the held item or removes a registered item |  |
 | `bloodnight.command.night` | /bloodnight night, shows the night selection and the next blood night of a world |  |
 | `bloodnight.command.night.manage` | /bloodnight night force and cancel, decides the coming night of a world |  |
 | `bloodnight.command.pack` | /bloodnight pack, writes the resource pack out to merge it into another pack |  |
+| `bloodnight.command.particles` | /bloodnight particles, switches the particle effects of mobs off or on for the player (every player has it) |  |
 | `bloodnight.command.problems` | /bloodnight problems, lists compile problems and runtime failures of mobs |  |
 | `bloodnight.command.reload` | /bloodnight reload, reads the configuration again and recompiles every mob |  |
 | `bloodnight.command.settings` | /bloodnight settings, shows or changes one setting without the web editor |  |
@@ -34,6 +36,7 @@ Only operators have these permissions at first. Give them to other players with 
 | `bloodnight.editor.loot` | Change the loot tables in the web editor; without it they are read only |  |
 | `bloodnight.editor.macros` | Change the macros in the web editor; without it they are read only |  |
 | `bloodnight.editor.mobs` | Change the mobs in the web editor; without it they are read only |  |
+| `bloodnight.editor.particles` | Change the particle effects in the web editor; without it they are read only |  |
 | `bloodnight.editor.server` | Change the server-wide settings in the web editor; without it they are read only |  |
 | `bloodnight.editor.worlds` | Change the settings of the worlds in the web editor; without it they are read only |  |
 | `bloodnight.updates` | Hear about new BloodNight versions on join |  |

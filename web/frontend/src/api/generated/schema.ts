@@ -25,6 +25,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assets/{version}/particles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The sprites of every particle of a Minecraft version */
+        get: operations["getParticleAssets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assets/{version}/sounds": {
         parameters: {
             query?: never;
@@ -349,7 +366,7 @@ export interface components {
             payload: unknown;
         };
         /** @enum {string} */
-        EditorArea: "MOBS" | "MACROS" | "ITEMS" | "WORLDS" | "SERVER" | "LOOT";
+        EditorArea: "MOBS" | "MACROS" | "ITEMS" | "WORLDS" | "SERVER" | "LOOT" | "PARTICLES";
         ErrorBody: {
             details?: {
                 [key: string]: string;
@@ -410,6 +427,12 @@ export interface components {
         ParticipantCreated: {
             editorUrl: string;
             name: string;
+        };
+        ParticleIndex: {
+            particles: {
+                [key: string]: string[];
+            };
+            version: string;
         };
         PayloadProblem: {
             message: string;
@@ -521,6 +544,7 @@ export type LockInfo = components['schemas']['LockInfo'];
 export type LockRequest = components['schemas']['LockRequest'];
 export type NodeType = components['schemas']['NodeType'];
 export type ParticipantCreated = components['schemas']['ParticipantCreated'];
+export type ParticleIndex = components['schemas']['ParticleIndex'];
 export type PayloadProblem = components['schemas']['PayloadProblem'];
 export type PortInfo = components['schemas']['PortInfo'];
 export type RevisionInfo = components['schemas']['RevisionInfo'];
@@ -553,6 +577,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ItemIndex"];
+                };
+            };
+            /** @description An error, e.g. 404, 409 or 423 Locked */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    getParticleAssets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParticleIndex"];
                 };
             };
             /** @description An error, e.g. 404, 409 or 423 Locked */
@@ -1179,6 +1234,7 @@ export const EditorArea = {
     LOOT: "LOOT",
     MACROS: "MACROS",
     MOBS: "MOBS",
+    PARTICLES: "PARTICLES",
     SERVER: "SERVER",
     WORLDS: "WORLDS",
 } as const;

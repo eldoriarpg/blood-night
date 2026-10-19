@@ -13,7 +13,9 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.living.movement.Steering;
 import de.eldoria.bloodnight.living.spawn.MobOutfitter;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.spawn.NightEnd;
+import de.eldoria.bloodnight.particles.play.Effects;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
@@ -25,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -67,6 +70,7 @@ public final class MobCoordinator {
     private final Steering steering;
     private final Logger logger;
     private final Consumer<Event> events;
+    private final Effects effects;
     private volatile Behaviours behaviours = Behaviours.empty();
 
     /**
@@ -108,6 +112,31 @@ public final class MobCoordinator {
             Steering steering,
             Logger logger,
             Consumer<Event> events) {
+        this(outfitter, items, definitions, runningNight, tasks, steering, logger, events, Effects.NONE);
+    }
+
+    /**
+     * @param outfitter    turns entities into custom mobs
+     * @param items        the current item registry
+     * @param definitions  mob definition by id, or {@code null}
+     * @param runningNight the number of the blood night running in a world, if any
+     * @param tasks        runs work on the mobs' threads
+     * @param steering     gives mobs their movement
+     * @param logger       receives behaviour failures
+     * @param events       calls events for other plugins, e.g. when a mob's night is over
+     * @param effects      plays the particle effects behaviours ask for and mobs wear
+     */
+    public MobCoordinator(
+            MobOutfitter outfitter,
+            Supplier<ItemRegistry> items,
+            Function<String, CustomMob> definitions,
+            Function<World, OptionalLong> runningNight,
+            Tasks tasks,
+            Steering steering,
+            Logger logger,
+            Consumer<Event> events,
+            Effects effects) {
+        this.effects = effects;
         this.events = events;
         this.outfitter = outfitter;
         this.items = items;
@@ -130,6 +159,7 @@ public final class MobCoordinator {
         Entity extension = outfitter.outfit(entity, mob);
         ActiveMob active = track(entity, mob, extension);
         guard(active, "mob.spawn", () -> active.behaviour().onSpawn());
+        effects.spawned(entity, looks(mob).spawn());
         return active;
     }
 
@@ -175,6 +205,16 @@ public final class MobCoordinator {
     public Optional<ActiveMob> mob(Entity entity) {
         Tracked tracked = mobs.get(entity.getUniqueId());
         return tracked == null ? Optional.empty() : Optional.of(tracked.active);
+    }
+
+    /**
+     * A mob died: plays its death effect where it died. Forgetting it is left to {@link #remove}.
+     *
+     * @param entity the entity
+     */
+    public void died(LivingEntity entity) {
+        Tracked tracked = mobs.get(entity.getUniqueId());
+        if (tracked != null) effects.died(entity, looks(tracked.active.mob()).death());
     }
 
     /**
@@ -277,6 +317,7 @@ public final class MobCoordinator {
             }
         }
         guard(mob, "mob.tick", () -> mob.behaviour().onTick());
+        effects.ticked(mob.entity(), looks(mob.mob()).ambient());
         return true;
     }
 
@@ -301,7 +342,12 @@ public final class MobCoordinator {
         forget(mob.entity().getUniqueId());
     }
 
+    private static MobParticles looks(CustomMob mob) {
+        return Objects.requireNonNullElse(mob.particles(), MobParticles.NONE);
+    }
+
     private void forget(UUID id) {
+        effects.forget(id);
         Tracked tracked = mobs.remove(id);
         if (tracked == null) return;
         Entity extension = tracked.active.extension();
@@ -327,7 +373,8 @@ public final class MobCoordinator {
                         extension,
                         items,
                         tasks,
-                        preset -> steering.steer(entity, mob.movement().with(preset)))))
+                        preset -> steering.steer(entity, mob.movement().with(preset)),
+                        effects)))
                 .orElse(NONE);
     }
 

@@ -90,6 +90,9 @@ export interface NodeView {
     position: Position
 }
 
+/** Choices of config fields that come from the session rather than the catalog, by `<node type>|<field>`. */
+export type SessionChoices = Readonly<Record<string, {options: readonly string[], labels: Readonly<Record<string, string>>}>>
+
 /** A wire between two pins. */
 export interface EdgeView {
     id: string
@@ -117,9 +120,13 @@ export const handles = {
  * @param graph the graph
  * @param catalog the catalog of the server the session came from
  * @param macros the session's macros, for the names of macro uses
+ * @param choices choices of config fields the catalog cannot know, by node type and field, e.g. the session's
+ *     particle effects for `world.play_effect|effect`
  * @returns the nodes and wires
  */
-export function graphView(graph: Graph, catalog: Catalog, macros: readonly Macro[], bindings: GraphBindings = {}): {nodes: NodeView[], edges: EdgeView[]} {
+export function graphView(
+    graph: Graph, catalog: Catalog, macros: readonly Macro[], bindings: GraphBindings = {}, choices: SessionChoices = {},
+): {nodes: NodeView[], edges: EdgeView[]} {
     const types = new Map((catalog.nodes ?? []).map(node => [node.id ?? '', node]))
     const values = new Map((catalog.types ?? []).map((type: TypeInfo) => [type.id ?? '', type.values ?? []]))
     const typeNames = new Map((catalog.types ?? []).map((type: TypeInfo) => [type.id ?? '', type.name ?? type.id ?? '']))
@@ -136,6 +143,7 @@ export function graphView(graph: Graph, catalog: Catalog, macros: readonly Macro
         typeNames,
         formats,
         names,
+        choices,
         rerouted: reroutedType(graph, catalog, bindings, id),
         connected: connectedOutputs.get(id) ?? new Set(),
         position: positions.get(id) ?? {x: 0, y: 0},
@@ -154,6 +162,7 @@ interface NodeContext {
     formats: Map<string, string | undefined>
     /** Text config values in use, by node family and field; see {@link namesInUse}. */
     names: Map<string, Suggestion[]>
+    choices: SessionChoices
     /** The type a reroute passes on, from what is wired into it. */
     rerouted: TypeRef | undefined
     connected: Set<string>
@@ -260,13 +269,14 @@ function configViews(definition: NodeType | undefined, instance: NodeInstance, p
     return (definition?.config ?? []).map(field => {
         const type = resolvePicked(field.type, picked)
         const typeField = isTypeField(field)
-        const options = typeField ? field.choices ?? [] : context.values.get(type?.id ?? '') ?? []
+        const session = context.choices[`${instance.type ?? ''}|${field.id ?? ''}`]
+        const options = session ? [...session.options] : (typeField ? field.choices ?? [] : context.values.get(type?.id ?? '') ?? [])
         return {
             id: field.id ?? '',
             name: field.name ?? field.id ?? '',
             pin: typeField ? 'other' : pinKind(type),
             options,
-            labels: typeField ? Object.fromEntries(options.map(choice => [choice, choiceName(choice, context.catalog)])) : {},
+            labels: session ? {...session.labels} : (typeField ? Object.fromEntries(options.map(choice => [choice, choiceName(choice, context.catalog)])) : {}),
             typeId: typeField ? '' : type?.id ?? '',
             format: typeField ? undefined : context.formats.get(type?.id ?? ''),
             selects: field.selects,

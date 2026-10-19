@@ -18,6 +18,7 @@ describe('sectionsOf', () => {
         expect([...sectionsOf(payload, [{op: 'add', path: '/settings/worlds/w/x', value: 1}]).sections]).toEqual(['settings/worlds/w'])
         expect([...sectionsOf(payload, [{op: 'add', path: '/items/x', value: {}}]).sections]).toEqual(['items/x'])
         expect([...sectionsOf(payload, [{op: 'remove', path: '/lootTables/gems'}]).sections]).toEqual(['lootTables/gems'])
+        expect([...sectionsOf({...payload, particleEffects: {glow: {}}}, [{op: 'remove', path: '/particleEffects/glow'}]).sections]).toEqual(['particleEffects/glow'])
         expect(sectionsOf(payload, [{op: 'replace', path: '', value: {}}]).everything).toBe(true)
     })
 

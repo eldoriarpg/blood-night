@@ -4,7 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 import axios from 'axios'
-import type {ItemIndex, SoundIndex} from '~/api/generated/schema'
+import type {ItemIndex, ParticleIndex, SoundIndex} from '~/api/generated/schema'
 
 const BASE = '/api/v1/assets'
 
@@ -45,4 +45,14 @@ export function soundIndex(version: string): Promise<SoundIndex> {
  */
 export function soundUrl(version: string, key: string): string {
     return `${BASE}/${encodeURIComponent(version)}/sounds/${encodeURIComponent(key)}.ogg`
+}
+
+/**
+ * The sprites of every particle of a Minecraft version. Like {@link itemIndex}, the first request may take a while.
+ *
+ * @param version the Minecraft version, e.g. `26.3`
+ * @returns the particles' sprites, served by {@link textureUrl}
+ */
+export function particleIndex(version: string): Promise<ParticleIndex> {
+    return axios.get<ParticleIndex>(`${BASE}/${encodeURIComponent(version)}/particles`, {timeout: 120000}).then(response => response.data)
 }

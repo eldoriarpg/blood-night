@@ -186,6 +186,42 @@ test('a loot table is made, filled, previewed and followed to its uses', async (
     await expect(page.locator('main').getByRole('button', {name: 'Zombie scraps', exact: true})).toBeVisible()
 })
 
+/** A built-in effect is copied, its emitter changed and previewed, and a mob wears the server's own effect. */
+test('a particle effect is copied, changed and worn by a mob', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('tab', {name: 'Particles'}).click()
+    await expect(page.getByRole('heading', {name: 'Blood glow'})).toBeVisible()
+    await expect(page.getByText('About 10 particles per second for each player who sees it.')).toBeVisible()
+
+    await page.getByRole('navigation', {name: 'Particle effects'}).getByRole('button', {name: 'Blood aura'}).click()
+    await expect(page.getByRole('heading', {name: 'Blood aura'})).toBeVisible()
+    await page.getByRole('button', {name: 'Copy to edit'}).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog.getByLabel('Name', {exact: true})).toHaveValue('Blood aura (copy)')
+    await dialog.getByLabel('Id', {exact: true}).fill('my_aura')
+    await dialog.getByRole('button', {name: 'Create'}).click()
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes[0]).toEqual([{op: 'add', path: '/particleEffects/my_aura', value: expect.objectContaining({name: 'Blood aura (copy)', duration: 40})}])
+
+    await expect(page.getByRole('heading', {name: 'Blood aura (copy)'})).toBeVisible()
+    await page.getByLabel('Shape', {exact: true}).selectOption('SPHERE')
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'replace', path: '/particleEffects/my_aura/emitters/0', value: expect.objectContaining({shape: expect.objectContaining({type: 'SPHERE'})})}])
+    await expect(page.getByRole('region', {name: 'Preview'}).locator('canvas')).toBeVisible()
+
+    await page.getByRole('tab', {name: 'Mobs'}).click()
+    await page.getByRole('button', {name: 'Particles', exact: true}).click()
+    await page.getByRole('button', {name: 'Set up'}).click()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+    await choose(page, page.getByRole('button', {name: 'While it lives', exact: true}), 'Blood glow')
+    await expect(page.getByText('Saved, revision 4')).toBeVisible()
+    expect(stage.changes.slice(2)).toEqual([
+        [{op: 'add', path: '/mobs/speed_creeper/particles', value: {}}],
+        [{op: 'add', path: '/mobs/speed_creeper/particles/ambient', value: 'blood_glow'}],
+    ])
+})
+
 /** An item gets a trim, wear and attributes; the first attribute keeps the material's own, and the preview shows them. */
 test('an item takes a trim, wear and attributes', async ({page}) => {
     const stage = await stageEditor(page)
