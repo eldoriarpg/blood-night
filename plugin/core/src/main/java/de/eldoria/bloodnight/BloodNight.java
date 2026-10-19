@@ -261,7 +261,8 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                 tasks,
                 steering,
                 getLogger(),
-                getServer().getPluginManager()::callEvent);
+                getServer().getPluginManager()::callEvent,
+                effects);
         dispatcher = new TriggerDispatcher(
                 coordinator::behaviour, coordinator::extensionBehaviour, (trigger, entity, error) -> {
                     if (entity != null) {

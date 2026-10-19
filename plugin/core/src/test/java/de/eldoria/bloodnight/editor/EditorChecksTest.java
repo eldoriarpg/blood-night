@@ -19,9 +19,13 @@ import de.eldoria.bloodnight.mob.attributes.Attributes;
 import de.eldoria.bloodnight.mob.equipment.Equipment;
 import de.eldoria.bloodnight.mob.equipment.Extension;
 import de.eldoria.bloodnight.mob.equipment.ExtensionType;
+import de.eldoria.bloodnight.particles.effect.ParticleEffect;
 import de.eldoria.graph.model.Graph;
+import de.eldoria.graph.model.Macro;
+import de.eldoria.graph.model.NodeInstance;
 import org.bukkit.entity.EntityType;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.node.StringNode;
 
 import java.util.List;
 import java.util.Map;
@@ -58,6 +62,34 @@ class EditorChecksTest {
                 EditorChecks.problems(result, Set.of("sword")::contains).stream()
                         .sorted()
                         .toList());
+    }
+
+    private static Graph playing(String effect) {
+        return Graph.builder()
+                .node("play", NodeInstance.of("world.play_effect").config("effect", StringNode.valueOf(effect)))
+                .build();
+    }
+
+    @Test
+    void graphsOnlyPlayEffectsThatExist() {
+        ParticleEffect own = new ParticleEffect("Own", null, null, null, null);
+        EditorResult result = new EditorResult(
+                Map.of(
+                        "a", Mobs.zombie("a", playing("bloodnight:blood_aura")),
+                        "b", Mobs.zombie("b", playing("own")),
+                        "c", Mobs.zombie("c", playing("gone"))),
+                List.of(new Macro("m", "M", "", "", playing("missing"))),
+                Map.of(),
+                Map.of(),
+                Map.of("own", own, "bloodnight:copy", own),
+                null,
+                Map.of());
+        assertEquals(
+                List.of(
+                        "Macro m uses unknown particle effect missing",
+                        "Mob c uses unknown particle effect gone",
+                        "Particle effect bloodnight:copy cannot use the built-in namespace"),
+                EditorChecks.problems(result, item -> true).stream().sorted().toList());
     }
 
     @Test

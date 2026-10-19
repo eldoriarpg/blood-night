@@ -30,7 +30,9 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import org.mockbukkit.mockbukkit.entity.ZombieMock;
+import org.mockbukkit.mockbukkit.world.WorldMock;
 import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.IntNode;
 import tools.jackson.databind.node.LongNode;
 import tools.jackson.databind.node.StringNode;
 
@@ -312,6 +314,71 @@ class BukkitNodesTest {
                 .build();
 
         assertEquals(List.of("1"), tick(graph));
+    }
+
+    @Test
+    void effectsPlayAndTheirArrivalRunsOnALaterTick() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "play"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node(
+                        "play",
+                        NodeInstance.of("world.play_effect")
+                                .config("effect", StringNode.valueOf("bloodnight:blood_spear"))
+                                .input("source", "self", "entity")
+                                .chain("next", "played")
+                                .chain("arrived", "arrived"))
+                .node("played", NodeInstance.of("debug.print").literal("value", StringNode.valueOf("played")))
+                .node("arrived", NodeInstance.of("debug.print").literal("value", StringNode.valueOf("arrived")))
+                .build();
+        CompiledBehaviour behaviour = new GraphCompiler<>(
+                        BloodNightPlatform.create(
+                                CompileClasspath.discover(getClass().getClassLoader())),
+                        CompiledBehaviour.class,
+                        getClass().getClassLoader())
+                .compile(graph, ClassName.get("generated.bukkit", "Effect"))
+                .instantiate(new TestContext(zombie));
+        PrintStream original = System.out;
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(buffer, true, StandardCharsets.UTF_8));
+        try {
+            behaviour.onTick();
+            behaviour.onTick();
+        } finally {
+            System.setOut(original);
+        }
+        List<String> lines = buffer.toString(StandardCharsets.UTF_8).lines().toList();
+        assertEquals(
+                List.of(
+                        "effect bloodnight:blood_spear",
+                        "played",
+                        "arrived",
+                        "effect bloodnight:blood_spear",
+                        "played"),
+                lines);
+    }
+
+    @Test
+    void spawnParticleTakesASpeed() throws GraphCompilationException {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("mob.tick").chain("next", "spawn"))
+                .node("self", NodeInstance.of("mob.self"))
+                .node("self_get", NodeInstance.of("entity.read").input("target", "self", "entity"))
+                .node(
+                        "spawn",
+                        NodeInstance.of("world.spawn_particle")
+                                .input("target", "self_get", "world")
+                                .literal("particle", StringNode.valueOf("minecraft:flame"))
+                                .input("location", "self_get", "location")
+                                .literal("count", IntNode.valueOf(3))
+                                .literal("offset_x", DoubleNode.valueOf(0))
+                                .literal("offset_y", DoubleNode.valueOf(0))
+                                .literal("offset_z", DoubleNode.valueOf(0))
+                                .literal("speed", DoubleNode.valueOf(0.25)))
+                .build();
+        tick(graph);
+        assertEquals(1, ((WorldMock) world).getSpawnedParticles().size());
+        assertEquals(0.25, ((WorldMock) world).getSpawnedParticles().getFirst().extra());
     }
 
     /**

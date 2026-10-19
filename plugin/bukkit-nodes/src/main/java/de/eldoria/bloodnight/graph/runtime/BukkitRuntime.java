@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.graph.runtime;
 import de.eldoria.bloodnight.api.internal.MobContext;
 import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
 import de.eldoria.bloodnight.graph.runtime.world.Reach;
+import de.eldoria.graph.std.runtime.flow.Delays;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -250,6 +251,43 @@ public final class BukkitRuntime {
             if (data == null) world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ);
             else world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, data);
         });
+    }
+
+    /**
+     * Spawns particles, flying off at a speed whose meaning depends on the particle.
+     */
+    public static void particles(
+            MobContext context,
+            World world,
+            Particle particle,
+            Location location,
+            int count,
+            double offsetX,
+            double offsetY,
+            double offsetZ,
+            double speed,
+            @Nullable Object data) {
+        context.at(
+                location, () -> world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed, data));
+    }
+
+    /**
+     * Plays a particle effect of the library and, if it has something that travels, runs a chain once that reaches
+     * the target. The chain is held back by the behaviour's delays, so it runs on the mob's thread.
+     *
+     * @param delays  the behaviour's delays
+     * @param arrived what runs once the effect arrives, or {@code null}
+     */
+    public static void effect(
+            MobContext context,
+            Delays delays,
+            String id,
+            Object source,
+            @Nullable Object target,
+            @Nullable Player viewer,
+            @Nullable Runnable arrived) {
+        long ticks = context.effect(id, source, target, viewer);
+        if (ticks >= 0 && arrived != null) delays.after(ticks * 50, arrived);
     }
 
     /**

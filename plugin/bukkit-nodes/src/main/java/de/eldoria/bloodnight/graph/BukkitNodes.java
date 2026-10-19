@@ -26,6 +26,7 @@ import de.eldoria.graph.definition.descriptor.NodeKind;
 import de.eldoria.graph.definition.emit.EmitContext;
 import de.eldoria.graph.definition.emit.StatementContext;
 import de.eldoria.graph.definition.port.PortType;
+import de.eldoria.graph.std.runtime.flow.Delays;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -45,6 +46,7 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 import tools.jackson.databind.node.StringNode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -300,6 +302,7 @@ public final class BukkitNodes {
                     .input("offset_y", double.class)
                     .input("offset_z", double.class)
                     .input("data", "Data", PortType.of(Object.class), true)
+                    .optionalInput("speed", double.class)
                     .execution(NEXT)
                     .describe("target", "The world to spawn them in")
                     .describe("particle", "The kind of particle")
@@ -309,22 +312,53 @@ public final class BukkitNodes {
                     .describe("offset_y", "Spread up and down")
                     .describe("offset_z", "Spread north and south")
                     .describe("data", "What particles such as dust need, from a node like Dust; leave empty for others")
+                    .describe("speed", "How fast they fly off, the meaning depends on the particle; 1 when not given")
                     .build(),
             ctx -> CodeBlock.builder()
                     .addStatement(
-                            "$T.particles($L, $L, $L, $L, $L, $L, $L, $L, $L)",
-                            BukkitRuntime.class,
-                            ctx.context(),
-                            ctx.input("target"),
-                            ctx.input("particle"),
-                            ctx.input("location"),
-                            ctx.input("count"),
-                            ctx.input("offset_x"),
-                            ctx.input("offset_y"),
-                            ctx.input("offset_z"),
-                            ctx.connected("data") ? ctx.input("data") : CodeBlock.of("null"))
+                            ctx.connected("speed")
+                                    ? "$T.particles($L, $L, $L, $L, $L, $L, $L, $L, $L, $L)"
+                                    : "$T.particles($L, $L, $L, $L, $L, $L, $L, $L, $L)",
+                            particleArguments(ctx))
                     .add(ctx.chain(NEXT))
                     .build());
+
+    public static final StatementDefinition PLAY_EFFECT = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_PLAY_EFFECT, NodeKind.ACTION)
+                    .category("world")
+                    .name("Play Effect")
+                    .description("Plays a particle effect of the library at an entity or a place, or between two ends,"
+                            + " e.g. a beam from the mob to a player; on Arrived, what flies in it has reached the"
+                            + " target")
+                    .config("effect", String.class, StringNode.valueOf("bloodnight:blood_aura"))
+                    .input("source", "Source", PortType.of(Object.class), false)
+                    .input("target", "Target", PortType.of(Object.class), true)
+                    .optionalInput("for", Player.class)
+                    .execution(NEXT)
+                    .execution("arrived", "Arrived")
+                    .describe("source", "Where it plays: an entity, which it follows, or a location")
+                    .describe("target", "The other end, an entity or a location, for beams, arcs and what flies")
+                    .describe("for", "The only player who sees it; everyone near when not given")
+                    .build(),
+            ctx -> {
+                CodeBlock arrived = ctx.chain("arrived");
+                CodeBlock delays =
+                        ctx.sharedField("delays", ClassName.get(Delays.class), CodeBlock.of("new $T()", Delays.class));
+                ctx.everyTick(CodeBlock.of("$L.tick()", delays));
+                CodeBlock call = CodeBlock.of(
+                        "$T.effect($L, $L, $L, $L, $L, $L, ",
+                        BukkitRuntime.class,
+                        ctx.context(),
+                        delays,
+                        ctx.config("effect"),
+                        ctx.input("source"),
+                        ctx.connected("target") ? ctx.input("target") : CodeBlock.of("null"),
+                        ctx.connected("for") ? ctx.input("for") : CodeBlock.of("null"));
+                CodeBlock.Builder code = CodeBlock.builder();
+                if (arrived.isEmpty()) code.addStatement("$Lnull)", call);
+                else code.add("$L() -> {\n$>", call).add(arrived).add("$<});\n");
+                return code.add(ctx.chain(NEXT)).build();
+            });
 
     public static final StatementDefinition STRIKE_LIGHTNING = new StatementDefinition(
             NodeDescriptor.builder(BloodNightNodes.WORLD_STRIKE_LIGHTNING, NodeKind.ACTION)
@@ -810,6 +844,22 @@ public final class BukkitNodes {
 
     private BukkitNodes() {}
 
+    private static Object[] particleArguments(StatementContext ctx) {
+        List<Object> arguments = new ArrayList<>(List.of(
+                BukkitRuntime.class,
+                ctx.context(),
+                ctx.input("target"),
+                ctx.input("particle"),
+                ctx.input("location"),
+                ctx.input("count"),
+                ctx.input("offset_x"),
+                ctx.input("offset_y"),
+                ctx.input("offset_z")));
+        if (ctx.connected("speed")) arguments.add(ctx.input("speed"));
+        arguments.add(ctx.connected("data") ? ctx.input("data") : CodeBlock.of("null"));
+        return arguments.toArray();
+    }
+
     /**
      * @return every hand-written Bukkit node
      */
@@ -969,6 +1019,7 @@ public final class BukkitNodes {
                 DROP_LOOT,
                 SPAWN_TNT,
                 SHOW_MARKER,
+                PLAY_EFFECT,
                 SHOW_TEXT,
                 SHOW_ABOVE,
                 MOVE_TO,

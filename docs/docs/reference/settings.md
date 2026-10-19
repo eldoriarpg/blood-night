@@ -44,6 +44,11 @@ Settings for the whole server.
 | `foreignMobs.rules` | true or false | `false` |
 | `foreignMobs.markerKeys` | list of text | `[]` |
 | `setup.done` | true or false | `false` |
+| `particles.enabled` | true or false | `true` |
+| `particles.ambient` | true or false | `true` |
+| `particles.viewDistance` | whole number | `32` |
+| `particles.budgetPerTick` | whole number | `2000` |
+| `particles.perMob` | whole number | `4` |
 | `advancements` | true or false | `true` |
 | `loot.tables` | list of text |  |
 | `loot.slots` | map |  |
@@ -86,6 +91,12 @@ foreignMobs:
   wrap: false
 setup:
   done: false
+particles:
+  ambient: true
+  budgetPerTick: 2000
+  enabled: true
+  perMob: 4
+  viewDistance: 32
 advancements: true
 loot:
   tables: []

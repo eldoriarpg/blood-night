@@ -66,5 +66,11 @@ record TestContext(LivingEntity entity, List<MovementPreset> movements) implemen
     }
 
     @Override
+    public long effect(String id, Object source, Object target, Player viewer) {
+        System.out.println("effect " + id);
+        return 0;
+    }
+
+    @Override
     public void reveal(Entity entity, Player player) {}
 }
