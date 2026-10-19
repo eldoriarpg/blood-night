@@ -121,6 +121,34 @@
             {
               "type": "minecraft:set_enchantments",
               "enchantments": {
+                "bloodnight:earth_bound": 1
+              }
+            },
+            "bloodnight:blood_touched"
+          ],
+          "name": "minecraft:book",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "modifier": [
+            {
+              "type": "minecraft:set_enchantments",
+              "enchantments": {
+                "bloodnight:arcane_vision": 1
+              }
+            },
+            "bloodnight:blood_touched"
+          ],
+          "name": "minecraft:book",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "modifier": [
+            {
+              "type": "minecraft:set_enchantments",
+              "enchantments": {
                 "bloodnight:blood_bane": {
                   "type": "minecraft:uniform",
                   "max": 4,

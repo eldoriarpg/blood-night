@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.enchantments;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.DamageEvents;
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.api.event.mob.CustomMobMoveEntityEvent;
 import de.eldoria.bloodnight.configuration.world.NightSelection;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.night.selection.NightSelector;
@@ -26,7 +27,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +49,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EnchantmentEffectsTest {
     private static final Map<Material, Integer> WARD =
@@ -91,6 +95,11 @@ class EnchantmentEffectsTest {
         if (enchantment.equals(BloodEnchantments.NIGHT_WARD)) return WARD.getOrDefault(item.getType(), 0);
         if (enchantment.equals(BloodEnchantments.DAWNBRINGER)) return item.getType() == Material.GOLDEN_SWORD ? 4 : 0;
         if (enchantment.equals(BloodEnchantments.HUNTERS_MARK)) return item.getType() == Material.BOW ? 2 : 0;
+        if (enchantment.equals(BloodEnchantments.EARTH_BOUND))
+            return item.getType() == Material.NETHERITE_BOOTS ? 1 : 0;
+        if (enchantment.equals(BloodEnchantments.ARCANE_VISION)) {
+            return item.getType() == Material.NETHERITE_HELMET ? 1 : 0;
+        }
         return enchantment.equals(BloodEnchantments.BLOODTHIRST) && item.getType() == Material.DIAMOND_SWORD ? 3 : 0;
     }
 
@@ -200,5 +209,41 @@ class EnchantmentEffectsTest {
         assertEquals(
                 2 * EnchantmentEffects.MARK_SECONDS_PER_LEVEL * 20,
                 zombie.getPotionEffect(PotionEffectType.GLOWING).getDuration());
+    }
+
+    @Test
+    void earthBoundBootsKeepPlayersFromBeingMoved() {
+        var teleport = new CustomMobMoveEntityEvent(
+                player,
+                CustomMobMoveEntityEvent.Kind.TELEPORT,
+                world.getSpawnLocation().add(0, 20, 0));
+        assertTrue(teleport.callEvent());
+        player.getEquipment().setBoots(new ItemStack(Material.NETHERITE_BOOTS));
+        assertFalse(new CustomMobMoveEntityEvent(player, CustomMobMoveEntityEvent.Kind.CARRY, null).callEvent());
+        assertFalse(new CustomMobMoveEntityEvent(
+                        player,
+                        CustomMobMoveEntityEvent.Kind.TELEPORT,
+                        world.getSpawnLocation().add(0, 20, 0))
+                .callEvent());
+    }
+
+    @Test
+    void arcaneVisionKeepsBlindnessAway() {
+        PotionEffect blind = new PotionEffect(PotionEffectType.BLINDNESS, 100, 0);
+        assertTrue(blinding(blind).callEvent());
+        player.getEquipment().setHelmet(new ItemStack(Material.NETHERITE_HELMET));
+        assertFalse(blinding(blind).callEvent());
+        assertTrue(blinding(new PotionEffect(PotionEffectType.SLOWNESS, 100, 0)).callEvent());
+    }
+
+    private EntityPotionEffectEvent blinding(PotionEffect effect) {
+        return new EntityPotionEffectEvent(
+                player,
+                null,
+                effect,
+                zombie,
+                EntityPotionEffectEvent.Cause.ATTACK,
+                EntityPotionEffectEvent.Action.ADDED,
+                false);
     }
 }

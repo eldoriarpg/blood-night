@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
+import de.eldoria.bloodnight.api.event.mob.CustomMobMoveEntityEvent;
 import de.eldoria.bloodnight.api.internal.MobContext;
 import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
 import de.eldoria.bloodnight.graph.runtime.world.Reach;
@@ -101,12 +102,15 @@ public final class BukkitRuntime {
     }
 
     /**
-     * Starts moving an entity to a location. The move finishes once the target is loaded; on Folia a move into another
-     * region always finishes later.
+     * Starts moving an entity to a location, unless a listener of {@link CustomMobMoveEntityEvent} keeps it in place.
+     * The move finishes once the target is loaded; on Folia a move into another region always finishes later.
      *
-     * @return true, the move has started
+     * @return whether the move has started
      */
     public static boolean teleport(Entity entity, Location location) {
+        if (!new CustomMobMoveEntityEvent(entity, CustomMobMoveEntityEvent.Kind.TELEPORT, location).callEvent()) {
+            return false;
+        }
         entity.teleportAsync(location);
         return true;
     }

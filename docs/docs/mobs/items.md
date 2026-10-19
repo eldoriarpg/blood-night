@@ -65,6 +65,8 @@ The reward is the only place to find these books. Enchanting tables, villagers a
 | Bloodthirst (I to III) | Weapons | Every kill heals one heart for each level. |
 | Blood Walker (I to III) | Boots | You walk 10% faster for each level. |
 | Blood Vision | Helmets | You see in the dark, like with night vision. Only you see it. It shows no icon. |
+| Arcane Vision | Helmets | You are never blinded. Works at any time, not only during blood nights. |
+| Earth Bound | Boots | Special mobs cannot teleport you away or carry you off, like the launcher enderman and the carrier phantom. Works at any time. |
 | Steady Heart | Chestplates | No heartbeat, no dark moments and no scares. |
 | Hunter's Mark (I to III) | Bows, crossbows | What your arrows hit glows for 4 seconds for each level. |
 | Curse of the Blood Moon | Armor | A curse. Monsters nearby come for you. In return, your kills roll the reward twice. |
