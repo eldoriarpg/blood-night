@@ -35,6 +35,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
@@ -433,6 +434,59 @@ public final class BukkitNodes {
                             ctx.input("location"),
                             ctx.connected("seconds") ? ctx.input("seconds") : CodeBlock.of("2"),
                             ctx.connected("power") ? ctx.input("power") : CodeBlock.of("4"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition SPAWN_ENTITY = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_SPAWN_ENTITY, NodeKind.ACTION)
+                    .category("world")
+                    .name("Spawn Entity")
+                    .description("Spawns a vanilla entity, e.g. guards around a boss; it is no special mob")
+                    .input("location", Location.class)
+                    .input("type", "Type", PortType.of(EntityType.class), false)
+                    .output("entity", Entity.class)
+                    .execution(NEXT)
+                    .describe("location", "Where it spawns")
+                    .describe("type", "What spawns, e.g. a wither skeleton")
+                    .describe("entity", "The entity; missing when the place belongs to another region on Folia")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "final $T $L = $T.spawnEntity($L, $L)",
+                            Entity.class,
+                            ctx.bind("entity", NEXT),
+                            BukkitRuntime.class,
+                            ctx.input("location"),
+                            ctx.input("type"))
+                    .add(ctx.chain(NEXT))
+                    .build());
+
+    public static final StatementDefinition BREAK_BLOCKS = new StatementDefinition(
+            NodeDescriptor.builder(BloodNightNodes.WORLD_BREAK_BLOCKS, NodeKind.ACTION)
+                    .category("world")
+                    .name("Break Blocks")
+                    .description("Breaks the blocks in a radius around a location as a wither does: bedrock and the"
+                            + " other blocks a wither cannot break stay, nothing breaks while mob griefing is off, and"
+                            + " protection plugins can keep blocks")
+                    .input("location", Location.class)
+                    .input("radius", double.class)
+                    .optionalInput("drops", boolean.class)
+                    .output("broken", int.class)
+                    .execution(NEXT)
+                    .describe("location", "The middle")
+                    .describe("radius", "How far around, in blocks")
+                    .describe("drops", "Whether the blocks drop as items; no drops when not given")
+                    .describe("broken", "How many blocks broke")
+                    .build(),
+            ctx -> CodeBlock.builder()
+                    .addStatement(
+                            "final int $L = $T.breakBlocks($L, $L, $L, $L)",
+                            ctx.bind("broken", NEXT),
+                            BukkitRuntime.class,
+                            ctx.context(),
+                            ctx.input("location"),
+                            ctx.input("radius"),
+                            ctx.connected("drops") ? ctx.input("drops") : CodeBlock.of("false"))
                     .add(ctx.chain(NEXT))
                     .build());
 
@@ -1018,6 +1072,8 @@ public final class BukkitNodes {
                 STRIKE_LIGHTNING,
                 DROP_LOOT,
                 SPAWN_TNT,
+                SPAWN_ENTITY,
+                BREAK_BLOCKS,
                 SHOW_MARKER,
                 PLAY_EFFECT,
                 SHOW_TEXT,

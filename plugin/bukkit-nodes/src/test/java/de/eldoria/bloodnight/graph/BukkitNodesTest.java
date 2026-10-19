@@ -16,10 +16,14 @@ import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -150,6 +154,25 @@ class BukkitNodesTest {
         assertEquals(30, tnt.getFuseTicks());
         assertEquals(zombie, tnt.getSource());
         assertTrue(tnt.getPersistentDataContainer().has(BukkitRuntime.HARMLESS, PersistentDataType.BOOLEAN));
+    }
+
+    @Test
+    void blocksBreakAsAWitherBreaksThem() {
+        Location middle = new Location(world, 10, 70, 10);
+        middle.clone().add(1, 0, 0).getBlock().setType(Material.STONE);
+        middle.clone().add(-1, 0, 0).getBlock().setType(Material.BEDROCK);
+        middle.clone().add(0, 0, 3).getBlock().setType(Material.STONE);
+
+        assertEquals(1, BukkitRuntime.breakBlocks(new TestContext(zombie), middle, 1.5, false));
+        assertEquals(Material.AIR, middle.clone().add(1, 0, 0).getBlock().getType());
+        assertEquals(Material.BEDROCK, middle.clone().add(-1, 0, 0).getBlock().getType());
+        assertEquals(Material.STONE, middle.clone().add(0, 0, 3).getBlock().getType());
+    }
+
+    @Test
+    void entitiesSpawnWhereTheGraphSays() {
+        Entity spawned = BukkitRuntime.spawnEntity(new Location(world, 5, 64, 5), EntityType.WITHER_SKELETON);
+        assertTrue(spawned instanceof WitherSkeleton);
     }
 
     @Test
