@@ -170,18 +170,27 @@ function played(graph: Graph | undefined, id: string): string[] {
         .map(([node]) => node)
 }
 
+/** What an effect costs each player near it: particles per second, or in total for a play shorter than a second. */
+export interface EffectCost {
+    count: number
+    total: boolean
+}
+
 /**
  * @param effect an effect
- * @returns about how many particles each player near it gets per second while it plays
+ * @returns about how many particles each player near it gets while it plays; a beam or arc without its own end is
+ *     taken as 16 blocks long
  */
-export function perSecond(effect: ParticleEffect): number {
+export function effectCost(effect: ParticleEffect): EffectCost {
     const duration = Math.max(effect.duration ?? 20, 0) + 1
     const total = (effect.emitters ?? []).reduce((sum, emitter) => {
         const every = Math.max(emitter.every ?? 1, 1)
         const emissions = Math.max(0, Math.ceil((duration - (emitter.delay ?? 0)) / every))
-        return sum + emissions * (emitter.chance ?? 1) * pointCount(emitter.shape) * (emitter.count ?? 1)
+        const share = 1 / Math.max(emitter.tiles ?? 1, 1)
+        return sum + emissions * (emitter.chance ?? 1) * Math.ceil(pointCount(emitter.shape) * share) * (emitter.count ?? 1)
     }, 0)
-    return Math.round(total * 20 / duration)
+    if (duration < 20) return {count: Math.round(total), total: true}
+    return {count: Math.round(total * 20 / duration), total: false}
 }
 
 /**

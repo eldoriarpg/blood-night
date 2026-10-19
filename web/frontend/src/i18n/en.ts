@@ -784,6 +784,8 @@ export default {
             selfHint: 'Off for effects right in front of a player\'s eyes, such as wings on their back. Everyone else still sees it.',
             perSecond: 'About {count} particles per second for each player who sees it.',
             costly: 'That is a lot: {count} particles per second for each player. Lower the points, the count or how often it emits.',
+            costlyTotal: 'That is a lot: {count} particles at once for each player. Lower the points or the count, or build shapes over several emissions.',
+            inTotal: 'About {count} particles in total for each player who sees it.',
             limit: {
                 emitters: 'An effect has at most {max} emitters.',
                 pieces: 'An effect has at most {max} pieces.',
@@ -803,6 +805,8 @@ export default {
             every: 'Every (ticks)',
             delay: 'Delay (ticks)',
             chance: 'Chance (%)',
+            tiles: 'Built over (emissions)',
+            tilesHelp: 'Each emission draws only a share of the shape, so it builds up over this many emissions at a fraction of the particles. Suits particles that stay a while, like dust; short-lived ones flicker.',
             pieces: 'Display pieces',
             piecesIntro: 'Pieces are items or blocks that fly, turn and glow. A span is a block stretched from the source to the target, like a beam.',
             addPiece: 'Add a piece',

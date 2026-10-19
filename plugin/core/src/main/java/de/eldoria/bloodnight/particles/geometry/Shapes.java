@@ -31,6 +31,24 @@ public final class Shapes {
     private Shapes() {}
 
     /**
+     * The share of a shape's points one emission draws when the shape is built over several emissions: every
+     * {@code tiles}th point, starting one further each emission.
+     *
+     * @param points   all points of the shape
+     * @param tiles    emissions the shape is built over
+     * @param emission the number of the emission
+     * @return the points to draw now
+     */
+    public static List<Vec3> tile(List<Vec3> points, int tiles, int emission) {
+        if (tiles <= 1) return points;
+        List<Vec3> share = new ArrayList<>(points.size() / tiles + 1);
+        for (int index = Math.floorMod(emission, tiles); index < points.size(); index += tiles) {
+            share.add(points.get(index));
+        }
+        return share;
+    }
+
+    /**
      * @param shape  a shape that does not need both ends
      * @param frame  where it sits and how it is turned
      * @param moment when in the play it is drawn

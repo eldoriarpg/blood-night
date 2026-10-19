@@ -1026,6 +1026,8 @@ export default {
             selfHint: 'Matikan untuk kesan betul-betul di depan mata pemain, seperti sayap di belakangnya. Orang lain masih nampak.',
             perSecond: 'Kira-kira {count} partikel sesaat untuk setiap pemain yang nampak.',
             costly: 'Itu banyak: {count} partikel sesaat untuk setiap pemain. Kurangkan titik, bilangan atau kekerapan.',
+            costlyTotal: 'Itu banyak: {count} partikel serentak bagi setiap pemain. Kurangkan titik atau bilangan, atau bina bentuk dalam beberapa pancaran.',
+            inTotal: 'Kira-kira {count} partikel kesemuanya bagi setiap pemain yang melihatnya.',
             limit: {
                 emitters: 'Satu kesan mempunyai paling banyak {max} pemancar.',
                 pieces: 'Satu kesan mempunyai paling banyak {max} kepingan.',
@@ -1045,6 +1047,8 @@ export default {
             every: 'Setiap (tick)',
             delay: 'Lengah (tick)',
             chance: 'Peluang (%)',
+            tiles: 'Dibina dalam (pancaran)',
+            tilesHelp: 'Setiap pancaran hanya melukis sebahagian bentuk, jadi ia terbina dalam bilangan pancaran ini dengan sebahagian kecil partikel. Sesuai untuk partikel yang kekal seketika, seperti debu; yang singkat akan berkelip.',
             pieces: 'Kepingan paparan',
             piecesIntro: 'Kepingan ialah item atau blok yang terbang, berpusing dan bercahaya. Rentang ialah blok yang diregang dari sumber ke sasaran, seperti pancaran.',
             addPiece: 'Tambah kepingan',

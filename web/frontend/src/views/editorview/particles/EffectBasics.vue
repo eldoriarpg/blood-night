@@ -11,7 +11,7 @@ import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import EffectNumber from '~/views/editorview/particles/EffectNumber.vue'
 import type {ParticleEffect} from '~/api/generated/payload'
-import {COSTLY, LIMITS, limitProblems, perSecond} from '~/util/particles/particleEffects'
+import {COSTLY, LIMITS, effectCost, limitProblems} from '~/util/particles/particleEffects'
 
 /**
  * An effect's name, how long one play lasts, whether a player it plays on sees it, about how many particles it sends,
@@ -28,7 +28,7 @@ const emit = defineEmits<{
 
 const {t} = useI18n()
 const name = ref('')
-const cost = computed(() => perSecond(props.effect))
+const cost = computed(() => effectCost(props.effect))
 const problems = computed(() => limitProblems(props.effect))
 
 watch(() => props.effect.name, value => {
@@ -50,8 +50,8 @@ function saveName(): void {
       <EffectNumber :help="t('editor.particles.durationHelp')" :label="t('editor.particles.duration')" :max="LIMITS.duration" :min="0" :read-only="readOnly" :value="effect.duration" class="w-44" whole @save="duration => emit('save', {duration})"/>
     </div>
     <ToggleSetting :disabled="readOnly" :hint="t('editor.particles.selfHint')" :label="t('editor.particles.self')" :model-value="effect.self ?? true" @update:model-value="self => emit('save', {self})"/>
-    <MutedText size="sm" tag="p">{{ t('editor.particles.perSecond', {count: cost}) }}</MutedText>
-    <Alert v-if="cost > COSTLY" variant="held">{{ t('editor.particles.costly', {count: cost}) }}</Alert>
+    <MutedText size="sm" tag="p">{{ t(cost.total ? 'editor.particles.inTotal' : 'editor.particles.perSecond', {count: cost.count}) }}</MutedText>
+    <Alert v-if="cost.count > COSTLY" variant="held">{{ t(cost.total ? 'editor.particles.costlyTotal' : 'editor.particles.costly', {count: cost.count}) }}</Alert>
     <Alert v-for="problem in problems" :key="problem.key + JSON.stringify(problem.values)" variant="error">{{ t(problem.key, problem.values) }}</Alert>
   </div>
 </template>

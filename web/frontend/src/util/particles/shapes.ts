@@ -34,6 +34,8 @@ export interface Moment {
 export const MAX_POINTS = 64
 /** The longest beam or arc in blocks. */
 export const MAX_SPAN = 32
+/** The length of a beam or arc without its own end that the cost estimate assumes, since the play's ends are only known in game. */
+export const ESTIMATED_SPAN = 16
 /** The largest picture, in cells each way. */
 export const MAX_CELLS = 16
 
@@ -167,6 +169,14 @@ export function between(given: Shape | undefined, from: Vec, to: Vec, moment: Mo
 }
 
 /**
+ * @returns the length a beam or arc is taken to have: its own end when it has one, else {@link ESTIMATED_SPAN}
+ */
+function spanOf(shape: Shape | undefined): number {
+    const to = shape?.to
+    return to ? Math.min(Math.hypot(to.x, to.y, to.z), MAX_SPAN) : ESTIMATED_SPAN
+}
+
+/**
  * @returns how many points the shape has, for limits and cost estimates
  */
 export function pointCount(given: Shape | undefined): number {
@@ -175,7 +185,7 @@ export function pointCount(given: Shape | undefined): number {
         case 'POINT': return 1
         case 'RING': case 'SPHERE': case 'LINE': return shape.points
         case 'SPIRAL': return Math.min(MAX_POINTS, shape.points * shape.strands)
-        case 'BEAM': case 'ARC': return MAX_POINTS
+        case 'BEAM': case 'ARC': return Math.min(Math.ceil(spanOf(given) * shape.density) + 1, MAX_POINTS)
         case 'PATTERN': return Math.min(MAX_POINTS, cells(shape.rows).length * (shape.mirror ? 2 : 1))
     }
 }

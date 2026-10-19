@@ -788,6 +788,8 @@ export default {
             selfHint: 'Aus für Effekte direkt vor den Augen eines Spielers, wie Flügel auf seinem Rücken. Alle anderen sehen ihn weiter.',
             perSecond: 'Etwa {count} Partikel pro Sekunde für jeden Spieler, der ihn sieht.',
             costly: 'Das ist viel: {count} Partikel pro Sekunde für jeden Spieler. Senke die Punkte, die Anzahl oder wie oft er ausstößt.',
+            costlyTotal: 'Das ist viel: {count} Partikel auf einmal für jeden Spieler. Senke die Punkte oder die Anzahl, oder baue Formen über mehrere Ausgaben auf.',
+            inTotal: 'Etwa {count} Partikel insgesamt für jeden Spieler, der es sieht.',
             limit: {
                 emitters: 'Ein Effekt hat höchstens {max} Emitter.',
                 pieces: 'Ein Effekt hat höchstens {max} Teile.',
@@ -807,6 +809,8 @@ export default {
             every: 'Alle (Ticks)',
             delay: 'Verzögerung (Ticks)',
             chance: 'Chance (%)',
+            tiles: 'Aufgebaut über (Ausgaben)',
+            tilesHelp: 'Jede Ausgabe zeichnet nur einen Teil der Form, sie baut sich also über so viele Ausgaben mit einem Bruchteil der Partikel auf. Passt zu Partikeln, die eine Weile bleiben, wie Staub; kurzlebige flackern.',
             pieces: 'Anzeige-Teile',
             piecesIntro: 'Teile sind Items oder Blöcke, die fliegen, sich drehen und leuchten. Eine Spanne ist ein Block, der von der Quelle zum Ziel gestreckt ist, wie ein Strahl.',
             addPiece: 'Teil hinzufügen',

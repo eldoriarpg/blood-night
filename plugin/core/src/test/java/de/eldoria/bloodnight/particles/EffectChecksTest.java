@@ -39,7 +39,7 @@ class EffectChecksTest {
     }
 
     private static Emitter dust(ParticleDataSpec data) {
-        return new Emitter("minecraft:dust", data, null, null, null, null, null, null, null, null, null, null);
+        return new Emitter("minecraft:dust", data, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Test
@@ -72,6 +72,7 @@ class EffectChecksTest {
                 "minecraft:flame",
                 null,
                 new Anchor(null, Anchor.EffectEnd.PIECE, 1, null),
+                null,
                 null,
                 null,
                 null,

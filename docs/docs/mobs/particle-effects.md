@@ -91,6 +91,7 @@ An emitter draws one particle in a shape, again and again while the effect plays
 | `every` | Ticks between two emissions |
 | `delay` | Ticks into the play before the first emission |
 | `chance` | How likely each emission is, from 0 to 1. Use it for flicker. |
+| `tiles` | How many emissions the shape is built over. With `tiles: 4` each emission draws a quarter of the points, so the shape costs a quarter of the particles. Good for particles that stay a while, like `dust`; short-lived ones flicker. |
 
 ## Shapes
 
@@ -230,7 +231,9 @@ particles:
   it is used up, the effects mobs wear wait first. Effects from graphs go on up to twice as much.
 - `perMob`: how many effects one mob plays at once. The effect it wears counts too.
 
-The editor shows about how many particles an effect sends per second, and warns when it is a lot.
+The editor shows about how many particles an effect sends per second, or in total for an effect shorter than a second,
+and warns when it is a lot. It takes a beam or arc without its own end as 16 blocks long. To make a looping shape
+cheaper, build it over several emissions with `tiles`.
 
 ## Players can switch effects off
 

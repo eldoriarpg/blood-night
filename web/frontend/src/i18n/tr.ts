@@ -1026,6 +1026,8 @@ export default {
             selfHint: 'Bir oyuncunun gözünün hemen önündeki efektler için kapalı, sırtındaki kanatlar gibi. Diğer herkes görmeye devam eder.',
             perSecond: 'Onu gören her oyuncu için saniyede yaklaşık {count} parçacık.',
             costly: 'Bu çok fazla: her oyuncu için saniyede {count} parçacık. Noktaları, sayıyı ya da sıklığı azalt.',
+            costlyTotal: 'Bu çok: her oyuncu için aynı anda {count} parçacık. Noktaları veya sayıyı azalt ya da şekilleri birkaç yayımda oluştur.',
+            inTotal: 'Onu gören her oyuncu için toplam yaklaşık {count} parçacık.',
             limit: {
                 emitters: 'Bir efektte en fazla {max} yayıcı olur.',
                 pieces: 'Bir efektte en fazla {max} parça olur.',
@@ -1045,6 +1047,8 @@ export default {
             every: 'Her (tick)',
             delay: 'Gecikme (tick)',
             chance: 'Şans (%)',
+            tiles: 'Oluşturma (yayım)',
+            tilesHelp: 'Her yayım şeklin yalnızca bir kısmını çizer; şekil bu kadar yayımda, parçacıkların küçük bir kısmıyla tamamlanır. Toz gibi bir süre kalan parçacıklara uyar; kısa ömürlüler titrer.',
             pieces: 'Görüntü parçaları',
             piecesIntro: 'Parçalar uçan, dönen ve parlayan eşyalar ya da bloklardır. Açıklık, kaynaktan hedefe uzatılmış bir bloktur, bir ışın gibi.',
             addPiece: 'Parça ekle',

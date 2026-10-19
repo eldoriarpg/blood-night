@@ -1078,6 +1078,9 @@
         },
         "chance" : {
           "type" : "number"
+        },
+        "tiles" : {
+          "type" : "integer"
         }
       }
     },

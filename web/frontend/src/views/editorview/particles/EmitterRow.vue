@@ -66,6 +66,7 @@ function save(change: Partial<Emitter>): void {
         <EffectNumber :label="t('editor.particles.speed')" :min="0" :read-only="readOnly" :value="emitter.speed" class="w-32" @save="speed => save({speed})"/>
         <EffectNumber :label="t('editor.particles.every')" :max="600" :min="1" :read-only="readOnly" :value="emitter.every" class="w-32" whole @save="every => save({every})"/>
         <EffectNumber :label="t('editor.particles.delay')" :max="600" :min="0" :read-only="readOnly" :value="emitter.delay" class="w-32" whole @save="delay => save({delay})"/>
+        <EffectNumber :help="t('editor.particles.tilesHelp')" :label="t('editor.particles.tiles')" :max="20" :min="1" :read-only="readOnly" :value="emitter.tiles ?? 1" class="w-32" whole @save="tiles => save({tiles})"/>
         <EffectNumber :label="t('editor.particles.chance')" :max="100" :min="0" :read-only="readOnly" :value="Math.round((emitter.chance ?? 1) * 100)" class="w-32" whole @save="percent => save({chance: percent / 100})"/>
       </div>
       <VecFields :axes="[t('editor.particles.axes.east'), t('editor.particles.axes.up'), t('editor.particles.axes.south')]" :label="t('editor.particles.spread')" :read-only="readOnly" :value="emitter.spread" @save="spread => save({spread})"/>

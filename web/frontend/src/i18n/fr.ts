@@ -1026,6 +1026,8 @@ export default {
             selfHint: 'Désactivé pour les effets juste devant les yeux d\'un joueur, comme des ailes dans son dos. Les autres le voient toujours.',
             perSecond: 'Environ {count} particules par seconde pour chaque joueur qui le voit.',
             costly: 'C\'est beaucoup : {count} particules par seconde pour chaque joueur. Baisse les points, le nombre ou la fréquence.',
+            costlyTotal: 'C\'est beaucoup : {count} particules d\'un coup pour chaque joueur. Baisse les points ou le nombre, ou construis les formes sur plusieurs émissions.',
+            inTotal: 'Environ {count} particules au total pour chaque joueur qui le voit.',
             limit: {
                 emitters: 'Un effet a au plus {max} émetteurs.',
                 pieces: 'Un effet a au plus {max} pièces.',
@@ -1045,6 +1047,8 @@ export default {
             every: 'Toutes les (ticks)',
             delay: 'Délai (ticks)',
             chance: 'Chance (%)',
+            tiles: 'Construit sur (émissions)',
+            tilesHelp: 'Chaque émission ne dessine qu\'une part de la forme, qui se complète sur ce nombre d\'émissions avec une fraction des particules. Convient aux particules qui durent, comme la poussière ; les éphémères clignotent.',
             pieces: 'Pièces d\'affichage',
             piecesIntro: 'Les pièces sont des objets ou des blocs qui volent, tournent et brillent. Une travée est un bloc étiré de la source à la cible, comme un rayon.',
             addPiece: 'Ajouter une pièce',

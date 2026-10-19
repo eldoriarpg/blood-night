@@ -153,6 +153,7 @@ public final class Play {
         List<Vec3> points = shape.betweenEnds()
                 ? Shapes.between(shape, base, far != null ? far : frame.at(base).world(shape.to()), moment, random)
                 : Shapes.around(shape, frame.at(base), moment);
+        points = Shapes.tile(points, emitter.tiles(), since / emitter.every());
         if (points.isEmpty()) return;
         try {
             send(emitter, frame, own.world(), base, far, points);

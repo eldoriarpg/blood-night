@@ -1026,6 +1026,8 @@ export default {
             selfHint: 'Apagado para efectos justo delante de los ojos de un jugador, como alas en su espalda. Los demás lo siguen viendo.',
             perSecond: 'Unas {count} partículas por segundo para cada jugador que lo ve.',
             costly: 'Eso es mucho: {count} partículas por segundo para cada jugador. Baja los puntos, la cantidad o la frecuencia.',
+            costlyTotal: 'Es mucho: {count} partículas a la vez para cada jugador. Baja los puntos o la cantidad, o forma las figuras en varias emisiones.',
+            inTotal: 'Unas {count} partículas en total para cada jugador que lo ve.',
             limit: {
                 emitters: 'Un efecto tiene como máximo {max} emisores.',
                 pieces: 'Un efecto tiene como máximo {max} piezas.',
@@ -1045,6 +1047,8 @@ export default {
             every: 'Cada (ticks)',
             delay: 'Retraso (ticks)',
             chance: 'Probabilidad (%)',
+            tiles: 'Se forma en (emisiones)',
+            tilesHelp: 'Cada emisión dibuja solo una parte de la forma, que se completa en este número de emisiones con una fracción de las partículas. Va bien con partículas que duran, como el polvo; las efímeras parpadean.',
             pieces: 'Piezas de display',
             piecesIntro: 'Las piezas son objetos o bloques que vuelan, giran y brillan. Un tramo es un bloque estirado del origen al objetivo, como un rayo.',
             addPiece: 'Añadir una pieza',

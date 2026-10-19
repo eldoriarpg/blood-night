@@ -257,6 +257,7 @@ effects:
             - ".xxxx..."
             - "..xx...."
         every: 2
+        tiles: 2
   arcane_lines:
     name: Arcane lines
     duration: 20
@@ -265,11 +266,13 @@ effects:
         anchor: {at: EYES}
         shape: {type: ARC, density: 3, bend: 0.8, twist: 60, spin: 12}
         every: 2
+        tiles: 4
       - particle: minecraft:dust
         data: {color: "#a050ff", size: 0.7}
         anchor: {at: EYES}
         shape: {type: ARC, density: 4, bend: 0.8, twist: -60, spin: 12}
         every: 2
+        tiles: 4
   drain_beam:
     name: Drain beam
     duration: 60

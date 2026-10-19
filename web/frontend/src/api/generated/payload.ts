@@ -768,6 +768,7 @@ export interface Emitter {
   every?: number;
   delay?: number;
   chance?: number;
+  tiles?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
