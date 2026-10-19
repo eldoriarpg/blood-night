@@ -7,8 +7,8 @@ package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.CodeBlock;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
-import de.eldoria.graph.definition.EmitContext;
-import de.eldoria.graph.reflect.CallGuard;
+import de.eldoria.graph.definition.emit.EmitContext;
+import de.eldoria.graph.reflect.member.CallGuard;
 
 import java.util.Map;
 

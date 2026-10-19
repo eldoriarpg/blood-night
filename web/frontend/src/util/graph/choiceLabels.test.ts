@@ -59,7 +59,7 @@ describe('helpers', () => {
         expect(simpleName('org.bukkit.inventory.EquipmentSlot')).toBe('EquipmentSlot')
         expect(registryKey('CREEPER')).toBe('minecraft:creeper')
         expect(registryKey('pack:thing')).toBe('pack:thing')
-        expect(enumNameOf({typeId: 'de.eldoria.graph.std.runtime.TimeUnit'})).toBe('TimeUnit')
+        expect(enumNameOf({typeId: 'de.eldoria.graph.std.runtime.value.TimeUnit'})).toBe('TimeUnit')
         expect(enumNameOf({enumName: 'Color'})).toBe('Color')
         expect(enumNameOf({})).toBeUndefined()
     })

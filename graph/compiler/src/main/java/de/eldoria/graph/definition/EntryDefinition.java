@@ -5,6 +5,14 @@
  */
 package de.eldoria.graph.definition;
 
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
+import de.eldoria.graph.definition.descriptor.Shapes;
+import de.eldoria.graph.definition.emit.OutputEmitter;
+import de.eldoria.graph.definition.entry.EntryContext;
+import de.eldoria.graph.definition.entry.EntryGuard;
+import de.eldoria.graph.definition.entry.EntryParameter;
+
 import java.util.List;
 import java.util.Objects;
 

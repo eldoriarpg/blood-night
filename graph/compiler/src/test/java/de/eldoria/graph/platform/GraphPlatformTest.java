@@ -7,11 +7,11 @@ package de.eldoria.graph.platform;
 
 import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.definition.EntryDefinition;
-import de.eldoria.graph.definition.EntryParameter;
 import de.eldoria.graph.definition.ExpressionDefinition;
-import de.eldoria.graph.definition.NodeDescriptor;
-import de.eldoria.graph.definition.NodeKind;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
+import de.eldoria.graph.definition.entry.EntryParameter;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.toy.ToyContext;
 import de.eldoria.graph.toy.ToyHost;
 import de.eldoria.graph.toy.ToyNodes;

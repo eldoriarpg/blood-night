@@ -5,6 +5,8 @@
  */
 package de.eldoria.graph.compiler;
 
+import de.eldoria.graph.compiler.java.SourceFile;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -19,7 +21,7 @@ public final class CompilationException extends Exception {
     private final List<Diagnostic<? extends JavaFileObject>> diagnostics;
     private final List<SourceFile> sources;
 
-    CompilationException(List<Diagnostic<? extends JavaFileObject>> diagnostics, List<SourceFile> sources) {
+    public CompilationException(List<Diagnostic<? extends JavaFileObject>> diagnostics, List<SourceFile> sources) {
         super(describe(diagnostics, sources));
         this.diagnostics = List.copyOf(diagnostics);
         this.sources = List.copyOf(sources);

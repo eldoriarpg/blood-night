@@ -5,6 +5,8 @@
  */
 package de.eldoria.graph.definition;
 
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+
 /**
  * A node type: descriptor plus code emitter. The shape decides how the compiler places the code.
  */

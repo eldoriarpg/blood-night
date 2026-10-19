@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.graph;
 
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.types.TypeMapping;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.registry.keys.AttributeKeys;

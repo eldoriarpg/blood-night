@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.CodeBlock;
-import de.eldoria.graph.definition.EntryContext;
+import de.eldoria.graph.definition.entry.EntryContext;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;

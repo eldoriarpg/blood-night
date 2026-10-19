@@ -7,10 +7,10 @@ package de.eldoria.bloodnight.web;
 
 import de.eldoria.bloodnight.web.api.editor.PayloadProblem;
 import de.eldoria.graph.payload.Catalog;
-import de.eldoria.graph.payload.ConfigInfo;
-import de.eldoria.graph.payload.ExecutionInfo;
-import de.eldoria.graph.payload.NodeType;
-import de.eldoria.graph.payload.PortInfo;
+import de.eldoria.graph.payload.node.ConfigInfo;
+import de.eldoria.graph.payload.node.ExecutionInfo;
+import de.eldoria.graph.payload.node.NodeType;
+import de.eldoria.graph.payload.node.PortInfo;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 

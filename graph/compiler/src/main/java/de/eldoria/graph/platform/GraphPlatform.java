@@ -5,11 +5,11 @@
  */
 package de.eldoria.graph.platform;
 
-import de.eldoria.graph.definition.ConfigField;
 import de.eldoria.graph.definition.EntryDefinition;
-import de.eldoria.graph.definition.EntryParameter;
 import de.eldoria.graph.definition.NodeDefinition;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.entry.EntryParameter;
+import de.eldoria.graph.definition.port.ConfigField;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.types.TypeMapping;
 import org.jspecify.annotations.Nullable;
 

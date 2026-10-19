@@ -13,7 +13,7 @@ import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
 import de.eldoria.bloodnight.store.MobStore;
-import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import org.bukkit.World;

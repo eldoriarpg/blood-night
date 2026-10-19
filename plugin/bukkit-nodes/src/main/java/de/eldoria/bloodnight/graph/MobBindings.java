@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.graph;
 
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.platform.Binding;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;

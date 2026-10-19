@@ -5,6 +5,9 @@
  */
 package de.eldoria.graph.definition;
 
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
+import de.eldoria.graph.definition.descriptor.Shapes;
 import de.eldoria.graph.model.Macro;
 import org.jspecify.annotations.Nullable;
 

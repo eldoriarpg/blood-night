@@ -5,7 +5,7 @@
  */
 package de.eldoria.graph.reflect;
 
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.port.PortType;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -110,7 +110,7 @@ public final class ReflectionRules {
      * @param method a candidate getter or setter
      * @return whether the method may become a port
      */
-    boolean accepts(Method method) {
+    public boolean accepts(Method method) {
         if (method.getDeclaringClass() == Object.class) return false;
         if (Modifier.isStatic(method.getModifiers()) || method.isBridge() || method.isSynthetic()) return false;
         if (excludeDeprecated && method.isAnnotationPresent(Deprecated.class)) return false;
@@ -123,7 +123,7 @@ public final class ReflectionRules {
      * @param type type of a candidate port
      * @return whether a port of the type is wanted
      */
-    boolean accepts(PortType type) {
+    public boolean accepts(PortType type) {
         return !type.hasVariables() && types.test(type);
     }
 

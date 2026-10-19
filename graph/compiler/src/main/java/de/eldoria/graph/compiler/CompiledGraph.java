@@ -6,6 +6,7 @@
 package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 
 import java.util.List;
 import java.util.Map;

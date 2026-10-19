@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.behaviour;
 
-import de.eldoria.graph.compiler.GraphProblem;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.compiler.validate.GraphProblem;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.GraphJson;
 import de.eldoria.graph.model.Macro;

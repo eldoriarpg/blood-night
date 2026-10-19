@@ -15,7 +15,7 @@ import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.GraphJson;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.payload.Catalog;
-import de.eldoria.graph.payload.NodeType;
+import de.eldoria.graph.payload.node.NodeType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

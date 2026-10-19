@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.command;
 
 import de.eldoria.bloodnight.BloodNight;
-import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 import net.strokkur.commands.Executes;
 import net.strokkur.commands.Subcommand;
 import net.strokkur.commands.permission.Permission;

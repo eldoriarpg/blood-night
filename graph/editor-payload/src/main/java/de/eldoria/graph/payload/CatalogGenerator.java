@@ -5,14 +5,18 @@
  */
 package de.eldoria.graph.payload;
 
-import de.eldoria.graph.compiler.MacroBoundary;
-import de.eldoria.graph.compiler.Routines;
-import de.eldoria.graph.definition.ConfigField;
-import de.eldoria.graph.definition.ExecutionPort;
+import de.eldoria.graph.compiler.emit.Routines;
+import de.eldoria.graph.compiler.macro.MacroBoundary;
 import de.eldoria.graph.definition.NodeDefinition;
-import de.eldoria.graph.definition.NodeDescriptor;
-import de.eldoria.graph.definition.Port;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.port.ConfigField;
+import de.eldoria.graph.definition.port.ExecutionPort;
+import de.eldoria.graph.definition.port.Port;
+import de.eldoria.graph.definition.port.PortType;
+import de.eldoria.graph.payload.node.ConfigInfo;
+import de.eldoria.graph.payload.node.ExecutionInfo;
+import de.eldoria.graph.payload.node.NodeType;
+import de.eldoria.graph.payload.node.PortInfo;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.types.TypeMapping;
 import tools.jackson.databind.ObjectMapper;

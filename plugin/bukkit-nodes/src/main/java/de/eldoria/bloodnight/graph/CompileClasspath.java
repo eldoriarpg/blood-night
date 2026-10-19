@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.graph;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
-import de.eldoria.graph.std.runtime.Cooldown;
+import de.eldoria.graph.std.runtime.flow.Cooldown;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 

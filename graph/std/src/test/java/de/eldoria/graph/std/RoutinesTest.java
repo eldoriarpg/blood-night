@@ -6,7 +6,7 @@
 package de.eldoria.graph.std;
 
 import de.eldoria.graph.compiler.GraphCompilationException;
-import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import org.junit.jupiter.api.Test;

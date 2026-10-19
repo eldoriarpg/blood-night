@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.graph;
 
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.reflect.Documentation;
 import de.eldoria.graph.reflect.ReflectionRules;
 import org.bukkit.entity.Creeper;

@@ -5,6 +5,10 @@
  */
 package de.eldoria.graph.compiler;
 
+import de.eldoria.graph.compiler.java.GeneratedClassLoader;
+import de.eldoria.graph.compiler.java.RuntimeCompiler;
+import de.eldoria.graph.compiler.java.SourceFile;
+
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.List;

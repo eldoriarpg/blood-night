@@ -7,8 +7,8 @@ package de.eldoria.bloodnight.behaviour;
 
 import de.eldoria.bloodnight.api.CompiledBehaviour;
 import de.eldoria.graph.compiler.CompiledGraph;
-import de.eldoria.graph.compiler.GraphProblem;
-import de.eldoria.graph.compiler.MacroLibrary;
+import de.eldoria.graph.compiler.macro.MacroLibrary;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 
 import java.util.List;
 import java.util.Map;

@@ -82,16 +82,17 @@ way).
   (restore cached bytecode without compiling again).
 - `de.eldoria.graph.compiler.CompiledGraph`: the loaded class; `instantiate` creates a host instance with its own
   state, `bytecode()` returns class files for caching.
-- `de.eldoria.graph.compiler.Graphs`: builds graphs in code, checking node types, ports and config fields against a
-  platform as they are named.
-- `de.eldoria.graph.compiler.MacroLibrary`: user macros checked against a platform; a broken macro is left out and
-  its problems are kept per macro.
-- `de.eldoria.graph.compiler.MacroBoundary`, `Routines`: the boundary node types of macros and routines.
-- `de.eldoria.graph.compiler.GraphProblem`, `GraphCompilationException`: located problems and the exception
-  carrying them.
-- `de.eldoria.graph.compiler.RuntimeCompiler`: in-memory compilation with ECJ.
-- `de.eldoria.graph.definition`: node definitions, descriptors, ports (`Port`, `PortType`, `ExecutionPort`,
-  `ConfigField`) and the emit contexts.
+- `de.eldoria.graph.compiler.validate`: `Graphs` builds graphs in code, checking node types, ports and config
+  fields against a platform as they are named; `GraphValidator` and `GraphProblem` check a graph and locate its
+  problems.
+- `de.eldoria.graph.compiler.macro`: `MacroLibrary` (user macros checked against a platform; a broken macro is left
+  out and its problems are kept per macro), `MacroExpander` and `MacroBoundary` (the boundary node types of macros).
+- `de.eldoria.graph.compiler.emit`: `GraphEmitter` writes the Java source; `Routines` holds the boundary node types
+  of routines.
+- `de.eldoria.graph.compiler.java`: `RuntimeCompiler`, in-memory compilation with ECJ, and the source map.
+- `de.eldoria.graph.definition`: node definitions; `definition.descriptor` their descriptors, `definition.port` the
+  ports (`Port`, `PortType`, `ExecutionPort`, `ConfigField`), `definition.entry` the entry contexts and guards and
+  `definition.emit` the emit contexts.
 - `de.eldoria.graph.platform`: `GraphPlatform`, `NodeRule`, `PlatformException`.
 - `de.eldoria.graph.reflect`: derives nodes by reflection: `ReflectedType` (getters, setters, constructors,
   factories, actions and queries of a class; its read and change nodes are variants of the `object.mutate` family

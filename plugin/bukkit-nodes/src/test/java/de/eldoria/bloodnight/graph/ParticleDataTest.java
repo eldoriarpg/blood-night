@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.graph;
 
-import de.eldoria.graph.compiler.Graphs;
+import de.eldoria.graph.compiler.validate.Graphs;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

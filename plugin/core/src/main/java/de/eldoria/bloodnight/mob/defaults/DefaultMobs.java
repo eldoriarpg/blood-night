@@ -21,7 +21,7 @@ import de.eldoria.bloodnight.mob.meta.SpawnConditions;
 import de.eldoria.bloodnight.mob.meta.SpawnRules;
 import de.eldoria.bloodnight.mob.meta.Surface;
 import de.eldoria.bloodnight.mob.meta.ValueModifier;
-import de.eldoria.graph.compiler.Graphs;
+import de.eldoria.graph.compiler.validate.Graphs;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 import org.bukkit.entity.EntityType;

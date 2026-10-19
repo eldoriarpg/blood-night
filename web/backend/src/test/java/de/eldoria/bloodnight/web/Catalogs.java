@@ -6,11 +6,11 @@
 package de.eldoria.bloodnight.web;
 
 import de.eldoria.graph.payload.Catalog;
-import de.eldoria.graph.payload.ConfigInfo;
-import de.eldoria.graph.payload.ExecutionInfo;
-import de.eldoria.graph.payload.NodeType;
-import de.eldoria.graph.payload.PortInfo;
 import de.eldoria.graph.payload.TypeRef;
+import de.eldoria.graph.payload.node.ConfigInfo;
+import de.eldoria.graph.payload.node.ExecutionInfo;
+import de.eldoria.graph.payload.node.NodeType;
+import de.eldoria.graph.payload.node.PortInfo;
 
 import java.util.List;
 import java.util.Map;
