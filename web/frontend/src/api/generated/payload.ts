@@ -457,7 +457,7 @@ export interface Graph {
   nodes: {
     [k: string]: NodeInstance;
   };
-  comments: {
+  comments?: {
     [k: string]: Comment;
   };
 }

@@ -44,7 +44,7 @@ import java.util.UUID;
  * (qualified by its package or outer class when two share one). Enums list their constants; collections become arrays (sets with unique items); maps become objects whose values follow the
  * value type; {@link JsonNode} and {@link Object} accept anything; {@link Instant} is a date-time string. Classes of
  * other libraries that are not enums, such as item stacks, are opaque objects. Record components are required unless
- * nullable or their record leaves values out ({@link JsonInclude} other than always); fields of classes are optional and carry the value a new instance has as their default. Field names
+ * nullable or their record or the component itself leaves values out ({@link JsonInclude} other than always); fields of classes are optional and carry the value a new instance has as their default. Field names
  * follow {@link JsonProperty}; {@link JsonIgnore}d, static and transient fields are left out.
  */
 public final class JsonSchemas {
@@ -199,7 +199,8 @@ public final class JsonSchemas {
             if (ignored(component)) continue;
             String property = propertyName(component, component.getName());
             properties.set(property, schema(component.getGenericType()));
-            if (!omitsEmpty && !nullable(component, component.getAnnotatedType())) required.add(property);
+            boolean omitted = omitsEmpty || omits(component.getAccessor().getAnnotation(JsonInclude.class));
+            if (!omitted && !nullable(component, component.getAnnotatedType())) required.add(property);
         }
         if (!required.isEmpty()) required.forEach(schema.putArray("required")::add);
         return schema;
@@ -236,7 +237,10 @@ public final class JsonSchemas {
     }
 
     private static boolean omitsValues(Class<?> clazz) {
-        JsonInclude include = clazz.getAnnotation(JsonInclude.class);
+        return omits(clazz.getAnnotation(JsonInclude.class));
+    }
+
+    private static boolean omits(@Nullable JsonInclude include) {
         return include != null
                 && include.value() != JsonInclude.Include.ALWAYS
                 && include.value() != JsonInclude.Include.USE_DEFAULTS;
