@@ -212,16 +212,16 @@
             "false" : [ "branch_35" ]
           }
         },
-        "branch_43" : {
+        "branch_46" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_42",
-              "port" : "result"
+              "node" : "cast_44",
+              "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "spawn_particle_41" ]
+            "true" : [ "mutate_45" ]
           }
         },
         "branch_51" : {
@@ -236,16 +236,16 @@
             "true" : [ "mutate_50" ]
           }
         },
-        "branch_56" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_54",
-              "port" : "matches"
-            }
+        "cast_44" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
           },
-          "executions" : {
-            "true" : [ "mutate_55" ]
+          "inputs" : {
+            "value" : {
+              "node" : "damage_by_entity_43",
+              "port" : "attacker"
+            }
           }
         },
         "cast_49" : {
@@ -255,30 +255,9 @@
           },
           "inputs" : {
             "value" : {
-              "node" : "damage_by_entity_48",
+              "node" : "damage_by_player_48",
               "port" : "attacker"
             }
-          }
-        },
-        "cast_54" : {
-          "type" : "cast",
-          "config" : {
-            "type" : "living_entity"
-          },
-          "inputs" : {
-            "value" : {
-              "node" : "damage_by_player_53",
-              "port" : "attacker"
-            }
-          }
-        },
-        "cooldown_42" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
           }
         },
         "create_11" : {
@@ -323,28 +302,16 @@
             }
           }
         },
-        "create_39" : {
-          "type" : "dust.create",
-          "inputs" : {
-            "color" : {
-              "node" : "rgb_40",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "size" : 2.0
-          }
-        },
-        "damage_by_entity_48" : {
+        "damage_by_entity_43" : {
           "type" : "event.damage_by_entity",
           "executions" : {
-            "next" : [ "branch_51", "teleport_near_52" ]
+            "next" : [ "branch_46", "teleport_near_47" ]
           }
         },
-        "damage_by_player_53" : {
+        "damage_by_player_48" : {
           "type" : "event.damage_by_player",
           "executions" : {
-            "next" : [ "branch_56", "teleport_near_57" ]
+            "next" : [ "branch_51", "teleport_near_52" ]
           }
         },
         "define_38" : {
@@ -362,7 +329,7 @@
             "duration" : 1.0
           },
           "executions" : {
-            "next" : [ "teleport_27", "spawn_particle_28" ]
+            "next" : [ "teleport_27", "play_effect_28" ]
           }
         },
         "distance_2" : {
@@ -424,6 +391,19 @@
             }
           }
         },
+        "mutate_45" : {
+          "type" : "creeper.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_4",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "cast_44",
+              "port" : "result"
+            }
+          }
+        },
         "mutate_50" : {
           "type" : "creeper.mutate",
           "inputs" : {
@@ -437,25 +417,24 @@
             }
           }
         },
-        "mutate_55" : {
-          "type" : "creeper.mutate",
-          "inputs" : {
-            "target" : {
-              "node" : "self_4",
-              "port" : "entity"
-            },
-            "target_value" : {
-              "node" : "cast_54",
-              "port" : "result"
-            }
-          }
-        },
         "parameter_0" : {
           "type" : "routine.parameter",
           "config" : {
             "name" : "target",
             "routine" : "teleport_near",
             "type" : "living_entity"
+          }
+        },
+        "play_effect_28" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
           }
         },
         "random_number_12" : {
@@ -536,14 +515,6 @@
             "red" : 170
           }
         },
-        "rgb_40" : {
-          "type" : "color.rgb",
-          "literals" : {
-            "blue" : 128,
-            "green" : 0,
-            "red" : 128
-          }
-        },
         "self_4" : {
           "type" : "mob.self"
         },
@@ -583,54 +554,10 @@
             "size" : 3.0
           }
         },
-        "spawn_particle_28" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_1",
-              "port" : "location"
-            },
-            "target" : {
-              "node" : "read_3",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 10,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:portal"
-          }
-        },
-        "spawn_particle_41" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "data" : {
-              "node" : "create_39",
-              "port" : "result"
-            },
-            "location" : {
-              "node" : "read_3",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_3",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 5,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:dust"
-          }
-        },
-        "target_change_46" : {
+        "target_change_41" : {
           "type" : "event.target_change",
           "executions" : {
-            "next" : [ "teleport_near_47" ]
+            "next" : [ "teleport_near_42" ]
           }
         },
         "teleport_27" : {
@@ -646,7 +573,7 @@
             }
           }
         },
-        "teleport_near_44" : {
+        "teleport_near_39" : {
           "type" : "routine.teleport_near",
           "inputs" : {
             "target" : {
@@ -655,12 +582,21 @@
             }
           }
         },
+        "teleport_near_42" : {
+          "type" : "routine.teleport_near",
+          "inputs" : {
+            "target" : {
+              "node" : "target_change_41",
+              "port" : "target"
+            }
+          }
+        },
         "teleport_near_47" : {
           "type" : "routine.teleport_near",
           "inputs" : {
             "target" : {
-              "node" : "target_change_46",
-              "port" : "target"
+              "node" : "cast_44",
+              "port" : "result"
             }
           }
         },
@@ -673,19 +609,10 @@
             }
           }
         },
-        "teleport_near_57" : {
-          "type" : "routine.teleport_near",
-          "inputs" : {
-            "target" : {
-              "node" : "cast_54",
-              "port" : "result"
-            }
-          }
-        },
-        "tick_45" : {
+        "tick_40" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_43", "teleport_near_44" ]
+            "next" : [ "teleport_near_39" ]
           }
         }
       }
@@ -731,7 +658,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:void_shimmer",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "ender_creeper" : {

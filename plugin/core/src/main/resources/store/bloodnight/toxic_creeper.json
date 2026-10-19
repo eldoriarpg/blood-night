@@ -49,31 +49,19 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_12" : {
+        "branch_7" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_11",
+              "node" : "cooldown_6",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "spawn_potion_cloud_9" ]
+            "true" : [ "spawn_potion_cloud_4" ]
           }
         },
-        "branch_8" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_7",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "spawn_particle_5" ]
-          }
-        },
-        "cooldown_11" : {
+        "cooldown_6" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -82,31 +70,10 @@
             "duration" : 3000
           }
         },
-        "cooldown_7" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
-          }
-        },
-        "create_3" : {
-          "type" : "dust.create",
-          "inputs" : {
-            "color" : {
-              "node" : "rgb_4",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "size" : 2.0
-          }
-        },
-        "explode_14" : {
+        "explode_9" : {
           "type" : "event.explode",
           "executions" : {
-            "next" : [ "spawn_potion_cloud_15" ]
+            "next" : [ "spawn_potion_cloud_10" ]
           }
         },
         "mutate_0" : {
@@ -121,7 +88,7 @@
             "max_fuse_ticks" : 20
           }
         },
-        "read_6" : {
+        "read_3" : {
           "type" : "creeper.read",
           "inputs" : {
             "target" : {
@@ -130,7 +97,7 @@
             }
           }
         },
-        "rgb_10" : {
+        "rgb_11" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 0,
@@ -138,15 +105,7 @@
             "red" : 0
           }
         },
-        "rgb_16" : {
-          "type" : "color.rgb",
-          "literals" : {
-            "blue" : 0,
-            "green" : 128,
-            "red" : 0
-          }
-        },
-        "rgb_4" : {
+        "rgb_5" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 0,
@@ -163,39 +122,15 @@
             "next" : [ "mutate_0" ]
           }
         },
-        "spawn_particle_5" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "data" : {
-              "node" : "create_3",
-              "port" : "result"
-            },
-            "location" : {
-              "node" : "read_6",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_6",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 5,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:dust"
-          }
-        },
-        "spawn_potion_cloud_15" : {
+        "spawn_potion_cloud_10" : {
           "type" : "world.spawn_potion_cloud",
           "inputs" : {
             "color" : {
-              "node" : "rgb_16",
+              "node" : "rgb_11",
               "port" : "result"
             },
             "location" : {
-              "node" : "explode_14",
+              "node" : "explode_9",
               "port" : "location"
             }
           },
@@ -206,15 +141,15 @@
             "seconds" : 10
           }
         },
-        "spawn_potion_cloud_9" : {
+        "spawn_potion_cloud_4" : {
           "type" : "world.spawn_potion_cloud",
           "inputs" : {
             "color" : {
-              "node" : "rgb_10",
+              "node" : "rgb_5",
               "port" : "result"
             },
             "location" : {
-              "node" : "read_6",
+              "node" : "read_3",
               "port" : "location"
             }
           },
@@ -225,10 +160,10 @@
             "seconds" : 3
           }
         },
-        "tick_13" : {
+        "tick_8" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_8", "branch_12" ]
+            "next" : [ "branch_7" ]
           }
         }
       }
@@ -274,7 +209,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:toxic_haze",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "toxic_creeper" : {

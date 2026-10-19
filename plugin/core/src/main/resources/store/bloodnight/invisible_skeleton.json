@@ -127,25 +127,28 @@
             "glowing" : true
           }
         },
-        "night_end_14" : {
+        "night_end_13" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_13" ]
+            "next" : [ "play_effect_12" ]
+          }
+        },
+        "play_effect_12" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
           }
         },
         "projectile_shoot_8" : {
           "type" : "event.projectile_shoot",
           "executions" : {
             "next" : [ "reset_11", "remove_potion_effect_10", "mutate_9" ]
-          }
-        },
-        "read_12" : {
-          "type" : "mob.read",
-          "inputs" : {
-            "target" : {
-              "node" : "self_1",
-              "port" : "entity"
-            }
           }
         },
         "remove_potion_effect_10" : {
@@ -168,26 +171,6 @@
         },
         "self_1" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_13" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_12",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_12",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
         },
         "tick_7" : {
           "type" : "mob.tick",

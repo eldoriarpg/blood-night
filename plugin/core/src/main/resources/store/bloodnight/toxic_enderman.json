@@ -49,18 +49,6 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_12" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_11",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "spawn_particle_10" ]
-          }
-        },
         "branch_6" : {
           "type" : "flow.branch",
           "inputs" : {
@@ -83,27 +71,6 @@
           },
           "executions" : {
             "true" : [ "branch_6" ]
-          }
-        },
-        "cooldown_11" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
-          }
-        },
-        "create_8" : {
-          "type" : "dust.create",
-          "inputs" : {
-            "color" : {
-              "node" : "rgb_9",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "size" : 2.0
           }
         },
         "is_null_4" : {
@@ -149,13 +116,13 @@
             "radius" : 16.0
           }
         },
-        "night_end_19" : {
+        "night_end_14" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_18" ]
+            "next" : [ "spawn_particle_13" ]
           }
         },
-        "power_17" : {
+        "power_12" : {
           "type" : "particle.power",
           "literals" : {
             "power" : 1.0
@@ -170,15 +137,7 @@
             }
           }
         },
-        "rgb_16" : {
-          "type" : "color.rgb",
-          "literals" : {
-            "blue" : 0,
-            "green" : 128,
-            "red" : 0
-          }
-        },
-        "rgb_9" : {
+        "rgb_11" : {
           "type" : "color.rgb",
           "literals" : {
             "blue" : 0,
@@ -189,35 +148,11 @@
         "self_2" : {
           "type" : "mob.self"
         },
-        "spawn_particle_10" : {
+        "spawn_particle_13" : {
           "type" : "world.spawn_particle",
           "inputs" : {
             "data" : {
-              "node" : "create_8",
-              "port" : "result"
-            },
-            "location" : {
-              "node" : "read_1",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_1",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 5,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:dust"
-          }
-        },
-        "spawn_particle_18" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "data" : {
-              "node" : "power_17",
+              "node" : "power_12",
               "port" : "power"
             },
             "location" : {
@@ -237,15 +172,15 @@
             "particle" : "minecraft:dragon_breath"
           }
         },
-        "spawn_potion_cloud_15" : {
+        "spawn_potion_cloud_10" : {
           "type" : "world.spawn_potion_cloud",
           "inputs" : {
             "color" : {
-              "node" : "rgb_16",
+              "node" : "rgb_11",
               "port" : "result"
             },
             "location" : {
-              "node" : "teleport_14",
+              "node" : "teleport_9",
               "port" : "from"
             }
           },
@@ -256,16 +191,16 @@
             "seconds" : 10
           }
         },
-        "teleport_14" : {
+        "teleport_9" : {
           "type" : "event.teleport",
           "executions" : {
-            "next" : [ "spawn_potion_cloud_15" ]
+            "next" : [ "spawn_potion_cloud_10" ]
           }
         },
-        "tick_13" : {
+        "tick_8" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_7", "branch_12" ]
+            "next" : [ "branch_7" ]
           }
         }
       }
@@ -311,7 +246,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:toxic_haze",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "toxic_enderman" : {

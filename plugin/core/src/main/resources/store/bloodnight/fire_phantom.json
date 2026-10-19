@@ -286,7 +286,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:ember_crown",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "fire_phantom" : {

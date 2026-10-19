@@ -49,52 +49,31 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_11" : {
+        "branch_6" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_10",
+              "node" : "cooldown_5",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_9" ]
+            "true" : [ "launch_projectile_2", "launch_projectile_3", "launch_projectile_4" ]
           }
         },
-        "branch_4" : {
+        "branch_8" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_3",
+              "node" : "is_null_7",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "spawn_particle_2" ]
+            "false" : [ "branch_6" ]
           }
         },
-        "branch_9" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_8",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "launch_projectile_5", "launch_projectile_6", "launch_projectile_7" ]
-          }
-        },
-        "cooldown_3" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
-          }
-        },
-        "cooldown_8" : {
+        "cooldown_5" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -103,7 +82,7 @@
             "duration" : 6000
           }
         },
-        "is_null_10" : {
+        "is_null_7" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -112,7 +91,7 @@
             }
           }
         },
-        "launch_projectile_5" : {
+        "launch_projectile_2" : {
           "type" : "living_entity.launch_projectile",
           "config" : {
             "projectile" : "WIND_CHARGE"
@@ -131,7 +110,7 @@
             "speed" : 1.5
           }
         },
-        "launch_projectile_6" : {
+        "launch_projectile_3" : {
           "type" : "living_entity.launch_projectile",
           "config" : {
             "projectile" : "WIND_CHARGE"
@@ -150,7 +129,7 @@
             "speed" : 1.2
           }
         },
-        "launch_projectile_7" : {
+        "launch_projectile_4" : {
           "type" : "living_entity.launch_projectile",
           "config" : {
             "projectile" : "WIND_CHARGE"
@@ -181,30 +160,10 @@
         "self_1" : {
           "type" : "mob.self"
         },
-        "spawn_particle_2" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 1,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:cloud"
-          }
-        },
-        "tick_12" : {
+        "tick_9" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_4", "branch_11" ]
+            "next" : [ "branch_8" ]
           }
         }
       }
@@ -250,7 +209,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:storm_charge",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "storm_breeze" : {

@@ -49,43 +49,7 @@
     },
     "behaviour" : {
       "nodes" : {
-        "branch_11" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_10",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "carry_2" ]
-          }
-        },
-        "branch_14" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "greater_or_equal_13",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_11" ]
-          }
-        },
-        "branch_15" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cast_1",
-              "port" : "matches"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_14" ]
-          }
-        },
-        "branch_9" : {
+        "branch_10" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -94,7 +58,43 @@
             }
           },
           "executions" : {
-            "true" : [ "play_sound_7", "lift_4", "delay_6" ]
+            "true" : [ "play_sound_7", "play_effect_9", "lift_4", "delay_6" ]
+          }
+        },
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_11",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "carry_2" ]
+          }
+        },
+        "branch_15" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "greater_or_equal_14",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_12" ]
+          }
+        },
+        "branch_16" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_1",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_15" ]
           }
         },
         "carry_2" : {
@@ -110,7 +110,7 @@
             }
           },
           "executions" : {
-            "next" : [ "branch_9" ]
+            "next" : [ "branch_10" ]
           }
         },
         "cast_1" : {
@@ -125,7 +125,7 @@
             }
           }
         },
-        "cooldown_10" : {
+        "cooldown_11" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -134,16 +134,16 @@
             "duration" : 15000
           }
         },
-        "damage_by_entity_17" : {
+        "damage_by_entity_18" : {
           "type" : "event.damage_by_entity",
           "executions" : {
-            "next" : [ "reset_16" ]
+            "next" : [ "reset_17" ]
           }
         },
-        "damage_by_player_19" : {
+        "damage_by_player_20" : {
           "type" : "event.damage_by_player",
           "executions" : {
-            "next" : [ "reset_18" ]
+            "next" : [ "reset_19" ]
           }
         },
         "delay_6" : {
@@ -164,17 +164,17 @@
             }
           }
         },
-        "elapsed_12" : {
+        "elapsed_13" : {
           "type" : "timer.elapsed",
           "config" : {
             "timer" : "hurt"
           }
         },
-        "greater_or_equal_13" : {
+        "greater_or_equal_14" : {
           "type" : "logic.greater_or_equal",
           "inputs" : {
             "first" : {
-              "node" : "elapsed_12",
+              "node" : "elapsed_13",
               "port" : "elapsed"
             }
           },
@@ -185,7 +185,7 @@
         "hit_0" : {
           "type" : "event.hit",
           "executions" : {
-            "next" : [ "branch_15" ]
+            "next" : [ "branch_16" ]
           }
         },
         "lift_4" : {
@@ -204,7 +204,35 @@
         "night_end_22" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_21" ]
+            "next" : [ "play_effect_21" ]
+          }
+        },
+        "play_effect_21" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "play_effect_9" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:shadow_wings"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
           }
         },
         "play_sound_7" : {
@@ -225,15 +253,6 @@
             "volume" : 1.0
           }
         },
-        "read_20" : {
-          "type" : "mob.read",
-          "inputs" : {
-            "target" : {
-              "node" : "self_3",
-              "port" : "entity"
-            }
-          }
-        },
         "read_8" : {
           "type" : "player.read",
           "inputs" : {
@@ -243,13 +262,13 @@
             }
           }
         },
-        "reset_16" : {
+        "reset_17" : {
           "type" : "timer.reset",
           "config" : {
             "timer" : "hurt"
           }
         },
-        "reset_18" : {
+        "reset_19" : {
           "type" : "timer.reset",
           "config" : {
             "timer" : "hurt"
@@ -257,26 +276,6 @@
         },
         "self_3" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_21" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_20",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_20",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
         }
       }
     },
@@ -321,7 +320,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:soul_mist",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "carrier_phantom" : {

@@ -38,6 +38,9 @@ your own copy with a new id.
 | `bloodnight:night_end_smoke` | A column of smoke |
 | `bloodnight:spawn_rise` | Souls rising in a ring |
 | `bloodnight:death_burst` | Red crumbs and dust |
+| `bloodnight:speed_trail` | Small clouds and dust at the feet |
+| `bloodnight:dread_shadow` | A dark pool at the feet and witch sparks |
+| `bloodnight:arcane_glow` | Enchanting letters and a purple ring above the head |
 | `bloodnight:shadow_wings` | Dark wings on the target's back that flap |
 | `bloodnight:arcane_lines` | Two magic arcs from the source to the target |
 | `bloodnight:drain_beam` | A red bar from the source to the target, with sparks |

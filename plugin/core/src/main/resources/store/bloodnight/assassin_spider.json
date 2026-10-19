@@ -145,7 +145,7 @@
             }
           },
           "executions" : {
-            "true" : [ "mutate_16", "spawn_particle_37" ]
+            "true" : [ "mutate_16", "play_effect_37" ]
           }
         },
         "branch_40" : {
@@ -508,7 +508,7 @@
         "night_end_51" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_50" ]
+            "next" : [ "play_effect_50" ]
           }
         },
         "normalize_26" : {
@@ -517,6 +517,30 @@
             "value" : {
               "node" : "direction_27",
               "port" : "result"
+            }
+          }
+        },
+        "play_effect_37" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:shock_wave"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
+          }
+        },
+        "play_effect_50" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
             }
           }
         },
@@ -558,46 +582,6 @@
         },
         "self_1" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_37" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 15,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:crit"
-          }
-        },
-        "spawn_particle_50" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
         },
         "subtract_18" : {
           "type" : "math.subtract",

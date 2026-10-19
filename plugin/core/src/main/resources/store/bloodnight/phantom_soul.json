@@ -264,7 +264,19 @@
         "night_end_24" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_23" ]
+            "next" : [ "play_effect_23" ]
+          }
+        },
+        "play_effect_23" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_1",
+              "port" : "entity"
+            }
           }
         },
         "read_0" : {
@@ -299,26 +311,6 @@
         },
         "self_1" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_23" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
         },
         "tick_18" : {
           "type" : "mob.tick",
@@ -369,7 +361,11 @@
       "seconds" : 3.0,
       "fleeBelow" : 0.3
     },
-    "particles" : null
+    "particles" : {
+      "ambient" : "bloodnight:soul_mist",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
   },
   "lootTables" : {
     "phantom_soul" : {

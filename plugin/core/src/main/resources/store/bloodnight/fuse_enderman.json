@@ -111,23 +111,11 @@
             "true" : [ "branch_14" ]
           }
         },
-        "branch_20" : {
+        "branch_17" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_19",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "spawn_particle_18" ]
-          }
-        },
-        "branch_22" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_21",
+              "node" : "cooldown_16",
               "port" : "result"
             }
           },
@@ -135,46 +123,25 @@
             "true" : [ "spawn_tnt_3" ]
           }
         },
-        "branch_24" : {
+        "branch_19" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_23",
+              "node" : "is_null_18",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "branch_22" ]
+            "false" : [ "branch_17" ]
           }
         },
-        "cooldown_19" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
-          }
-        },
-        "cooldown_21" : {
+        "cooldown_16" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
             "duration" : 6000
-          }
-        },
-        "create_16" : {
-          "type" : "dust.create",
-          "inputs" : {
-            "color" : {
-              "node" : "rgb_17",
-              "port" : "result"
-            }
-          },
-          "literals" : {
-            "size" : 1.0
           }
         },
         "create_9" : {
@@ -216,7 +183,7 @@
             }
           }
         },
-        "is_null_23" : {
+        "is_null_18" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -282,40 +249,8 @@
             }
           }
         },
-        "rgb_17" : {
-          "type" : "color.rgb",
-          "literals" : {
-            "blue" : 0,
-            "green" : 40,
-            "red" : 200
-          }
-        },
         "self_1" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_18" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "data" : {
-              "node" : "create_16",
-              "port" : "result"
-            },
-            "location" : {
-              "node" : "read_0",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_0",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 3,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:dust"
-          }
         },
         "spawn_tnt_3" : {
           "type" : "world.spawn_tnt",
@@ -330,10 +265,10 @@
             "seconds" : 2.0
           }
         },
-        "tick_25" : {
+        "tick_20" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_15", "branch_20", "branch_24" ]
+            "next" : [ "branch_15", "branch_19" ]
           }
         }
       }

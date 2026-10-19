@@ -243,7 +243,19 @@
         "night_end_26" : {
           "type" : "mob.night_end",
           "executions" : {
-            "next" : [ "spawn_particle_25" ]
+            "next" : [ "play_effect_25" ]
+          }
+        },
+        "play_effect_25" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:night_end_smoke"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_11",
+              "port" : "entity"
+            }
           }
         },
         "play_sound_22" : {
@@ -284,26 +296,6 @@
         },
         "self_11" : {
           "type" : "mob.self"
-        },
-        "spawn_particle_25" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_12",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_12",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 30,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:campfire_cosy_smoke"
-          }
         },
         "target_change_0" : {
           "type" : "event.target_change",

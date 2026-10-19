@@ -88,7 +88,7 @@
             }
           }
         },
-        "apply_effect_24" : {
+        "apply_effect_25" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
@@ -102,7 +102,7 @@
             "seconds" : 1.0
           }
         },
-        "branch_21" : {
+        "branch_22" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -111,10 +111,10 @@
             }
           },
           "executions" : {
-            "false" : [ "teleport_18", "teleport_19", "spawn_particle_20", "delay_16" ]
+            "false" : [ "teleport_18", "teleport_19", "play_effect_20", "play_effect_21", "delay_16" ]
           }
         },
-        "branch_22" : {
+        "branch_23" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -123,22 +123,22 @@
             }
           },
           "executions" : {
-            "true" : [ "branch_21" ]
+            "true" : [ "branch_22" ]
           }
         },
-        "branch_28" : {
+        "branch_29" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_27",
+              "node" : "cooldown_28",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "set_2", "apply_effect_24", "play_sound_25", "delay_23" ]
+            "true" : [ "set_2", "apply_effect_25", "play_sound_26", "delay_24" ]
           }
         },
-        "branch_29" : {
+        "branch_30" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -147,10 +147,22 @@
             }
           },
           "executions" : {
-            "true" : [ "branch_28" ]
+            "true" : [ "branch_29" ]
           }
         },
-        "branch_34" : {
+        "branch_35" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_34",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_32" ]
+          }
+        },
+        "branch_36" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -159,31 +171,7 @@
             }
           },
           "executions" : {
-            "false" : [ "mutate_31" ]
-          }
-        },
-        "branch_35" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_32",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_34" ]
-          }
-        },
-        "branch_38" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_37",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "spawn_particle_36" ]
+            "true" : [ "branch_35" ]
           }
         },
         "cast_1" : {
@@ -210,22 +198,13 @@
             }
           }
         },
-        "cooldown_27" : {
+        "cooldown_28" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
             "duration" : 8000
-          }
-        },
-        "cooldown_37" : {
-          "type" : "function.cooldown",
-          "config" : {
-            "unit" : "MILLISECONDS"
-          },
-          "literals" : {
-            "duration" : 250
           }
         },
         "create_8" : {
@@ -258,13 +237,13 @@
             "next" : [ "teleport_17" ]
           }
         },
-        "delay_23" : {
+        "delay_24" : {
           "type" : "flow.delay",
           "literals" : {
             "duration" : 1.0
           },
           "executions" : {
-            "next" : [ "branch_22" ]
+            "next" : [ "branch_23" ]
           }
         },
         "get_15" : {
@@ -277,10 +256,10 @@
         "hit_0" : {
           "type" : "event.hit",
           "executions" : {
-            "next" : [ "branch_29" ]
+            "next" : [ "branch_30" ]
           }
         },
-        "is_null_32" : {
+        "is_null_33" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -289,16 +268,16 @@
             }
           }
         },
-        "is_null_33" : {
+        "is_null_34" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
-              "node" : "nearest_player_30",
+              "node" : "nearest_player_31",
               "port" : "player"
             }
           }
         },
-        "mutate_31" : {
+        "mutate_32" : {
           "type" : "mob.mutate",
           "inputs" : {
             "target" : {
@@ -306,12 +285,12 @@
               "port" : "entity"
             },
             "target_value" : {
-              "node" : "nearest_player_30",
+              "node" : "nearest_player_31",
               "port" : "player"
             }
           }
         },
-        "nearest_player_30" : {
+        "nearest_player_31" : {
           "type" : "world.nearest_player",
           "inputs" : {
             "location" : {
@@ -323,11 +302,39 @@
             "radius" : 16.0
           }
         },
-        "play_sound_25" : {
+        "play_effect_20" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_8",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_21" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:shadow_wings"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_4",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_5",
+              "port" : "result"
+            }
+          }
+        },
+        "play_sound_26" : {
           "type" : "player.play_sound",
           "inputs" : {
             "location" : {
-              "node" : "read_26",
+              "node" : "read_27",
               "port" : "location"
             },
             "target" : {
@@ -362,7 +369,7 @@
             "upper" : 30.0
           }
         },
-        "read_26" : {
+        "read_27" : {
           "type" : "player.read",
           "inputs" : {
             "target" : {
@@ -414,46 +421,6 @@
             }
           }
         },
-        "spawn_particle_20" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "create_8",
-              "port" : "result"
-            },
-            "target" : {
-              "node" : "read_3",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 40,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:portal"
-          }
-        },
-        "spawn_particle_36" : {
-          "type" : "world.spawn_particle",
-          "inputs" : {
-            "location" : {
-              "node" : "read_3",
-              "port" : "eye_location"
-            },
-            "target" : {
-              "node" : "read_3",
-              "port" : "world"
-            }
-          },
-          "literals" : {
-            "count" : 3,
-            "offset_x" : 1.5,
-            "offset_y" : 1.0,
-            "offset_z" : 1.5,
-            "particle" : "minecraft:reverse_portal"
-          }
-        },
         "teleport_17" : {
           "type" : "entity.teleport",
           "inputs" : {
@@ -493,10 +460,10 @@
             }
           }
         },
-        "tick_39" : {
+        "tick_37" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_35", "branch_38" ]
+            "next" : [ "branch_36" ]
           }
         }
       }
