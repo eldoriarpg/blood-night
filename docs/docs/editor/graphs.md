@@ -92,6 +92,7 @@ again, or double click the box, to open it. A closed frame can't be deleted: ope
 | Mutate | Reads and changes the properties of something, like a creeper's fuse or a damage amount |
 | Run Command | Runs a command as the console. This is how a mob uses other plugins, like giving money. |
 | Broadcast | Sends a message to the players in the world or on the server |
+| Play Effect | Plays a [particle effect](../mobs/particle-effects.md) at the mob, a place or a player, or from one to another. Its **Arrived** output goes on when what flies in it reaches the target. |
 
 All nodes are listed in the [node reference](../reference/nodes/index.md).
 
@@ -125,7 +126,7 @@ What changes on Folia:
 | Entities Near Location, Entities Near Entity, Nearest Player, Line Trace, Block At | Finds nothing |
 | Has Line Of Sight | Gives false |
 | Launch Projectile | Launches nothing |
-| Strike Lightning, Spawn Particle, Spawn Potion Cloud, Mutate Block | Happen a tick later |
+| Strike Lightning, Spawn Particle, Play Effect, Spawn Potion Cloud, Mutate Block | Happen a tick later |
 | Mutate World (time, weather, difficulty, ...) | Happens a tick later |
 | Read World: entities, players and counts | Always fails on Folia and shows a problem |
 | Mutate, Apply Effect, Damage on an entity in another region | Fails and shows a problem |

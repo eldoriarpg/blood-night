@@ -47,8 +47,11 @@ happen:
 - **You changed what the mob does**, for example its graph in the editor. Then BloodNight never overwrites your
   work. Admins see a message when they join, and you take the update with `/bn store update` when you want it.
 
-An update only brings the mob's behaviour. Your own numbers stay: its name, health, damage, equipment, drops and
-when it spawns.
+An update only brings the mob's behaviour. Your own numbers stay: its name, health, damage, equipment, drops, when it
+spawns and the [particle effects](particle-effects.md) it wears.
+
+To take the store's particle effects as well, use `/bn store update --particles`, or turn on **Also take the store's
+particle effects** in the editor's store. The editor marks mobs whose effects differ from the store's.
 
 `/bn store update` takes every waiting update. `/bn store update speed_zombie` takes one.
 

@@ -18,6 +18,9 @@ All commands start with `/bloodnight`. The short form is `/bn`.
 | `/bn editor new` | Starts a fresh editor session | `bloodnight.command.editor` |
 | `/bn editor apply [force]` | Applies what you made in the editor; the session stays open for more changes | `bloodnight.command.editor` |
 | `/bn editor cancel` | Closes the editor session | `bloodnight.command.editor` |
+| `/bn editor preview <effect>` | Plays a [particle effect](mobs/particle-effects.md) in front of you, as it is in the open session. Only you see it. | `bloodnight.command.editor` |
+| `/bn store update [--particles] [pack or mob]` | Takes waiting mob updates. With `--particles` the mobs also take the store's particle effects. | `bloodnight.command.store` |
+| `/bn particles [on or off]` | Switches the particle effects of mobs off or on for you | `bloodnight.command.particles` |
 | `/bn item register` | Saves the item in your hand and gives it an ID | `bloodnight.command.item` |
 | `/bn item remove <id>` | Removes a saved item | `bloodnight.command.item` |
 | `/bn settings <server or world> <path> [value]` | Shows or changes one setting | `bloodnight.command.settings` |
@@ -32,8 +35,8 @@ Replies come in the player's language. English and German are there so far.
 
 Without `[world]`, the command uses your own world. From the console it uses the first world.
 
-`bloodnight.admin` gives all command permissions at once. All of them are for operators by default. The full list is
-on the [permissions page](./reference/permissions.md).
+`bloodnight.admin` gives all command permissions at once. All of them are for operators by default, except
+`/bn particles`, which every player may use. The full list is on the [permissions page](./reference/permissions.md).
 
 ## Settings without the editor
 

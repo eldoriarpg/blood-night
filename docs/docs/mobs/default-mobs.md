@@ -14,6 +14,11 @@ Their names show in each player's language, English or German so far. Players wi
 The first 33 have double health, only spawn during blood nights and go away when the night ends. The Blood Dragon is
 different, see below.
 
+Each mob wears a [particle effect](particle-effects.md) that fits it, plus souls when it spawns and a red burst when it
+dies. The invisible ones wear none, so nothing gives them away. Some effects aim at you: dark wings when a mob lifts
+you up, magic lines when a wizard casts, lightning bolts, and the Blood Dragon's spear and beam. Change or remove them
+in the mob's **Particles** part.
+
 ## Zombies
 
 Husks, drowned, zombie villagers and zombified piglins can become these too, when no mob of their own fits.
@@ -101,7 +106,7 @@ Cave spiders can become these too.
 | `launcher_enderman` | Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go. |
 | `grabber_enderman` | Every 10 seconds it grabs mobs around it and puts them down in front of you. |
 | `fuse_enderman` | Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks. |
-| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning, its hits wither. It never spawns by chance. |
+| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning. Every 8 seconds it throws a blood spear at the nearest player, which hurts when it lands. Its hits wither and draw a red beam. It never spawns by chance. |
 
 Open any of them in the [web editor](../editor/sessions.md) to see how they work. They are good examples for your
 own mobs.
