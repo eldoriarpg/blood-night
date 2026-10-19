@@ -96,6 +96,23 @@ describe('GraphChanges', () => {
         expect(result.nodes.tick?.executions).toEqual({next: []})
     })
 
+    it('adds, edits, shifts and removes comment frames', () => {
+        const frame = {title: 'Fuse', note: '', color: 'red', x: 0, y: 0, width: 200, height: 100, collapsed: false}
+        const {id, operations} = new GraphChanges(base, graph()).addComment(frame)
+        const framed = changed(operations)
+        expect(id).toBe('comment_1')
+        expect(framed.comments).toEqual({comment_1: frame})
+
+        const changes = new GraphChanges(base, framed)
+        const applied = (ops: ReturnType<GraphChanges['move']>) => applyPatch({mobs: {m: {behaviour: framed}}}, ops).mobs.m.behaviour
+        expect(applied(changes.editComment(id, {collapsed: true})).comments?.comment_1).toEqual({...frame, collapsed: true})
+        const shifted = applied(changes.shift([id], ['tick'], {x: 22, y: -44}))
+        expect(shifted.comments?.comment_1).toMatchObject({x: 22, y: -44})
+        expect(shifted.nodes.tick?.editor).toEqual({x: 22, y: -44})
+        expect(applied(changes.removeComment(id)).comments).toEqual({})
+        expect(new GraphChanges(base, framed).addComment(frame).id).toBe('comment_2')
+    })
+
     it('adds nodes with fresh ids', () => {
         const {id, operations} = new GraphChanges(base, graph()).add('creeper.ignite', {x: 1, y: 2})
         expect(id).toBe('ignite_1')

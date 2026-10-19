@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-import type {Graph, NodeInstance} from '~/api/generated/payload'
+import type {Comment, Graph, NodeInstance} from '~/api/generated/payload'
 import type {PatchOperation} from '~/util/patch/jsonPatch'
 import type {Position} from '~/util/graph/graphLayout'
 
@@ -28,6 +28,50 @@ export class GraphChanges {
 
     private node(id: string): string {
         return `${this.base}/nodes/${escape(id)}`
+    }
+
+    private comment(id: string): string {
+        return `${this.base}/comments/${escape(id)}`
+    }
+
+    /** Adds a comment frame with a fresh id; the graph's comment map is made when it has none yet. */
+    addComment(comment: Comment): {id: string, operations: PatchOperation[]} {
+        const id = freshId('comment', Object.keys(this.graph.comments ?? {}))
+        const operations: PatchOperation[] = this.graph.comments
+            ? [{op: 'add', path: this.comment(id), value: comment}]
+            : [{op: 'add', path: `${this.base}/comments`, value: {[id]: comment}}]
+        return {id, operations}
+    }
+
+    /** Changes parts of a comment frame, keeping the rest. */
+    editComment(id: string, changes: Partial<Comment>): PatchOperation[] {
+        const comment = this.graph.comments?.[id]
+        if (!comment) throw new Error(`No comment ${id}`)
+        return [{op: 'add', path: this.comment(id), value: {...comment, ...changes}}]
+    }
+
+    /** Removes a comment frame; the nodes inside it stay. */
+    removeComment(id: string): PatchOperation[] {
+        return [{op: 'remove', path: this.comment(id)}]
+    }
+
+    /**
+     * Moves comment frames and nodes by the same distance, as one change: a frame dragged with what it holds.
+     *
+     * @param comments the frames to move
+     * @param nodes the nodes to move
+     * @param by how far
+     */
+    shift(comments: readonly string[], nodes: readonly string[], by: Position): PatchOperation[] {
+        const frames = comments.flatMap(id => {
+            const comment = this.graph.comments?.[id]
+            return comment ? this.editComment(id, {x: Math.round(comment.x + by.x), y: Math.round(comment.y + by.y)}) : []
+        })
+        const moved = nodes.flatMap(id => {
+            const editor = (this.instance(id).editor ?? {}) as {x?: number, y?: number}
+            return this.move(id, {x: (editor.x ?? 0) + by.x, y: (editor.y ?? 0) + by.y})
+        })
+        return [...frames, ...moved]
     }
 
     private instance(id: string): NodeInstance {
