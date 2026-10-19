@@ -1080,6 +1080,8 @@ export default {
                 on: 'Üzerinde durur',
                 at: 'Nokta',
                 piece: 'Parça',
+                aim: 'Hedef noktası',
+                sameAim: 'Aynı nokta',
                 ends: {SOURCE: 'Kaynak', TARGET: 'Hedef', PIECE: 'Bir parça'},
                 points: {FEET: 'Ayaklar', CENTER: 'Orta', EYES: 'Gözler', ABOVE: 'Başın üstü'},
             },

@@ -31,6 +31,9 @@
         },
         "piece" : {
           "type" : "integer"
+        },
+        "aim" : {
+          "$ref" : "#/$defs/BodyPoint"
         }
       }
     },

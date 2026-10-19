@@ -276,7 +276,7 @@ effects:
     pieces:
       - kind: SPAN
         block: minecraft:red_stained_glass
-        anchor: {at: CENTER}
+        anchor: {at: EYES, aim: CENTER}
         width: 0.08
         grow: 6
         glow: true
@@ -284,7 +284,7 @@ effects:
     emitters:
       - particle: minecraft:dust
         data: {color: "#ff4040", size: 0.6}
-        anchor: {at: CENTER}
+        anchor: {at: EYES, aim: CENTER}
         shape: {type: BEAM, density: 3, jitter: 0.1}
         every: 2
         chance: 0.6
@@ -315,7 +315,7 @@ effects:
       - kind: ITEM
         item: minecraft:trident
         rotation: {pitch: 90, yaw: 0, roll: 45}
-        anchor: {at: CENTER}
+        anchor: {at: EYES, aim: CENTER}
         motion: {ticks: 8, through: 1.5, ease: IN}
         stick: 20
         glow: true

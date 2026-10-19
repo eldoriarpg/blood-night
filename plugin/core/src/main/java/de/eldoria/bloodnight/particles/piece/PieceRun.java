@@ -209,7 +209,7 @@ public final class PieceRun {
     }
 
     private @Nullable Vec3 farPoint() {
-        return other == null ? null : other.point(piece.anchor().at());
+        return other == null ? null : other.point(piece.anchor().aimed());
     }
 
     private Transformation transformation(Vec3 at, @Nullable Vec3 far) {

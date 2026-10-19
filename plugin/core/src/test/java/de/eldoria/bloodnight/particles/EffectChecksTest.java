@@ -71,7 +71,7 @@ class EffectChecksTest {
         Emitter onPiece = new Emitter(
                 "minecraft:flame",
                 null,
-                new Anchor(null, Anchor.EffectEnd.PIECE, 1),
+                new Anchor(null, Anchor.EffectEnd.PIECE, 1, null),
                 null,
                 null,
                 null,

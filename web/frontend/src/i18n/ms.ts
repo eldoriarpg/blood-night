@@ -1080,6 +1080,8 @@ export default {
                 on: 'Duduk pada',
                 at: 'Titik',
                 piece: 'Kepingan',
+                aim: 'Menghala ke',
+                sameAim: 'Titik yang sama',
                 ends: {SOURCE: 'Sumber', TARGET: 'Sasaran', PIECE: 'Satu kepingan'},
                 points: {FEET: 'Kaki', CENTER: 'Tengah', EYES: 'Mata', ABOVE: 'Atas kepala'},
             },

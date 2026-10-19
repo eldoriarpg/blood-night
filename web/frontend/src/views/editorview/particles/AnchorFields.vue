@@ -10,7 +10,8 @@ import EffectNumber from '~/views/editorview/particles/EffectNumber.vue'
 import type {Anchor, BodyPoint, EffectEnd} from '~/api/generated/payload'
 
 /**
- * Where an emitter or a piece sits: a point on the body of the source or the target, or one of the effect's pieces.
+ * Where an emitter or a piece sits: a point on the body of the source or the target, or one of the effect's pieces,
+ * and the point on the other end's body it aims at, e.g. from the eyes to the chest.
  */
 const props = defineProps<{
   anchor: Anchor | undefined
@@ -45,8 +46,14 @@ function save(change: Partial<Anchor>): void {
         <option v-for="point in POINTS" :key="point" :value="point">{{ t(`editor.particles.anchor.points.${point}`) }}</option>
       </SelectInput>
     </LabelledField>
+    <LabelledField v-if="current.on !== 'PIECE'" v-slot="{id}" :label="t('editor.particles.anchor.aim')" class="w-40">
+      <SelectInput :id="id" :disabled="readOnly" :model-value="current.aim ?? ''" @update:model-value="aim => save({aim: aim === '' ? undefined : aim as BodyPoint})">
+        <option value="">{{ t('editor.particles.anchor.sameAim') }}</option>
+        <option v-for="point in POINTS" :key="point" :value="point">{{ t(`editor.particles.anchor.points.${point}`) }}</option>
+      </SelectInput>
+    </LabelledField>
     <EffectNumber
-        v-else
+        v-if="current.on === 'PIECE'"
         :label="t('editor.particles.anchor.piece')"
         :max="pieces ?? 1"
         :min="1"

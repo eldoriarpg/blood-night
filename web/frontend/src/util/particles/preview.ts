@@ -94,7 +94,7 @@ export class Simulation {
         const other = own === this.source ? this.target : this.source
         const origin = emitter.anchor?.on === 'PIECE' ? this.pieces[emitter.anchor.piece ?? 0]?.position : point(own, emitter.anchor)
         if (!origin) return
-        const far = other ? point(other, emitter.anchor) : undefined
+        const far = other ? aimedPoint(other, emitter.anchor) : undefined
         const shape = shapeOf(emitter.shape)
         const frame = frameOf(origin, forward(shape.facing, own, origin, far))
         let base = inWorld(frame, emitter.offset ?? vec(0, 0, 0))
@@ -132,7 +132,7 @@ export class Simulation {
         const own = piece.anchor?.on === 'TARGET' && this.target ? this.target : this.source
         const other = own === this.source ? this.target : this.source
         const anchor = point(own, piece.anchor)
-        const far = other ? point(other, piece.anchor) : undefined
+        const far = other ? aimedPoint(other, piece.anchor) : undefined
         const start = inWorld(frameOf(anchor, forward(piece.facing ?? 'PATH', own, anchor, far)), piece.offset ?? vec(0, 0, 0))
         if (piece.kind === 'SPAN') {
             if (!far || this.tick > this.duration) return null
@@ -155,6 +155,13 @@ export class Simulation {
 export function point(body: Body, anchor: Anchor | undefined): Vec {
     const lift = {FEET: 0, CENTER: body.height / 2, EYES: body.height * EYES, ABOVE: body.height + ABOVE}[anchor?.at ?? 'CENTER']
     return plus(body.feet, vec(0, lift, 0))
+}
+
+/**
+ * @returns where an anchor aims at on the other end's figure: its own aim point, else its own point
+ */
+export function aimedPoint(body: Body, anchor: Anchor | undefined): Vec {
+    return point(body, anchor?.aim ? {...anchor, at: anchor.aim} : anchor)
 }
 
 function forward(face: Facing, body: Body, from: Vec, other: Vec | undefined): Vec {

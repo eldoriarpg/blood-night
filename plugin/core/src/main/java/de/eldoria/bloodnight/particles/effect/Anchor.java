@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.particles.effect;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -16,11 +17,14 @@ import java.util.Objects;
  * @param at    the point on the entity's body
  * @param on    which end, or a piece
  * @param piece the piece's index, for {@link EffectEnd#PIECE}
+ * @param aim   the point on the other end's body it aims at, e.g. a beam from the eyes to the chest; none aims at
+ *              the same point as {@code at}
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record Anchor(BodyPoint at, EffectEnd on, Integer piece) {
+public record Anchor(
+        BodyPoint at, EffectEnd on, Integer piece, @Nullable BodyPoint aim) {
     /** The centre of the source. */
-    public static final Anchor SOURCE_CENTER = new Anchor(BodyPoint.CENTER, EffectEnd.SOURCE, 0);
+    public static final Anchor SOURCE_CENTER = new Anchor(BodyPoint.CENTER, EffectEnd.SOURCE, 0, null);
 
     /** A point on an entity's body. */
     public enum BodyPoint {
@@ -48,5 +52,12 @@ public record Anchor(BodyPoint at, EffectEnd on, Integer piece) {
         at = Objects.requireNonNullElse(at, BodyPoint.CENTER);
         on = Objects.requireNonNullElse(on, EffectEnd.SOURCE);
         piece = Math.max(0, Objects.requireNonNullElse(piece, 0));
+    }
+
+    /**
+     * @return the point on the other end's body it aims at
+     */
+    public BodyPoint aimed() {
+        return aim == null ? at : aim;
     }
 }

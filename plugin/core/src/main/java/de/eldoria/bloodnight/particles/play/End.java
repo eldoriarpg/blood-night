@@ -10,17 +10,21 @@ import de.eldoria.bloodnight.particles.geometry.Facing;
 import de.eldoria.bloodnight.particles.geometry.Vec3;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.ComplexLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * One end of a play: an entity, followed as it moves, or a fixed place.
  * <p>
  * An entity is read from whichever thread runs the play. On Folia that may be another region's thread; Paper reads an
  * entity's position there without a check, as vanilla does when it sends particles, so the value is at most a tick
- * old.
+ * old. The eyes of a body made of parts, such as an Ender Dragon, are the middle of its head.
  */
 public final class End {
     private static final double ABOVE = 0.3;
@@ -85,6 +89,11 @@ public final class End {
         Location location = location();
         Vec3 feet = new Vec3(location.getX(), location.getY(), location.getZ());
         if (entity == null || !entity.isValid()) return feet;
+        if (at == Anchor.BodyPoint.EYES
+                && entity instanceof ComplexLivingEntity complex
+                && !complex.getParts().isEmpty()) {
+            return head(complex.getParts());
+        }
         double height = entity.getHeight();
         double lift =
                 switch (at) {
@@ -94,6 +103,21 @@ public final class End {
                     case ABOVE -> height + ABOVE;
                 };
         return feet.plus(new Vec3(0, lift, 0));
+    }
+
+    /**
+     * The head of a body made of parts, such as an Ender Dragon's, whose own eye height lies at the top of its large
+     * box: its smallest part.
+     *
+     * @param parts the body's parts
+     * @return the middle of the smallest part
+     */
+    static Vec3 head(Collection<? extends Entity> parts) {
+        Entity head = parts.stream()
+                .min(Comparator.comparingDouble(part -> part.getWidth() * part.getHeight()))
+                .orElseThrow();
+        Location at = head.getLocation();
+        return new Vec3(at.getX(), at.getY() + head.getHeight() / 2, at.getZ());
     }
 
     /**

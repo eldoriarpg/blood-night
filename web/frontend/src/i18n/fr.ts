@@ -1080,6 +1080,8 @@ export default {
                 on: 'Placé sur',
                 at: 'Point',
                 piece: 'Pièce',
+                aim: 'Vise',
+                sameAim: 'Même point',
                 ends: {SOURCE: 'Source', TARGET: 'Cible', PIECE: 'Une pièce'},
                 points: {FEET: 'Pieds', CENTER: 'Milieu', EYES: 'Yeux', ABOVE: 'Au-dessus de la tête'},
             },

@@ -142,7 +142,7 @@ public final class Play {
         if (own == null) return;
         Vec3 origin = anchor.on() == Anchor.EffectEnd.PIECE ? pieces.get(anchor.piece()) : own.point(anchor.at());
         if (origin == null) return;
-        Vec3 far = other == null ? null : other.point(anchor.at());
+        Vec3 far = other == null ? null : other.point(anchor.aimed());
         Shape shape = emitter.shape();
         Frame frame = Frame.of(origin, own.forward(shape.facing(), origin, far));
         Vec3 base = frame.world(emitter.offset());
