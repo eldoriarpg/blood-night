@@ -111,7 +111,7 @@ public final class Announcer implements Listener {
                         player,
                         worldSettings.announcement().bossBar(),
                         times.apply(world),
-                        event.night(),
+                        nights.endOf(world, times.apply(world), event.night()),
                         NightKind.of(world).key("name"));
             });
         }
@@ -203,7 +203,7 @@ public final class Announcer implements Listener {
                 player,
                 worldSettings.announcement().bossBar(),
                 times.apply(world),
-                night.getAsLong(),
+                nights.endOf(world, times.apply(world), night.getAsLong()),
                 NightKind.of(world).key("name"));
         ambience.tick(player, worldSettings.soundSettings());
     }
@@ -221,7 +221,7 @@ public final class Announcer implements Listener {
                 player,
                 worldSettings.announcement().bossBar(),
                 times.apply(world),
-                night.getAsLong(),
+                nights.endOf(world, times.apply(world), night.getAsLong()),
                 NightKind.of(world).key("name"));
     }
 

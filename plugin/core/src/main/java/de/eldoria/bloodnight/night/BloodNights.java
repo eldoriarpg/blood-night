@@ -97,6 +97,18 @@ public final class BloodNights {
     }
 
     /**
+     * @param world a world with a running blood night
+     * @param times its night times
+     * @param night the running night's number
+     * @return the time its blood night ends at: for one forced to begin at once in a world without a day cycle, its
+     *     own end; otherwise the end of its night
+     */
+    public long endOf(World world, NightTimes times, long night) {
+        Long deadline = until.get(world.getUID());
+        return deadline != null ? deadline : times.endOf(night);
+    }
+
+    /**
      * @param world a world
      * @return the number of the blood night running in it, if one is
      */

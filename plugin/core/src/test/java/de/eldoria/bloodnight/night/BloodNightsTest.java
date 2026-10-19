@@ -241,6 +241,8 @@ class BloodNightsTest {
         end.setGameTime(3 * 12_000 + 5_000);
         assertEquals(3, timedNights.force(end));
         assertEquals(3, timedNights.running(end).getAsLong());
+        NightTimes times = NightTimes.of(end, settings);
+        assertEquals(3 * 12_000 + 5_000 + times.length(), timedNights.endOf(end, times, 3));
 
         end.setGameTime(3 * 12_000 + 7_000);
         timedNights.check(List.of(end));
