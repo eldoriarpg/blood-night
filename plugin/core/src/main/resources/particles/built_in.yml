@@ -309,9 +309,10 @@ effects:
     name: Blood spear
     duration: 40
     pieces:
-      - kind: ITEM
-        item: minecraft:trident
-        rotation: {pitch: 90, yaw: 0, roll: 45}
+      - kind: BLOCK
+        block: minecraft:end_rod
+        scale: 2
+        rotation: {pitch: 90, yaw: 0, roll: 0}
         anchor: {at: EYES, aim: CENTER}
         motion: {ticks: 8, through: 1.5, ease: IN}
         stick: 20

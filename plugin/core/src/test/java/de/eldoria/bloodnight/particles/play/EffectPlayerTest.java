@@ -10,8 +10,8 @@ import de.eldoria.bloodnight.particles.EffectLibrary;
 import de.eldoria.bloodnight.particles.ParticleEffects;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Location;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Zombie;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
@@ -111,7 +111,7 @@ class EffectPlayerTest {
         target.teleport(new Location(world, 4, 64, 0));
         assertEquals(8, effects.play("bloodnight:blood_spear", zombie, target, null, zombie.getUniqueId()));
         server.getScheduler().performTicks(2);
-        assertEquals(1, world.getEntitiesByClass(ItemDisplay.class).size());
+        assertEquals(1, world.getEntitiesByClass(BlockDisplay.class).size());
         server.getScheduler().performTicks(60);
         assertTrue(world.getEntitiesByClass(Display.class).isEmpty());
     }
