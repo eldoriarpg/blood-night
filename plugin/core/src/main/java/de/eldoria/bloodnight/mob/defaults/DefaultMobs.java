@@ -95,6 +95,11 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final double SEAL_REACH = 200;
 
     /**
+     * Blocks below the Blood Dragon its arcane seal is drawn at.
+     */
+    private static final double SEAL_BELOW = 6;
+
+    /**
      * Sideways speed the arcane seal throws players with, about 30 blocks far.
      */
     private static final double SEAL_PUSH = 2.7;
@@ -2027,8 +2032,8 @@ public final class DefaultMobs implements BloodNightNodes {
 
     /**
      * The Blood Dragon's arcane seal, once a minute while a player is within {@value #SEAL_REACH} blocks: it hangs
-     * still, draws a magic circle on the ground below it and, once the circle is complete, throws every player in
-     * that reach it can see about 30 blocks away. A player behind a pillar is safe.
+     * still, draws a magic circle {@value #SEAL_BELOW} blocks below itself and, once the circle is complete, throws
+     * every player in that reach it can see about 30 blocks away. A player behind a pillar is safe.
      *
      * @return the chain that casts it
      */
@@ -2037,18 +2042,18 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("location", graph.selfRead(), "location")
                 .literal("radius", SEAL_REACH)
                 .id();
-        String down = graph.node(VECTOR_CREATE)
-                .literal("x", 0.0)
-                .literal("y", -1.0)
-                .literal("z", 0.0)
+        String below = graph.node(LOCATION_CREATE)
+                .input("world", graph.selfRead(), "world")
+                .input("x", graph.selfRead(), "x")
+                .input(
+                        "y",
+                        graph.node(MATH_SUBTRACT)
+                                .input("first", graph.selfRead(), "y")
+                                .literal("second", SEAL_BELOW)
+                                .id(),
+                        RESULT)
+                .input("z", graph.selfRead(), "z")
                 .id();
-        Graphs.NodeBuilder trace = graph.node(WORLD_LINE_TRACE)
-                .config("hits", "BLOCKS")
-                .input("start", graph.selfRead(), "location")
-                .input("direction", down, RESULT)
-                .literal("distance", 128.0)
-                .input("ignore", graph.self(), "entity");
-        String ground = trace.id();
         String release = graph.node(FLOW_DELAY)
                 .literal("duration", SEAL_CHARGE)
                 .chain(
@@ -2056,15 +2061,16 @@ public final class DefaultMobs implements BloodNightNodes {
                         playersAround(graph, SEAL_REACH, player -> throwAway(graph, player)),
                         casting(graph, false))
                 .id();
-        String cast = graph.when(
-                ground,
-                "hit",
-                casting(graph, true),
-                ai(graph, false),
-                graph.playEffect("bloodnight:arcane_seal", ground, "location").id(),
-                release);
-        trace.chain("next", cast);
-        return graph.present(nearest, "player", graph.every(SEAL_COOLDOWN, ground));
+        return graph.present(
+                nearest,
+                "player",
+                graph.every(
+                        SEAL_COOLDOWN,
+                        casting(graph, true),
+                        ai(graph, false),
+                        graph.playEffect("bloodnight:arcane_seal", below, RESULT)
+                                .id(),
+                        release));
     }
 
     /**

@@ -106,7 +106,7 @@ Cave spiders can become these too.
 | `launcher_enderman` | Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go. |
 | `grabber_enderman` | Every 10 seconds it grabs mobs around it and puts them down in front of you. |
 | `fuse_enderman` | Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks. |
-| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning. Every 8 seconds it throws a blood spear at the nearest player, which hurts when it lands. Its hits wither and drain the player. Once a minute it hangs still and draws an arcane seal 50 blocks across on the ground below it; after 8 seconds every player within 200 blocks it can see is thrown about 30 blocks away. Hide behind a pillar. It never spawns by chance. |
+| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning. Every 8 seconds it throws a blood spear at the nearest player, which hurts when it lands. Its hits wither and drain the player. Once a minute it hangs still and draws an arcane seal 50 blocks across in the air below it; after 8 seconds every player within 200 blocks it can see is thrown about 30 blocks away. Hide behind a pillar. It never spawns by chance. |
 
 Open any of them in the [web editor](../editor/sessions.md) to see how they work. They are good examples for your
 own mobs.
