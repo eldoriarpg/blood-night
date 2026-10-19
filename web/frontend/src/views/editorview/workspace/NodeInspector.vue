@@ -14,11 +14,9 @@ import MutedText from '@/components/typography/MutedText.vue'
 import NodeValue from '~/views/editorview/workspace/NodeValue.vue'
 import type {Catalog} from '~/api/generated/schema'
 import type {Graph} from '~/api/generated/payload'
-import {GraphChanges} from '~/util/graph/graphChanges'
-import {changingSibling, withVariants} from '~/util/graph/mutate'
+import {changingSibling} from '~/util/graph/mutate'
 import {configEdit} from '~/util/graph/nodeEdits'
 import type {GraphBindings} from '~/util/graph/graphBindings'
-import type {PatchOperation} from '~/util/patch/jsonPatch'
 import {pinKind} from '~/util/graph/pins'
 import {choiceName, isTypeField, pickedTitle, pickedTypes, resolvePicked} from '~/util/graph/pickedTypes'
 
@@ -37,7 +35,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const changes = useEditorChanges()
+const {changes, editor, apply} = useGraphEdits(() => props)
 const {t} = useI18n()
 const names = useChoiceLabels()
 
@@ -67,17 +65,6 @@ const config = computed(() => (definition.value?.config ?? []).map(field => {
     value: instance.value?.config?.[field.id ?? ''] ?? field.defaultValue,
   }
 }))
-
-function editor(): GraphChanges {
-  return new GraphChanges(props.base, props.graph)
-}
-
-/**
- * Sends a change, turning a Mutate node into the variant that fits whether it changes anything.
- */
-function apply(operations: PatchOperation[]): Promise<boolean> {
-  return changes.apply(withVariants(props.base, props.graph, props.catalog, operations, props.bindings))
-}
 
 function saveConfig(field: string, value: unknown): void {
   void apply(configEdit(props.base, props.graph, props.catalog, props.node, field, value))

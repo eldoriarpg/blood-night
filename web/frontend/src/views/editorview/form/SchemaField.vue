@@ -74,19 +74,7 @@ const placeholders = computed(() => {
 })
 const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind) || special.value === 'dropWeights' || special.value === 'lootTables' || special.value === 'experience' || special.value === 'money' || special.value === 'moonPhases' || special.value === 'phaseCycle' || special.value === 'curve' || special.value === 'worldMobs' || special.value === 'mobName')
 const current = computed(() => props.value ?? props.field.defaultValue)
-const draft = ref<string | number | undefined>(undefined)
-const numberDraft = computed<number | undefined>({
-  get: () => typeof draft.value === 'number' ? draft.value : undefined,
-  set: value => {
-    draft.value = value
-  },
-})
-const textDraft = computed<string | undefined>({
-  get: () => typeof draft.value === 'string' ? draft.value : undefined,
-  set: value => {
-    draft.value = value
-  },
-})
+const {draft, numberDraft, textDraft} = useValueDraft()
 const listValue = computed(() => Array.isArray(current.value) ? current.value as unknown[] : undefined)
 const soundsValue = computed(() => listValue.value as SoundEntry[] | undefined)
 const textsValue = computed(() => Array.isArray(current.value) ? current.value as string[] : undefined)

@@ -29,32 +29,15 @@ defineProps<{
 const {t} = useI18n()
 const sounds = useSoundAssets()
 const open = ref(false)
-const query = ref('')
 const group = ref<string | undefined>(undefined)
-const active = ref(0)
 const LIMIT = 150
 
-const matches = computed(() => searchSounds(sounds.choices.value, query.value, group.value))
-const shown = computed(() => matches.value.slice(0, LIMIT))
-
-watch([query, group], () => {
-  active.value = 0
-})
-
-watch(open, now => {
-  if (now) {
-    query.value = ''
-    active.value = Math.max(0, shown.value.findIndex(choice => choice.key === model.value))
-  }
-})
+const {query, active, matches, shown, step} = usePickerSearch(
+  open, query => searchSounds(sounds.choices.value, query, group.value), LIMIT, choice => choice.key === model.value, [group])
 
 onMounted(() => {
   void sounds.load()
 })
-
-function step(by: number): void {
-  if (shown.value.length > 0) active.value = (active.value + by + shown.value.length) % shown.value.length
-}
 
 function pick(choice: SoundChoice | undefined): void {
   if (!choice) return

@@ -15,10 +15,8 @@ import CanvasShortcuts from '~/views/editorview/workspace/CanvasShortcuts.vue'
 import NodePicker from '~/views/editorview/workspace/NodePicker.vue'
 import type {Catalog} from '~/api/generated/schema'
 import type {Graph, Macro} from '~/api/generated/payload'
-import {GraphChanges} from '~/util/graph/graphChanges'
 import {graphView, handles, type EdgeView, type NodeView} from '~/util/graph/graphView'
 import {addableNodes, nodeMatches, pulledPin, type NodeMatch, type PulledPin} from '~/util/graph/nodeMatches'
-import {withVariants} from '~/util/graph/mutate'
 import {channelsEdit, configEdit} from '~/util/graph/nodeEdits'
 import {arrange, type LayoutNode} from '~/util/graph/autoLayout'
 import {executionOrder} from '~/util/graph/executionOrder'
@@ -26,7 +24,6 @@ import {graphPlayback} from '~/util/graph/graphPlayback'
 import {storedPosition, type Position} from '~/util/graph/graphLayout'
 import {COMMENT_NODE, type CommentView} from '~/util/graph/comments'
 import type {GraphBindings} from '~/util/graph/graphBindings'
-import type {PatchOperation} from '~/util/patch/jsonPatch'
 
 /**
  * A graph on a canvas: drawn from the payload, and every edit (moving, wiring, unwiring, deleting) sent as a change.
@@ -70,7 +67,7 @@ const emit = defineEmits<{
 
 const flowId = useId()
 const flow = useVueFlow(flowId)
-const changes = useEditorChanges()
+const {editor, apply} = useGraphEdits(() => props)
 const {t} = useI18n()
 const pulled = ref<PulledPin | null>(null)
 const wired = ref(false)
@@ -127,17 +124,6 @@ function played(start: string): void {
 }
 
 onUnmounted(() => playback.stop())
-
-function editor(): GraphChanges {
-  return new GraphChanges(props.base, props.graph)
-}
-
-/**
- * Sends a change, turning Mutate nodes into the variant that fits what is wired into them.
- */
-function apply(operations: PatchOperation[]): Promise<boolean> {
-  return changes.apply(withVariants(props.base, props.graph, props.catalog, operations, props.bindings))
-}
 
 function onGrid(position: Position): Position {
   return {x: Math.round(position.x / GRID) * GRID, y: Math.round(position.y / GRID) * GRID}

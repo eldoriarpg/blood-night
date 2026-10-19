@@ -9,21 +9,15 @@ import SectionHeader from '@/components/typography/SectionHeader.vue'
 import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
 import SliderInput from '@/components/input/range/SliderInput.vue'
 import MutedText from '@/components/typography/MutedText.vue'
-import type {EditorItem, MaterialInfo} from '~/api/generated/payload'
+import type {ItemSectionEmits, ItemSectionProps} from '~/util/items/itemSection'
 
 /**
  * How an item that wears out holds up: whether it is unbreakable, and how worn it already is, as a slider with the
  * uses that leaves. Shown only for items that wear out.
  */
-const props = defineProps<{
-  item: EditorItem
-  info: MaterialInfo
-  readOnly: boolean
-}>()
+const props = defineProps<ItemSectionProps>()
 
-const emit = defineEmits<{
-  save: [key: keyof EditorItem, value: unknown]
-}>()
+const emit = defineEmits<ItemSectionEmits>()
 
 const {t} = useI18n()
 const wear = ref(0)

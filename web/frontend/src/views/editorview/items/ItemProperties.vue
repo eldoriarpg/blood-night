@@ -8,21 +8,15 @@ import ItemLook from '~/views/editorview/items/ItemLook.vue'
 import ItemDurability from '~/views/editorview/items/ItemDurability.vue'
 import ItemAttributes from '~/views/editorview/items/ItemAttributes.vue'
 import ItemTooltipParts from '~/views/editorview/items/ItemTooltipParts.vue'
-import type {EditorItem, MaterialInfo} from '~/api/generated/payload'
+import type {ItemSectionEmits, ItemSectionProps} from '~/util/items/itemSection'
 
 /**
  * What an item is beyond its texts and enchantments: how it looks, how it wears where it wears out, the attributes it
  * gives and which tooltip parts it hides.
  */
-defineProps<{
-  item: EditorItem
-  info: MaterialInfo
-  readOnly: boolean
-}>()
+defineProps<ItemSectionProps>()
 
-const emit = defineEmits<{
-  save: [key: keyof EditorItem, value: unknown]
-}>()
+const emit = defineEmits<ItemSectionEmits>()
 </script>
 
 <template>

@@ -11,22 +11,16 @@ import NumberInput from '@/components/input/number/NumberInput.vue'
 import ColorInput from '@/components/input/color/ColorInput.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
-import type {EditorItem, MaterialInfo} from '~/api/generated/payload'
+import type {ItemSectionEmits, ItemSectionProps} from '~/util/items/itemSection'
 import {keyWords} from '~/util/items/itemLook'
 
 /**
  * How an item looks: whether it glints, the model a resource pack gives it, its dye colour where it takes one and its
  * armour trim where it takes one. A cleared field is saved as unset, so the item looks as its material does.
  */
-const props = defineProps<{
-  item: EditorItem
-  info: MaterialInfo
-  readOnly: boolean
-}>()
+const props = defineProps<ItemSectionProps>()
 
-const emit = defineEmits<{
-  save: [key: keyof EditorItem, value: unknown]
-}>()
+const emit = defineEmits<ItemSectionEmits>()
 
 const {t} = useI18n()
 const session = useEditorSession()
