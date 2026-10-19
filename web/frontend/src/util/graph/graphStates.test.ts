@@ -8,6 +8,7 @@ import type {Catalog} from '~/api/generated/schema'
 import type {Graph} from '~/api/generated/payload'
 import {StateChanges, removable, stateCatalog, stateGraph, stateRows, transitions} from './graphStates'
 import {stateLayout} from './stateLayout'
+import {GraphChanges} from './graphChanges'
 
 const graph: Graph = {
     states: [
@@ -39,6 +40,20 @@ describe('graph states', () => {
         expect(Object.keys(calm.graph.comments ?? {})).toEqual(['frame'])
         expect(Object.keys(stateGraph(graph, 'angry').graph.nodes).sort()).toEqual(['aura', 'cast', 'reader'])
         expect(Object.keys(stateGraph(graph, undefined).graph.nodes)).toEqual(['always'])
+    })
+
+    it('gives a borrowed node a place of its own in every state', () => {
+        const placed: Graph = {
+            ...graph,
+            nodes: {...graph.nodes, always: {type: 'value.number', editor: {x: 5, y: 6, at: {calm: {x: 100, y: 200}}}}},
+        }
+        expect(stateGraph(placed, 'calm').graph.nodes.always?.editor).toEqual({at: {calm: {x: 100, y: 200}}, x: 100, y: 200})
+        expect(stateGraph(placed, undefined).graph.nodes.always?.editor).toEqual({x: 5, y: 6, at: {calm: {x: 100, y: 200}}})
+
+        const inCalm = new GraphChanges('/g', placed, 'calm').move('always', {x: 1, y: 2})
+        expect(inCalm).toEqual([{op: 'add', path: '/g/nodes/always/editor', value: {x: 5, y: 6, at: {calm: {x: 1, y: 2}}}}])
+        const own = new GraphChanges('/g', placed, 'calm').move('tick', {x: 3, y: 4})
+        expect(own).toEqual([{op: 'add', path: '/g/nodes/tick/editor', value: {x: 3, y: 4}}])
     })
 
     it('offers the state nodes only where they fit', () => {

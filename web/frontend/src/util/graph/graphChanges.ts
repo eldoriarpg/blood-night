@@ -74,8 +74,8 @@ export class GraphChanges {
             return comment ? this.editComment(id, {x: Math.round(comment.x + by.x), y: Math.round(comment.y + by.y)}) : []
         })
         const moved = nodes.flatMap(id => {
-            const editor = (this.instance(id).editor ?? {}) as {x?: number, y?: number}
-            return this.move(id, {x: (editor.x ?? 0) + by.x, y: (editor.y ?? 0) + by.y})
+            const at = this.position(id)
+            return this.move(id, {x: (at?.x ?? 0) + by.x, y: (at?.y ?? 0) + by.y})
         })
         return [...frames, ...moved]
     }
@@ -86,10 +86,30 @@ export class GraphChanges {
         return instance
     }
 
-    /** Moves a node, keeping what else the editor stored with it. */
+    /**
+     * Whether a node lies outside the state this edits and is only shown in it because a node there reads it; such a
+     * node keeps a place of its own in every state that shows it, so moving it there leaves its own state alone.
+     */
+    private borrowed(id: string): boolean {
+        return this.state !== undefined && this.instance(id).state !== this.state
+    }
+
+    /** Where a node is placed in the state this edits, if it is. */
+    private position(id: string): Position | undefined {
+        const editor = (this.instance(id).editor ?? {}) as {x?: number, y?: number, at?: Record<string, Position>}
+        if (this.borrowed(id)) return editor.at?.[this.state!]
+        return typeof editor.x === 'number' && typeof editor.y === 'number' ? {x: editor.x, y: editor.y} : undefined
+    }
+
+    /** Moves a node, keeping what else the editor stored with it; a borrowed node only in the state this edits. */
     move(id: string, position: Position): PatchOperation[] {
         const editor = (this.instance(id).editor ?? {}) as Record<string, unknown>
-        return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, x: Math.round(position.x), y: Math.round(position.y)}}]
+        const placed = {x: Math.round(position.x), y: Math.round(position.y)}
+        if (this.borrowed(id)) {
+            const at = (editor.at ?? {}) as Record<string, Position>
+            return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, at: {...at, [this.state!]: placed}}}]
+        }
+        return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, ...placed}}]
     }
 
     /**

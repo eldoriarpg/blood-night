@@ -80,9 +80,19 @@ export function stateGraph(graph: Graph, state: string | undefined): {graph: Gra
         }
     }
     const shown: Record<string, NodeInstance> = Object.fromEntries(own)
-    for (const id of borrowed) shown[id] = {...nodes[id], executions: {}}
+    for (const id of borrowed) shown[id] = {...nodes[id], executions: {}, editor: placedIn(nodes[id]!, state)}
     const comments = Object.fromEntries(Object.entries(graph.comments ?? {}).filter(([, comment]) => comment.state === state))
     return {graph: {...graph, nodes: shown, comments}, borrowed}
+}
+
+/**
+ * The editor data of a node shown in another state than its own, with the place it has in that state: borrowed nodes
+ * keep one place per state showing them, so arranging one state leaves the others alone.
+ */
+function placedIn(node: NodeInstance, state: string | undefined): NodeInstance['editor'] {
+    const {x: _x, y: _y, ...rest} = (node.editor ?? {}) as {x?: number, y?: number, at?: Record<string, {x: number, y: number}>}
+    const at = state === undefined ? undefined : rest.at?.[state]
+    return at ? {...rest, x: at.x, y: at.y} : rest
 }
 
 /**
