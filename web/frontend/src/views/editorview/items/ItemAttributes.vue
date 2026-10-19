@@ -10,7 +10,8 @@ import DecimalInput from '@/components/input/number/DecimalInput.vue'
 import MutedIconButton from '@/components/button/MutedIconButton.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import ChoicePicker from '~/views/editorview/form/ChoicePicker.vue'
-import type {EditorItem, ItemAttribute, ItemSlot, MaterialInfo, Operation} from '~/api/generated/payload'
+import type {ItemAttribute, ItemSlot, Operation} from '~/api/generated/payload'
+import type {ItemSectionEmits, ItemSectionProps} from '~/util/items/itemSection'
 import {attributeLabels} from '~/util/settings/serverSuggestions'
 import {addAttribute} from '~/util/items/itemLook'
 
@@ -19,15 +20,9 @@ import {addAttribute} from '~/util/items/itemLook'
  * has to be. Without rows the item gives what its material gives by itself, which is listed; the first row added
  * brings those along as rows, since Minecraft drops them once an item has any.
  */
-const props = defineProps<{
-  item: EditorItem
-  info: MaterialInfo
-  readOnly: boolean
-}>()
+const props = defineProps<ItemSectionProps>()
 
-const emit = defineEmits<{
-  save: [key: keyof EditorItem, value: unknown]
-}>()
+const emit = defineEmits<ItemSectionEmits>()
 
 const {t} = useI18n()
 const session = useEditorSession()

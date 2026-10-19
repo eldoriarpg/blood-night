@@ -6,22 +6,17 @@
 <script setup lang="ts">
 import SectionHeader from '@/components/typography/SectionHeader.vue'
 import CheckboxInput from '@/components/input/toggle/CheckboxInput.vue'
-import type {EditorItem, MaterialInfo, TooltipPart} from '~/api/generated/payload'
+import type {TooltipPart} from '~/api/generated/payload'
+import type {ItemSectionEmits, ItemSectionProps} from '~/util/items/itemSection'
 import {hideableParts} from '~/util/items/itemLook'
 
 /**
  * Which parts of an item's tooltip are left out: one checkbox per part the item shows. The item keeps what a hidden
  * part stands for.
  */
-const props = defineProps<{
-  item: EditorItem
-  info: MaterialInfo
-  readOnly: boolean
-}>()
+const props = defineProps<ItemSectionProps>()
 
-const emit = defineEmits<{
-  save: [key: keyof EditorItem, value: unknown]
-}>()
+const emit = defineEmits<ItemSectionEmits>()
 
 const {t} = useI18n()
 const parts = computed(() => hideableParts(props.item, props.info))

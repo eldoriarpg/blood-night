@@ -37,35 +37,20 @@ const props = defineProps<{
 
 const {t} = useI18n()
 const open = ref(false)
-const query = ref('')
-const active = ref(0)
 const LIMIT = 200
 const SEARCHED_FROM = 13
 const list = ref<HTMLElement | null>(null)
 const searchable = computed(() => props.options.length >= SEARCHED_FROM)
 
 const names = computed(() => props.labels ?? {})
-const matches = computed(() => searchLabelled(props.options, names.value, query.value))
-const shown = computed(() => matches.value.slice(0, LIMIT))
-
-watch(query, () => {
-  active.value = 0
-})
+const {query, active, matches, shown, step} = usePickerSearch(open, query => searchLabelled(props.options, names.value, query), LIMIT, option => option === model.value)
 
 watch(open, now => {
-  if (now) {
-    query.value = ''
-    active.value = Math.max(0, shown.value.indexOf(model.value ?? ''))
-    if (!searchable.value) void nextTick(() => list.value?.focus())
-  }
+  if (now && !searchable.value) void nextTick(() => list.value?.focus())
 })
 
 function nameOf(option: string): string {
   return names.value[option] ?? option
-}
-
-function step(by: number): void {
-  if (shown.value.length > 0) active.value = (active.value + by + shown.value.length) % shown.value.length
 }
 
 function pick(option: string | undefined): void {

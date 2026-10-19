@@ -39,19 +39,7 @@ const emit = defineEmits<{
   save: [value: unknown]
 }>()
 
-const draft = ref<string | number | undefined>(undefined)
-const numberDraft = computed<number | undefined>({
-  get: () => typeof draft.value === 'number' ? draft.value : undefined,
-  set: value => {
-    draft.value = value
-  },
-})
-const textDraft = computed<string | undefined>({
-  get: () => typeof draft.value === 'string' ? draft.value : undefined,
-  set: value => {
-    draft.value = value
-  },
-})
+const {draft, numberDraft, textDraft} = useValueDraft()
 const choice = computed(() => typeof props.value === 'string' ? props.value : null)
 const colour = computed(() => typeof props.value === 'string' ? props.value : '#ffffff')
 

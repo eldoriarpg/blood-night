@@ -31,32 +31,14 @@ const props = defineProps<{
 const {t} = useI18n()
 const assets = useItemAssets()
 const open = ref(false)
-const query = ref('')
-const active = ref(0)
 const LIMIT = 120
 
 const chosen = computed(() => props.choices.find(choice => choice.key === model.value))
-const matches = computed(() => searchChoices(props.choices, query.value))
-const shown = computed(() => matches.value.slice(0, LIMIT))
-
-watch(query, () => {
-  active.value = 0
-})
-
-watch(open, now => {
-  if (now) {
-    query.value = ''
-    active.value = Math.max(0, shown.value.findIndex(choice => choice.key === model.value))
-  }
-})
+const {query, active, matches, shown, step} = usePickerSearch(open, query => searchChoices(props.choices, query), LIMIT, choice => choice.key === model.value)
 
 onMounted(() => {
   void assets.load()
 })
-
-function step(by: number): void {
-  if (shown.value.length > 0) active.value = (active.value + by + shown.value.length) % shown.value.length
-}
 
 function pick(choice: ItemChoice | undefined): void {
   if (!choice) return
