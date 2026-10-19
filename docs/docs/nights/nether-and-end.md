@@ -49,7 +49,8 @@ Minutes here are game minutes. They follow the server's tick rate.
 The fog and the light turn red, just like in the overworld. Players also get the red screen edge, the darkness pulses,
 the particles and the heartbeat from the [atmosphere](./atmosphere.md) settings. Rain does nothing here.
 
-`/bloodnight night` shows when the next blood night comes, and `force` and `cancel` work too.
+`/bloodnight night` shows when the next blood night comes, and `force` and `cancel` work too. These worlds have no
+night to wait for, so `force` starts a blood night right away. It lasts as long as the world's blood nights.
 
 ## The dragon fight
 

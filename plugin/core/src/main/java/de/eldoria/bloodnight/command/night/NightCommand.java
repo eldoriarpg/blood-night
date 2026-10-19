@@ -85,11 +85,20 @@ public final class NightCommand {
     private void force(CommandSender sender, World world) {
         plugin.tasks().globalNow(() -> {
             long night = plugin.bloodNights().force(world);
+            if (plugin.bloodNights().running(world).isPresent()) {
+                Replies.send(
+                        sender,
+                        "night.forced_now",
+                        Replies.arg("world", plugin.worldNames().name(world)));
+                return;
+            }
+            long ticks = plugin.selector().times(world).ticksUntil(NightTimes.now(world), night);
             Replies.send(
                     sender,
                     "night.forced",
                     Replies.arg("night", night),
-                    Replies.arg("world", plugin.worldNames().name(world)));
+                    Replies.arg("world", plugin.worldNames().name(world)),
+                    Replies.arg("minutes", Math.max(1, ticks / 20 / 60)));
         });
     }
 

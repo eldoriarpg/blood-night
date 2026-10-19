@@ -224,6 +224,38 @@ class BloodNightsTest {
     }
 
     @Test
+    void forcingInAWorldWithoutADayCycleBeginsNowForTheLengthOfANight() {
+        WorldMock end = new WorldMock();
+        end.setName("the_end");
+        end.setEnvironment(World.Environment.THE_END);
+        server.addWorld(end);
+        NightSettings settings = Selections.read(
+                "{\"timed\":{\"everyMinutes\":10,\"chance\":0,\"lengthMinutes\":2}}", NightSettings.class);
+        TimedNights timed = settings.timed();
+        BloodNights timedNights = new BloodNights(
+                new NightSelector(ignored -> timed, ignored -> NightTimes.of(end, settings), CLOCK, () -> 20),
+                ignored -> true,
+                server.getPluginManager(),
+                Logger.getLogger("test"));
+
+        end.setGameTime(3 * 12_000 + 5_000);
+        assertEquals(3, timedNights.force(end));
+        assertEquals(3, timedNights.running(end).getAsLong());
+
+        end.setGameTime(3 * 12_000 + 7_000);
+        timedNights.check(List.of(end));
+        assertEquals(3, timedNights.running(end).getAsLong());
+
+        end.setGameTime(3 * 12_000 + 7_400);
+        timedNights.check(List.of(end));
+        assertTrue(timedNights.running(end).isEmpty());
+
+        end.setGameTime(4 * 12_000 + 100);
+        timedNights.check(List.of(end));
+        assertTrue(timedNights.running(end).isEmpty());
+    }
+
+    @Test
     void heldBloodNightsLastUntilReleased() {
         world.setFullTime(1_000);
         nights.hold(world);

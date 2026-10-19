@@ -46,7 +46,9 @@ public interface BloodNightService {
     int probability(World world, int nightsAhead);
 
     /**
-     * Makes the world's coming night a blood night; when it is night already, the blood night begins now.
+     * Makes the world's coming night a blood night; when it is night already, the blood night begins now. A world
+     * without a day cycle, such as the End, has no night to wait for: a blood night begins there now and lasts as long
+     * as its nights.
      */
     void force(World world);
 
