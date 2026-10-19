@@ -18,12 +18,12 @@ import java.util.Map;
 /**
  * A small catalog: an entry with a chain, an action with an input and a config field, a value node.
  */
-final class Catalogs {
+public final class Catalogs {
     private static final TypeRef NUMBER = new TypeRef("number", null, null, List.of());
 
     private Catalogs() {}
 
-    static Catalog small() {
+    public static Catalog small() {
         return new Catalog(
                 Catalog.FORMAT,
                 "test-catalog",

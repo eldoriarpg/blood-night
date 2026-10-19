@@ -5,6 +5,17 @@
  */
 package de.eldoria.bloodnight.web.api.editor;
 
+import de.eldoria.bloodnight.web.api.editor.change.AppliedReport;
+import de.eldoria.bloodnight.web.api.editor.change.ChangeAccepted;
+import de.eldoria.bloodnight.web.api.editor.change.ChangeBatch;
+import de.eldoria.bloodnight.web.api.editor.change.RevisionInfo;
+import de.eldoria.bloodnight.web.api.editor.session.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.session.CreateSession;
+import de.eldoria.bloodnight.web.api.editor.session.ParticipantCreated;
+import de.eldoria.bloodnight.web.api.editor.session.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.stream.LockRequest;
+import de.eldoria.bloodnight.web.api.editor.stream.StreamEvent;
+
 /**
  * The editor's routes in BloodNight's web backend, version 1.
  * <ul>

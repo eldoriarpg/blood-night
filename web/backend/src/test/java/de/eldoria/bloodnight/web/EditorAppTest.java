@@ -6,16 +6,21 @@
 package de.eldoria.bloodnight.web;
 
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
-import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
-import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
-import de.eldoria.bloodnight.web.api.editor.RevisionInfo;
-import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
-import de.eldoria.bloodnight.web.api.editor.StreamEvent;
-import de.eldoria.bloodnight.web.api.editor.StreamEventType;
+import de.eldoria.bloodnight.web.api.editor.change.ChangeAccepted;
+import de.eldoria.bloodnight.web.api.editor.change.RevisionInfo;
+import de.eldoria.bloodnight.web.api.editor.session.ParticipantCreated;
+import de.eldoria.bloodnight.web.api.editor.session.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.stream.StreamEvent;
+import de.eldoria.bloodnight.web.api.editor.stream.StreamEventType;
+import de.eldoria.bloodnight.web.session.Rooms;
+import de.eldoria.bloodnight.web.storage.CatalogRepository;
+import de.eldoria.bloodnight.web.storage.Database;
+import de.eldoria.bloodnight.web.storage.ParticipantRepository;
+import de.eldoria.bloodnight.web.storage.SessionRepository;
 import de.eldoria.graph.payload.CatalogGenerator;
 import io.javalin.Javalin;
 import org.junit.jupiter.api.AfterAll;

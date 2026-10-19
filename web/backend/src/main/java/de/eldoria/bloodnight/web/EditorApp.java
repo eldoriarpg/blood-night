@@ -6,23 +6,36 @@
 package de.eldoria.bloodnight.web;
 
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
-import de.eldoria.bloodnight.web.api.editor.AddParticipant;
-import de.eldoria.bloodnight.web.api.editor.AppliedReport;
-import de.eldoria.bloodnight.web.api.editor.ChangeAccepted;
-import de.eldoria.bloodnight.web.api.editor.ChangeBatch;
-import de.eldoria.bloodnight.web.api.editor.CreateSession;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
-import de.eldoria.bloodnight.web.api.editor.LockInfo;
-import de.eldoria.bloodnight.web.api.editor.LockRequest;
-import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
-import de.eldoria.bloodnight.web.api.editor.PayloadProblem;
-import de.eldoria.bloodnight.web.api.editor.RevisionInfo;
-import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
-import de.eldoria.bloodnight.web.api.editor.StreamEvent;
-import de.eldoria.bloodnight.web.api.editor.StreamEventType;
+import de.eldoria.bloodnight.web.api.editor.change.AppliedReport;
+import de.eldoria.bloodnight.web.api.editor.change.ChangeAccepted;
+import de.eldoria.bloodnight.web.api.editor.change.ChangeBatch;
+import de.eldoria.bloodnight.web.api.editor.change.PayloadProblem;
+import de.eldoria.bloodnight.web.api.editor.change.RevisionInfo;
+import de.eldoria.bloodnight.web.api.editor.session.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.session.CreateSession;
+import de.eldoria.bloodnight.web.api.editor.session.ParticipantCreated;
+import de.eldoria.bloodnight.web.api.editor.session.SessionCreated;
+import de.eldoria.bloodnight.web.api.editor.stream.LockInfo;
+import de.eldoria.bloodnight.web.api.editor.stream.LockRequest;
+import de.eldoria.bloodnight.web.api.editor.stream.StreamEvent;
+import de.eldoria.bloodnight.web.api.editor.stream.StreamEventType;
+import de.eldoria.bloodnight.web.assets.ItemAssets;
+import de.eldoria.bloodnight.web.payload.JsonPatch;
+import de.eldoria.bloodnight.web.payload.PayloadValidator;
+import de.eldoria.bloodnight.web.payload.Sections;
+import de.eldoria.bloodnight.web.session.Participant;
+import de.eldoria.bloodnight.web.session.Room;
+import de.eldoria.bloodnight.web.session.Rooms;
+import de.eldoria.bloodnight.web.session.Tokens;
+import de.eldoria.bloodnight.web.storage.CatalogRepository;
+import de.eldoria.bloodnight.web.storage.ParticipantRepository;
+import de.eldoria.bloodnight.web.storage.SessionRepository;
+import de.eldoria.bloodnight.web.storage.StoredRevision;
+import de.eldoria.bloodnight.web.storage.StoredSession;
 import de.eldoria.graph.payload.Catalog;
 import de.eldoria.graph.payload.CatalogGenerator;
 import io.javalin.Javalin;
@@ -79,8 +92,8 @@ import java.util.stream.Collectors;
  * Minecraft's item icons, names and sounds ({@link AssetRoutes}) are served from {@link ItemAssets}, without a token and
  * cacheable for good, so the editor's item pickers can show them.
  */
-final class EditorApp {
-    static final JsonMapper MAPPER = JsonMapper.builder()
+public final class EditorApp {
+    public static final JsonMapper MAPPER = JsonMapper.builder()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .build();
     private static final TypeReference<List<PayloadProblem>> PROBLEMS = new TypeReference<>() {};
