@@ -45,6 +45,7 @@ export type EntityType =
   | 'COW'
   | 'CREAKING'
   | 'CREEPER'
+  | 'CUSHION'
   | 'DARK_OAK_BOAT'
   | 'DARK_OAK_CHEST_BOAT'
   | 'DOLPHIN'
@@ -120,6 +121,8 @@ export type EntityType =
   | 'PILLAGER'
   | 'PLAYER'
   | 'POLAR_BEAR'
+  | 'POPLAR_BOAT'
+  | 'POPLAR_CHEST_BOAT'
   | 'PUFFERFISH'
   | 'RABBIT'
   | 'RAVAGER'
@@ -1752,6 +1755,7 @@ export const EntityType = {
     COW: "COW",
     CREAKING: "CREAKING",
     CREEPER: "CREEPER",
+    CUSHION: "CUSHION",
     DARK_OAK_BOAT: "DARK_OAK_BOAT",
     DARK_OAK_CHEST_BOAT: "DARK_OAK_CHEST_BOAT",
     DOLPHIN: "DOLPHIN",
@@ -1827,6 +1831,8 @@ export const EntityType = {
     PILLAGER: "PILLAGER",
     PLAYER: "PLAYER",
     POLAR_BEAR: "POLAR_BEAR",
+    POPLAR_BOAT: "POPLAR_BOAT",
+    POPLAR_CHEST_BOAT: "POPLAR_CHEST_BOAT",
     PUFFERFISH: "PUFFERFISH",
     RABBIT: "RABBIT",
     RAVAGER: "RAVAGER",

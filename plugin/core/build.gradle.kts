@@ -54,7 +54,7 @@ paper {
     name = "BloodNight"
     main = "de.eldoria.bloodnight.BloodNight"
     bootstrapper = "de.eldoria.bloodnight.BloodNightBootstrap"
-    apiVersion = "26.2"
+    apiVersion = "26.3"
     foliaSupported = true
     description = "Special mobs during blood nights, their behaviour built from node graphs"
     authors = listOf("RainbowDashLabs")
@@ -211,7 +211,7 @@ tasks {
 }
 
 runPaper.folia.registerTask {
-    minecraftVersion("26.2")
+    minecraftVersion("26.3")
     runDirectory = layout.projectDirectory.dir("run-folia")
     jvmArgs(
         "-Dcom.mojang.eula.agree=true",

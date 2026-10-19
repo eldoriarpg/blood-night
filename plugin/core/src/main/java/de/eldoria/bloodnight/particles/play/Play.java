@@ -194,7 +194,7 @@ public final class Play {
                             emitter.spread().x(),
                             emitter.spread().y(),
                             emitter.spread().z())
-                    .extra(emitter.speed())
+                    .speed(emitter.speed())
                     .receivers(seeing);
             try {
                 for (int at = 0; at < points.size(); at++) {
