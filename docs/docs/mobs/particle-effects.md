@@ -155,6 +155,10 @@ motion: {ticks: 8, through: 1.5, ease: IN}
 - `through`: how far it goes on past the other end, in blocks. This makes a spear go through a player.
 - `ease`: `LINEAR` keeps the same speed, `IN` speeds up, `OUT` slows down.
 
+The other end is the same point of the body as the anchor: a beam from the mob's `EYES` ends at the player's eyes.
+Seen by that player, it then ends right in front of their face and looks cut off and wide. Use `CENTER` for
+anything aimed at a player, so it hits their chest.
+
 ## Display pieces
 
 A piece shows something solid that particles cannot draw: an item, a block, or a bar.

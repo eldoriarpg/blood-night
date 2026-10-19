@@ -40,11 +40,14 @@ import java.util.UUID;
  * off do not see it; with a viewer, only the viewer does.
  * <p>
  * A piece with motion flies to the other end and on past it, stays there for its {@code stick} ticks, then goes; one
- * without stays at its anchor for the play's duration. A span stretches from its end to the other one the whole time.
+ * without stays at its anchor for the play's duration. A span stretches from its end to the other one the whole time;
+ * its start follows its end within the same tick its stretch changes in, so the far end stays on the target while the
+ * source moves.
  */
 public final class PieceRun {
     private static final int FADE = 5;
     private static final int FLIGHT_SMOOTHING = 2;
+    private static final int SPAN_SMOOTHING = 1;
     private static final Display.Brightness BRIGHT = new Display.Brightness(15, 15);
     private final Piece piece;
     private final int index;
@@ -113,7 +116,7 @@ public final class PieceRun {
                 spawned.setBrightness(BRIGHT);
                 spawned.getPersistentDataContainer().set(Displays.DISPLAY, PersistentDataType.BOOLEAN, true);
                 if (play.viewer() != null) spawned.setVisibleByDefault(false);
-                spawned.setTeleportDuration(FLIGHT_SMOOTHING);
+                spawned.setTeleportDuration(piece.kind() == Piece.PieceKind.SPAN ? SPAN_SMOOTHING : FLIGHT_SMOOTHING);
                 dress(spawned);
                 shown = transformation(start, far);
                 spawned.setTransformation(shown);
