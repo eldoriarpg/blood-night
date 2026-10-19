@@ -90,6 +90,9 @@ final class BloodNightCommand {
     @Subcommand
     final SetupCommand setup;
 
+    @Subcommand
+    final ParticlesCommand particles;
+
     BloodNightCommand(BloodNight plugin) {
         this.plugin = plugin;
         reload = new ReloadCommand(plugin);
@@ -107,6 +110,7 @@ final class BloodNightCommand {
         pack = new PackCommand(plugin);
         convert = new ConvertCommand(plugin);
         setup = new SetupCommand(editor);
+        particles = new ParticlesCommand(plugin);
     }
 
     /**
@@ -144,6 +148,7 @@ final class BloodNightCommand {
         subcommands.put("trigger", "trigger [mob]");
         subcommands.put("debug", "debug");
         subcommands.put("export", "export");
+        subcommands.put("particles", "particles [on | off]");
         return subcommands;
     }
 }

@@ -77,6 +77,11 @@ import de.eldoria.bloodnight.night.NightStretch;
 import de.eldoria.bloodnight.night.selection.NightSelector;
 import de.eldoria.bloodnight.night.selection.NightTimes;
 import de.eldoria.bloodnight.night.selection.Prediction;
+import de.eldoria.bloodnight.particles.EffectLibrary;
+import de.eldoria.bloodnight.particles.play.Budget;
+import de.eldoria.bloodnight.particles.play.EffectPlayer;
+import de.eldoria.bloodnight.particles.play.Stage;
+import de.eldoria.bloodnight.particles.play.Viewers;
 import de.eldoria.bloodnight.rules.CommandBlocker;
 import de.eldoria.bloodnight.rules.MobDamage;
 import de.eldoria.bloodnight.rules.PhantomForce;
@@ -172,6 +177,8 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     private BloodNights bloodNights;
     private Behaviours behaviours = Behaviours.empty();
     private Catalog catalog;
+    private Viewers viewers;
+    private EffectPlayer effects;
 
     /**
      * Registers the WorldGuard flags while plugins load, as WorldGuard requires.
@@ -226,6 +233,16 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                 world -> configuration.worldConfig(world).enabled(),
                 getServer().getPluginManager(),
                 getLogger());
+        viewers = new Viewers();
+        getServer().getPluginManager().registerEvents(viewers, this);
+        Budget budget = new Budget(() -> configuration.main().particles().budgetPerTick());
+        tasks.globalTimer(1, budget::reset);
+        effects = new EffectPlayer(
+                new EffectLibrary(() -> configuration.particleEffects()),
+                new Stage(tasks, viewers, budget, () -> configuration.main().particles(), id -> configuration
+                        .items()
+                        .item(id)),
+                this);
         PaperSteering steering = new PaperSteering(getServer().getMobGoals());
         getServer().getPluginManager().registerEvents(steering, this);
         coordinator = new MobCoordinator(
@@ -757,6 +774,20 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
      */
     public Configuration configuration() {
         return configuration;
+    }
+
+    /**
+     * @return who sees particle effects
+     */
+    public Viewers viewers() {
+        return viewers;
+    }
+
+    /**
+     * @return plays particle effects
+     */
+    public EffectPlayer effects() {
+        return effects;
     }
 
     /**

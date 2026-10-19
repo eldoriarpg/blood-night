@@ -268,7 +268,7 @@ effects:
     pieces:
       - kind: ITEM
         item: minecraft:trident
-        rotation: {pitch: 90, yaw: 0, roll: 0}
+        rotation: {pitch: 90, yaw: 0, roll: 45}
         anchor: {at: EYES}
         motion: {ticks: 8, through: 1.5, ease: IN}
         stick: 20

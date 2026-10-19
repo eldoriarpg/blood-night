@@ -235,13 +235,20 @@ public final class Displays {
 
     /**
      * Takes one of the mob's warning slots for a warning made of some displays.
+     */
+    private static @Nullable Runnable reserve(MobContext context, int parts) {
+        return reserve(context.entity().getUniqueId(), parts);
+    }
+
+    /**
+     * Takes one of a mob's display slots for something made of some displays, e.g. the pieces of a particle effect.
      *
-     * @param parts how many displays the warning is made of
+     * @param owner the mob
+     * @param parts how many displays it is made of
      * @return what each display runs once it is gone, freeing the slot after the last; {@code null} when the mob has
      *     no slot left
      */
-    private static @Nullable Runnable reserve(MobContext context, int parts) {
-        UUID owner = context.entity().getUniqueId();
+    public static @Nullable Runnable reserve(UUID owner, int parts) {
         AtomicInteger alive = ALIVE.computeIfAbsent(owner, ignored -> new AtomicInteger());
         if (alive.incrementAndGet() > PER_MOB) {
             release(owner, alive);

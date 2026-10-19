@@ -720,6 +720,7 @@ export interface ConfigFile {
   store?: StoreSettings;
   foreignMobs?: ForeignMobSettings;
   setup?: SetupSettings;
+  particles?: ParticleSettings;
   advancements?: boolean;
   loot?: ServerLoot;
 }
@@ -791,6 +792,17 @@ export interface ForeignMobSettings {
  */
 export interface SetupSettings {
   done?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ParticleSettings".
+ */
+export interface ParticleSettings {
+  enabled?: boolean;
+  ambient?: boolean;
+  viewDistance?: number;
+  budgetPerTick?: number;
+  perMob?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

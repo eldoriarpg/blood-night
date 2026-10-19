@@ -437,6 +437,18 @@
             "done" : false
           }
         },
+        "particles" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/ParticleSettings"
+          } ],
+          "default" : {
+            "ambient" : true,
+            "budgetPerTick" : 2000,
+            "enabled" : true,
+            "perMob" : 4,
+            "viewDistance" : 32
+          }
+        },
         "advancements" : {
           "type" : "boolean",
           "default" : true
@@ -1942,6 +1954,31 @@
     "Overlay" : {
       "type" : "string",
       "enum" : [ "PROGRESS", "NOTCHED_6", "NOTCHED_10", "NOTCHED_12", "NOTCHED_20" ]
+    },
+    "ParticleSettings" : {
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "ambient" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "viewDistance" : {
+          "type" : "integer",
+          "default" : 32
+        },
+        "budgetPerTick" : {
+          "type" : "integer",
+          "default" : 2000
+        },
+        "perMob" : {
+          "type" : "integer",
+          "default" : 4
+        }
+      }
     },
     "Phase" : {
       "type" : "object",
