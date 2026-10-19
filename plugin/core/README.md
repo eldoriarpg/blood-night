@@ -73,8 +73,7 @@ All packages are below `de.eldoria.bloodnight`.
   the server; `loot.drop`: `DropHandler`, `PickupGuard`, `RewardLoot`.
 - `mob`: `CustomMob`, `MobTypes` (the entity types a custom mob or its extension can be: spawnable mobs),
   `SpawnReasons`, `MobOrigin`; `mob.attributes`, `mob.spawn` (spawn rules and conditions) and `mob.equipment`
-  (equipment and extension); `mob.defaults` (`DefaultMobs`, the shipped mobs, built as graphs with `MobGraph`);
-  `mob.serialization` (Jackson serializers for the editor payload).
+  (equipment and extension); `mob.defaults` (`DefaultMobs`, the shipped mobs, built as graphs with `MobGraph`).
 - `night`: `BloodNights`, `NightStretch`, `NightSkipGuard`, `NightCommands`, `DragonFight`; `night.selection`:
   `NightSelector`, `NightTimes`, `Prediction`.
 - `rules`: `WorldRules`, `MobDamage`, `CommandBlocker`, `PhantomForce`; `rules.death`: `DeathActionHandler`,

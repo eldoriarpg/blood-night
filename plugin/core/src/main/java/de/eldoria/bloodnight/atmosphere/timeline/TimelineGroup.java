@@ -33,8 +33,8 @@ public enum TimelineGroup {
     RAIDS_DENIED("raids_denied", Start.NIGHT, Ticks.FADE_OUT + Ticks.FADE),
     OMEN("omen", Start.OMEN, Ticks.OMEN + Ticks.FADE);
 
-    public static final int FULL = Ticks.FADE;
-    public static final int FADE_OUT = Ticks.FADE_OUT;
+    static final int FULL = Ticks.FADE;
+    static final int FADE_OUT = Ticks.FADE_OUT;
     public static final int OMEN_TICKS = Ticks.OMEN;
 
     private final String name;

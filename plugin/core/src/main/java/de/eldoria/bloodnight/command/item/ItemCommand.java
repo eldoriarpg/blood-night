@@ -82,7 +82,7 @@ public final class ItemCommand {
         Replies.send(sender, "item.removed", Replies.arg("id", id));
     }
 
-    public static ItemRegistry copy(ItemRegistry items) {
+    static ItemRegistry copy(ItemRegistry items) {
         return new ItemRegistry(Map.copyOf(items.registrations()), Map.copyOf(items.definitions()));
     }
 }

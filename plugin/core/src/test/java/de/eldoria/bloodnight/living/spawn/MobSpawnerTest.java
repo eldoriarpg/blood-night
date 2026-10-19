@@ -341,6 +341,8 @@ class MobSpawnerTest {
         assertFalse(new ForeignMobs(() -> foreign, () -> null).isForeign(zombie));
     }
 
+    /** Citizens marks its NPCs with Bukkit metadata, which Paper deprecates; the test sets it the way Citizens does. */
+    @SuppressWarnings("deprecation")
     @Test
     void npcsStayAsTheyAre() {
         at(13_000);

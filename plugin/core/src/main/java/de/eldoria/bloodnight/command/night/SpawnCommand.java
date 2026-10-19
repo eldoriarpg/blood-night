@@ -58,7 +58,7 @@ public final class SpawnCommand {
      * @return the middle of the face of the block the player looks at, so the mob stands on it or beside it; where the
      *     player stands when no block is within reach
      */
-    public static Location lookedAt(Player player) {
+    static Location lookedAt(Player player) {
         RayTraceResult hit = player.rayTraceBlocks(REACH, FluidCollisionMode.NEVER);
         Block block = hit == null ? null : hit.getHitBlock();
         BlockFace face = hit == null ? null : hit.getHitBlockFace();
@@ -69,7 +69,7 @@ public final class SpawnCommand {
     /**
      * @return the middle of the block next to the given one on that face, at its bottom
      */
-    public static Location besides(Block block, BlockFace face) {
+    static Location besides(Block block, BlockFace face) {
         return block.getRelative(face).getLocation().add(0.5, 0, 0.5);
     }
 

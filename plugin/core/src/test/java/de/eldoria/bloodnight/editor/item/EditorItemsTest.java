@@ -14,6 +14,7 @@ import de.eldoria.bloodnight.items.look.TooltipPart;
 import org.bukkit.Material;
 import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,11 @@ class EditorItemsTest {
     void registeredItemsTakeTheirTextsAndKeepTheRest() {
         ItemStack stored = ItemStack.of(Material.DIAMOND_SWORD);
         stored.setAmount(1);
-        stored.editMeta(meta -> meta.setCustomModelData(7));
+        stored.editMeta(meta -> {
+            CustomModelDataComponent data = meta.getCustomModelDataComponent();
+            data.setFloats(List.of(7f));
+            meta.setCustomModelDataComponent(data);
+        });
         ItemRegistry current = new ItemRegistry(Map.of("abc", stored), null);
         EditorItem edit = new EditorItem(
                 ItemKind.REGISTERED,
@@ -67,7 +72,8 @@ class EditorItemsTest {
         ItemStack item = applied.item("abc");
         assertNotNull(item);
         assertEquals(Material.DIAMOND_SWORD, item.getType());
-        assertEquals(7, item.getItemMeta().getCustomModelData());
+        assertEquals(
+                List.of(7f), item.getItemMeta().getCustomModelDataComponent().getFloats());
         ItemDefinition read = ItemTexts.read(item);
         assertEquals("<!italic><red>Edge", read.name());
         assertEquals(List.of("<!italic><gray>Sharp"), read.lore());

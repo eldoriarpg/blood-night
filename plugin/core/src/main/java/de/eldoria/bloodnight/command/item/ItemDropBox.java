@@ -43,7 +43,7 @@ public final class ItemDropBox implements InventoryHolder {
     /**
      * Opens an empty box for the player.
      */
-    public static void open(Player player) {
+    static void open(Player player) {
         player.openInventory(new ItemDropBox(Replies.text(player, "item.box.title")).getInventory());
         Replies.send(player, "item.box.opened");
     }
@@ -79,7 +79,7 @@ public final class ItemDropBox implements InventoryHolder {
         };
     }
 
-    public static void giveBack(Player player, List<ItemStack> items) {
+    static void giveBack(Player player, List<ItemStack> items) {
         player.getInventory()
                 .addItem(items.stream().map(ItemStack::clone).toArray(ItemStack[]::new))
                 .values()
@@ -108,7 +108,7 @@ public final class ItemDropBox implements InventoryHolder {
      * @param items    the items, possibly the same one more than once
      * @return each item's id once, in the items' order, with whether it was registered before
      */
-    public static Map<String, Boolean> registerAll(ItemRegistry registry, List<ItemStack> items) {
+    static Map<String, Boolean> registerAll(ItemRegistry registry, List<ItemStack> items) {
         Map<String, Boolean> ids = new LinkedHashMap<>();
         for (ItemStack item : items) {
             boolean known = registry.find(item) != null;
@@ -117,7 +117,7 @@ public final class ItemDropBox implements InventoryHolder {
         return ids;
     }
 
-    public static Component copyable(Player player, String id) {
+    static Component copyable(Player player, String id) {
         return Component.text(id, NamedTextColor.GOLD)
                 .clickEvent(ClickEvent.copyToClipboard(id))
                 .hoverEvent(Replies.text(player, "item.copy"));
