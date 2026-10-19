@@ -41,7 +41,9 @@ class JsonSchemasTest {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     record Sparse(String id, List<String> tags) {}
 
-    record PartlySparse(String id, @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> tags) {}
+    record PartlySparse(
+            String id,
+            @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> tags) {}
 
     record Mob(String id, @Nullable String name, List<String> tags, Map<String, Integer> weights, JsonNode editor) {}
 
