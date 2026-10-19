@@ -23,6 +23,8 @@ import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import org.mockbukkit.mockbukkit.entity.ZombieMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,6 +37,7 @@ class EffectPlayerTest {
     private Viewers viewers;
     private EffectPlayer effects;
     private PlayerMock player;
+    private final List<Runnable> sent = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -42,7 +45,11 @@ class EffectPlayerTest {
         Plugin plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
         viewers = new Viewers();
-        Stage stage = new Stage(new Tasks(plugin), viewers, new Budget(() -> 2000), ParticleSettings::new, id -> null);
+        Stage stage = new Stage(
+                new Tasks(plugin), viewers, new Budget(() -> 2000), ParticleSettings::new, id -> null, work -> {
+                    sent.add(work);
+                    work.run();
+                });
         effects = new EffectPlayer(new EffectLibrary(ParticleEffects::new), stage, plugin);
         player = server.addPlayer();
         player.teleport(new Location(world, 5, 64, 0));
@@ -78,6 +85,13 @@ class EffectPlayerTest {
         server.getScheduler().performTicks(3);
         assertFalse(world.getSpawnedParticles().isEmpty());
         assertTrue(world.getSpawnedParticles().getFirst().receivers().contains(player));
+    }
+
+    @Test
+    void particlesLeaveThroughTheSender() {
+        effects.play("bloodnight:shock_wave", spot(), null, null, null);
+        server.getScheduler().performTicks(3);
+        assertFalse(sent.isEmpty());
     }
 
     @Test

@@ -222,6 +222,7 @@ particles:
   viewDistance: 32
   budgetPerTick: 2000
   perMob: 4
+  asyncDispatch: true
 ```
 
 - `enabled`: turns all particle effects off. Spawn Particle nodes still work.
@@ -230,6 +231,8 @@ particles:
 - `budgetPerTick`: how many particles all effects together send per tick. Each player who sees a particle counts. When
   it is used up, the effects mobs wear wait first. Effects from graphs go on up to twice as much.
 - `perMob`: how many effects one mob plays at once. The effect it wears counts too.
+- `asyncDispatch`: sends the particles to players on a thread of its own, so the server's ticks stay short. Switch it
+  off if particles go missing on your server software.
 
 The editor shows about how many particles an effect sends per second, or in total for an effect shorter than a second,
 and warns when it is a lot. It takes a beam or arc without its own end as 16 blocks long. To make a looping shape

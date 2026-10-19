@@ -10,8 +10,11 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -26,6 +29,7 @@ public final class Tasks {
     private static final boolean REGIONISED = classExists("io.papermc.paper.threadedregions.RegionizedServer");
     private final Plugin plugin;
     private final Server server;
+    private @Nullable ExecutorService sender;
 
     /**
      * @param plugin the plugin owning the tasks
@@ -150,12 +154,25 @@ public final class Tasks {
     }
 
     /**
-     * Stops every global task of the plugin, e.g. when it disables. Entity tasks end with their entities or by
+     * Stops every global task of the plugin and the packet sender, e.g. when it disables. Entity tasks end with their entities or by
      * cancelling them.
      */
-    public void cancelAll() {
+    public synchronized void cancelAll() {
         server.getGlobalRegionScheduler().cancelTasks(plugin);
         server.getAsyncScheduler().cancelTasks(plugin);
+        if (sender != null) sender.shutdownNow();
+        sender = null;
+    }
+
+    /**
+     * Sends packets off the tick threads, one after another in the order they were handed over, so particles drawn
+     * in one tick leave together. The thread starts on first use.
+     */
+    public synchronized void send(Runnable work) {
+        if (sender == null)
+            sender = Executors.newSingleThreadExecutor(
+                    Thread.ofPlatform().name("bloodnight-particles").daemon().factory());
+        sender.execute(work);
     }
 
     private static boolean classExists(String name) {

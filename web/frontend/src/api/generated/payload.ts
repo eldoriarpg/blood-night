@@ -1000,6 +1000,7 @@ export interface ParticleSettings {
   viewDistance?: number;
   budgetPerTick?: number;
   perMob?: number;
+  asyncDispatch?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

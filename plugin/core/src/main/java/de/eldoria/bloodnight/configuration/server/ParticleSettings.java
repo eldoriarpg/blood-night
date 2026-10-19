@@ -15,6 +15,7 @@ public class ParticleSettings {
     private int viewDistance = 32;
     private int budgetPerTick = 2000;
     private int perMob = 4;
+    private boolean asyncDispatch = true;
 
     /**
      * @return whether particle effects play at all
@@ -50,5 +51,12 @@ public class ParticleSettings {
      */
     public int perMob() {
         return Math.max(perMob, 1);
+    }
+
+    /**
+     * @return whether particles are sent to players off the tick threads; the shapes are still worked out on them
+     */
+    public boolean asyncDispatch() {
+        return asyncDispatch;
     }
 }

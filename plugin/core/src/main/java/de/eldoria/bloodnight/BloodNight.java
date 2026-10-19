@@ -239,9 +239,13 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         tasks.globalTimer(1, budget::reset);
         effects = new EffectPlayer(
                 new EffectLibrary(() -> configuration.particleEffects()),
-                new Stage(tasks, viewers, budget, () -> configuration.main().particles(), id -> configuration
-                        .items()
-                        .item(id)),
+                new Stage(
+                        tasks,
+                        viewers,
+                        budget,
+                        () -> configuration.main().particles(),
+                        id -> configuration.items().item(id),
+                        tasks::send),
                 this);
         PaperSteering steering = new PaperSteering(getServer().getMobGoals());
         getServer().getPluginManager().registerEvents(steering, this);

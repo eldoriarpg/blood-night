@@ -464,6 +464,7 @@
           } ],
           "default" : {
             "ambient" : true,
+            "asyncDispatch" : true,
             "budgetPerTick" : 2000,
             "enabled" : true,
             "perMob" : 4,
@@ -2190,6 +2191,10 @@
         "perMob" : {
           "type" : "integer",
           "default" : 4
+        },
+        "asyncDispatch" : {
+          "type" : "boolean",
+          "default" : true
         }
       }
     },

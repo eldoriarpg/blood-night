@@ -156,13 +156,18 @@ public final class Play {
         points = Shapes.tile(points, emitter.tiles(), since / emitter.every());
         if (points.isEmpty()) return;
         try {
-            send(emitter, frame, own.world(), base, far, points);
+            send(index, emitter, frame, own.world(), base, far, points);
         } catch (IllegalArgumentException e) {
             broken[index] = true;
         }
     }
 
-    private void send(Emitter emitter, Frame frame, World world, Vec3 base, @Nullable Vec3 far, List<Vec3> points) {
+    /**
+     * Sends one emission's particles, off the tick thread when the settings say so. An emitter whose particles the
+     * server refuses is not drawn again.
+     */
+    private void send(
+            int index, Emitter emitter, Frame frame, World world, Vec3 base, @Nullable Vec3 far, List<Vec3> points) {
         Particle particle = EffectChecks.particle(emitter.particle());
         if (particle == null) throw new IllegalArgumentException("Unknown particle " + emitter.particle());
         List<Player> seeing =
@@ -170,21 +175,40 @@ public final class Play {
         if (seeing.isEmpty()) return;
         if (!stage.budget().take(points.size() * emitter.count() * seeing.size(), worn)) return;
         boolean trail = DataKind.of(particle) == DataKind.TRAIL;
-        Object data = trail ? null : ParticleDatas.build(particle, emitter.data(), null, stage.items());
-        ParticleBuilder builder = new ParticleBuilder(particle)
-                .count(emitter.count())
-                .offset(
-                        emitter.spread().x(),
-                        emitter.spread().y(),
-                        emitter.spread().z())
-                .extra(emitter.speed())
-                .receivers(seeing);
+        Object shared = trail ? null : ParticleDatas.build(particle, emitter.data(), null, stage.items());
+        List<Object> data = new ArrayList<>(points.size());
         for (Vec3 point : points) {
-            if (trail)
-                data = ParticleDatas.build(
-                        particle, emitter.data(), trailEnd(world, frame, point, far, emitter), stage.items());
-            builder.location(world, point.x(), point.y(), point.z()).data(data).spawn();
+            data.add(
+                    trail
+                            ? ParticleDatas.build(
+                                    particle,
+                                    emitter.data(),
+                                    trailEnd(world, frame, point, far, emitter),
+                                    stage.items())
+                            : shared);
         }
+        Runnable spawn = () -> {
+            ParticleBuilder builder = new ParticleBuilder(particle)
+                    .count(emitter.count())
+                    .offset(
+                            emitter.spread().x(),
+                            emitter.spread().y(),
+                            emitter.spread().z())
+                    .extra(emitter.speed())
+                    .receivers(seeing);
+            try {
+                for (int at = 0; at < points.size(); at++) {
+                    Vec3 point = points.get(at);
+                    builder.location(world, point.x(), point.y(), point.z())
+                            .data(data.get(at))
+                            .spawn();
+                }
+            } catch (IllegalArgumentException e) {
+                broken[index] = true;
+            }
+        };
+        if (stage.settings().get().asyncDispatch()) stage.sender().execute(spawn);
+        else spawn.run();
     }
 
     /**

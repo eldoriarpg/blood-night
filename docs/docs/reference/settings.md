@@ -49,6 +49,7 @@ Settings for the whole server.
 | `particles.viewDistance` | whole number | `32` |
 | `particles.budgetPerTick` | whole number | `2000` |
 | `particles.perMob` | whole number | `4` |
+| `particles.asyncDispatch` | true or false | `true` |
 | `advancements` | true or false | `true` |
 | `loot.tables` | list of text |  |
 | `loot.slots` | map |  |
@@ -93,6 +94,7 @@ setup:
   done: false
 particles:
   ambient: true
+  asyncDispatch: true
   budgetPerTick: 2000
   enabled: true
   perMob: 4
