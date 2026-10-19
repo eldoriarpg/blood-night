@@ -730,6 +730,7 @@ test('the preview arranges a graph without positions', async ({page}) => {
         return first !== null && second !== null && first.x + first.width <= second.x
     }).toBe(true)
 
+    await expect(page.locator('.bn-canvas[data-arranged="true"]')).toBeVisible()
     const before = await settledBox(tick)
     const pane = await page.locator('.vue-flow__pane').boundingBox()
     if (!pane) throw new Error('no pane')

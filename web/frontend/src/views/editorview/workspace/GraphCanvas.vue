@@ -322,6 +322,9 @@ async function arrangeShown(): Promise<void> {
   void nextTick(() => flow.fitView())
 }
 
+/** Whether every node has its place and the view was fitted to them; the canvas carries it as `data-arranged`. */
+const arranged = ref(false)
+
 /**
  * Saves a position for every node that has none: the whole graph arranged when no node has one, else the unplaced
  * nodes where they are shown.
@@ -343,7 +346,10 @@ async function placeUnplaced(): Promise<void> {
 }
 
 flow.onNodesInitialized(() => {
-  void placeUnplaced()
+  arranged.value = false
+  void placeUnplaced().then(() => nextTick()).then(() => {
+    arranged.value = true
+  })
 })
 
 /** Adds a node of a type in the middle of what the canvas shows. */
@@ -378,6 +384,7 @@ defineExpose({add})
         pan-activation-key-code="Space"
         :zoom-on-double-click="false"
         :style="grid"
+        :data-arranged="arranged"
         class="bn-canvas"
         fit-view-on-init
         @connect="connected"
