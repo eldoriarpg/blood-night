@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 /**
  * Shows a text the way an {@link Method} says; only chat messages carry the prefix.
  */
-final class Delivery {
+public final class Delivery {
     private Delivery() {}
 
     /**
@@ -23,7 +23,7 @@ final class Delivery {
      * @param key       the text's key
      * @param arguments its placeholders
      */
-    static void send(Player player, Method method, String key, TagResolver... arguments) {
+    public static void send(Player player, Method method, String key, TagResolver... arguments) {
         MessageSender sender = Texts.sender();
         switch (method) {
             case CHAT -> sender.sendMessage(player, key, arguments);

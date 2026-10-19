@@ -18,6 +18,8 @@ import de.eldoria.bloodnight.loot.assign.OrdinaryLoot;
 import de.eldoria.bloodnight.loot.assign.ServerLoot;
 import de.eldoria.bloodnight.loot.assign.VanillaLoot;
 import de.eldoria.bloodnight.loot.assign.WorldLoot;
+import de.eldoria.bloodnight.loot.money.Money;
+import de.eldoria.bloodnight.loot.money.MoneyRewards;
 import de.eldoria.bloodnight.loot.roll.LootLevel;
 import de.eldoria.bloodnight.loot.roll.LootRoll;
 import de.eldoria.bloodnight.mob.CustomMob;
@@ -60,7 +62,9 @@ import java.util.random.RandomGenerator;
  * ordinary enemies drop more vanilla loot and experience and roll their own table lists as their world's
  * {@link OrdinaryLoot} says, unless their kind or spawn reason is excluded or another plugin owns them.
  * <p>
- * The rolled loot passes through {@link BloodNightLootEvent} first. Amounts above an item's stack size are split into
+ * A kill also pays money through Vault where the most specific level sets some (an ordinary enemy only where its
+ * world's {@link OrdinaryLoot} does); {@link MoneyRewards} splits it among the players who damaged the mob. The
+ * rolled loot and the money pass through {@link BloodNightLootEvent} first. Amounts above an item's stack size are split into
  * full stacks, each as worn as its entry rolls where the entry sets a wear; unknown item ids are left out and unknown
  * table ids are skipped, logged once each.
  * <p>
@@ -79,6 +83,7 @@ public final class DropHandler implements Listener {
     private final RegionRules regions;
     private final BiFunction<LivingEntity, Player, Collection<ItemStack>> reward;
     private final Consumer<Event> events;
+    private final MoneyRewards money;
     private final Logger log;
     private final Set<String> missing = ConcurrentHashMap.newKeySet();
 
@@ -94,6 +99,7 @@ public final class DropHandler implements Listener {
      * @param regions    where regions switch the extra loot of ordinary enemies off
      * @param reward     rolls the blood night reward for a mob and the player who killed it
      * @param events     calls the loot event
+     * @param money      pays the money of a kill
      * @param log        where unknown table ids are reported
      */
     public DropHandler(
@@ -108,6 +114,7 @@ public final class DropHandler implements Listener {
             RegionRules regions,
             BiFunction<LivingEntity, Player, Collection<ItemStack>> reward,
             Consumer<Event> events,
+            MoneyRewards money,
             Logger log) {
         this.mobs = mobs;
         this.worlds = worlds;
@@ -120,6 +127,7 @@ public final class DropHandler implements Listener {
         this.regions = regions;
         this.reward = reward;
         this.events = events;
+        this.money = money;
         this.log = log;
     }
 
@@ -152,7 +160,7 @@ public final class DropHandler implements Listener {
         levels.add(loot.level());
         if (loot.inherit()) levels.add(world.level());
         if (loot.inherit() && world.inherit()) levels.add(server.level());
-        addRolled(event, killer, id, levels);
+        addRolled(event, killer, id, levels, firstSet(loot.money(), world.money(), server.money()));
         if (world.rewardLoot() && bloodNight.test(entity.getWorld())) {
             event.getDrops().addAll(reward.apply(entity, killer));
         }
@@ -170,7 +178,7 @@ public final class DropHandler implements Listener {
         List<LootLevel> levels = new ArrayList<>();
         levels.add(new LootLevel(ordinary.tables(), ordinary.slots(), false));
         if (world.inherit()) levels.add(server.get().ordinary().level());
-        addRolled(event, killer, null, levels);
+        addRolled(event, killer, null, levels, ordinary.money());
         event.setDroppedExp(ordinary.experience().apply(event.getDroppedExp()));
     }
 
@@ -182,7 +190,8 @@ public final class DropHandler implements Listener {
                 && regions.allows(entity.getLocation(), RegionFlag.RULES);
     }
 
-    private void addRolled(EntityDeathEvent event, Player killer, @Nullable String id, List<LootLevel> levels) {
+    private void addRolled(
+            EntityDeathEvent event, Player killer, @Nullable String id, List<LootLevel> levels, @Nullable Money pay) {
         Map<String, List<ItemStack>> loot = new LinkedHashMap<>();
         for (LootRoll.Rolled rolled : LootRoll.roll(levels, this::table, random)) {
             ItemStack item = items.apply(rolled.entry().item());
@@ -192,11 +201,13 @@ public final class DropHandler implements Listener {
             if (wear != null) stacks.forEach(stack -> ItemTexts.wear(stack, wear.roll(random)));
             loot.computeIfAbsent(rolled.table(), table -> new ArrayList<>()).addAll(stacks);
         }
-        if (loot.isEmpty()) return;
-        BloodNightLootEvent lootEvent = new BloodNightLootEvent(event.getEntity(), id, killer, loot);
+        double amount = pay == null ? 0 : pay.roll(random);
+        if (loot.isEmpty() && amount <= 0) return;
+        BloodNightLootEvent lootEvent = new BloodNightLootEvent(event.getEntity(), id, killer, loot, amount);
         events.accept(lootEvent);
         if (lootEvent.isCancelled()) return;
         lootEvent.loot().values().forEach(event.getDrops()::addAll);
+        money.pay(event.getEntity(), killer, lootEvent.money());
     }
 
     private @Nullable LootTable table(String id) {
@@ -219,6 +230,13 @@ public final class DropHandler implements Listener {
             stacks.add(stack);
         }
         return stacks;
+    }
+
+    private static @Nullable Money firstSet(@Nullable Money... levels) {
+        for (Money money : levels) {
+            if (money != null) return money;
+        }
+        return null;
     }
 
     private static Experience firstSet(@Nullable Experience... levels) {

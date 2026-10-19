@@ -995,6 +995,14 @@ export default {
             amount: 'Pengalaman',
             factor: 'Faktor',
         },
+        money: {
+            nothing: 'Tiada',
+            pay: 'Satu jumlah',
+            min: 'Sekurang-kurangnya',
+            max: 'Paling banyak',
+            to: 'hingga',
+            noEconomy: 'Pelayan ini tiada ekonomi. Pasang Vault dan plugin ekonomi, jika tidak bunuhan tidak membayar apa-apa.',
+        },
         mobLoot: {
             title: 'Apa yang dijatuhkan',
             world: 'Dalam dunia',
@@ -1016,6 +1024,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: 'Beritahu pemain wang yang dibayar oleh satu bunuhan'},
             phase: {
                 probabilities: 'Peluang blood night pada setiap malam dalam kitaran',
             },
@@ -1071,13 +1080,16 @@ export default {
             mobLoot: {
                 slots: 'Berapa banyak entri jadual yang dijatuhkan satu bunuhan. Jika tidak ditetapkan, bilangan dunia digunakan, jika tidak bilangan pelayan.',
                 replaceSame: 'Item daripada jadual mob ini dibuang daripada jadual dunia dan pelayan, supaya peluang dan jumlah mob ini yang dikira.',
+                money: 'Wang yang dibayar satu bunuhan melalui Vault, rawak antara dua jumlah itu. Ia dibahagi antara pemain yang mencederakan mob, mengikut kerosakan setiap seorang. Jika tidak ditetapkan, wang dunia digunakan, jika tidak wang pelayan.',
             },
             loot: {
                 tables: 'Jadual yang turut dijatuhkan oleh setiap mob khas di sini, kecuali mob itu mematikannya.',
                 slots: 'Berapa banyak entri jadual yang dijatuhkan satu bunuhan apabila mob tidak menetapkannya.',
+                money: 'Wang yang dibayar bunuhan mob istimewa melalui Vault jika mob itu tidak menetapkan apa-apa. Ia dibahagi antara pemain yang mencederakannya, mengikut kerosakan setiap seorang.',
             },
             ordinary: {
                 tables: 'Jadual harta rampasan yang turut dijatuhkan oleh musuh biasa semasa blood night. Jadual dunia ditambah kepada jadual pelayan.',
+                money: 'Wang yang dibayar bunuhan musuh biasa melalui Vault semasa blood night, dibahagi mengikut kerosakan setiap pemain.',
             },
             settings: {
                 displayName: 'Ditunjukkan dalam mesej, placeholder dan di sini dalam editor. Warna MiniMessage boleh digunakan. Kosong: nama dunia dalam Multiverse atau Hyperverse, jika tidak nama foldernya.',
@@ -1325,6 +1337,7 @@ export default {
             inherit: 'Jatuhkan juga harta rampasan yang ditetapkan di atas',
             replaceSame: 'Item sendiri menggantikan item yang sama di atas',
             experience: 'Pengalaman',
+            money: 'Wang',
             ordinary: 'Musuh biasa semasa blood night',
         },
     },

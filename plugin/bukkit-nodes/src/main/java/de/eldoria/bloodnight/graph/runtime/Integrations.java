@@ -46,7 +46,29 @@ public final class Integrations {
      * Pays a player through Vault, on the global region.
      */
     public static void deposit(MobContext context, Player player, double amount) {
-        context.global(() -> economy("depositPlayer", player, amount));
+        context.global(() -> depositNow(player, amount));
+    }
+
+    /**
+     * Pays a player through Vault on the current thread, which should be the global region.
+     */
+    public static void depositNow(Player player, double amount) {
+        economy("depositPlayer", player, amount);
+    }
+
+    /**
+     * @return whether Vault and an economy plugin take payments
+     */
+    public static boolean hasEconomy() {
+        return Boolean.TRUE.equals(invokeEconomy("isEnabled", new Class<?>[0], new Object[0]));
+    }
+
+    /**
+     * @return the amount written the way the economy shows money, e.g. {@code 12.50 Coins}; plain without one
+     */
+    public static String formatMoney(double amount) {
+        Object formatted = invokeEconomy("format", new Class<?>[] {double.class}, new Object[] {amount});
+        return formatted instanceof String text ? text : "%.2f".formatted(amount);
     }
 
     /**
@@ -129,18 +151,21 @@ public final class Integrations {
     }
 
     private static @Nullable Object economy(String method, Player player, Object... more) {
+        Class<?>[] parameters = more.length == 0
+                ? new Class<?>[] {OfflinePlayer.class}
+                : new Class<?>[] {OfflinePlayer.class, double.class};
+        Object[] arguments = more.length == 0 ? new Object[] {player} : new Object[] {player, more[0]};
+        return invokeEconomy(method, parameters, arguments);
+    }
+
+    private static @Nullable Object invokeEconomy(String method, Class<?>[] parameters, Object[] arguments) {
         try {
             Class<?> type = pluginClass("Vault", "net.milkbowl.vault.economy.Economy");
             if (type == null) return null;
             RegisteredServiceProvider<?> registration =
                     Bukkit.getServicesManager().getRegistration(type);
             if (registration == null) return null;
-            Object economy = registration.getProvider();
-            Class<?>[] parameters = more.length == 0
-                    ? new Class<?>[] {OfflinePlayer.class}
-                    : new Class<?>[] {OfflinePlayer.class, double.class};
-            Object[] arguments = more.length == 0 ? new Object[] {player} : new Object[] {player, more[0]};
-            return type.getMethod(method, parameters).invoke(economy, arguments);
+            return type.getMethod(method, parameters).invoke(registration.getProvider(), arguments);
         } catch (ReflectiveOperationException | LinkageError e) {
             return null;
         }

@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.loot.assign;
 
+import de.eldoria.bloodnight.loot.money.Money;
 import de.eldoria.bloodnight.loot.roll.LootLevel;
 import org.jspecify.annotations.Nullable;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
  * @param rewardLoot  whether a special mob a player kills during a blood night also drops a roll of the data pack's
  *                    loot table {@code bloodnight:blood_night/reward}
  * @param ordinary    what ordinary enemies drop
+ * @param money       what a special mob's kill pays; null takes the server's
  */
 public record WorldLoot(
         List<String> tables,
@@ -32,7 +34,8 @@ public record WorldLoot(
         Boolean replaceSame,
         @Nullable Experience experience,
         Boolean rewardLoot,
-        OrdinaryLoot ordinary) {
+        OrdinaryLoot ordinary,
+        @Nullable Money money) {
     public WorldLoot {
         tables = List.copyOf(Objects.requireNonNullElse(tables, List.of()));
         slots = slots == null ? null : Map.copyOf(slots);
@@ -46,7 +49,7 @@ public record WorldLoot(
      * @return the settings of a fresh world
      */
     public static WorldLoot defaults() {
-        return new WorldLoot(List.of(), null, true, false, null, true, OrdinaryLoot.defaults());
+        return new WorldLoot(List.of(), null, true, false, null, true, OrdinaryLoot.defaults(), null);
     }
 
     /**

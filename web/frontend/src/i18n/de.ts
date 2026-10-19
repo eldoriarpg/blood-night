@@ -759,6 +759,14 @@ export default {
             amount: 'Erfahrung',
             factor: 'Faktor',
         },
+        money: {
+            nothing: 'Nichts',
+            pay: 'Ein Betrag',
+            min: 'Mindestens',
+            max: 'Höchstens',
+            to: 'bis',
+            noEconomy: 'Dieser Server hat keine Wirtschaft. Installiere Vault und ein Wirtschafts-Plugin, sonst bringen Kills kein Geld.',
+        },
         mobLoot: {
             title: 'Was er fallen lässt',
             world: 'In Welt',
@@ -780,6 +788,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: 'Spielern sagen, wie viel Geld ein Kill ihnen gebracht hat'},
             phase: {probabilities: 'Chance einer Blutnacht in jeder Nacht des Zyklus'},
             moonPhase: {probabilities: 'Chance einer Blutnacht nach Mondphase'},
             creepers: {blockDamage: 'Creeper zerstören in Blutnächten Blöcke', always: 'Blöcke immer vor Creepern schützen, nicht nur in Blutnächten'},
@@ -812,13 +821,16 @@ export default {
             mobLoot: {
                 slots: 'Wie viele Tabelleneinträge ein Kill fallen lässt. Nicht gesetzt gilt die Anzahl der Welt, sonst die des Servers.',
                 replaceSame: 'Ein Item aus den Tabellen dieses Mobs fällt aus den Tabellen der Welt und des Servers heraus, damit Chance und Menge dieses Mobs zählen.',
+                money: 'Geld, das ein Kill über Vault bringt, zufällig zwischen den beiden Beträgen. Es wird unter den Spielern aufgeteilt, die den Mob verletzt haben, nach dem Schaden jedes Einzelnen. Nicht gesetzt gilt das Geld der Welt, sonst das des Servers.',
             },
             loot: {
                 tables: 'Die Tabellen, aus denen jeder spezielle Mob hier zusätzlich fallen lässt, außer der Mob schaltet das ab.',
                 slots: 'Wie viele Tabelleneinträge ein Kill fallen lässt, wenn der Mob nichts festlegt.',
+                money: 'Geld, das ein Kill eines Spezialmobs über Vault bringt, wo der Mob keins festlegt. Es wird unter den Spielern aufgeteilt, die den Mob verletzt haben, nach dem Schaden jedes Einzelnen.',
             },
             ordinary: {
                 tables: 'Beutetabellen, aus denen normale Gegner in Blutnächten zusätzlich fallen lassen. Die der Welt kommen zu denen des Servers dazu.',
+                money: 'Geld, das ein Kill eines normalen Gegners in Blutnächten über Vault bringt, aufgeteilt nach dem Schaden jedes Spielers.',
             },
             settings: {
                 displayName: 'Erscheint in Nachrichten, Platzhaltern und hier im Editor. MiniMessage-Farben gehen. Leer: der Name der Welt in Multiverse oder Hyperverse, sonst ihr Ordnername.',
@@ -1040,6 +1052,7 @@ export default {
             inherit: 'Auch die übergeordnete Beute fallen lassen',
             replaceSame: 'Eigene Items ersetzen dieselben Items darüber',
             experience: 'Erfahrung',
+            money: 'Geld',
             ordinary: 'Normale Gegner in Blutnächten',
         },
     },

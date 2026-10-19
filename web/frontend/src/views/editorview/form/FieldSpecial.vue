@@ -13,7 +13,8 @@ import FieldMap from '~/views/editorview/form/FieldMap.vue'
 import FieldDropWeights from '~/views/editorview/form/FieldDropWeights.vue'
 import FieldLootTables from '~/views/editorview/form/FieldLootTables.vue'
 import FieldExperience from '~/views/editorview/form/FieldExperience.vue'
-import type {Experience} from '~/api/generated/payload'
+import FieldMoney from '~/views/editorview/form/FieldMoney.vue'
+import type {Experience, Money} from '~/api/generated/payload'
 import FieldGameRules from '~/views/editorview/form/FieldGameRules.vue'
 import FieldMiniMessage from '~/views/editorview/form/FieldMiniMessage.vue'
 import FieldMoonPhases from '~/views/editorview/form/FieldMoonPhases.vue'
@@ -29,7 +30,7 @@ import {mobLabel} from '~/util/mobs/mobName'
  * A settings field drawn its own way (see {@link SpecialField}): chances as sliders, times of day as a clock, effects,
  * mobs, game rules and loot tables picked by name, and MiniMessage with a preview. The mob a dragon fight's dragon
  * becomes is picked from the mobs based on the Ender Dragon only. A mob's or a world's loot settings may be left to the
- * next broader level, which the field names.
+ * next broader level, which the field names; the money of ordinary enemies is not passed down, so it never is.
  */
 const props = defineProps<{
   special: SpecialField
@@ -65,11 +66,14 @@ const dragons = computed(() => mobs.value.filter(id => session.payload.value?.mo
 const mobLabels = computed(() => Object.fromEntries(mobs.value.map(id => [id, mobLabel(session.payload.value?.mobs?.[id]?.attributes?.name, locale.value) || id])))
 const texts = computed(() => Array.isArray(props.value) ? props.value.filter((entry): entry is string => typeof entry === 'string') : undefined)
 const experience = computed(() => object.value as Experience | undefined)
+const money = computed(() => object.value as Money | undefined)
+const economy = computed(() => session.payload.value?.choices?.economy === true)
 const inherited = computed(() => {
   if (props.path.startsWith('/mobs/')) return t('editor.loot.asBroader.mob')
   if (props.path.startsWith('/settings/worlds/')) return t('editor.loot.asBroader.world')
   return undefined
 })
+const moneyInherited = computed(() => props.path.includes('/ordinary/') ? undefined : inherited.value)
 const samples = computed(() => ({name: t('editor.miniMessage.nightName'), player: 'Steve', world: 'world'}))
 </script>
 
@@ -106,6 +110,7 @@ const samples = computed(() => ({name: t('editor.miniMessage.nightName'), player
   <FieldDropWeights v-else-if="special === 'dropWeights'" :help="help" :inherited="inherited" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldLootTables v-else-if="special === 'lootTables'" :help="help" :label="label" :read-only="readOnly" :value="texts" @save="emit('save', $event)"/>
   <FieldExperience v-else-if="special === 'experience'" :help="help" :inherited="inherited" :label="label" :read-only="readOnly" :value="experience" @save="emit('save', $event)"/>
+  <FieldMoney v-else-if="special === 'money'" :economy="economy" :help="help" :inherited="moneyInherited" :label="label" :read-only="readOnly" :value="money" @save="emit('save', $event)"/>
   <FieldMobName v-else-if="special === 'mobName'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldWorldMobs v-else-if="special === 'worldMobs'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldCurve v-else-if="special === 'curve'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>

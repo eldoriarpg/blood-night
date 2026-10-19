@@ -338,7 +338,8 @@
       "inherit" : true,
       "replaceSame" : true,
       "vanillaLoot" : "KEEP",
-      "experience" : null
+      "experience" : null,
+      "money" : null
     },
     "extension" : {
       "type" : "NONE",

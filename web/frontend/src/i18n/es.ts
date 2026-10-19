@@ -995,6 +995,14 @@ export default {
             amount: 'Experiencia',
             factor: 'Factor',
         },
+        money: {
+            nothing: 'Nada',
+            pay: 'Una cantidad',
+            min: 'Mínimo',
+            max: 'Máximo',
+            to: 'a',
+            noEconomy: 'Este servidor no tiene economía. Instala Vault y un plugin de economía, o las muertes no pagan nada.',
+        },
         mobLoot: {
             title: 'Lo que suelta',
             world: 'En el mundo',
@@ -1016,6 +1024,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: 'Decir a los jugadores cuánto dinero les dio una muerte'},
             phase: {
                 probabilities: 'Probabilidad de noche sangrienta en cada noche del ciclo',
             },
@@ -1071,13 +1080,16 @@ export default {
             mobLoot: {
                 slots: 'Cuántas entradas de tabla suelta una muerte. Sin fijar, vale el número del mundo, si no el del servidor.',
                 replaceSame: 'Un objeto de las tablas de esta criatura se quita de las tablas del mundo y del servidor, para que cuenten la probabilidad y la cantidad de esta criatura.',
+                money: 'Dinero que paga una muerte a través de Vault, al azar entre las dos cantidades. Se reparte entre los jugadores que hirieron a la criatura, según el daño de cada uno. Sin fijar, vale el dinero del mundo, si no el del servidor.',
             },
             loot: {
                 tables: 'Las tablas de las que cada criatura especial de aquí también suelta, salvo que la criatura lo desactive.',
                 slots: 'Cuántas entradas de tabla suelta una muerte cuando la criatura no fija ninguna.',
+                money: 'Dinero que paga la muerte de una criatura especial a través de Vault cuando la criatura no fija ninguno. Se reparte entre los jugadores que la hirieron, según el daño de cada uno.',
             },
             ordinary: {
                 tables: 'Tablas de botín de las que los enemigos normales también sueltan durante las noches sangrientas. Las del mundo se suman a las del servidor.',
+                money: 'Dinero que paga la muerte de un enemigo común a través de Vault durante las noches sangrientas, repartido según el daño de cada jugador.',
             },
             settings: {
                 displayName: 'Se muestra en mensajes, marcadores y aquí en el editor. Admite colores MiniMessage. Vacío: el nombre del mundo en Multiverse o Hyperverse, si no el nombre de su carpeta.',
@@ -1325,6 +1337,7 @@ export default {
             inherit: 'Soltar también el botín fijado más arriba',
             replaceSame: 'Sus objetos sustituyen a los mismos objetos más arriba',
             experience: 'Experiencia',
+            money: 'Dinero',
             ordinary: 'Enemigos comunes durante las noches sangrientas',
         },
     },

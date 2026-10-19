@@ -5,8 +5,11 @@
  */
 package de.eldoria.bloodnight.loot.drop;
 
+import de.eldoria.bloodnight.DamageEvents;
 import de.eldoria.bloodnight.Mobs;
+import de.eldoria.bloodnight.announce.Texts;
 import de.eldoria.bloodnight.api.event.mob.BloodNightLootEvent;
+import de.eldoria.bloodnight.configuration.server.Announcements;
 import de.eldoria.bloodnight.configuration.server.plugins.ForeignMobSettings;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemRegistry;
@@ -22,10 +25,16 @@ import de.eldoria.bloodnight.loot.assign.OrdinaryLoot;
 import de.eldoria.bloodnight.loot.assign.ServerLoot;
 import de.eldoria.bloodnight.loot.assign.VanillaLoot;
 import de.eldoria.bloodnight.loot.assign.WorldLoot;
+import de.eldoria.bloodnight.loot.money.DamageShares;
+import de.eldoria.bloodnight.loot.money.Money;
+import de.eldoria.bloodnight.loot.money.MoneyRewards;
+import de.eldoria.bloodnight.loot.money.Wallet;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.attributes.ValueModifier;
 import de.eldoria.bloodnight.util.MobTags;
 import de.eldoria.graph.model.Graph;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.damage.DamageSource;
@@ -33,19 +42,24 @@ import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
+import org.mockbukkit.mockbukkit.entity.PlayerMock;
 import org.mockbukkit.mockbukkit.world.WorldMock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +68,7 @@ import java.util.logging.Logger;
 import java.util.random.RandomGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DropHandlerTest {
@@ -76,8 +91,11 @@ class DropHandlerTest {
     private CustomMob gemmy;
     private boolean bloodNight;
     private WorldLoot worldLoot = WorldLoot.defaults();
-    private ServerLoot serverLoot = new ServerLoot(List.of("emeralds"), Map.of(1, 1), null, null);
+    private ServerLoot serverLoot = new ServerLoot(List.of("emeralds"), Map.of(1, 1), null, null, null);
     private Consumer<Event> events = event -> {};
+    private final Map<String, Double> paid = new LinkedHashMap<>();
+    private boolean economy = true;
+    private DamageShares damage;
     private DropHandler handler;
 
     @BeforeEach
@@ -86,6 +104,8 @@ class DropHandlerTest {
         world = server.addSimpleWorld("world");
         gemmy = gemmy(VanillaLoot.KEEP, false);
         ItemRegistry items = new ItemRegistry(null, null);
+        Texts.create(MockBukkit.createMockPlugin(), "<dark_red>[BN]</dark_red>", "en_US");
+        damage = new DamageShares();
         handler = new DropHandler(
                 id -> id.equals("gemmy") ? gemmy : null,
                 world -> worldLoot,
@@ -98,6 +118,7 @@ class DropHandlerTest {
                 RegionRules.NONE,
                 (mob, killer) -> List.of(new ItemStack(Material.NETHER_STAR)),
                 event -> events.accept(event),
+                new MoneyRewards(new FakeWallet(), damage, server::getPlayer, Announcements::new),
                 Logger.getAnonymousLogger());
     }
 
@@ -111,6 +132,10 @@ class DropHandlerTest {
     }
 
     private static CustomMob gemmy(VanillaLoot vanillaLoot, boolean inherit) {
+        return gemmy(vanillaLoot, inherit, null);
+    }
+
+    private static CustomMob gemmy(VanillaLoot vanillaLoot, boolean inherit, @Nullable Money money) {
         return Mobs.zombie("gemmy", Graph.builder().build())
                 .withLoot(new MobLoot(
                         List.of("gems"),
@@ -118,11 +143,16 @@ class DropHandlerTest {
                         inherit,
                         true,
                         vanillaLoot,
-                        new Experience(ValueModifier.VALUE, 10)));
+                        new Experience(ValueModifier.VALUE, 10),
+                        money));
     }
 
     private EntityDeathEvent die(LivingEntity entity, boolean byPlayer, ItemStack... drops) {
-        if (byPlayer) entity.setKiller(server.addPlayer());
+        return die(entity, byPlayer ? server.addPlayer() : null, drops);
+    }
+
+    private EntityDeathEvent die(LivingEntity entity, @Nullable Player killer, ItemStack... drops) {
+        if (killer != null) entity.setKiller(killer);
         EntityDeathEvent event = new EntityDeathEvent(
                 entity, DamageSource.builder(DamageType.GENERIC).build(), new ArrayList<>(List.of(drops)), 5);
         handler.onDeath(event);
@@ -171,7 +201,7 @@ class DropHandlerTest {
     @Test
     void entriesDropTheirItemAsWornAsTheyRoll() {
         gemmy = Mobs.zombie("gemmy", Graph.builder().build())
-                .withLoot(new MobLoot(List.of("worn"), Map.of(1, 1), false, true, VanillaLoot.CLEAR, null));
+                .withLoot(new MobLoot(List.of("worn"), Map.of(1, 1), false, true, VanillaLoot.CLEAR, null, null));
 
         ItemStack sword = death(true).getDrops().getFirst();
 
@@ -221,7 +251,7 @@ class DropHandlerTest {
     @Test
     void worldsCanTurnTheRewardOff() {
         bloodNight = true;
-        worldLoot = new WorldLoot(null, null, null, null, null, false, null);
+        worldLoot = new WorldLoot(null, null, null, null, null, false, null, null);
 
         EntityDeathEvent event = death(true);
 
@@ -287,7 +317,8 @@ class DropHandlerTest {
     @Test
     void excludedKindsAndAnimalsKeepTheirLoot() {
         bloodNight = true;
-        worldLoot = withOrdinary(new OrdinaryLoot(null, null, null, null, null, null, Set.of(EntityType.ZOMBIE), null));
+        worldLoot = withOrdinary(
+                new OrdinaryLoot(null, null, null, null, null, null, Set.of(EntityType.ZOMBIE), null, null));
 
         EntityDeathEvent zombie = die(zombie(), true, new ItemStack(Material.ROTTEN_FLESH));
         Cow cow = world.spawn(new Location(world, 0, 64, 0), Cow.class);
@@ -300,8 +331,8 @@ class DropHandlerTest {
     @Test
     void ordinaryEnemiesRollTheirOwnTables() {
         bloodNight = true;
-        worldLoot = withOrdinary(
-                new OrdinaryLoot(null, 1.0, List.of("emeralds"), Map.of(1, 1), ValueModifier.DEFAULT, 0.0, null, null));
+        worldLoot = withOrdinary(new OrdinaryLoot(
+                null, 1.0, List.of("emeralds"), Map.of(1, 1), ValueModifier.DEFAULT, 0.0, null, null, null));
 
         EntityDeathEvent event = die(zombie(), true, new ItemStack(Material.ROTTEN_FLESH));
 
@@ -309,7 +340,106 @@ class DropHandlerTest {
         assertEquals(5, event.getDroppedExp());
     }
 
+    @Test
+    void aKillPaysTheMoneyOfTheMostSpecificLevel() {
+        serverLoot = new ServerLoot(List.of("emeralds"), Map.of(1, 1), null, null, new Money(5, 5));
+        PlayerMock killer = server.addPlayer("Steve");
+        death(killer);
+        gemmy = gemmy(VanillaLoot.KEEP, false, new Money(20, 20));
+        death(killer);
+
+        assertEquals(Map.of("Steve", 25.0), paid);
+        assertEquals("You earned 5.00.", plain(killer.nextActionBar()));
+        assertEquals("You earned 20.00.", plain(killer.nextActionBar()));
+    }
+
+    @Test
+    void theMoneyIsSplitByTheDamageEachPlayerDealt() {
+        gemmy = gemmy(VanillaLoot.KEEP, false, new Money(10, 10));
+        PlayerMock steve = server.addPlayer("Steve");
+        PlayerMock alex = server.addPlayer("Alex");
+        Zombie zombie = zombie();
+        MobTags.markCustomMob(zombie, gemmy);
+        hit(steve, zombie, 6);
+        hit(alex, zombie, 2);
+        hit(alex, zombie, 40);
+
+        die(zombie, alex);
+
+        assertEquals(Map.of("Steve", 3.0, "Alex", 7.0), paid);
+    }
+
+    @Test
+    void theLootEventCanChangeAndCancelTheMoney() {
+        gemmy = gemmy(VanillaLoot.KEEP, false, new Money(10, 10));
+        PlayerMock killer = server.addPlayer("Steve");
+        events = event -> {
+            if (event instanceof BloodNightLootEvent loot) loot.setMoney(loot.money() * 2);
+        };
+        death(killer);
+        events = event -> {
+            if (event instanceof BloodNightLootEvent loot) loot.setCancelled(true);
+        };
+        death(killer);
+
+        assertEquals(Map.of("Steve", 20.0), paid);
+    }
+
+    @Test
+    void nothingIsPaidWithoutAnEconomyOrForOrdinaryEnemiesOfWorldsWithoutMoney() {
+        gemmy = gemmy(VanillaLoot.KEEP, false, new Money(10, 10));
+        economy = false;
+        death(server.addPlayer("Steve"));
+        economy = true;
+        bloodNight = true;
+        die(zombie(), server.addPlayer("Alex"));
+        worldLoot = withOrdinary(new OrdinaryLoot(null, null, null, null, null, null, null, null, new Money(1, 1)));
+        die(zombie(), server.addPlayer("Herobrine"));
+
+        assertEquals(Map.of("Herobrine", 1.0), paid);
+    }
+
+    private EntityDeathEvent death(Player killer) {
+        Zombie zombie = zombie();
+        MobTags.markCustomMob(zombie, gemmy);
+        return die(zombie, killer);
+    }
+
+    private void hit(Player player, LivingEntity mob, double amount) {
+        DamageSource source = DamageSource.builder(DamageType.PLAYER_ATTACK)
+                .withCausingEntity(player)
+                .withDirectEntity(player)
+                .build();
+        damage.onDamage(DamageEvents.byEntity(player, mob, DamageCause.ENTITY_ATTACK, source, amount));
+        mob.setHealth(Math.max(0, mob.getHealth() - amount));
+    }
+
+    private static String plain(@Nullable Component component) {
+        assertNotNull(component);
+        return PlainTextComponentSerializer.plainText().serialize(component);
+    }
+
+    /**
+     * Records payments by player name instead of paying, and writes amounts with two decimals.
+     */
+    private final class FakeWallet implements Wallet {
+        @Override
+        public boolean available() {
+            return economy;
+        }
+
+        @Override
+        public void pay(Player player, double amount) {
+            paid.merge(player.getName(), amount, Double::sum);
+        }
+
+        @Override
+        public String format(double amount) {
+            return "%.2f".formatted(amount);
+        }
+    }
+
     private static WorldLoot withOrdinary(OrdinaryLoot ordinary) {
-        return new WorldLoot(null, null, null, null, null, null, ordinary);
+        return new WorldLoot(null, null, null, null, null, null, ordinary, null);
     }
 }

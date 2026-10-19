@@ -134,6 +134,34 @@ where it comes from, and how many drop. A **Roll** button shows one kill's loot.
 
 By default, special mobs give 4 times the normal experience. That is the server's setting.
 
+## Money
+
+A kill can also pay money. This needs [Vault](https://www.spigotmc.org/resources/vault.34315/) and an economy
+plugin, like EssentialsX. Without them, kills pay nothing.
+
+```yaml
+loot:
+  money: {min: 5, max: 20}
+```
+
+- Every kill pays an amount between `min` and `max`. The same number twice pays always that much.
+- `money` works like `experience`: the mob's counts, else the world's, else the server's. The server pays nothing until
+  you set it.
+- Ordinary monsters pay only where their world says so, in `loot.ordinary.money`. Mobs from spawners and portals pay
+  nothing, like their loot.
+
+### Who gets the money
+
+The money is split between all players who hurt the mob. Each gets a share of how much damage they did. Say Steve did
+a quarter of the damage and Alex the rest. Then Steve gets a quarter of the money and Alex three quarters. Arrows count
+for the player who shot them.
+
+Players who are offline when the mob dies get nothing. Each player sees how much they got, unless you turn that off
+with `announcements.money` (see [announcements](../nights/announcements.md)).
+
+For other rewards, like more money for a fast kill, use the node
+[Give Money](../reference/nodes/plugins.md) in the mob's graph.
+
 ## Normal loot of special mobs
 
 `vanillaLoot` in a mob's `loot` decides what happens to its normal loot:
@@ -189,5 +217,5 @@ change a table you already have, so your changes stay.
 
 ## For plugin developers
 
-Other plugins can change the loot before it drops with `BloodNightLootEvent`. See
+Other plugins can change the loot and the money before they drop with `BloodNightLootEvent`. See
 [the developer pages](../developers/api.md).

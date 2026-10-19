@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.loot.assign;
 
+import de.eldoria.bloodnight.loot.money.Money;
 import de.eldoria.bloodnight.mob.attributes.ValueModifier;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -29,6 +30,7 @@ import java.util.Set;
  * @param xpValue         the number it changes by
  * @param excludedTypes   kinds of mobs whose drops never change
  * @param excludedReasons mobs spawned for these reasons keep their drops, e.g. from spawners or through portals
+ * @param money           what a kill pays; null pays nothing
  */
 public record OrdinaryLoot(
         Boolean enabled,
@@ -38,7 +40,8 @@ public record OrdinaryLoot(
         ValueModifier xpModifier,
         Double xpValue,
         Set<EntityType> excludedTypes,
-        Set<SpawnReason> excludedReasons) {
+        Set<SpawnReason> excludedReasons,
+        @Nullable Money money) {
     private static final Set<SpawnReason> EXCLUDED_REASONS = Collections.unmodifiableSet(
             EnumSet.of(SpawnReason.SPAWNER, SpawnReason.TRIAL_SPAWNER, SpawnReason.NETHER_PORTAL));
 
@@ -57,7 +60,8 @@ public record OrdinaryLoot(
      * @return the settings of a fresh world
      */
     public static OrdinaryLoot defaults() {
-        return new OrdinaryLoot(true, 2.0, List.of(), null, ValueModifier.MULTIPLY, 2.0, Set.of(), EXCLUDED_REASONS);
+        return new OrdinaryLoot(
+                true, 2.0, List.of(), null, ValueModifier.MULTIPLY, 2.0, Set.of(), EXCLUDED_REASONS, null);
     }
 
     /**

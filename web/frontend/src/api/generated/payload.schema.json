@@ -85,6 +85,10 @@
             "$ref" : "#/$defs/Language"
           } ],
           "default" : "en_US"
+        },
+        "money" : {
+          "type" : "boolean",
+          "default" : true
         }
       }
     },
@@ -333,6 +337,7 @@
           "default" : {
             "fallbackLocale" : "en_US",
             "method" : "SUBTITLE",
+            "money" : true,
             "personalMethod" : "ACTION_BAR",
             "prefix" : "<dark_red>[<red>BN</red>]</dark_red> ",
             "reach" : "SERVER"
@@ -426,7 +431,8 @@
             "experience" : {
               "modifier" : "MULTIPLY",
               "value" : 4.0
-            }
+            },
+            "money" : null
           }
         }
       }
@@ -719,9 +725,12 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "economy" : {
+          "type" : "boolean"
         }
       },
-      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials" ]
+      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials", "economy" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -1315,6 +1324,9 @@
         },
         "experience" : {
           "$ref" : "#/$defs/Experience"
+        },
+        "money" : {
+          "$ref" : "#/$defs/Money"
         }
       },
       "required" : [ "tables", "inherit", "replaceSame", "vanillaLoot" ]
@@ -1419,6 +1431,18 @@
           "default" : { }
         }
       }
+    },
+    "Money" : {
+      "type" : "object",
+      "properties" : {
+        "min" : {
+          "type" : "number"
+        },
+        "max" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "min", "max" ]
     },
     "MoonPhase" : {
       "type" : "object",
@@ -1872,6 +1896,9 @@
             "$ref" : "#/$defs/SpawnReason"
           },
           "uniqueItems" : true
+        },
+        "money" : {
+          "$ref" : "#/$defs/Money"
         }
       },
       "required" : [ "enabled", "lootMultiplier", "tables", "xpModifier", "xpValue", "excludedTypes", "excludedReasons" ]
@@ -2082,6 +2109,9 @@
         },
         "experience" : {
           "$ref" : "#/$defs/Experience"
+        },
+        "money" : {
+          "$ref" : "#/$defs/Money"
         }
       },
       "required" : [ "tables", "ordinary", "experience" ]
@@ -2539,6 +2569,9 @@
         },
         "ordinary" : {
           "$ref" : "#/$defs/OrdinaryLoot"
+        },
+        "money" : {
+          "$ref" : "#/$defs/Money"
         }
       },
       "required" : [ "tables", "inherit", "replaceSame", "rewardLoot", "ordinary" ]
@@ -2854,8 +2887,10 @@
               "xpModifier" : "MULTIPLY",
               "xpValue" : 2.0,
               "excludedTypes" : [ ],
-              "excludedReasons" : [ "SPAWNER", "TRIAL_SPAWNER", "NETHER_PORTAL" ]
-            }
+              "excludedReasons" : [ "SPAWNER", "TRIAL_SPAWNER", "NETHER_PORTAL" ],
+              "money" : null
+            },
+            "money" : null
           }
         },
         "nightRules" : {

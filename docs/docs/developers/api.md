@@ -91,12 +91,12 @@ Don't use them: they can change in any version.
 
 | Event | When | Can be cancelled |
 |---|---|---|
-| [`BloodNightBeginEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/BloodNightBeginEvent.html) | A blood night is about to begin | Yes. The night stays normal. |
-| [`BloodNightEndEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/BloodNightEndEvent.html) | A blood night ended. `reason()` says why. | No |
-| [`CustomMobSpawnEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/CustomMobSpawnEvent.html) | A spawning mob is about to become a special mob | Yes. The mob stays normal. |
-| [`CustomMobDeathEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/CustomMobDeathEvent.html) | A special mob died. You can still change its drops. | No |
-| [`CustomMobNightEndEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/CustomMobNightEndEvent.html) | A special mob's blood night is over and it is about to go or turn ordinary. `action(...)` changes what happens. | Yes. The mob stays as it is. |
-| [`BloodNightLootEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/BloodNightLootEvent.html) | A player killed a special mob, or an ordinary monster in a blood night, and its [loot tables](../mobs/loot-tables.md) were rolled. `loot()` holds the stacks by table ID; change, add or remove them. `mobId()` is null for an ordinary monster. | Yes. Nothing from the tables drops. |
+| [`BloodNightBeginEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/night/BloodNightBeginEvent.html) | A blood night is about to begin | Yes. The night stays normal. |
+| [`BloodNightEndEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/night/BloodNightEndEvent.html) | A blood night ended. `reason()` says why. | No |
+| [`CustomMobSpawnEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/mob/CustomMobSpawnEvent.html) | A spawning mob is about to become a special mob | Yes. The mob stays normal. |
+| [`CustomMobDeathEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/mob/CustomMobDeathEvent.html) | A special mob died. You can still change its drops. | No |
+| [`CustomMobNightEndEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/mob/CustomMobNightEndEvent.html) | A special mob's blood night is over and it is about to go or turn ordinary. `action(...)` changes what happens. | Yes. The mob stays as it is. |
+| [`BloodNightLootEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/mob/BloodNightLootEvent.html) | A player killed a special mob, or an ordinary monster in a blood night, and its [loot tables](../mobs/loot-tables.md) were rolled. `loot()` holds the stacks by table ID; change, add or remove them. `money()` is what the kill pays through Vault; change it with `setMoney`. `mobId()` is null for an ordinary monster. | Yes. Nothing from the tables drops and no money is paid. |
 | [`DeathActionEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/DeathActionEvent.html) | A death is about to cause lightning, thunder or a shockwave. `action()` says which. | Yes. That one is left out. |
 | [`BloodNightSettingsChangeEvent`](pathname:///javadoc/de/eldoria/bloodnight/api/event/BloodNightSettingsChangeEvent.html) | The settings changed and are in use. `cause()` says why: `RELOAD`, `EDITOR`, `COMMAND`, `STORE` or `CONVERT`. | No |
 

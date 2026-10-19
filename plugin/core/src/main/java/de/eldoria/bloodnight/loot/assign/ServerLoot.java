@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.loot.assign;
 
+import de.eldoria.bloodnight.loot.money.Money;
 import de.eldoria.bloodnight.loot.roll.LootLevel;
 import de.eldoria.bloodnight.mob.attributes.ValueModifier;
 import org.jspecify.annotations.Nullable;
@@ -20,9 +21,14 @@ import java.util.Objects;
  * @param slots      how many entries drop, as weights by count, where no world or mob sets it
  * @param ordinary   what ordinary enemies roll on top of their world's tables during blood nights
  * @param experience how special mobs' experience changes where no world or mob sets it
+ * @param money      what a special mob's kill pays where no world or mob sets it; null pays nothing
  */
 public record ServerLoot(
-        List<String> tables, @Nullable Map<Integer, Integer> slots, Ordinary ordinary, Experience experience) {
+        List<String> tables,
+        @Nullable Map<Integer, Integer> slots,
+        Ordinary ordinary,
+        Experience experience,
+        @Nullable Money money) {
     /**
      * The server's loot for ordinary enemies.
      *
@@ -58,7 +64,8 @@ public record ServerLoot(
                 List.of(),
                 Map.of(1, 90, 2, 50, 3, 10),
                 new Ordinary(List.of(), Map.of(1, 1)),
-                new Experience(ValueModifier.MULTIPLY, 4));
+                new Experience(ValueModifier.MULTIPLY, 4),
+                null);
     }
 
     /**

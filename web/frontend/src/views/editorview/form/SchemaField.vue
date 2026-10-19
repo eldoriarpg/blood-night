@@ -72,7 +72,7 @@ const placeholders = computed(() => {
     ? [{token: '{player}', meaning: t(each ? 'editor.placeholders.playerEach' : 'editor.placeholders.player')}, {token: '{world}', meaning: t('editor.placeholders.world')}]
     : undefined
 })
-const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind) || special.value === 'dropWeights' || special.value === 'lootTables' || special.value === 'experience' || special.value === 'moonPhases' || special.value === 'phaseCycle' || special.value === 'curve' || special.value === 'worldMobs' || special.value === 'mobName')
+const inlineHelp = computed(() => ['boolean', 'integer', 'number', 'text', 'choice'].includes(props.field.kind) || special.value === 'dropWeights' || special.value === 'lootTables' || special.value === 'experience' || special.value === 'money' || special.value === 'moonPhases' || special.value === 'phaseCycle' || special.value === 'curve' || special.value === 'worldMobs' || special.value === 'mobName')
 const current = computed(() => props.value ?? props.field.defaultValue)
 const draft = ref<string | number | undefined>(undefined)
 const numberDraft = computed<number | undefined>({
