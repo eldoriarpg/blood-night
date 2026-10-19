@@ -105,6 +105,16 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final double SEAL_ABOVE_GROUND = 0.3;
 
     /**
+     * Seconds the Blood Dragon takes to rise before it casts its arcane seal.
+     */
+    private static final double SEAL_RISE = 1.5;
+
+    /**
+     * Blocks the Blood Dragon rises before it casts its arcane seal.
+     */
+    private static final double SEAL_RISE_HEIGHT = 8;
+
+    /**
      * Share of its health below which the Blood Dragon begins to cast its arcane seal.
      */
     private static final double SEAL_HEALTH = 0.7;
@@ -2037,10 +2047,14 @@ public final class DefaultMobs implements BloodNightNodes {
                     .id();
             graph.on(
                     MOB_TICK,
-                    graph.every(6000, graph.present(nearest, "player", fireball)),
-                    graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
-                    graph.every(8000, graph.present(nearest, "player", graph.when(seesNearest, RESULT, spear))),
-                    graph.unless(casting(graph), VALUE, ai(graph, true)),
+                    graph.unless(
+                            casting(graph),
+                            VALUE,
+                            graph.every(6000, graph.present(nearest, "player", fireball)),
+                            graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
+                            graph.every(8000, graph.present(nearest, "player", graph.when(seesNearest, RESULT, spear))),
+                            ai(graph, true),
+                            stopHovering(graph)),
                     arcaneSeal(graph));
             String hit = graph.entry(EVENT_HIT);
             String hitPlayer = graph.as("player", hit, "entity");
@@ -2082,8 +2096,9 @@ public final class DefaultMobs implements BloodNightNodes {
     }
 
     /**
-     * The Blood Dragon's arcane seal, once a minute while a player is within {@value #SEAL_REACH} blocks: it hangs
-     * still, draws a magic circle {@value #SEAL_BELOW} blocks below itself, or just above the ground when that is
+     * The Blood Dragon's arcane seal, once a minute while a player is within {@value #SEAL_REACH} blocks: it roars,
+     * rises {@value #SEAL_RISE_HEIGHT} blocks, turns its head to the nearest player and hovers in place in an arcane
+     * aura, draws a magic circle {@value #SEAL_BELOW} blocks below itself, or just above the ground when that is
      * closer, and, once the circle is complete, throws every player in that reach it can see about 30 blocks away. A
      * player behind a pillar is safe. It only casts once its health is below {@value #SEAL_HEALTH} of its maximum.
      *
@@ -2126,16 +2141,97 @@ public final class DefaultMobs implements BloodNightNodes {
                 .chain(
                         "next",
                         playersAround(graph, SEAL_REACH, player -> throwAway(graph, player)),
+                        roar(graph),
+                        phase(graph, "CIRCLING"),
                         casting(graph, false))
+                .id();
+        String hover = graph.node(FLOW_DELAY)
+                .literal("duration", SEAL_RISE + 0.1)
+                .chain(
+                        "next",
+                        graph.present(nearest, "player", faceAway(graph, nearest)),
+                        ai(graph, true),
+                        phase(graph, "HOVER"))
+                .id();
+        String rise = graph.node(ENTITY_LIFT)
+                .input(TARGET, graph.self(), "entity")
+                .literal("height", SEAL_RISE_HEIGHT)
+                .literal("seconds", SEAL_RISE)
                 .id();
         trace.chain(
                 "next",
                 casting(graph, true),
                 ai(graph, false),
+                roar(graph),
+                rise,
                 graph.playEffect("bloodnight:arcane_seal", below, RESULT).id(),
+                graph.effectOnSelf("bloodnight:seal_aura"),
+                hover,
                 release);
         return graph.present(
                 nearest, "player", healthBelow(graph, SEAL_HEALTH, graph.every(SEAL_COOLDOWN, trace.id())));
+    }
+
+    /**
+     * @return a chain playing the dragon's growl to every player within {@value #SEAL_REACH} blocks
+     */
+    private static String roar(MobGraph graph) {
+        return playersAround(
+                graph,
+                SEAL_REACH,
+                player -> graph.sound(player, RESULT, "minecraft:entity.ender_dragon.growl", 4, 0.8));
+    }
+
+    /**
+     * @return a chain sending a hovering dragon back to circling, e.g. one a restart cut off in its cast
+     */
+    private static String stopHovering(MobGraph graph) {
+        String dragon = graph.node(ENDER_DRAGON_READ)
+                .input(TARGET, graph.as("ender_dragon", graph.self(), "entity"), RESULT)
+                .id();
+        String hovering = graph.node(LOGIC_EQUAL)
+                .input("first", dragon, "phase")
+                .input("second", graph.value("dragon_phase", "HOVER"), VALUE)
+                .id();
+        return graph.when(hovering, RESULT, phase(graph, "CIRCLING"));
+    }
+
+    /**
+     * @param phase a dragon phase, e.g. {@code HOVER} to hang flapping in place
+     * @return a node switching the dragon to it
+     */
+    private static String phase(MobGraph graph, String phase) {
+        return graph.node(ENDER_DRAGON_MUTATE)
+                .input(TARGET, graph.as("ender_dragon", graph.self(), "entity"), RESULT)
+                .input("phase", graph.value("dragon_phase", phase), VALUE)
+                .id();
+    }
+
+    /**
+     * Turns the dragon where it is now so its head points at the nearest player; a dragon's view points backwards, so
+     * it looks away from the player.
+     *
+     * @param nearest the node whose {@code player} is the nearest player
+     */
+    private static String faceAway(MobGraph graph, String nearest) {
+        String player = graph.node(ENTITY_READ).input(TARGET, nearest, "player").id();
+        String now =
+                graph.node(ENTITY_READ).input(TARGET, graph.self(), "entity").id();
+        String away = graph.node(VECTOR_DIRECTION)
+                .input("from", flat(graph, player, 0.01), RESULT)
+                .input("to", flat(graph, now, 0), RESULT)
+                .id();
+        Graphs.NodeBuilder turned =
+                graph.node(LOCATION_MUTATE).input(TARGET, now, "location").input("direction", away, RESULT);
+        String facing = graph.node(LOCATION_CREATE)
+                .input("world", turned.id(), "world")
+                .input("x", turned.id(), "x")
+                .input("y", turned.id(), "y")
+                .input("z", turned.id(), "z")
+                .input("yaw", turned.id(), "yaw")
+                .id();
+        turned.chain("next", teleport(graph, graph.self(), "entity", facing, RESULT));
+        return turned.id();
     }
 
     /**

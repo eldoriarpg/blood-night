@@ -373,6 +373,27 @@ effects:
         shape: {type: RING, radius: 26, points: 48, facing: UP}
         every: 2
         delay: 156
+  seal_aura:
+    name: Seal aura
+    duration: 160
+    viewDistance: 128
+    emitters:
+      - particle: minecraft:enchant
+        anchor: {at: CENTER}
+        shape: {type: SPHERE, radius: 6, points: 60}
+        every: 2
+        tiles: 2
+      - particle: minecraft:end_rod
+        anchor: {at: CENTER}
+        shape: {type: RING, radius: 8, points: 48, spin: 6, facing: UP}
+        every: 4
+        tiles: 2
+      - particle: minecraft:dust
+        data: {color: "#a050ff", size: 1.4}
+        anchor: {at: CENTER}
+        shape: {type: SPIRAL, radius: 5, height: 6, turns: 2, points: 30, strands: 2, spin: 12}
+        offset: {x: 0, y: -3, z: 0}
+        every: 3
   drain_beam:
     name: Drain beam
     duration: 60

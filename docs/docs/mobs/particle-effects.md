@@ -48,6 +48,7 @@ your own copy with a new id.
 | `bloodnight:blood_spear` | A glowing spear that flies through the target |
 | `bloodnight:rune_circle` | A turning rune on the ground |
 | `bloodnight:arcane_seal` | A magic circle 50 blocks across that fills in over 8 seconds and ends in a ring of explosions. Seen from 128 blocks. The Blood Dragon casts it. |
+| `bloodnight:seal_aura` | Enchanting letters, a turning ring of end rods and a purple spiral around the source for 8 seconds. Seen from 128 blocks. |
 
 ## Your own effects
 

@@ -32,6 +32,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.damage.DamageType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -140,12 +141,14 @@ public final class BukkitTypes {
                 .selectable("living_entity", PortType.of(LivingEntity.class))
                 .selectable("mob", PortType.of(Mob.class))
                 .selectable("creeper", PortType.of(Creeper.class))
+                .selectable("ender_dragon", PortType.of(EnderDragon.class))
                 .selectable("player", PortType.of(Player.class))
                 .selectable("location", PortType.of(Location.class))
                 .selectable("vector", PortType.of(Vector.class))
                 .selectable("world", PortType.of(World.class))
                 .selectable("item", PortType.of(ItemStack.class))
                 .selectable("damage_cause", PortType.of(EntityDamageEvent.DamageCause.class))
+                .selectable("dragon_phase", PortType.of(EnderDragon.Phase.class))
                 .selectable("entity_type", PortType.of(EntityType.class))
                 .selectable("potion_effect_type", PortType.of(PotionEffectType.class))
                 .selectable("item_type", PortType.of(ItemType.class))

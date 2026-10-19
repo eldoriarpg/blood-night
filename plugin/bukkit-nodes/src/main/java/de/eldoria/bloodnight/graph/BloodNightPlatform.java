@@ -37,6 +37,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockType;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
@@ -149,6 +150,10 @@ public final class BloodNightPlatform {
                         Param.of("pitch", float.class))
                 .build(rules));
         nodes.addAll(ReflectedType.of(Mob.class, "mob").category("entity").build(rules));
+        nodes.addAll(ReflectedType.of(EnderDragon.class, "ender_dragon")
+                .category("entity")
+                .name("Ender Dragon")
+                .build(rules));
         nodes.addAll(ReflectedType.of(Creeper.class, "creeper")
                 .category("entity")
                 .action("explode", "explode")
