@@ -99,6 +99,7 @@ export default {
             fit: 'Ajustar a la vista',
             arrange: 'Ordenar nodos',
             problems: 'Problemas',
+            comment: 'Comentar los nodos seleccionados',
         },
         shortcuts: {
             title: 'Atajos',
@@ -115,6 +116,7 @@ export default {
                 zoom: 'Rueda del ratón',
                 delete: 'Supr',
                 free: 'Alt + arrastrar',
+                comment: 'C',
             },
             does: {
                 addNode: 'Añadir un nodo donde hiciste clic',
@@ -127,7 +129,21 @@ export default {
                 zoom: 'Acercar o alejar',
                 delete: 'Borrar los nodos o conexiones seleccionados',
                 free: 'Colocar un nodo fuera de la cuadrícula',
+                comment: 'Enmarcar los nodos seleccionados en un comentario',
             },
+        },
+        comments: {
+            untitled: 'Comentario',
+            title: 'Título',
+            note: 'Nota',
+            collapse: 'Cerrar',
+            expand: 'Abrir',
+            resize: 'Cambiar tamaño',
+            nodes: 'Nodos dentro: {count}',
+            problems: 'Problemas: {count}',
+            rename: 'Doble clic para renombrar',
+            pin: '{node}: {port}',
+            colours: {grey: 'Gris', red: 'Rojo', orange: 'Naranja', yellow: 'Amarillo', green: 'Verde', blue: 'Azul', purple: 'Morado'},
         },
         problems: {
             none: 'No se encontraron problemas.',

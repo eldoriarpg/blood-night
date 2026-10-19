@@ -457,6 +457,9 @@ export interface Graph {
   nodes: {
     [k: string]: NodeInstance;
   };
+  comments?: {
+    [k: string]: Comment;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -485,6 +488,20 @@ export interface NodeInstance {
 export interface Edge {
   node: string;
   port: string;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Comment".
+ */
+export interface Comment {
+  title: string;
+  note: string;
+  color: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  collapsed: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

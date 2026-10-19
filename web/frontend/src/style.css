@@ -175,3 +175,44 @@ a:not(.row-link) {
 a:not(.row-link):hover {
     text-decoration: underline;
 }
+
+.vue-flow__handle {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border-width: 2px;
+    background: var(--color-raised);
+}
+
+.vue-flow__handle.pin-reroute {
+    width: 8px;
+    height: 8px;
+    min-width: 0;
+    min-height: 0;
+    border: 0;
+    background: var(--color-ink-faint);
+}
+
+.vue-flow__handle.pin-exec {
+    border: 0;
+    border-radius: 0;
+    background: var(--color-pin-exec);
+    clip-path: polygon(0 0, 60% 0, 100% 50%, 60% 100%, 0 100%);
+    opacity: 0.55;
+}
+
+.vue-flow__handle.pin-exec.pin-filled {
+    opacity: 1;
+}
+
+.vue-flow__handle.pin-data.pin-filled {
+    background: currentColor;
+}
+
+.vue-flow__handle.pin-entity { border-color: var(--color-pin-entity); color: var(--color-pin-entity); }
+.vue-flow__handle.pin-number { border-color: var(--color-pin-number); color: var(--color-pin-number); }
+.vue-flow__handle.pin-boolean { border-color: var(--color-pin-boolean); color: var(--color-pin-boolean); }
+.vue-flow__handle.pin-text { border-color: var(--color-pin-text); color: var(--color-pin-text); }
+.vue-flow__handle.pin-location { border-color: var(--color-pin-location); color: var(--color-pin-location); }
+.vue-flow__handle.pin-item { border-color: var(--color-pin-item); color: var(--color-pin-item); }
+.vue-flow__handle.pin-other { border-color: var(--color-pin-other); color: var(--color-pin-other); }

@@ -41,6 +41,10 @@ class JsonSchemasTest {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     record Sparse(String id, List<String> tags) {}
 
+    record PartlySparse(
+            String id,
+            @JsonInclude(JsonInclude.Include.NON_EMPTY) List<String> tags) {}
+
     record Mob(String id, @Nullable String name, List<String> tags, Map<String, Integer> weights, JsonNode editor) {}
 
     static class Night {
@@ -99,6 +103,12 @@ class JsonSchemasTest {
     void recordsLeavingValuesOutRequireNothing() {
         assertFalse(
                 definition(JsonSchemas.document(Sparse.class, MAPPER), "Sparse").has("required"));
+    }
+
+    @Test
+    void componentsLeftOutWhenEmptyAreOptional() {
+        JsonNode schema = definition(JsonSchemas.document(PartlySparse.class, MAPPER), "PartlySparse");
+        assertEquals("[\"id\"]", schema.get("required").toString());
     }
 
     @Test

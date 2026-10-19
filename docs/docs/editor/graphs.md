@@ -52,11 +52,30 @@ The `fearful_phantom` does exactly this. Open it to compare.
 | Double click a node | See its details |
 | Double click a wire | Add a reroute point to tidy it |
 | Drag on the canvas | Select nodes in a box |
+| C | Put the selected nodes in a comment |
 | Space + drag | Move the view |
 | Scroll | Zoom |
 | Delete | Delete what is selected |
 
 **Arrange nodes** in the toolbar lays out the whole graph neatly.
+
+### Comments
+
+A comment is a coloured frame around a group of nodes. It says what that part of the graph does, like "Charge
+attack". It never changes what the mob does.
+
+- Select some nodes and press **C**, or use the note button in the toolbar. A frame appears around them. Type its
+  title and press Enter.
+- Double click the title to change it. When the frame is selected, its bar has colours and a pen for a longer note.
+- Drag the frame by its bar. The nodes inside move with it. Drag a node out of the frame to take it out.
+- Drag the bottom right corner to make the frame bigger or smaller.
+- **Delete** removes the frame. The nodes stay.
+
+The arrow at the start of the bar closes the frame. Its nodes are then hidden behind one small box. The box shows how
+many nodes it hides and whether one of them has a problem. Wires to the hidden nodes end at the box. Click the arrow
+again, or double click the box, to open it. A closed frame can't be deleted: open it first.
+
+**Arrange nodes** keeps every frame around its nodes.
 
 ## Handy nodes
 

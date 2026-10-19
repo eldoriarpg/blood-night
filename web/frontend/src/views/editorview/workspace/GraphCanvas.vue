@@ -4,10 +4,12 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 <script setup lang="ts">
-import {VueFlow, useVueFlow, type Connection, type EdgeChange, type EdgeMouseEvent, type NodeChange, type NodeDragEvent, type NodeMouseEvent, type OnConnectStartParams} from '@vue-flow/core'
+import {VueFlow, useVueFlow, type Connection, type EdgeChange, type EdgeMouseEvent, type NodeChange, type NodeMouseEvent, type OnConnectStartParams} from '@vue-flow/core'
 import '@vue-flow/core/dist/style.css'
 import {useEventListener} from '@vueuse/core'
 import GraphNode from '~/views/editorview/workspace/GraphNode.vue'
+import CommentFrame from '~/views/editorview/workspace/CommentFrame.vue'
+import {useCanvasFrames} from '~/views/editorview/workspace/canvasFrames'
 import CanvasToolbar from '~/views/editorview/workspace/CanvasToolbar.vue'
 import CanvasShortcuts from '~/views/editorview/workspace/CanvasShortcuts.vue'
 import NodePicker from '~/views/editorview/workspace/NodePicker.vue'
@@ -22,6 +24,7 @@ import {arrange, type LayoutNode} from '~/util/graph/autoLayout'
 import {executionOrder} from '~/util/graph/executionOrder'
 import {graphPlayback} from '~/util/graph/graphPlayback'
 import {storedPosition, type Position} from '~/util/graph/graphLayout'
+import {COMMENT_NODE, type CommentView} from '~/util/graph/comments'
 import type {GraphBindings} from '~/util/graph/graphBindings'
 import type {PatchOperation} from '~/util/patch/jsonPatch'
 
@@ -39,6 +42,8 @@ import type {PatchOperation} from '~/util/patch/jsonPatch'
  * values are edited on the nodes themselves. A double click on a wire puts a reroute on it there, a dot that only
  * gives the wire another path. A wire reaches Vue Flow only once it holds both of its nodes: Vue Flow takes new wires
  * before new nodes, so a node added with its wire would otherwise leave the wire pointing at nothing for a moment.
+ * Comment frames sit behind the nodes (see {@link useCanvasFrames}); C or the toolbar frames the selected nodes, Delete
+ * removes a frame only, and Arrange keeps frames with their nodes.
  */
 const props = defineProps<{
   graph: Graph
@@ -98,24 +103,23 @@ const shownPositions = ref<ReadonlyMap<string, Position>>(new Map())
 watch(() => Object.keys(props.graph.nodes ?? {}).join(), () => {
   shownPositions.value = new Map()
 })
-const nodes = computed(() => view.value.nodes.map(node => ({
-  id: node.id,
-  type: 'blueprint',
-  position: shownPositions.value.get(node.id) ?? node.position,
-  data: node,
-  class: playback.current.value === node.id ? 'bn-lit bn-current' : playback.order.value.has(node.id) ? 'bn-lit' : '',
-})))
-const flowNodeIds = computed(() => new Set(flow.nodes.value.map(node => node.id)))
-const edges = computed(() => view.value.edges.filter(edge => flowNodeIds.value.has(edge.source) && flowNodeIds.value.has(edge.target)).map(edge => ({
-  id: edge.id,
-  source: edge.source,
-  sourceHandle: edge.sourceHandle,
-  target: edge.target,
-  targetHandle: edge.targetHandle,
-  animated: playback.wires.value.has(edge.id),
-  class: playback.wires.value.has(edge.id) ? 'bn-lit-wire' : '',
-  style: {stroke: `var(--color-pin-${edge.pin})`, strokeWidth: playback.wires.value.has(edge.id) ? 4 : edge.pin === 'exec' ? 2.5 : 2},
-})))
+const session = useEditorSession()
+const frames = useCanvasFrames({
+  graph: () => props.graph,
+  base: () => props.base,
+  readOnly: () => props.readOnly,
+  view,
+  shownPositions,
+  flow,
+  playback,
+  problems: () => session.data.value.problems,
+  editor,
+  apply,
+  grid: GRID,
+  viewCenter,
+  keys: !props.preview,
+})
+const {nodes, edges} = frames
 
 /** Plays the order a chain runs in, from the node that starts it. */
 function played(start: string): void {
@@ -170,11 +174,6 @@ function rerouted({edge, event}: EdgeMouseEvent): void {
   void apply([...operations, ...changes.connectData(wire.target, wire.targetHandle.slice(3), id, 'value')])
 }
 
-function moved(event: NodeDragEvent): void {
-  if (props.readOnly) return
-  void changes.apply(event.nodes.flatMap(node => editor().move(node.id, node.position)))
-}
-
 function connected(connection: Connection): void {
   wired.value = true
   if (props.readOnly) return
@@ -189,11 +188,13 @@ function connected(connection: Connection): void {
 function validConnection(connection: Connection): boolean {
   const execution = connection.sourceHandle?.startsWith('exec:') && connection.targetHandle === handles.execIn
   const data = connection.sourceHandle?.startsWith('out:') && connection.targetHandle?.startsWith('in:')
-  return Boolean(execution || data) && connection.source !== connection.target
+  const framed = connection.sourceHandle?.startsWith('cout:') || connection.targetHandle?.startsWith('cin:')
+  return Boolean(execution || data || framed) && connection.source !== connection.target
 }
 
 const removedEdges = new Set<string>()
 const removedNodes = new Set<string>()
+const removedFrames = new Set<string>()
 let removing = false
 
 /**
@@ -207,13 +208,15 @@ function removeLater(): void {
   void nextTick(() => {
     removing = false
     const nodes = [...removedNodes]
+    const comments = [...removedFrames]
     const wires = [...removedEdges]
       .map(id => edgesById.value.get(id))
       .filter((edge): edge is EdgeView => edge !== undefined && !removedNodes.has(edge.source) && !removedNodes.has(edge.target))
     removedNodes.clear()
     removedEdges.clear()
+    removedFrames.clear()
     if (props.readOnly) return
-    void apply(unwire(nodes, wires))
+    void apply([...unwire(nodes, wires), ...comments.flatMap(id => editor().removeComment(id))])
   })
 }
 
@@ -238,9 +241,11 @@ function unwire(nodes: readonly string[], wires: readonly EdgeView[]) {
 
 function nodesChanged(nodeChanges: NodeChange[]): void {
   nodeChanges.forEach(change => {
-    if (change.type === 'remove') removedNodes.add(change.id)
+    if (change.type !== 'remove') return
+    if (change.id.startsWith(COMMENT_NODE)) removedFrames.add(change.id.slice(COMMENT_NODE.length))
+    else removedNodes.add(change.id)
   })
-  if (removedNodes.size > 0) removeLater()
+  if (removedNodes.size > 0 || removedFrames.size > 0) removeLater()
 }
 
 /**
@@ -249,6 +254,7 @@ function nodesChanged(nodeChanges: NodeChange[]): void {
  */
 function inspected({node, event}: NodeMouseEvent): void {
   if (event.target instanceof Element && event.target.closest('input, select, textarea, button')) return
+  if (frames.doubleClicked(node.id)) return
   emit('inspect', node.id)
 }
 
@@ -290,7 +296,7 @@ function paneDoubleClicked(event: MouseEvent): void {
 }
 
 function measured(): LayoutNode[] {
-  return flow.getNodes.value.map(node => ({
+  return flow.getNodes.value.filter(node => frames.arranged(node.id)).map(node => ({
     id: node.id,
     width: node.dimensions.width,
     height: node.dimensions.height,
@@ -312,15 +318,18 @@ function save(positions: ReadonlyMap<string, Position>): Promise<boolean> {
 /** Lays the whole graph out with ELK and saves every position. */
 async function arrangeAll(): Promise<void> {
   if (props.readOnly || flow.getNodes.value.length === 0) return
-  const arranged = await arrange(measured(), view.value.edges)
+  const before = frames.frames.value
+  const sizes = new Map(flow.getNodes.value.map(node => [node.id, node.dimensions]))
+  const arranged = await arrange(measured(), frames.routed.value.edges)
   const positions = new Map([...arranged].map(([id, position]) => [id, onGrid(position)]))
-  if (await save(positions)) void nextTick(fitUnlessMoved)
+  const moves = [...positions].filter(([id]) => !id.startsWith(COMMENT_NODE)).flatMap(([id, position]) => editor().move(id, position))
+  if (await apply([...moves, ...frames.afterArrange(before, positions, sizes)])) void nextTick(fitUnlessMoved)
 }
 
 /** Lays out a graph that may not be changed, for this view only, so a read-only graph without positions is readable. */
 async function arrangeShown(): Promise<void> {
   if (flow.getNodes.value.length === 0) return
-  const arranged = await arrange(measured(), view.value.edges)
+  const arranged = await arrange(measured(), frames.routed.value.edges)
   shownPositions.value = new Map([...arranged].map(([id, position]) => [id, onGrid(position)]))
   void nextTick(fitUnlessMoved)
 }
@@ -369,9 +378,12 @@ flow.onNodesInitialized(() => {
 /** Adds a node of a type in the middle of what the canvas shows. */
 function add(type: string): void {
   if (props.readOnly) return
+  void apply(editor().add(type, viewCenter()).operations)
+}
+
+function viewCenter(): Position {
   const bounds = flow.vueFlowRef.value?.getBoundingClientRect()
-  const center = flow.screenToFlowCoordinate({x: (bounds?.left ?? 0) + (bounds?.width ?? 0) / 2, y: (bounds?.top ?? 0) + (bounds?.height ?? 0) / 2})
-  void apply(editor().add(type, center).operations)
+  return flow.screenToFlowCoordinate({x: (bounds?.left ?? 0) + (bounds?.width ?? 0) / 2, y: (bounds?.top ?? 0) + (bounds?.height ?? 0) / 2})
 }
 
 defineExpose({add})
@@ -407,11 +419,13 @@ defineExpose({add})
         @dblclick="paneDoubleClicked"
         @edge-double-click="rerouted"
         @edges-change="edgesChanged"
-        @node-drag-stop="moved"
         @nodes-change="nodesChanged"
         @node-double-click="inspected"
         @pane-click="emit('inspect', null)"
     >
+      <template #node-comment="frameProps">
+        <CommentFrame v-bind="frames.frameBindings(frameProps.data as CommentView)" :selected="frameProps.selected" @edit="edit => frames.edit((frameProps.data as CommentView).id, edit)" @named="frames.naming.value = null" @toggle="frames.toggle((frameProps.data as CommentView).id)"/>
+      </template>
       <template #node-blueprint="nodeProps">
         <GraphNode
             :data="nodeProps.data as NodeView"
@@ -439,6 +453,7 @@ defineExpose({add})
         :problem-count="problemCount"
         :read-only="readOnly"
         @arrange="arrangeAll"
+        @comment="frames.frameSelection"
         @fit="flow.fitView()"
         @problems="emit('problems')"
         @zoom-in="flow.zoomIn()"

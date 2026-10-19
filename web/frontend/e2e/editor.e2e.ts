@@ -338,6 +338,62 @@ test('a drag on the canvas selects nodes', async ({page}) => {
     expect(await settledBox(ignite)).toEqual(box)
 })
 
+/**
+ * C frames the selected node in a comment whose title is typed next; dragging the frame by its bar moves the node
+ * along, closing it hides the node behind one box that takes its wire, a double click opens it, and Delete removes
+ * the frame only.
+ */
+test('a comment frames nodes, moves them along, closes and is removed', async ({page}) => {
+    const stage = await stageEditor(page)
+    await openGraph(page, stage.link)
+    const graph = '/mobs/speed_creeper/behaviour'
+    const ignite = page.locator('.vue-flow__node[data-id="ignite"]')
+    await settledBox(ignite)
+    await ignite.click()
+    await page.keyboard.press('c')
+
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    const added = stage.changes[0]![0] as {path: string, value: Record<string, {x: number, width: number}>}
+    expect(added.path).toBe(`${graph}/comments`)
+    const frame = added.value.comment_1!
+    expect(frame.x).toBeLessThan(420)
+    expect(frame.x + frame.width).toBeGreaterThan(420)
+
+    await page.getByRole('textbox', {name: 'Title'}).fill('Fuse')
+    await page.keyboard.press('Enter')
+    await expect(page.getByText('Saved, revision 2')).toBeVisible()
+    expect(stage.changes[1]).toEqual([{op: 'add', path: `${graph}/comments/comment_1`, value: {...frame, title: 'Fuse'}}])
+
+    const bar = page.locator('.vue-flow__node[data-id="comment:comment_1"] .bn-frame-bar')
+    const box = await settledBox(bar)
+    await page.mouse.move(box.x + 200, box.y + box.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(box.x + 80, box.y + box.height / 2 + 60, {steps: 10})
+    await page.mouse.up()
+    await expect(page.getByText('Saved, revision 3')).toBeVisible()
+    const shifted = stage.changes[2] as {path: string, value: {x: number}}[]
+    const by = shifted.find(operation => operation.path.endsWith('/comment_1'))!.value.x - frame.x
+    expect(by).toBeLessThan(0)
+    expect(shifted.find(operation => operation.path.endsWith('/ignite/editor'))!.value.x).toBe(420 + by)
+
+    await page.getByTestId('comment-toggle').click()
+    await expect(page.getByText('Saved, revision 4')).toBeVisible()
+    await expect(ignite).toHaveCount(0)
+    await expect(page.getByTestId('comment-closed')).toContainText('Nodes inside: 1')
+    await expect(page.locator('[data-handleid^="cin:"]')).toHaveCount(1)
+    await expect(page.locator('.vue-flow__edge')).toHaveCount(1)
+
+    await page.getByTestId('comment-closed').dblclick()
+    await expect(page.getByText('Saved, revision 5')).toBeVisible()
+    await expect(ignite).toBeVisible()
+
+    await page.locator('.vue-flow__node[data-id="comment:comment_1"] .bn-frame-bar').click({position: {x: 200, y: 20}})
+    await page.keyboard.press('Delete')
+    await expect(page.getByText('Saved, revision 6')).toBeVisible()
+    expect(stage.changes[5]).toEqual([{op: 'remove', path: `${graph}/comments/comment_1`}])
+    await expect(ignite).toBeVisible()
+})
+
 /** Holding Space turns a drag on the canvas into moving the view. */
 test('space and drag move the view', async ({page}) => {
     const stage = await stageEditor(page)
