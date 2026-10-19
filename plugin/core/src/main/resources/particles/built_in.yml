@@ -273,21 +273,18 @@ effects:
   drain_beam:
     name: Drain beam
     duration: 60
-    pieces:
-      - kind: SPAN
-        block: minecraft:red_stained_glass
-        anchor: {at: EYES, aim: CENTER}
-        width: 0.08
-        grow: 6
-        glow: true
-        color: "#ff2020"
     emitters:
       - particle: minecraft:dust
-        data: {color: "#ff4040", size: 0.6}
+        data: {color: "#ff1010", size: 0.9}
         anchor: {at: EYES, aim: CENTER}
-        shape: {type: BEAM, density: 3, jitter: 0.1}
+        shape: {type: BEAM, density: 4}
+        every: 1
+      - particle: minecraft:dust
+        data: {color: "#ff9090", size: 0.5}
+        anchor: {at: EYES, aim: CENTER}
+        shape: {type: BEAM, density: 2, jitter: 0.12}
         every: 2
-        chance: 0.6
+        chance: 0.7
       - particle: minecraft:dust_color_transition
         data: {color: "#ff0000", to: "#300000", size: 0.8}
         anchor: {at: CENTER, on: TARGET}
