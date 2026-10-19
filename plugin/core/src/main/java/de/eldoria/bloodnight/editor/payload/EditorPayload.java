@@ -12,7 +12,6 @@ import de.eldoria.bloodnight.editor.item.EditorItem;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.serialization.EditorSerialization;
 import de.eldoria.bloodnight.store.MobStore;
 import de.eldoria.graph.compiler.validate.GraphProblem;
 import de.eldoria.graph.model.Macro;
@@ -72,7 +71,6 @@ public record EditorPayload(
         @Nullable EditorLegacy legacy) {
     public static final ObjectMapper MAPPER = JsonMapper.builder()
             .addModule(JacksonPaper.builder().build())
-            .addModule(new EditorSerialization())
             .changeDefaultVisibility(visibility -> visibility
                     .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                     .withGetterVisibility(JsonAutoDetect.Visibility.NONE)

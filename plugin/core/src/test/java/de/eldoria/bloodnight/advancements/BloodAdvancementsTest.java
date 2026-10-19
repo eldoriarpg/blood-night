@@ -163,6 +163,8 @@ class BloodAdvancementsTest {
                         .count());
     }
 
+    /** The event's only constructor takes the deprecated slot type, and MockBukkit never fires the event itself. */
+    @SuppressWarnings("deprecation")
     @Test
     void nightWardFiveIsWorthAnAdvancement() {
         server.getPluginManager()

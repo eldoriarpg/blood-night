@@ -29,6 +29,7 @@ import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
@@ -90,7 +91,7 @@ public final class ItemTexts {
             meta.setEnchantmentGlintOverride(look.glint());
             String model = look.model();
             meta.setItemModel(model == null || model.isBlank() ? null : NamespacedKey.fromString(model));
-            meta.setCustomModelData(look.modelData());
+            meta.setCustomModelDataComponent(modelData(meta, look.modelData()));
             meta.setUnbreakable(look.unbreakable());
             Double wear = look.wear();
             if (meta instanceof Damageable damageable && maxDurability > 0) {
@@ -142,7 +143,7 @@ public final class ItemTexts {
                 enchantments,
                 meta.hasEnchantmentGlintOverride() ? meta.getEnchantmentGlintOverride() : null,
                 model == null ? null : model.asString(),
-                meta.hasCustomModelData() ? meta.getCustomModelData() : null,
+                modelNumber(meta),
                 meta.isUnbreakable(),
                 wear,
                 color,
@@ -193,6 +194,26 @@ public final class ItemTexts {
         int maxDurability = maxDurability(item);
         if (maxDurability <= 0) return;
         item.editMeta(Damageable.class, damageable -> damageable.setDamage(damage(wear, maxDurability)));
+    }
+
+    /**
+     * The custom model data with the number as its first float, the way a number was stored before the component
+     * existed; the other values the item carries stay. No number removes the custom model data.
+     */
+    private static @Nullable CustomModelDataComponent modelData(ItemMeta meta, @Nullable Integer number) {
+        if (number == null) return null;
+        CustomModelDataComponent data = meta.getCustomModelDataComponent();
+        List<Float> floats = new ArrayList<>(data.getFloats());
+        if (floats.isEmpty()) floats.add(number.floatValue());
+        else floats.set(0, number.floatValue());
+        data.setFloats(floats);
+        return data;
+    }
+
+    private static @Nullable Integer modelNumber(ItemMeta meta) {
+        if (!meta.hasCustomModelDataComponent()) return null;
+        List<Float> floats = meta.getCustomModelDataComponent().getFloats();
+        return floats.isEmpty() ? null : floats.getFirst().intValue();
     }
 
     private static int maxDurability(ItemStack item) {

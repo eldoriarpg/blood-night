@@ -61,6 +61,8 @@ class MobDamageTest extends RulesTest {
         assertEquals(4, hit(zombie, cow));
     }
 
+    /** Citizens marks its NPCs with Bukkit metadata, which Paper deprecates; the test sets it the way Citizens does. */
+    @SuppressWarnings("deprecation")
     @Test
     void npcsKeepTheirDamage() {
         zombie.setMetadata("NPC", new FixedMetadataValue(plugin, true));
