@@ -835,6 +835,8 @@ export default {
                 on: 'Sits on',
                 at: 'Point',
                 piece: 'Piece',
+                aim: 'Aims at',
+                sameAim: 'Same point',
                 ends: {SOURCE: 'Source', TARGET: 'Target', PIECE: 'A piece'},
                 points: {FEET: 'Feet', CENTER: 'Middle', EYES: 'Eyes', ABOVE: 'Above the head'},
             },

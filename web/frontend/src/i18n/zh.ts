@@ -1080,6 +1080,8 @@ export default {
                 on: '位于',
                 at: '位置',
                 piece: '部件',
+                aim: '瞄准',
+                sameAim: '相同位置',
                 ends: {SOURCE: '来源', TARGET: '目标', PIECE: '某个部件'},
                 points: {FEET: '脚下', CENTER: '中间', EYES: '眼睛', ABOVE: '头顶上方'},
             },

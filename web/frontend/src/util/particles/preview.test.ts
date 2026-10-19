@@ -5,7 +5,7 @@
  */
 import {describe, expect, it} from 'vitest'
 import type {ParticleEffect} from '~/api/generated/payload'
-import {point, Simulation} from './preview'
+import {aimedPoint, point, Simulation} from './preview'
 import {vec} from './shapes'
 
 const source = {feet: vec(0, 0, 0), height: 2, yaw: 0}
@@ -42,5 +42,7 @@ describe('preview', () => {
         expect(play.pieces[0]?.position.x).toBeCloseTo(6)
         expect(play.pieces[1]?.end?.x).toBeCloseTo(6)
         expect(point(target, {at: 'EYES'}).y).toBeCloseTo(1.7)
+        expect(aimedPoint(target, {at: 'EYES'}).y).toBeCloseTo(1.7)
+        expect(aimedPoint(target, {at: 'EYES', aim: 'CENTER'}).y).toBeCloseTo(1)
     })
 })

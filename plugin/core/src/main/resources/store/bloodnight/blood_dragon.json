@@ -49,11 +49,11 @@
     },
     "behaviour" : {
       "nodes" : {
-        "apply_effect_26" : {
+        "apply_effect_29" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_25",
+              "node" : "cast_27",
               "port" : "result"
             }
           },
@@ -75,11 +75,11 @@
             "false" : [ "damage_7" ]
           }
         },
-        "branch_12" : {
+        "branch_13" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_11",
+              "node" : "is_null_12",
               "port" : "result"
             }
           },
@@ -87,23 +87,23 @@
             "false" : [ "launch_projectile_3" ]
           }
         },
-        "branch_14" : {
+        "branch_15" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_13",
+              "node" : "cooldown_14",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_12" ]
+            "true" : [ "branch_13" ]
           }
         },
-        "branch_16" : {
+        "branch_17" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_15",
+              "node" : "is_null_16",
               "port" : "result"
             }
           },
@@ -111,67 +111,103 @@
             "false" : [ "strike_lightning_5", "play_effect_6" ]
           }
         },
-        "branch_18" : {
+        "branch_19" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_17",
+              "node" : "cooldown_18",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_16" ]
+            "true" : [ "branch_17" ]
           }
         },
         "branch_20" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_19",
+              "node" : "has_line_of_sight_11",
               "port" : "result"
             }
           },
           "executions" : {
-            "false" : [ "play_effect_8" ]
+            "true" : [ "play_effect_8" ]
           }
         },
         "branch_22" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_21",
+              "node" : "is_null_21",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_20" ]
+            "false" : [ "branch_20" ]
           }
         },
-        "branch_28" : {
+        "branch_24" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cast_25",
+              "node" : "cooldown_23",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_22" ]
+          }
+        },
+        "branch_32" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_31",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_30" ]
+          }
+        },
+        "branch_33" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_28",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_32" ]
+          }
+        },
+        "branch_34" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_27",
               "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "apply_effect_26", "play_effect_27" ]
+            "true" : [ "apply_effect_29", "branch_33" ]
           }
         },
-        "cast_25" : {
+        "cast_27" : {
           "type" : "cast",
           "config" : {
             "type" : "player"
           },
           "inputs" : {
             "value" : {
-              "node" : "hit_24",
+              "node" : "hit_26",
               "port" : "entity"
             }
           }
         },
-        "cooldown_13" : {
+        "cooldown_14" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -180,7 +216,7 @@
             "duration" : 6000
           }
         },
-        "cooldown_17" : {
+        "cooldown_18" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -189,13 +225,22 @@
             "duration" : 10000
           }
         },
-        "cooldown_21" : {
+        "cooldown_23" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
           },
           "literals" : {
             "duration" : 8000
+          }
+        },
+        "cooldown_31" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 3000
           }
         },
         "damage_7" : {
@@ -214,13 +259,39 @@
             "amount" : 6.0
           }
         },
-        "hit_24" : {
+        "has_line_of_sight_11" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "has_line_of_sight_28" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "cast_27",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "hit_26" : {
           "type" : "event.hit",
           "executions" : {
-            "next" : [ "branch_28" ]
+            "next" : [ "branch_34" ]
           }
         },
-        "is_null_11" : {
+        "is_null_12" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -229,7 +300,7 @@
             }
           }
         },
-        "is_null_15" : {
+        "is_null_16" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -238,7 +309,7 @@
             }
           }
         },
-        "is_null_19" : {
+        "is_null_21" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
@@ -287,7 +358,7 @@
             "radius" : 128.0
           }
         },
-        "play_effect_27" : {
+        "play_effect_30" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:drain_beam"
@@ -298,7 +369,7 @@
               "port" : "entity"
             },
             "target" : {
-              "node" : "cast_25",
+              "node" : "cast_27",
               "port" : "result"
             }
           }
@@ -368,10 +439,10 @@
             }
           }
         },
-        "tick_23" : {
+        "tick_25" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_14", "branch_18", "branch_22" ]
+            "next" : [ "branch_15", "branch_19", "branch_24" ]
           }
         }
       }

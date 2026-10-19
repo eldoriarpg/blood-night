@@ -1080,6 +1080,8 @@ export default {
                 on: 'Está en',
                 at: 'Punto',
                 piece: 'Pieza',
+                aim: 'Apunta a',
+                sameAim: 'El mismo punto',
                 ends: {SOURCE: 'Origen', TARGET: 'Objetivo', PIECE: 'Una pieza'},
                 points: {FEET: 'Pies', CENTER: 'Centro', EYES: 'Ojos', ABOVE: 'Sobre la cabeza'},
             },

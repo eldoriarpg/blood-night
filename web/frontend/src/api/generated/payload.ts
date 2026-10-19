@@ -806,6 +806,7 @@ export interface Anchor {
   at?: BodyPoint;
   on?: EffectEnd;
   piece?: number;
+  aim?: BodyPoint;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

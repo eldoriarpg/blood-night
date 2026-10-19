@@ -1950,20 +1950,31 @@ public final class DefaultMobs implements BloodNightNodes {
                     .input("target", nearest, "player")
                     .chain("arrived", graph.present(nearest, "player", pierce))
                     .id();
+            String seesNearest = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
+                    .input(TARGET, graph.self(), "entity")
+                    .input("other", nearest, "player")
+                    .id();
             graph.on(
                     MOB_TICK,
                     graph.every(6000, graph.present(nearest, "player", fireball)),
                     graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
-                    graph.every(8000, graph.present(nearest, "player", spear)));
+                    graph.every(8000, graph.present(nearest, "player", graph.when(seesNearest, RESULT, spear))));
             String hit = graph.entry(EVENT_HIT);
             String hitPlayer = graph.as("player", hit, "entity");
+            String seesHit = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
+                    .input(TARGET, graph.self(), "entity")
+                    .input("other", hitPlayer, RESULT)
+                    .id();
             graph.on(
                     EVENT_HIT,
                     graph.when(
                             hitPlayer,
                             "matches",
                             graph.effect(hitPlayer, RESULT, "minecraft:wither", 5, 1),
-                            graph.effectAt("bloodnight:drain_beam", hitPlayer, RESULT)));
+                            graph.when(
+                                    seesHit,
+                                    RESULT,
+                                    graph.every(3000, graph.effectAt("bloodnight:drain_beam", hitPlayer, RESULT)))));
         });
         Attributes base = dragon.attributes();
         return new CustomMob(

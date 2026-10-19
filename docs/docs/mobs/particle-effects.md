@@ -81,7 +81,7 @@ An emitter draws one particle in a shape, again and again while the effect plays
 |---|---|
 | `particle` | The particle, for example `minecraft:flame` |
 | `data` | What some particles need: a colour, a size, a block or an item. The editor shows only what the particle uses. |
-| `anchor` | Where it sits: `on` the `SOURCE`, the `TARGET` or a `PIECE`, and `at` the `FEET`, `CENTER`, `EYES` or `ABOVE` the head |
+| `anchor` | Where it sits: `on` the `SOURCE`, the `TARGET` or a `PIECE`, and `at` the `FEET`, `CENTER`, `EYES` or `ABOVE` the head; `aim` is the point it aims at on the other end |
 | `offset` | A shift from the anchor, in blocks: `x` to the right, `y` up, `z` forward |
 | `shape` | Where the particles appear, see below |
 | `motion` | Lets it travel to the other end, see below |
@@ -154,6 +154,11 @@ motion: {ticks: 8, through: 1.5, ease: IN}
 - `ticks`: how long it takes to reach the other end.
 - `through`: how far it goes on past the other end, in blocks. This makes a spear go through a player.
 - `ease`: `LINEAR` keeps the same speed, `IN` speeds up, `OUT` slows down.
+
+On the other end, an emitter or piece aims at the same point of the body as its anchor, unless the anchor sets
+`aim`: `anchor: {at: EYES, aim: CENTER}` starts at the mob's eyes and hits the player's chest. Aim at `CENTER` for
+anything aimed at a player: at their `EYES`, it ends right in front of their face and looks cut off and wide. An Ender
+Dragon's `EYES` are its head.
 
 ## Display pieces
 
