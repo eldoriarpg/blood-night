@@ -12,6 +12,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,8 +63,11 @@ class TextsTest {
     }
 
     private static Properties bundle(String locale) throws IOException {
-        try (InputStream stream =
-                TextsTest.class.getClassLoader().getResourceAsStream("messages_%s.properties".formatted(locale))) {
+        return resource("messages_%s.properties".formatted(locale));
+    }
+
+    private static Properties resource(String name) throws IOException {
+        try (InputStream stream = TextsTest.class.getClassLoader().getResourceAsStream(name)) {
             Properties properties = new Properties();
             properties.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
             return properties;
@@ -76,6 +80,29 @@ class TextsTest {
 
     private static String begin(CommandSender receiver) {
         return plain(Texts.render(receiver, NightKind.NIGHT.key("begin"), Placeholder.unparsed("world", "world")));
+    }
+
+    @Test
+    void theReferenceFileHoldsTheEnglishTexts() throws IOException {
+        assertEquals(bundle("en_US"), resource("messages.properties"));
+    }
+
+    @Test
+    void textFilesOnTheServerGetNewTexts() throws IOException {
+        Plugin plugin = MockBukkit.createMockPlugin();
+        Path file = plugin.getDataFolder().toPath().resolve("messages/messages_de_DE.properties");
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, "bloodnight.night.begin=Eigener Text\n");
+
+        Texts.create(plugin, "", "en_US");
+
+        Properties updated = new Properties();
+        try (InputStream stream = Files.newInputStream(file)) {
+            updated.load(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        }
+        assertEquals("Eigener Text", updated.getProperty("bloodnight.night.begin"));
+        assertEquals(
+                bundle("de_DE").getProperty("bloodnight.money.paid"), updated.getProperty("bloodnight.money.paid"));
     }
 
     @ParameterizedTest

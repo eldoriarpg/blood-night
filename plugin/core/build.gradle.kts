@@ -153,6 +153,9 @@ tasks {
         from(rootProject.layout.projectDirectory.dir("plugin/resourcepack")) {
             into("resourcepack")
         }
+        from("src/main/resources/messages_en_US.properties") {
+            rename { "messages.properties" }
+        }
     }
 
     register<JavaExec>("generateStore") {
