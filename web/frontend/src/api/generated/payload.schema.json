@@ -2166,6 +2166,9 @@
         },
         "self" : {
           "type" : "boolean"
+        },
+        "viewDistance" : {
+          "type" : "integer"
         }
       }
     },

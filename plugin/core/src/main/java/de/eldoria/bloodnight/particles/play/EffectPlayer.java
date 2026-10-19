@@ -115,7 +115,12 @@ public final class EffectPlayer implements Effects {
         }
         End source = current.play().source();
         if (stage.viewers()
-                .near(mob.getWorld(), source.point(Anchor.BodyPoint.CENTER), settings.viewDistance(), null, List.of())
+                .near(
+                        mob.getWorld(),
+                        source.point(Anchor.BodyPoint.CENTER),
+                        current.play().effect().viewDistance(settings.viewDistance()),
+                        null,
+                        List.of())
                 .isEmpty()) {
             return;
         }

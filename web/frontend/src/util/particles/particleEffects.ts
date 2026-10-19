@@ -30,8 +30,11 @@ export const PLAY_EFFECT = 'world.play_effect'
 export const BUILT_IN = 'bloodnight:'
 /** The slots of a mob's Particles part. */
 export const WORN = ['ambient', 'spawn', 'death'] as const
-/** The most emitters and pieces one effect has, and particles per emission, as on the server. */
-export const LIMITS = {emitters: 8, pieces: 4, perEmission: 256, duration: 600} as const
+/**
+ * The most emitters and pieces one effect has, particles per emission and the longest play, as on the server; the
+ * view distance an effect sets, and the one it starts with.
+ */
+export const LIMITS = {emitters: 8, pieces: 4, perEmission: 256, duration: 600, minView: 8, maxView: 128, startView: 64} as const
 /** Particles per second per player above which the editor warns. */
 export const COSTLY = 400
 

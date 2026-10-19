@@ -31,13 +31,13 @@ export interface Moment {
 }
 
 /** The most points one shape has, as on the server. */
-export const MAX_POINTS = 64
+export const MAX_POINTS = 256
 /** The longest beam or arc in blocks. */
 export const MAX_SPAN = 32
 /** The length of a beam or arc without its own end that the cost estimate assumes, since the play's ends are only known in game. */
 export const ESTIMATED_SPAN = 16
 /** The largest picture, in cells each way. */
-export const MAX_CELLS = 16
+export const MAX_CELLS = 32
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5))
 

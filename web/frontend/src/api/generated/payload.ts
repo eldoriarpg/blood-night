@@ -750,6 +750,7 @@ export interface ParticleEffect {
   emitters?: Emitter[];
   pieces?: Piece[];
   self?: boolean;
+  viewDistance?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

@@ -72,6 +72,8 @@ effects:
 - `pieces`: display pieces, see below. An effect has up to 4.
 - `self`: whether a player the effect plays on sees it. Turn it off for wings on a player's back, so they do not block
   the view. Everyone else still sees them.
+- `viewDistance`: how far away players see this effect, 8 to 128 blocks. Leave it out to use the server's
+  `particles.viewDistance`. Give it to big warnings, like a boss charging an attack.
 
 ## Emitters
 
@@ -113,11 +115,11 @@ Every shape can also use:
 - `spin`: degrees the shape turns at each emission.
 - `grow`: the shape grows from nothing to its size during the play. Beams and arcs grow in length.
 
-A shape has at most 64 points. One emission draws at most 256 particles, points times `count`.
+A shape has at most 256 points. One emission draws at most 256 particles, points times `count`.
 
 ### Pictures
 
-A `PATTERN` is a picture of up to 16 by 16 cells. In the editor you click the cells. In the file, `x` is a point and `.`
+A `PATTERN` is a picture of up to 32 by 32 cells. In the editor you click the cells. In the file, `x` is a point and `.`
 is none.
 
 ```yaml

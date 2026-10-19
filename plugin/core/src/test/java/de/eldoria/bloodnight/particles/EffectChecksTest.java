@@ -45,17 +45,17 @@ class EffectChecksTest {
     @Test
     void unknownParticlesAreRefused() {
         ParticleEffect effect =
-                new ParticleEffect("x", null, List.of(Emitter.of("minecraft:nothing", Shape.POINT)), null, null);
+                new ParticleEffect("x", null, List.of(Emitter.of("minecraft:nothing", Shape.POINT)), null, null, null);
         assertEquals(
                 List.of("Particle effect test, emitter 1 uses unknown particle minecraft:nothing"), problems(effect));
     }
 
     @Test
     void dustNeedsAColour() {
-        ParticleEffect effect = new ParticleEffect("x", null, List.of(dust(ParticleDataSpec.NONE)), null, null);
+        ParticleEffect effect = new ParticleEffect("x", null, List.of(dust(ParticleDataSpec.NONE)), null, null, null);
         assertTrue(problems(effect).getFirst().contains("needs a colour"));
         ParticleDataSpec red = new ParticleDataSpec("#ff0000", null, 1.0, null, null, null, null, null, null);
-        assertEquals(List.of(), problems(new ParticleEffect("x", null, List.of(dust(red)), null, null)));
+        assertEquals(List.of(), problems(new ParticleEffect("x", null, List.of(dust(red)), null, null, null)));
     }
 
     @Test
@@ -63,7 +63,7 @@ class EffectChecksTest {
         List<Emitter> many = Collections.nCopies(9, Emitter.of("minecraft:flame", Shape.POINT));
         assertEquals(
                 List.of("Particle effect test has more than 8 emitters"),
-                problems(new ParticleEffect("x", null, many, null, null)));
+                problems(new ParticleEffect("x", null, many, null, null, null)));
     }
 
     @Test
@@ -97,7 +97,7 @@ class EffectChecksTest {
                 null,
                 null,
                 null);
-        List<String> problems = problems(new ParticleEffect("x", null, List.of(onPiece), List.of(piece), null));
+        List<String> problems = problems(new ParticleEffect("x", null, List.of(onPiece), List.of(piece), null, null));
         assertEquals(2, problems.size());
         assertTrue(problems.get(0).contains("sits on piece 2"));
         assertTrue(problems.get(1).contains("unknown item minecraft:nothing"));

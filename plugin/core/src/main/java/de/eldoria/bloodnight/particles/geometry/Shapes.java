@@ -18,13 +18,13 @@ import java.util.random.RandomGenerator;
  */
 public final class Shapes {
     /** The most points one shape has. */
-    public static final int MAX_POINTS = 64;
+    public static final int MAX_POINTS = 256;
 
     /** The longest beam or arc, in blocks; longer ones are not drawn. */
     public static final double MAX_SPAN = 32;
 
     /** The largest picture, in cells each way. */
-    public static final int MAX_CELLS = 16;
+    public static final int MAX_CELLS = 32;
 
     private static final double GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 

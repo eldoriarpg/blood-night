@@ -31,6 +31,10 @@ const name = ref('')
 const cost = computed(() => effectCost(props.effect))
 const problems = computed(() => limitProblems(props.effect))
 
+function ownView(own: boolean): void {
+  emit('save', {viewDistance: own ? LIMITS.startView : undefined})
+}
+
 watch(() => props.effect.name, value => {
   name.value = value ?? ''
 }, {immediate: true})
@@ -49,6 +53,8 @@ function saveName(): void {
       </LabelledField>
       <EffectNumber :help="t('editor.particles.durationHelp')" :label="t('editor.particles.duration')" :max="LIMITS.duration" :min="0" :read-only="readOnly" :value="effect.duration" class="w-44" whole @save="duration => emit('save', {duration})"/>
     </div>
+    <ToggleSetting :disabled="readOnly" :hint="t('editor.particles.ownViewHint')" :label="t('editor.particles.ownView')" :model-value="effect.viewDistance !== undefined" @update:model-value="ownView"/>
+    <EffectNumber v-if="effect.viewDistance !== undefined" :label="t('editor.particles.viewDistance')" :max="LIMITS.maxView" :min="LIMITS.minView" :read-only="readOnly" :value="effect.viewDistance" class="w-44" whole @save="viewDistance => emit('save', {viewDistance})"/>
     <ToggleSetting :disabled="readOnly" :hint="t('editor.particles.selfHint')" :label="t('editor.particles.self')" :model-value="effect.self ?? true" @update:model-value="self => emit('save', {self})"/>
     <MutedText size="sm" tag="p">{{ t(cost.total ? 'editor.particles.inTotal' : 'editor.particles.perSecond', {count: cost.count}) }}</MutedText>
     <Alert v-if="cost.count > COSTLY" variant="held">{{ t(cost.total ? 'editor.particles.costlyTotal' : 'editor.particles.costly', {count: cost.count}) }}</Alert>

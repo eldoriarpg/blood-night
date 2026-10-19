@@ -170,8 +170,8 @@ public final class Play {
             int index, Emitter emitter, Frame frame, World world, Vec3 base, @Nullable Vec3 far, List<Vec3> points) {
         Particle particle = EffectChecks.particle(emitter.particle());
         if (particle == null) throw new IllegalArgumentException("Unknown particle " + emitter.particle());
-        List<Player> seeing =
-                stage.viewers().near(world, base, stage.settings().get().viewDistance(), viewer, skip);
+        List<Player> seeing = stage.viewers()
+                .near(world, base, effect.viewDistance(stage.settings().get().viewDistance()), viewer, skip);
         if (seeing.isEmpty()) return;
         if (!stage.budget().take(points.size() * emitter.count() * seeing.size(), worn)) return;
         boolean trail = DataKind.of(particle) == DataKind.TRAIL;

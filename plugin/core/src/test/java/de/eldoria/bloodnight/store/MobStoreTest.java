@@ -59,7 +59,7 @@ class MobStoreTest {
     }
 
     private static final MobParticles STORE_LOOKS = new MobParticles("store_glow", null, null);
-    private static final ParticleEffect GLOW = new ParticleEffect("Glow", null, null, null, null);
+    private static final ParticleEffect GLOW = new ParticleEffect("Glow", null, null, null, null, null);
 
     private static MobStore looking(Graph behaviour) {
         CustomMob mob = Mobs.zombie("runner", behaviour).withParticles(STORE_LOOKS);
