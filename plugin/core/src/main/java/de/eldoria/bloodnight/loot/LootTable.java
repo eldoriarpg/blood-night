@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.loot;
 
+import de.eldoria.bloodnight.loot.roll.LootLevel;
+
 import java.util.List;
 import java.util.Objects;
 

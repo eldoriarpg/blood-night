@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.night;
 
-import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
-import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
-import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
+import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
+import de.eldoria.bloodnight.configuration.world.NightSettings;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
 import de.eldoria.bloodnight.util.Commands;
 import org.bukkit.Server;

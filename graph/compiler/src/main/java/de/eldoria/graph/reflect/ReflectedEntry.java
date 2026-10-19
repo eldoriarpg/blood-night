@@ -6,13 +6,14 @@
 package de.eldoria.graph.reflect;
 
 import com.palantir.javapoet.CodeBlock;
-import de.eldoria.graph.definition.ConfigField;
 import de.eldoria.graph.definition.EntryDefinition;
-import de.eldoria.graph.definition.EntryGuard;
-import de.eldoria.graph.definition.EntryParameter;
-import de.eldoria.graph.definition.NodeDescriptor;
-import de.eldoria.graph.definition.NodeKind;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
+import de.eldoria.graph.definition.entry.EntryGuard;
+import de.eldoria.graph.definition.entry.EntryParameter;
+import de.eldoria.graph.definition.port.ConfigField;
+import de.eldoria.graph.definition.port.PortType;
+import de.eldoria.graph.reflect.member.Properties;
 import tools.jackson.databind.JsonNode;
 
 import java.lang.reflect.Method;

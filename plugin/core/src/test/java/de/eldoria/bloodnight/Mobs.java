@@ -6,13 +6,13 @@
 package de.eldoria.bloodnight;
 
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.Attributes;
-import de.eldoria.bloodnight.mob.meta.Equipment;
-import de.eldoria.bloodnight.mob.meta.Extension;
-import de.eldoria.bloodnight.mob.meta.ExtensionType;
-import de.eldoria.bloodnight.mob.meta.MobName;
-import de.eldoria.bloodnight.mob.meta.SpawnRules;
-import de.eldoria.bloodnight.mob.meta.ValueModifier;
+import de.eldoria.bloodnight.mob.attributes.Attributes;
+import de.eldoria.bloodnight.mob.attributes.MobName;
+import de.eldoria.bloodnight.mob.attributes.ValueModifier;
+import de.eldoria.bloodnight.mob.equipment.Equipment;
+import de.eldoria.bloodnight.mob.equipment.Extension;
+import de.eldoria.bloodnight.mob.equipment.ExtensionType;
+import de.eldoria.bloodnight.mob.spawn.SpawnRules;
 import de.eldoria.graph.model.Graph;
 import org.bukkit.entity.EntityType;
 

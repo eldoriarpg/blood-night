@@ -5,7 +5,7 @@
  */
 package de.eldoria.graph.platform;
 
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.port.PortType;
 
 import java.util.List;
 import java.util.Objects;

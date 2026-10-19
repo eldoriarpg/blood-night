@@ -6,10 +6,10 @@
 package de.eldoria.bloodnight.mob.defaults;
 
 import de.eldoria.bloodnight.graph.BloodNightNodes;
-import de.eldoria.bloodnight.graph.MobBindings;
-import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
-import de.eldoria.graph.compiler.Graphs;
-import de.eldoria.graph.compiler.Routines;
+import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
+import de.eldoria.bloodnight.graph.trigger.MobBindings;
+import de.eldoria.graph.compiler.emit.Routines;
+import de.eldoria.graph.compiler.validate.Graphs;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.StdNodes;

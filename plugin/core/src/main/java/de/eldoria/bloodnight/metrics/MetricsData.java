@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.metrics;
 
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
 
 import java.util.Collection;

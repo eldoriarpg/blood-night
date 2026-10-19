@@ -7,9 +7,10 @@ package de.eldoria.graph.compiler;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 import de.eldoria.graph.definition.ExpressionDefinition;
-import de.eldoria.graph.definition.NodeDescriptor;
-import de.eldoria.graph.definition.NodeKind;
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;

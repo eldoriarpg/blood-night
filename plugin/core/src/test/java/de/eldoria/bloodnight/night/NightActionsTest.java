@@ -5,8 +5,10 @@
  */
 package de.eldoria.bloodnight.night;
 
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
-import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.NightSettings;
+import de.eldoria.bloodnight.night.selection.NightSelector;
+import de.eldoria.bloodnight.night.selection.NightTimes;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

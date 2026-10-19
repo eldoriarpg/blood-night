@@ -5,6 +5,12 @@
  */
 package de.eldoria.bloodnight.web;
 
+import de.eldoria.bloodnight.web.assets.ItemAssets;
+import de.eldoria.bloodnight.web.session.Rooms;
+import de.eldoria.bloodnight.web.storage.CatalogRepository;
+import de.eldoria.bloodnight.web.storage.Database;
+import de.eldoria.bloodnight.web.storage.ParticipantRepository;
+import de.eldoria.bloodnight.web.storage.SessionRepository;
 import io.javalin.Javalin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -45,25 +45,27 @@ registries when the generated code runs.
 
 ## Layout
 
-All classes are in `de.eldoria.bloodnight.graph`, runtime helpers in `de.eldoria.bloodnight.graph.runtime`.
+Packages below `de.eldoria.bloodnight.graph`:
 
-- `BloodNightPlatform`: assembles the platform and the full node list (standard, Bukkit, the typed cast and value nodes, reflected,
-  entries); the kill entry gets a victim picker (`KillVictim`).
-- `BloodNightNodes`: node type id constants (extends `StdNodes`), for building graphs in code.
-- `BukkitNodes`: the hand-written Bukkit nodes.
-- `BukkitTypes`: editor names, literal codecs and selectable macro input types of the Bukkit types.
-- `BukkitRules`: reflection rules: skips event plumbing, accepts only port types the editor can handle.
-- `ColorCodec`: colors as `#rrggbb`.
-- `RegistryCodec`: reads and emits namespaced keys of a registry; knows the valid keys from the live server, or
-  without one from Paper's generated key classes or enum constants.
-- `ParticleData`: compile-time checks that a typed-in particle gets the data it needs.
-- `Trigger`, `Triggers`: the trigger table: event class, which entity is "this mob", filter, priority.
-- `TriggerDispatcher`: registers listeners for used triggers and dispatches to behaviours.
-- `CompileClasspath`: finds the jars generated code compiles against inside a running server.
-- `runtime.BukkitRuntime`: helpers generated code calls (`launchAt`, `potionCloud`, `nearestPlayer`, `attacker`,
-  `killer`).
-- `runtime.Registries`: registry lookup used by emitted code; `runtime.ProjectileKind`: projectiles a mob can launch;
-  `runtime.Trace` and `runtime.TraceHits`: line traces and what they stop at.
+- (root) `BloodNightPlatform`: assembles the platform and the full node list (standard, Bukkit, the typed cast and
+  value nodes, reflected, entries). `BloodNightNodes`: node type id constants (extends `StdNodes`), for building
+  graphs in code. `BukkitNodes`: the hand-written Bukkit nodes. `PluginNodes`: nodes for PlaceholderAPI, Vault and MythicMobs.
+  `CompileClasspath`: finds the jars generated code compiles against inside a running server.
+- `trigger`: `Trigger`, `Triggers`: the trigger table: event class, which entity is "this mob", filter, priority.
+  `TriggerDispatcher`: registers listeners for used triggers and dispatches to behaviours. `KillVictim`: the victim
+  picker of the kill entry. `MobBindings`: the graph-wide Self and Extension types of a mob's graph.
+- `types`: `BukkitTypes`: editor names, literal codecs and selectable macro input types of the Bukkit types.
+  `BukkitRules`: reflection rules: skips event plumbing, accepts only port types the editor can handle. `ColorCodec`:
+  colors as `#rrggbb`. `RegistryCodec`: reads and emits namespaced keys of a registry; knows the valid keys from the
+  live server, or without one from Paper's generated key classes or enum constants. `ParticleData`: compile-time
+  checks that a typed-in particle gets the data it needs.
+- `runtime`: helpers generated code calls. `BukkitRuntime` (`launchAt`, `potionCloud`, `nearestPlayer`, `attacker`,
+  `killer`), `Registries` (registry lookup), `Displays` (warnings drawn with display entities) and `Integrations`
+  (what the nodes of other plugins call, by reflection). `FoliaGuards` keeps the reflected World and Block nodes on
+  the threads that own what they touch.
+- `runtime.world`: `ProjectileKind`: projectiles a mob can launch; `Trace` and `TraceHits`: line traces and what they
+  stop at; `Reach`: who hears a broadcast; `Carrying`: picking up, lifting and dropping entities; `MarkerShape`: the
+  shapes of a warning marker.
 
 ## Extending
 

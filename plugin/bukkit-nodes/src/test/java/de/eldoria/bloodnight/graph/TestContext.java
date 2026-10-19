@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.graph;
 
-import de.eldoria.bloodnight.api.MobContext;
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MobContext;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

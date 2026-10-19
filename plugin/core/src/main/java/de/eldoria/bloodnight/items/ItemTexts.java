@@ -7,6 +7,10 @@ package de.eldoria.bloodnight.items;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import de.eldoria.bloodnight.items.look.ItemAttribute;
+import de.eldoria.bloodnight.items.look.ItemSlot;
+import de.eldoria.bloodnight.items.look.ItemTrim;
+import de.eldoria.bloodnight.items.look.TooltipPart;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.text.Component;

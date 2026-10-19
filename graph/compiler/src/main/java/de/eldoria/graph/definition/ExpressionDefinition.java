@@ -5,6 +5,12 @@
  */
 package de.eldoria.graph.definition;
 
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
+import de.eldoria.graph.definition.descriptor.Shapes;
+import de.eldoria.graph.definition.emit.EmitContext;
+import de.eldoria.graph.definition.emit.OutputEmitter;
+
 import java.util.Objects;
 
 /**

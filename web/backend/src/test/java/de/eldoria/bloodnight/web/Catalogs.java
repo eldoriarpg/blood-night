@@ -6,11 +6,11 @@
 package de.eldoria.bloodnight.web;
 
 import de.eldoria.graph.payload.Catalog;
-import de.eldoria.graph.payload.ConfigInfo;
-import de.eldoria.graph.payload.ExecutionInfo;
-import de.eldoria.graph.payload.NodeType;
-import de.eldoria.graph.payload.PortInfo;
 import de.eldoria.graph.payload.TypeRef;
+import de.eldoria.graph.payload.node.ConfigInfo;
+import de.eldoria.graph.payload.node.ExecutionInfo;
+import de.eldoria.graph.payload.node.NodeType;
+import de.eldoria.graph.payload.node.PortInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -18,12 +18,12 @@ import java.util.Map;
 /**
  * A small catalog: an entry with a chain, an action with an input and a config field, a value node.
  */
-final class Catalogs {
+public final class Catalogs {
     private static final TypeRef NUMBER = new TypeRef("number", null, null, List.of());
 
     private Catalogs() {}
 
-    static Catalog small() {
+    public static Catalog small() {
         return new Catalog(
                 Catalog.FORMAT,
                 "test-catalog",

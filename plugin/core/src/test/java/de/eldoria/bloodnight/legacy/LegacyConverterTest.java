@@ -6,19 +6,19 @@
 package de.eldoria.bloodnight.legacy;
 
 import de.eldoria.bloodnight.configuration.ConfigFile;
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
-import de.eldoria.bloodnight.configuration.elements.world.mobsettings.AttributeOverride;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.mobsettings.AttributeOverride;
+import de.eldoria.bloodnight.configuration.world.nightselection.NightSelectionType;
 import de.eldoria.bloodnight.items.ItemRegistry;
-import de.eldoria.bloodnight.loot.Experience;
 import de.eldoria.bloodnight.loot.LootAmount;
 import de.eldoria.bloodnight.loot.LootEntry;
 import de.eldoria.bloodnight.loot.LootTables;
+import de.eldoria.bloodnight.loot.assign.Experience;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.MobName;
-import de.eldoria.bloodnight.mob.meta.ValueModifier;
-import de.eldoria.bloodnight.store.BuiltInStore;
+import de.eldoria.bloodnight.mob.attributes.MobName;
+import de.eldoria.bloodnight.mob.attributes.ValueModifier;
 import de.eldoria.bloodnight.store.MobStore;
+import de.eldoria.bloodnight.store.build.BuiltInStore;
 import org.bukkit.Material;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

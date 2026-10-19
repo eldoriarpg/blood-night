@@ -5,7 +5,8 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
-import de.eldoria.bloodnight.api.MobContext;
+import de.eldoria.bloodnight.api.internal.MobContext;
+import de.eldoria.bloodnight.graph.runtime.world.MarkerShape;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -175,7 +176,7 @@ public final class Displays {
     /**
      * @return the stained glass whose colour is nearest to the given one
      */
-    static Material glass(Color color) {
+    public static Material glass(Color color) {
         DyeColor nearest = Arrays.stream(DyeColor.values())
                 .min(Comparator.comparingInt(dye -> distance(dye.getColor(), color)))
                 .orElse(DyeColor.RED);

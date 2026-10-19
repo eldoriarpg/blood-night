@@ -5,10 +5,10 @@
  */
 package de.eldoria.bloodnight.rules;
 
-import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
+import de.eldoria.bloodnight.configuration.world.MobSettings;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
-import de.eldoria.bloodnight.mobs.ForeignMobs;
+import de.eldoria.bloodnight.living.spawn.ForeignMobs;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;

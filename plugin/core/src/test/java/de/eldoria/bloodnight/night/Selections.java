@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.night;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
 import tools.jackson.databind.json.JsonMapper;
 
 /**

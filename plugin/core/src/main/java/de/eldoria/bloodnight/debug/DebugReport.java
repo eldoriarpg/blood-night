@@ -6,9 +6,9 @@
 package de.eldoria.bloodnight.debug;
 
 import de.eldoria.bloodnight.BloodNight;
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.MobOrigin;
+import de.eldoria.bloodnight.mob.MobOrigin;
 import de.eldoria.eldoutilities.debug.DebugDataProvider;
 import de.eldoria.eldoutilities.debug.DebugSettings;
 import de.eldoria.eldoutilities.debug.HealthCheck;

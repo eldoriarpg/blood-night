@@ -5,11 +5,12 @@ and the records they exchange, with no Bukkit or server code, so both the plugin
 
 ## Overview
 
-Everything lives in `de.eldoria.bloodnight.web.api.editor`. The types are plain Java records and enums serialized
+Everything lives in `de.eldoria.bloodnight.web.api.editor`: the routes and the session view at its root, opening a
+session and adding participants in `session`, saving changes in `change`, and the stream and locks in `stream`. The types are plain Java records and enums serialized
 with Jackson. The frontend does not use them directly: the backend generates an OpenAPI description from them (see
 [web-backend](../backend/README.md)), and the frontend's TypeScript types are generated from that description.
 
-The package is `@NullMarked` (JSpecify): a field is non-null unless marked `@Nullable`.
+The packages are `@NullMarked` (JSpecify): a field is non-null unless marked `@Nullable`.
 
 ## Layout
 

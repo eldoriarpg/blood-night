@@ -5,7 +5,7 @@
  */
 package de.eldoria.graph.platform;
 
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.port.PortType;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 

@@ -7,6 +7,9 @@ package de.eldoria.bloodnight.editor;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.eldoria.bloodnight.editor.item.EditorItem;
+import de.eldoria.bloodnight.editor.payload.EditorPayload;
+import de.eldoria.bloodnight.editor.payload.SettingsPayload;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.graph.model.Macro;

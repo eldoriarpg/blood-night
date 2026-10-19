@@ -6,8 +6,8 @@
 package de.eldoria.bloodnight.rules;
 
 import de.eldoria.bloodnight.DamageEvents;
-import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
-import de.eldoria.bloodnight.mobs.ForeignMobs;
+import de.eldoria.bloodnight.configuration.server.plugins.ForeignMobSettings;
+import de.eldoria.bloodnight.living.spawn.ForeignMobs;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;

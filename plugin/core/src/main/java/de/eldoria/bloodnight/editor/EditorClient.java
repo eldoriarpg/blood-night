@@ -5,15 +5,15 @@
  */
 package de.eldoria.bloodnight.editor;
 
-import de.eldoria.bloodnight.configuration.elements.EditorSettings;
-import de.eldoria.bloodnight.web.api.editor.AddParticipant;
-import de.eldoria.bloodnight.web.api.editor.AppliedReport;
-import de.eldoria.bloodnight.web.api.editor.CreateSession;
+import de.eldoria.bloodnight.configuration.server.EditorSettings;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
-import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
-import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
+import de.eldoria.bloodnight.web.api.editor.change.AppliedReport;
+import de.eldoria.bloodnight.web.api.editor.session.AddParticipant;
+import de.eldoria.bloodnight.web.api.editor.session.CreateSession;
+import de.eldoria.bloodnight.web.api.editor.session.ParticipantCreated;
+import de.eldoria.bloodnight.web.api.editor.session.SessionCreated;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;

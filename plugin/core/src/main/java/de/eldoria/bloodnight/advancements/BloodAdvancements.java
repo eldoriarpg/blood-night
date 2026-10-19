@@ -6,8 +6,8 @@
 package de.eldoria.bloodnight.advancements;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
-import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
-import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
 import de.eldoria.bloodnight.enchantments.BloodEnchantments;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.util.MobTags;

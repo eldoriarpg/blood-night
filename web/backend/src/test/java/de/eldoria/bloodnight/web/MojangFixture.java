@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.web;
 
 import com.sun.net.httpserver.HttpServer;
+import de.eldoria.bloodnight.web.assets.ItemAssets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,16 +32,16 @@ import java.util.zip.ZipOutputStream;
  * (stone), an item switching between models (a compass) and a specially drawn item whose base model gives its
  * texture as a sprite object (a chest).
  */
-final class MojangFixture implements AutoCloseable {
-    static final byte[] SWORD_PNG = {(byte) 0x89, 'P', 'N', 'G', 1};
-    static final byte[] STONE_PNG = {(byte) 0x89, 'P', 'N', 'G', 2};
-    static final byte[] ZOMBIE_OGG = {'O', 'g', 'g', 'S', 1};
+public final class MojangFixture implements AutoCloseable {
+    public static final byte[] SWORD_PNG = {(byte) 0x89, 'P', 'N', 'G', 1};
+    public static final byte[] STONE_PNG = {(byte) 0x89, 'P', 'N', 'G', 2};
+    public static final byte[] ZOMBIE_OGG = {'O', 'g', 'g', 'S', 1};
     private final HttpServer server;
     private final Map<String, byte[]> files = new ConcurrentHashMap<>();
     private final AtomicInteger jarDownloads = new AtomicInteger();
     private volatile boolean corruptJar;
 
-    MojangFixture() throws IOException {
+    public MojangFixture() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/", exchange -> {
             String path = exchange.getRequestURI().getPath();
@@ -88,7 +89,7 @@ final class MojangFixture implements AutoCloseable {
      * @param cache the cache directory
      * @return assets fetched from this stand-in
      */
-    ItemAssets assets(Path cache) {
+    public ItemAssets assets(Path cache) {
         return new ItemAssets(
                 cache, HttpClient.newHttpClient(), URI.create(url("/manifest.json")), URI.create(url("/resources/")));
     }
@@ -96,14 +97,14 @@ final class MojangFixture implements AutoCloseable {
     /**
      * @return how often the client jar was downloaded
      */
-    int jarDownloads() {
+    public int jarDownloads() {
         return jarDownloads.get();
     }
 
     /**
      * @param corrupt whether the client jar is served with the wrong content, failing its sha1 check
      */
-    void corruptJar(boolean corrupt) {
+    public void corruptJar(boolean corrupt) {
         corruptJar = corrupt;
     }
 

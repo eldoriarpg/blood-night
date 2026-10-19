@@ -5,11 +5,11 @@
  */
 package de.eldoria.bloodnight.configuration;
 
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.items.ItemRegistry;
+import de.eldoria.bloodnight.living.MobRegistry;
 import de.eldoria.bloodnight.loot.LootTables;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mobs.MobRegistry;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import dev.chojo.ocular.Configurations;

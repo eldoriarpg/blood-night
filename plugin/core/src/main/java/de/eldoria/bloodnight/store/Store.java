@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.store;
 
+import de.eldoria.bloodnight.store.files.StorePack;
+
 import java.util.List;
 import java.util.Optional;
 

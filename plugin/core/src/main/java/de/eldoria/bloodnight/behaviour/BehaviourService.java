@@ -6,16 +6,16 @@
 package de.eldoria.bloodnight.behaviour;
 
 import com.palantir.javapoet.ClassName;
-import de.eldoria.bloodnight.api.CompiledBehaviour;
-import de.eldoria.bloodnight.graph.MobBindings;
-import de.eldoria.bloodnight.graph.Triggers;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
+import de.eldoria.bloodnight.graph.trigger.MobBindings;
+import de.eldoria.bloodnight.graph.trigger.Triggers;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.graph.compiler.CompiledGraph;
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphCompiler;
-import de.eldoria.graph.compiler.GraphProblem;
-import de.eldoria.graph.compiler.MacroLibrary;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.compiler.macro.MacroLibrary;
+import de.eldoria.graph.compiler.validate.GraphProblem;
+import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.model.Macro;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.platform.GraphPlatform;

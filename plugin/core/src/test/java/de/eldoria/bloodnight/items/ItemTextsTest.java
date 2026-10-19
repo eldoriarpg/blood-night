@@ -5,8 +5,10 @@
  */
 package de.eldoria.bloodnight.items;
 
-import de.eldoria.bloodnight.editor.MaterialInfo;
-import de.eldoria.bloodnight.editor.MaterialInfos;
+import de.eldoria.bloodnight.editor.payload.MaterialInfo;
+import de.eldoria.bloodnight.editor.payload.MaterialInfos;
+import de.eldoria.bloodnight.items.look.ItemTrim;
+import de.eldoria.bloodnight.items.look.TooltipPart;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;

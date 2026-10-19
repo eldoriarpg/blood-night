@@ -5,10 +5,10 @@
  */
 package de.eldoria.bloodnight.rules;
 
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.night.BloodNights;
-import de.eldoria.bloodnight.night.NightSelector;
-import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.selection.NightSelector;
+import de.eldoria.bloodnight.night.selection.NightTimes;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
@@ -23,16 +23,16 @@ import java.util.logging.Logger;
 /**
  * A server with one world in which every night is a blood night, for the rules' tests.
  */
-abstract class RulesTest {
-    static final NightTimes TIMES = new NightTimes(13_000, 23_000);
-    ServerMock server;
-    Plugin plugin;
-    World world;
-    BloodNights nights;
-    WorldSettings settings = Settings.enabled();
+public abstract class RulesTest {
+    protected static final NightTimes TIMES = new NightTimes(13_000, 23_000);
+    protected ServerMock server;
+    protected Plugin plugin;
+    protected World world;
+    protected BloodNights nights;
+    protected WorldSettings settings = Settings.enabled();
 
     @BeforeEach
-    void setUpServer() {
+    protected void setUpServer() {
         server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
@@ -45,15 +45,15 @@ abstract class RulesTest {
     }
 
     @AfterEach
-    void tearDownServer() {
+    protected void tearDownServer() {
         MockBukkit.unmock();
     }
 
-    void bloodNight() {
+    protected void bloodNight() {
         at(13_000);
     }
 
-    void day() {
+    protected void day() {
         at(24_000);
     }
 

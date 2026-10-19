@@ -5,15 +5,15 @@
  */
 package de.eldoria.bloodnight.configuration;
 
-import de.eldoria.bloodnight.configuration.elements.Announcements;
-import de.eldoria.bloodnight.configuration.elements.EditorSettings;
-import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
-import de.eldoria.bloodnight.configuration.elements.PlaceholderSettings;
-import de.eldoria.bloodnight.configuration.elements.ResourcePackSettings;
-import de.eldoria.bloodnight.configuration.elements.SetupSettings;
-import de.eldoria.bloodnight.configuration.elements.StoreSettings;
-import de.eldoria.bloodnight.configuration.elements.UpdateSettings;
-import de.eldoria.bloodnight.loot.ServerLoot;
+import de.eldoria.bloodnight.configuration.server.Announcements;
+import de.eldoria.bloodnight.configuration.server.EditorSettings;
+import de.eldoria.bloodnight.configuration.server.PlaceholderSettings;
+import de.eldoria.bloodnight.configuration.server.ResourcePackSettings;
+import de.eldoria.bloodnight.configuration.server.UpdateSettings;
+import de.eldoria.bloodnight.configuration.server.plugins.ForeignMobSettings;
+import de.eldoria.bloodnight.configuration.server.plugins.SetupSettings;
+import de.eldoria.bloodnight.configuration.server.plugins.StoreSettings;
+import de.eldoria.bloodnight.loot.assign.ServerLoot;
 
 /**
  * The server-wide settings in {@code config.yml}; everything about nights and mobs is set per world, loot has a server

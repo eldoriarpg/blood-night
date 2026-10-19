@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.web.api.editor;
 
+import de.eldoria.bloodnight.web.api.editor.change.PayloadProblem;
+import de.eldoria.bloodnight.web.api.editor.stream.LockInfo;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 

@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.rules;
 
-import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
-import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.NamespacedKey;

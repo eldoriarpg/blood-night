@@ -7,13 +7,12 @@ package de.eldoria.bloodnight.mob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.loot.MobLoot;
-import de.eldoria.bloodnight.mob.meta.Attributes;
-import de.eldoria.bloodnight.mob.meta.Equipment;
-import de.eldoria.bloodnight.mob.meta.Extension;
-import de.eldoria.bloodnight.mob.meta.MobOrigin;
-import de.eldoria.bloodnight.mob.meta.Movement;
-import de.eldoria.bloodnight.mob.meta.SpawnRules;
+import de.eldoria.bloodnight.loot.assign.MobLoot;
+import de.eldoria.bloodnight.mob.attributes.Attributes;
+import de.eldoria.bloodnight.mob.attributes.Movement;
+import de.eldoria.bloodnight.mob.equipment.Equipment;
+import de.eldoria.bloodnight.mob.equipment.Extension;
+import de.eldoria.bloodnight.mob.spawn.SpawnRules;
 import de.eldoria.graph.model.Graph;
 import org.jspecify.annotations.Nullable;
 

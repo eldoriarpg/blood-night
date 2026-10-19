@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.night;
 
-import de.eldoria.bloodnight.configuration.elements.world.night.TimedNights;
+import de.eldoria.bloodnight.configuration.world.night.TimedNights;
+import de.eldoria.bloodnight.living.MobCoordinator;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mobs.MobCoordinator;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;

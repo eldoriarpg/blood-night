@@ -5,6 +5,8 @@
  */
 package de.eldoria.graph.payload;
 
+import de.eldoria.graph.payload.node.NodeType;
+
 import java.util.List;
 import java.util.Map;
 

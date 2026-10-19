@@ -1,6 +1,6 @@
 {
   "format" : 1,
-  "version" : "2e40d621cd1c8662",
+  "version" : "c6de34f3f00ba702",
   "nodes" : [ {
     "id" : "cast",
     "kind" : "pure",
@@ -148,7 +148,7 @@
       "id" : "unit",
       "name" : "Unit",
       "type" : {
-        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+        "id" : "de.eldoria.graph.std.runtime.value.TimeUnit"
       },
       "defaultValue" : "SECONDS"
     } ]
@@ -318,7 +318,7 @@
       "id" : "unit",
       "name" : "Unit",
       "type" : {
-        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+        "id" : "de.eldoria.graph.std.runtime.value.TimeUnit"
       },
       "defaultValue" : "SECONDS"
     } ]
@@ -343,7 +343,7 @@
       "id" : "change",
       "name" : "Change",
       "type" : {
-        "id" : "de.eldoria.graph.std.runtime.GateChange"
+        "id" : "de.eldoria.graph.std.runtime.flow.GateChange"
       },
       "defaultValue" : "CLOSE"
     } ]
@@ -517,7 +517,7 @@
       "id" : "unit",
       "name" : "Unit",
       "type" : {
-        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+        "id" : "de.eldoria.graph.std.runtime.value.TimeUnit"
       },
       "defaultValue" : "SECONDS"
     } ]
@@ -1527,7 +1527,7 @@
       "id" : "unit",
       "name" : "Unit",
       "type" : {
-        "id" : "de.eldoria.graph.std.runtime.TimeUnit"
+        "id" : "de.eldoria.graph.std.runtime.value.TimeUnit"
       },
       "defaultValue" : "SECONDS"
     } ]
@@ -1682,16 +1682,16 @@
     "literal" : true,
     "assignableTo" : [ "java.lang.Object" ]
   }, {
-    "id" : "de.eldoria.graph.std.runtime.GateChange",
+    "id" : "de.eldoria.graph.std.runtime.flow.GateChange",
     "name" : "GateChange",
-    "raw" : "de.eldoria.graph.std.runtime.GateChange",
+    "raw" : "de.eldoria.graph.std.runtime.flow.GateChange",
     "literal" : true,
     "values" : [ "OPEN", "CLOSE", "TOGGLE" ],
     "assignableTo" : [ "java.lang.Object" ]
   }, {
-    "id" : "de.eldoria.graph.std.runtime.TimeUnit",
+    "id" : "de.eldoria.graph.std.runtime.value.TimeUnit",
     "name" : "TimeUnit",
-    "raw" : "de.eldoria.graph.std.runtime.TimeUnit",
+    "raw" : "de.eldoria.graph.std.runtime.value.TimeUnit",
     "literal" : true,
     "values" : [ "MILLISECONDS", "TICKS", "SECONDS", "MINUTES" ],
     "assignableTo" : [ "java.lang.Object" ]

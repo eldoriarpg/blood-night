@@ -5,10 +5,10 @@
  */
 package de.eldoria.bloodnight.rules;
 
-import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
-import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
-import de.eldoria.bloodnight.configuration.elements.world.NightRuleSettings;
-import de.eldoria.bloodnight.configuration.elements.world.rules.WeatherChange;
+import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
+import de.eldoria.bloodnight.configuration.world.NightRuleSettings;
+import de.eldoria.bloodnight.configuration.world.rules.WeatherChange;
 import de.eldoria.bloodnight.night.BloodNights;
 import org.bukkit.Difficulty;
 import org.bukkit.GameRule;

@@ -8,9 +8,9 @@ package de.eldoria.graph.std;
 import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.definition.ExpressionDefinition;
 import de.eldoria.graph.definition.NodeDefinition;
-import de.eldoria.graph.definition.NodeDescriptor;
-import de.eldoria.graph.definition.NodeKind;
-import de.eldoria.graph.definition.PortType;
+import de.eldoria.graph.definition.descriptor.NodeDescriptor;
+import de.eldoria.graph.definition.descriptor.NodeKind;
+import de.eldoria.graph.definition.port.PortType;
 
 import java.util.List;
 

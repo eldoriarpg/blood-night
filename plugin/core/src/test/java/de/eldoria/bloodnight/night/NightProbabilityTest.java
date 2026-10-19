@@ -5,10 +5,10 @@
  */
 package de.eldoria.bloodnight.night;
 
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.Night;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.NightSelectionType;
-import de.eldoria.bloodnight.configuration.elements.world.nightselection.type.MoonPhaseType;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.nightselection.Night;
+import de.eldoria.bloodnight.configuration.world.nightselection.NightSelectionType;
+import de.eldoria.bloodnight.configuration.world.nightselection.type.MoonPhaseType;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

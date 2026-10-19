@@ -6,11 +6,11 @@
 package de.eldoria.bloodnight.atmosphere;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import de.eldoria.bloodnight.configuration.elements.world.AtmosphereSettings;
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.presentation.AtmosphereSettings;
 import de.eldoria.bloodnight.night.BloodNights;
-import de.eldoria.bloodnight.night.NightSelector;
-import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.selection.NightSelector;
+import de.eldoria.bloodnight.night.selection.NightTimes;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterEach;
@@ -26,20 +26,20 @@ import java.util.logging.Logger;
 /**
  * A server with one world in which every night is a blood night, for the atmosphere's tests.
  */
-abstract class AtmosphereTest {
-    static final JsonMapper MAPPER = JsonMapper.builder()
+public abstract class AtmosphereTest {
+    protected static final JsonMapper MAPPER = JsonMapper.builder()
             .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                     .withGetterVisibility(JsonAutoDetect.Visibility.NONE))
             .build();
-    static final NightTimes TIMES = new NightTimes(13_000, 23_000);
-    ServerMock server;
-    Plugin plugin;
-    World world;
-    BloodNights nights;
-    AtmosphereSettings atmosphere = new AtmosphereSettings();
+    protected static final NightTimes TIMES = new NightTimes(13_000, 23_000);
+    protected ServerMock server;
+    protected Plugin plugin;
+    protected World world;
+    protected BloodNights nights;
+    protected AtmosphereSettings atmosphere = new AtmosphereSettings();
 
     @BeforeEach
-    void setUpServer() {
+    protected void setUpServer() {
         server = MockBukkit.mock();
         plugin = MockBukkit.createMockPlugin();
         world = server.addSimpleWorld("world");
@@ -53,15 +53,15 @@ abstract class AtmosphereTest {
     }
 
     @AfterEach
-    void tearDownServer() {
+    protected void tearDownServer() {
         MockBukkit.unmock();
     }
 
-    void bloodNight() {
+    protected void bloodNight() {
         at(13_000);
     }
 
-    void day() {
+    protected void day() {
         at(24_000);
     }
 

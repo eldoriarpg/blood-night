@@ -6,11 +6,11 @@
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.ClassName;
-import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
 import de.eldoria.graph.compiler.CompiledGraph;
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphCompiler;
-import de.eldoria.graph.compiler.GraphProblem;
+import de.eldoria.graph.compiler.validate.GraphProblem;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.model.NodeInstance;
 import de.eldoria.graph.reflect.Documentation;

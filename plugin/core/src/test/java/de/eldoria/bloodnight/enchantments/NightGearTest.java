@@ -6,10 +6,10 @@
 package de.eldoria.bloodnight.enchantments;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
 import de.eldoria.bloodnight.night.BloodNights;
-import de.eldoria.bloodnight.night.NightSelector;
-import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.selection.NightSelector;
+import de.eldoria.bloodnight.night.selection.NightTimes;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;

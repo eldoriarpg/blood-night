@@ -41,23 +41,27 @@ Sessions expire after `SESSION_HOURS` without use; every use moves the expiry fo
 
 ## Layout
 
-All classes are in `de.eldoria.bloodnight.web`.
+Packages below `de.eldoria.bloodnight.web`:
 
-| Class | Purpose |
-|---|---|
-| `WebService` | Entry point: configuration, database, API, background sweeps |
-| `ServiceConfig` | Settings read from the environment |
-| `Database` | Connection pool, schema migration, default query configuration |
-| `EditorApp` | The HTTP routes and the WebSocket stream |
-| `SessionRepository`, `StoredSession`, `StoredRevision` | Sessions and their revisions in the database |
-| `ParticipantRepository`, `Participant` | Who may edit a session, by token hash |
-| `CatalogRepository` | Uploaded catalogs by version, cached in memory |
-| `Rooms`, `Room` | In-memory locks, presence and open streams per session |
-| `Sections` | Which sections a set of operations touches |
-| `JsonPatch` | RFC 6902 JSON Patch on Jackson trees |
-| `PayloadValidator` | Best-effort checks of a payload against a catalog |
-| `RateLimiter` | Sessions per address in a sliding window |
-| `Tokens` | Random session ids and tokens; tokens are stored only as SHA-256 hashes |
+| Package | Class | Purpose |
+|---|---|---|
+| (root) | `WebService` | Entry point: configuration, database, API, background sweeps |
+| | `ServiceConfig` | Settings read from the environment |
+| | `EditorApp` | The HTTP routes and the WebSocket stream |
+| | `RateLimiter` | Sessions per address in a sliding window |
+| | `ClientAddress` | The address a request comes from, read through trusted proxies |
+| `storage` | `Database` | Connection pool, schema migration, default query configuration |
+| | `SessionRepository`, `StoredSession`, `StoredRevision` | Sessions and their revisions in the database |
+| | `ParticipantRepository` | Who may edit a session, by token hash |
+| | `CatalogRepository` | Uploaded catalogs by version, cached in memory |
+| `session` | `Rooms`, `Room` | In-memory locks, presence and open streams per session |
+| | `Participant` | A person editing a session and the areas they may change |
+| | `Tokens` | Random session ids and tokens; tokens are stored only as SHA-256 hashes |
+| `payload` | `Sections` | Which sections a set of operations touches |
+| | `JsonPatch` | RFC 6902 JSON Patch on Jackson trees |
+| | `PayloadValidator` | Best-effort checks of a payload against a catalog |
+| `assets` | `ItemAssets` | Minecraft's item icons, names and sounds per version, cached from Mojang |
+| | `ItemAssetExtractor`, `SoundAssetExtractor` | Read items and sounds out of a client jar |
 
 Resources: `database/` holds the SADU migrations, `api/openapi.json` the generated API description,
 `logback.xml` the console logging.

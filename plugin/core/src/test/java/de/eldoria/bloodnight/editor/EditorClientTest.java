@@ -7,12 +7,12 @@ package de.eldoria.bloodnight.editor;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.sun.net.httpserver.HttpServer;
-import de.eldoria.bloodnight.configuration.elements.EditorSettings;
+import de.eldoria.bloodnight.configuration.server.EditorSettings;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
-import de.eldoria.bloodnight.web.api.editor.ParticipantCreated;
-import de.eldoria.bloodnight.web.api.editor.SessionCreated;
 import de.eldoria.bloodnight.web.api.editor.SessionState;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
+import de.eldoria.bloodnight.web.api.editor.session.ParticipantCreated;
+import de.eldoria.bloodnight.web.api.editor.session.SessionCreated;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
