@@ -15,7 +15,7 @@ import SectionLabel from '@/components/typography/SectionLabel.vue'
 const {t} = useI18n()
 const open = ref(false)
 
-const SHORTCUTS = ['addNode', 'wire', 'details', 'reroute', 'select', 'addToSelection', 'pan', 'zoom', 'delete', 'free'] as const
+const SHORTCUTS = ['addNode', 'wire', 'details', 'reroute', 'select', 'addToSelection', 'comment', 'pan', 'zoom', 'delete', 'free'] as const
 </script>
 
 <template>

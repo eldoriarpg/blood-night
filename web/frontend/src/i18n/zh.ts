@@ -99,6 +99,7 @@ export default {
             fit: '适应视图',
             arrange: '排列节点',
             problems: '问题',
+            comment: '为所选节点添加注释',
         },
         shortcuts: {
             title: '快捷键',
@@ -115,6 +116,7 @@ export default {
                 zoom: '滚动',
                 delete: 'Delete',
                 free: 'Alt + 拖动',
+                comment: 'C',
             },
             does: {
                 addNode: '在点击处添加节点',
@@ -127,7 +129,21 @@ export default {
                 zoom: '放大或缩小',
                 delete: '删除选中的节点或连线',
                 free: '把节点放在网格之外',
+                comment: '用注释框住所选节点',
             },
+        },
+        comments: {
+            untitled: '注释',
+            title: '标题',
+            note: '备注',
+            collapse: '收起',
+            expand: '展开',
+            resize: '调整大小',
+            nodes: '内部节点：{count}',
+            problems: '问题：{count}',
+            rename: '双击以重命名',
+            pin: '{node}：{port}',
+            colours: {grey: '灰色', red: '红色', orange: '橙色', yellow: '黄色', green: '绿色', blue: '蓝色', purple: '紫色'},
         },
         problems: {
             none: '没有发现问题。',

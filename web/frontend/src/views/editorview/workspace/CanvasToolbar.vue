@@ -19,6 +19,7 @@ const emit = defineEmits<{
   zoomOut: []
   fit: []
   arrange: []
+  comment: []
   problems: []
 }>()
 
@@ -31,6 +32,7 @@ const {t} = useI18n()
     <IconButton :label="t('editor.canvas.zoomIn')" icon="plus" @click="emit('zoomIn')"/>
     <IconButton :label="t('editor.canvas.fit')" icon="expand" @click="emit('fit')"/>
     <IconButton :disabled="readOnly" :label="t('editor.canvas.arrange')" icon="diagram-project" @click="emit('arrange')"/>
+    <IconButton :disabled="readOnly" :label="t('editor.canvas.comment')" data-testid="add-comment" icon="note-sticky" @click="emit('comment')"/>
     <span aria-hidden="true" class="mx-1 h-6 w-px bg-line"/>
     <SecondaryButton compact @click="emit('problems')">
       {{ t('editor.canvas.problems') }}

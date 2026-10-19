@@ -99,6 +99,7 @@ export default {
             fit: 'Muat ke paparan',
             arrange: 'Susun nod',
             problems: 'Masalah',
+            comment: 'Komen nod yang dipilih',
         },
         shortcuts: {
             title: 'Pintasan',
@@ -115,6 +116,7 @@ export default {
                 zoom: 'Tatal',
                 delete: 'Delete',
                 free: 'Alt + seret',
+                comment: 'C',
             },
             does: {
                 addNode: 'Tambah nod di tempat anda klik',
@@ -127,7 +129,21 @@ export default {
                 zoom: 'Zum masuk atau keluar',
                 delete: 'Padam nod atau wayar yang dipilih',
                 free: 'Letakkan nod di luar grid',
+                comment: 'Bingkaikan nod yang dipilih dalam komen',
             },
+        },
+        comments: {
+            untitled: 'Komen',
+            title: 'Tajuk',
+            note: 'Nota',
+            collapse: 'Tutup',
+            expand: 'Buka',
+            resize: 'Ubah saiz',
+            nodes: 'Nod di dalam: {count}',
+            problems: 'Masalah: {count}',
+            rename: 'Klik dua kali untuk menamakan semula',
+            pin: '{node}: {port}',
+            colours: {grey: 'Kelabu', red: 'Merah', orange: 'Oren', yellow: 'Kuning', green: 'Hijau', blue: 'Biru', purple: 'Ungu'},
         },
         problems: {
             none: 'Tiada masalah ditemui.',

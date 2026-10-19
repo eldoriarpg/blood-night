@@ -99,6 +99,7 @@ export default {
             fit: 'Hepsini göster',
             arrange: 'Düğümleri düzenle',
             problems: 'Sorunlar',
+            comment: 'Seçili düğümlere yorum ekle',
         },
         shortcuts: {
             title: 'Kısayollar',
@@ -115,6 +116,7 @@ export default {
                 zoom: 'Kaydır',
                 delete: 'Delete',
                 free: 'Alt + sürükle',
+                comment: 'C',
             },
             does: {
                 addNode: 'Tıkladığın yere bir düğüm ekle',
@@ -127,7 +129,21 @@ export default {
                 zoom: 'Yakınlaştır ya da uzaklaştır',
                 delete: 'Seçili düğümleri ya da bağlantıları sil',
                 free: 'Bir düğümü ızgaranın dışına yerleştir',
+                comment: 'Seçili düğümleri bir yorum çerçevesine al',
             },
+        },
+        comments: {
+            untitled: 'Yorum',
+            title: 'Başlık',
+            note: 'Not',
+            collapse: 'Kapat',
+            expand: 'Aç',
+            resize: 'Boyutlandır',
+            nodes: 'İçindeki düğümler: {count}',
+            problems: 'Sorunlar: {count}',
+            rename: 'Yeniden adlandırmak için çift tıkla',
+            pin: '{node}: {port}',
+            colours: {grey: 'Gri', red: 'Kırmızı', orange: 'Turuncu', yellow: 'Sarı', green: 'Yeşil', blue: 'Mavi', purple: 'Mor'},
         },
         problems: {
             none: 'Sorun bulunamadı.',

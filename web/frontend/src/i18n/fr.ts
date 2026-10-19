@@ -99,6 +99,7 @@ export default {
             fit: 'Tout afficher',
             arrange: 'Organiser les nœuds',
             problems: 'Problèmes',
+            comment: 'Commenter les nœuds sélectionnés',
         },
         shortcuts: {
             title: 'Raccourcis',
@@ -115,6 +116,7 @@ export default {
                 zoom: 'Molette',
                 delete: 'Suppr',
                 free: 'Alt + glisser',
+                comment: 'C',
             },
             does: {
                 addNode: 'Ajouter un nœud là où tu as cliqué',
@@ -127,7 +129,21 @@ export default {
                 zoom: 'Zoomer ou dézoomer',
                 delete: 'Supprimer les nœuds ou liaisons sélectionnés',
                 free: 'Placer un nœud hors de la grille',
+                comment: 'Encadrer les nœuds sélectionnés dans un commentaire',
             },
+        },
+        comments: {
+            untitled: 'Commentaire',
+            title: 'Titre',
+            note: 'Note',
+            collapse: 'Fermer',
+            expand: 'Ouvrir',
+            resize: 'Redimensionner',
+            nodes: 'Nœuds à l\'intérieur : {count}',
+            problems: 'Problèmes : {count}',
+            rename: 'Double-cliquez pour renommer',
+            pin: '{node} : {port}',
+            colours: {grey: 'Gris', red: 'Rouge', orange: 'Orange', yellow: 'Jaune', green: 'Vert', blue: 'Bleu', purple: 'Violet'},
         },
         problems: {
             none: 'Aucun problème trouvé.',
