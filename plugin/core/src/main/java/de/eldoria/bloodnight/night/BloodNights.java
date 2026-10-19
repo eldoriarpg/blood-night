@@ -90,6 +90,14 @@ public final class BloodNights {
 
     /**
      * @param world a world
+     * @return whether blood nights are switched on in it
+     */
+    public boolean enabled(World world) {
+        return enabled.test(world);
+    }
+
+    /**
+     * @param world a world
      * @return the number of the blood night running in it, if one is
      */
     public OptionalLong running(World world) {

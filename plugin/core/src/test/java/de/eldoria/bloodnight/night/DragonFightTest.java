@@ -42,9 +42,11 @@ import java.util.OptionalLong;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DragonFightTest {
+    private boolean enabled = true;
     private ServerMock server;
     private World end;
     private BloodNights nights;
@@ -63,7 +65,7 @@ class DragonFightTest {
         nights = new BloodNights(
                 new NightSelector(
                         ignored -> timed, ignored -> NightTimes.of(end, settings), Clock.systemUTC(), () -> 20),
-                ignored -> true,
+                ignored -> enabled,
                 server.getPluginManager(),
                 Logger.getLogger("test"));
         CustomMob plain = Mobs.zombie("blood_dragon", Graph.builder().build());
@@ -127,5 +129,16 @@ class DragonFightTest {
         server.getScheduler().performOneTick();
 
         assertEquals(OptionalLong.empty(), nights.running(end));
+    }
+
+    @Test
+    void aDisabledWorldKeepsItsVanillaDragon() {
+        enabled = false;
+        EnderDragon dragon = end.spawn(new Location(end, 0, 80, 0), EnderDragon.class);
+        server.getScheduler().performOneTick();
+        nights.check(List.of(end));
+
+        assertEquals(OptionalLong.empty(), nights.running(end));
+        assertFalse(MobTags.isCustomMob(dragon));
     }
 }

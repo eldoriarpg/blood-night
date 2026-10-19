@@ -21,9 +21,10 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import java.util.function.Function;
 
 /**
- * Makes a dragon fight a blood night: when an ender dragon appears, a blood night begins in its world and lasts until
- * the dragon dies, and the dragon becomes the world's dragon mob, see {@link TimedNights}. The night is begun and let
- * go on the global region, the dragon is changed on its own thread.
+ * Makes a dragon fight a blood night: when an ender dragon appears in a world with blood nights switched on, a blood
+ * night begins in its world and lasts until the dragon dies, and the dragon becomes the world's dragon mob, see
+ * {@link TimedNights}. In a world with blood nights switched off the dragon stays a vanilla one. The night is begun
+ * and let go on the global region, the dragon is changed on its own thread.
  */
 public final class DragonFight implements Listener {
     private final BloodNights nights;
@@ -57,7 +58,7 @@ public final class DragonFight implements Listener {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
         World world = dragon.getWorld();
         TimedNights timed = settings.apply(world);
-        if (!timed.dragonFight()) return;
+        if (!timed.dragonFight() || !nights.enabled(world)) return;
         tasks.global(() -> nights.hold(world));
         CustomMob mob = timed.dragon().isBlank() ? null : mobs.apply(timed.dragon());
         if (mob == null || !mob.attributes().isAssignable(dragon.getType())) return;
