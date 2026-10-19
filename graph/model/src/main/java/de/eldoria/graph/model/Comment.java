@@ -5,6 +5,9 @@
  */
 package de.eldoria.graph.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 
 /**
@@ -20,14 +23,24 @@ import java.util.Objects;
  * @param width     the width when open, in canvas units
  * @param height    the height when open, in canvas units
  * @param collapsed whether it is shown closed, hiding the nodes inside
+ * @param state     the state of the graph whose nodes it frames, or {@code null} for the part that always runs
  */
 public record Comment(
-        String title, String note, String color, double x, double y, double width, double height, boolean collapsed) {
+        String title,
+        String note,
+        String color,
+        double x,
+        double y,
+        double width,
+        double height,
+        boolean collapsed,
+        @JsonInclude(JsonInclude.Include.NON_NULL) @Nullable String state) {
     public Comment {
         title = Objects.requireNonNullElse(title, "");
         note = Objects.requireNonNullElse(note, "");
         color = Objects.requireNonNullElse(color, "grey");
         width = Math.max(0, width);
         height = Math.max(0, height);
+        if (state != null && state.isBlank()) state = null;
     }
 }

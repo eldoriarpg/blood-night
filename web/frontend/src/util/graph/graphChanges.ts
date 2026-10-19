@@ -24,7 +24,12 @@ export class GraphChanges {
      * @param base the pointer of the graph in the payload
      * @param graph the graph as it is now
      */
-    constructor(private readonly base: string, private readonly graph: Graph) {}
+    /**
+     * @param base  the graph's pointer
+     * @param graph the graph
+     * @param state the state new nodes and comment frames join; undefined for the part that always runs
+     */
+    constructor(private readonly base: string, private readonly graph: Graph, private readonly state?: string) {}
 
     private node(id: string): string {
         return `${this.base}/nodes/${escape(id)}`
@@ -37,9 +42,10 @@ export class GraphChanges {
     /** Adds a comment frame with a fresh id; the graph's comment map is made when it has none yet. */
     addComment(comment: Comment): {id: string, operations: PatchOperation[]} {
         const id = freshId('comment', Object.keys(this.graph.comments ?? {}))
+        const placed = this.state ? {...comment, state: this.state} : comment
         const operations: PatchOperation[] = this.graph.comments
-            ? [{op: 'add', path: this.comment(id), value: comment}]
-            : [{op: 'add', path: `${this.base}/comments`, value: {[id]: comment}}]
+            ? [{op: 'add', path: this.comment(id), value: placed}]
+            : [{op: 'add', path: `${this.base}/comments`, value: {[id]: placed}}]
         return {id, operations}
     }
 
@@ -86,11 +92,14 @@ export class GraphChanges {
         return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, x: Math.round(position.x), y: Math.round(position.y)}}]
     }
 
-    /** Adds a node of a type at a position, with a fresh id and, if given, the wires leaving or feeding it and its config. */
+    /**
+     * Adds a node of a type at a position, with a fresh id, in the state this edits, and, if given, the wires leaving or
+     * feeding it and its config.
+     */
     add(type: string, position: Position, wires: Pick<NodeInstance, 'inputs' | 'executions' | 'config'> = {}): {id: string, operations: PatchOperation[]} {
         const id = freshId(type, Object.keys(this.graph.nodes ?? {}))
         const operations: PatchOperation[] = this.graph.nodes ? [] : [{op: 'add', path: `${this.base}/nodes`, value: {}}]
-        operations.push({op: 'add', path: this.node(id), value: {type, ...wires, editor: {x: Math.round(position.x), y: Math.round(position.y)}}})
+        operations.push({op: 'add', path: this.node(id), value: {type, ...wires, ...(this.state ? {state: this.state} : {}), editor: {x: Math.round(position.x), y: Math.round(position.y)}}})
         return {id, operations}
     }
 

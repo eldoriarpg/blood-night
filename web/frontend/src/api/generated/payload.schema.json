@@ -374,6 +374,9 @@
         },
         "collapsed" : {
           "type" : "boolean"
+        },
+        "state" : {
+          "type" : "string"
         }
       },
       "required" : [ "title", "note", "color", "x", "y", "width", "height", "collapsed" ]

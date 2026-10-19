@@ -88,6 +88,8 @@ export interface NodeView {
     outputs: PortView[]
     executions: ExecutionView[]
     position: Position
+    /** Whether the node lies outside the state the canvas shows and is only drawn because a node there reads it. */
+    borrowed?: boolean
 }
 
 /** Choices of config fields that come from the session rather than the catalog, by `<node type>|<field>`. */

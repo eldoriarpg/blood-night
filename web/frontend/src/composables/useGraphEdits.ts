@@ -16,6 +16,8 @@ export interface EditedGraph {
     graph: Graph
     catalog: Catalog
     bindings: GraphBindings
+    /** The state new nodes join; undefined for the part that always runs. */
+    state?: string
 }
 
 /**
@@ -28,7 +30,7 @@ export function useGraphEdits(source: () => EditedGraph) {
     const changes = useEditorChanges()
 
     function editor(): GraphChanges {
-        return new GraphChanges(source().base, source().graph)
+        return new GraphChanges(source().base, source().graph, source().state)
     }
 
     function apply(operations: PatchOperation[]): Promise<boolean> {

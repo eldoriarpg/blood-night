@@ -557,6 +557,7 @@ export interface Comment {
   width: number;
   height: number;
   collapsed: boolean;
+  state?: string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
