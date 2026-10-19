@@ -55,7 +55,7 @@ class BuiltInStoreTest {
     void everyMobHasNamesAndAPack() {
         Store store = BuiltInStore.load();
 
-        assertEquals(35, store.entries().size());
+        assertEquals(38, store.entries().size());
         for (StoreEntry entry : store.entries()) {
             assertFalse(store.resolve(entry.pack()).isEmpty(), entry.id());
             assertFalse(entry.mobPackage().names().getOrDefault("de", "").isBlank(), entry.id());

@@ -1,0 +1,80 @@
+{
+  "pack": "withers",
+  "names": {
+    "en": "Blink Wither",
+    "de": "Blinzelwither",
+    "es": "Wither Parpadeante",
+    "fr": "Wither clignotant",
+    "ms": "Wither Kelip",
+    "tr": "Işınlanan Wither",
+    "zh": "闪烁凋灵"
+  },
+  "descriptions": {
+    "en": "A wither built during a blood night. It blinks behind you and teleports out of any cage, boat or trap.",
+    "de": "Ein Wither, der während einer Blutnacht gebaut wurde. Er taucht hinter dir auf und teleportiert sich aus jedem Käfig, Boot und jeder Falle.",
+    "es": "Un wither construido durante una noche sangrienta. Aparece detrás de ti y se teletransporta fuera de cualquier jaula, barca o trampa.",
+    "fr": "Un wither construit pendant une nuit de sang. Il apparaît derrière toi et se téléporte hors de toute cage, barque ou piège.",
+    "ms": "Wither yang dibina semasa blood night. Ia muncul di belakang anda dan berteleport keluar dari sebarang sangkar, bot atau perangkap.",
+    "tr": "Lanetli Gece sırasında kurulan bir wither. Arkanda belirir ve her kafesten, tekneden ya da tuzaktan ışınlanarak kurtulur.",
+    "zh": "血夜期间召唤的凋灵。它会闪现到你身后，并从任何笼子、船或陷阱中传送出来。"
+  },
+  "requires": [],
+  "loot": {
+    "slots": {
+      "2": 1,
+      "3": 2,
+      "4": 1
+    },
+    "tables": {
+      "blink_wither": {
+        "name": "Blink Wither",
+        "entries": [
+          {
+            "item": "minecraft:nether_star",
+            "weight": 2,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:experience_bottle",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 8,
+              "max": 16,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:diamond",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:ender_pearl",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 4,
+              "max": 8,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
+}

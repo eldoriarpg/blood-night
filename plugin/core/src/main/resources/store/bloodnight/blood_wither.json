@@ -1,0 +1,1163 @@
+{
+  "format" : 1,
+  "id" : "blood_wither",
+  "pack" : "withers",
+  "names" : {
+    "de" : "Blutwither",
+    "en" : "Blood Wither",
+    "es" : "Wither de Sangre",
+    "fr" : "Wither de sang",
+    "ms" : "Wither Darah",
+    "tr" : "Kan Wither'ı",
+    "zh" : "血之凋灵"
+  },
+  "descriptions" : {
+    "de" : "Ein Wither, der während einer Blutnacht gebaut wurde. Seine Schädel heilen ihn, und unter halber Gesundheit ruft er Wachen und wirft Blutspeere.",
+    "en" : "A wither built during a blood night. Its skulls heal it, and below half health it raises guards and throws blood spears.",
+    "es" : "Un wither construido durante una noche sangrienta. Sus calaveras lo curan y, con menos de media salud, invoca guardias y lanza lanzas de sangre.",
+    "fr" : "Un wither construit pendant une nuit de sang. Ses crânes le soignent et, sous la moitié de sa vie, il lève des gardes et lance des lances de sang.",
+    "ms" : "Wither yang dibina semasa blood night. Tengkoraknya memulihkannya, dan di bawah separuh nyawa ia memanggil pengawal dan melontar lembing darah.",
+    "tr" : "Lanetli Gece sırasında kurulan bir wither. Kafatasları onu iyileştirir; canı yarının altına düşünce muhafızlar çağırır ve kan mızrakları fırlatır.",
+    "zh" : "血夜期间召唤的凋灵。它的头颅会为它回血，生命低于一半时会召唤护卫并投掷血矛。"
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "blood_wither",
+    "equipment" : null,
+    "attributes" : {
+      "name" : {
+        "style" : "<dark_red>",
+        "texts" : {
+          "de" : "Blutwither",
+          "en" : "Blood Wither",
+          "es" : "Wither de Sangre",
+          "fr" : "Wither de sang",
+          "ms" : "Wither Darah",
+          "tr" : "Kan Wither'ı",
+          "zh" : "血之凋灵"
+        }
+      },
+      "entityType" : "WITHER",
+      "exactType" : true,
+      "healthModifier" : "VALUE",
+      "health" : 450.0,
+      "damageModifier" : "MULTIPLY",
+      "damage" : 1.3,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "add_17" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "add_18" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_26" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : -3.0
+          }
+        },
+        "add_27" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_35" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_36" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          }
+        },
+        "add_44" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          }
+        },
+        "add_45" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : -3.0
+          }
+        },
+        "add_6" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "health"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          }
+        },
+        "apply_effect_22" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_21",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          }
+        },
+        "apply_effect_31" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_30",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          }
+        },
+        "apply_effect_40" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_39",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          }
+        },
+        "apply_effect_49" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_48",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          }
+        },
+        "apply_effect_78" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : false
+          }
+        },
+        "attribute_2" : {
+          "type" : "living_entity.attribute",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "attribute" : "minecraft:max_health"
+          }
+        },
+        "attribute_71" : {
+          "type" : "living_entity.attribute",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "attribute" : "minecraft:max_health"
+          }
+        },
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_9",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_8" ]
+          }
+        },
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_1",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_10", "play_effect_11" ]
+          }
+        },
+        "branch_24" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_21",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_22", "play_effect_23" ]
+          }
+        },
+        "branch_33" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_30",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_31", "play_effect_32" ]
+          }
+        },
+        "branch_42" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_39",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_40", "play_effect_41" ]
+          }
+        },
+        "branch_51" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_48",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_49", "play_effect_50" ]
+          }
+        },
+        "branch_60" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_59",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_57" ]
+          }
+        },
+        "branch_61" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_56",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_58" ]
+          }
+        },
+        "branch_62" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_55",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_61" ]
+          }
+        },
+        "branch_64" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_63",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "for_each_54" ]
+          }
+        },
+        "branch_69" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_68",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_66" ]
+          }
+        },
+        "branch_70" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_67",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_69" ]
+          }
+        },
+        "branch_75" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_74",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "do_once_14" ]
+          }
+        },
+        "branch_77" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_76",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_75" ]
+          }
+        },
+        "branch_80" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_79",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_78" ]
+          }
+        },
+        "branch_81" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "get_13",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_80", "branch_64" ]
+          }
+        },
+        "cast_1" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_21" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_19",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_30" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_28",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_39" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_37",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_48" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_46",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_55" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_54",
+              "port" : "element"
+            }
+          }
+        },
+        "clamp_5" : {
+          "type" : "math.clamp",
+          "inputs" : {
+            "upper" : {
+              "node" : "read_4",
+              "port" : "value"
+            },
+            "value" : {
+              "node" : "add_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "lower" : 0.0
+          }
+        },
+        "cooldown_63" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 5000
+          }
+        },
+        "cooldown_79" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          }
+        },
+        "create_16" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_17",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_18",
+              "port" : "result"
+            }
+          }
+        },
+        "create_25" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_26",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_27",
+              "port" : "result"
+            }
+          }
+        },
+        "create_34" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_35",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_36",
+              "port" : "result"
+            }
+          }
+        },
+        "create_43" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_44",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_45",
+              "port" : "result"
+            }
+          }
+        },
+        "damage_57" : {
+          "type" : "living_entity.damage",
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_55",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amount" : 6.0
+          }
+        },
+        "do_once_14" : {
+          "type" : "flow.do_once",
+          "executions" : {
+            "next" : [ "set_15", "spawn_entity_19", "spawn_entity_28", "spawn_entity_37", "spawn_entity_46", "play_effect_52" ]
+          }
+        },
+        "for_each_54" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_53",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_62" ]
+          }
+        },
+        "get_13" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "enraged",
+            "type" : "boolean"
+          }
+        },
+        "has_line_of_sight_56" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "cast_55",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "hit_0" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_12" ]
+          }
+        },
+        "is_null_59" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "cast_55",
+              "port" : "result"
+            }
+          }
+        },
+        "is_null_67" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_7",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_68" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_65",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_76" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_71",
+              "port" : "result"
+            }
+          }
+        },
+        "is_null_9" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_2",
+              "port" : "result"
+            }
+          }
+        },
+        "less_74" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "health"
+            },
+            "second" : {
+              "node" : "multiply_73",
+              "port" : "result"
+            }
+          }
+        },
+        "multiply_73" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_72",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "second" : 0.5
+          }
+        },
+        "mutate_66" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "nearest_player_65",
+              "port" : "player"
+            }
+          }
+        },
+        "mutate_8" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "health" : {
+              "node" : "clamp_5",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "nearby_entities_53" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 32.0,
+            "y" : 16.0,
+            "z" : 32.0
+          }
+        },
+        "nearest_player_65" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_7",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 16.0
+          }
+        },
+        "play_effect_11" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:drain_beam"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_23" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_21",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_32" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_30",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_41" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_39",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_50" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_48",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_52" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:death_burst"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "play_effect_58" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:blood_spear"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_55",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "arrived" : [ "branch_60" ]
+          }
+        },
+        "read_4" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_2",
+              "port" : "result"
+            }
+          }
+        },
+        "read_7" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_72" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_71",
+              "port" : "result"
+            }
+          }
+        },
+        "self_3" : {
+          "type" : "mob.self"
+        },
+        "set_15" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "enraged",
+            "type" : "boolean"
+          },
+          "literals" : {
+            "value" : true
+          }
+        },
+        "spawn_entity_19" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_16",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_20",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_24" ]
+          }
+        },
+        "spawn_entity_28" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_25",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_29",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_33" ]
+          }
+        },
+        "spawn_entity_37" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_34",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_38",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_42" ]
+          }
+        },
+        "spawn_entity_46" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_43",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_47",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_51" ]
+          }
+        },
+        "tick_82" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_70", "branch_77", "branch_81" ]
+          }
+        },
+        "value_20" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          }
+        },
+        "value_29" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          }
+        },
+        "value_38" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          }
+        },
+        "value_47" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          }
+        }
+      }
+    },
+    "loot" : {
+      "tables" : [ "blood_wither" ],
+      "slots" : {
+        "2" : 1,
+        "3" : 2,
+        "4" : 1
+      },
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null,
+      "money" : null
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 0,
+      "nightOnly" : false,
+      "nightEnd" : "KEEP",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null,
+    "movement" : {
+      "preset" : "VANILLA",
+      "range" : 24.0,
+      "closest" : 6.0,
+      "farthest" : 10.0,
+      "seconds" : 3.0,
+      "fleeBelow" : 0.3
+    },
+    "particles" : {
+      "ambient" : "bloodnight:blood_aura",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
+  },
+  "lootTables" : {
+    "blood_wither" : {
+      "name" : "Blood Wither",
+      "entries" : [ {
+        "item" : "minecraft:nether_star",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:experience_bottle",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 8,
+          "max" : 16,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:diamond",
+        "weight" : 4,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 5,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:wither_skeleton_skull",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:redstone_block",
+        "weight" : 4,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 6,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      } ]
+    }
+  },
+  "particleEffects" : { }
+}

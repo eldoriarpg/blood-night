@@ -61,5 +61,26 @@
       "tr": "Seni fırlatan, yakalayan ve havaya uçuran Endermanlar, ayrıca ejderha savaşları için Kan Ejderhası.",
       "zh": "会把你抛起、抓住和炸飞的末影人，以及用于龙战的血龙。"
     }
+  },
+  {
+    "id": "withers",
+    "names": {
+      "en": "Blood withers",
+      "de": "Blutwither",
+      "es": "Withers de sangre",
+      "fr": "Withers de sang",
+      "ms": "Wither Darah",
+      "tr": "Kan Wither'ları",
+      "zh": "血凋灵"
+    },
+    "descriptions": {
+      "en": "Withers built during a blood night become one of these bosses.",
+      "de": "Wither, die während einer Blutnacht gebaut werden, werden zu einem dieser Bosse.",
+      "es": "Los withers construidos durante una noche sangrienta se convierten en uno de estos jefes.",
+      "fr": "Les withers construits pendant une nuit de sang deviennent l'un de ces boss.",
+      "ms": "Wither yang dibina semasa blood night menjadi salah satu bos ini.",
+      "tr": "Lanetli Gece sırasında kurulan wither'lar bu boss'lardan birine dönüşür.",
+      "zh": "血夜期间召唤的凋灵会变成这些首领之一。"
+    }
   }
 ]
