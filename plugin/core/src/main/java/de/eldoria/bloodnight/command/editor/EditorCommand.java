@@ -194,7 +194,7 @@ public final class EditorCommand {
      * @return the areas the sender may change: those of {@code bloodnight.editor.<area>} they have, everything for the
      *     console
      */
-    public static Set<EditorArea> areas(CommandSender sender) {
+    static Set<EditorArea> areas(CommandSender sender) {
         Set<EditorArea> areas = EnumSet.noneOf(EditorArea.class);
         for (EditorArea area : EditorArea.values()) {
             if (sender.hasPermission(AREA_PERMISSION + area.name().toLowerCase(Locale.ROOT))) areas.add(area);

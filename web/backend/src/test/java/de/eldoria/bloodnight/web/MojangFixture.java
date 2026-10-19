@@ -33,7 +33,7 @@ import java.util.zip.ZipOutputStream;
  * texture as a sprite object (a chest).
  */
 public final class MojangFixture implements AutoCloseable {
-    public static final byte[] SWORD_PNG = {(byte) 0x89, 'P', 'N', 'G', 1};
+    static final byte[] SWORD_PNG = {(byte) 0x89, 'P', 'N', 'G', 1};
     public static final byte[] STONE_PNG = {(byte) 0x89, 'P', 'N', 'G', 2};
     public static final byte[] ZOMBIE_OGG = {'O', 'g', 'g', 'S', 1};
     private final HttpServer server;
