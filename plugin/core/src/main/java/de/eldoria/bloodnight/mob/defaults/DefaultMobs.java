@@ -100,6 +100,16 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final double SEAL_BELOW = 6;
 
     /**
+     * Blocks above the ground the arcane seal stays when the ground is closer below the dragon.
+     */
+    private static final double SEAL_ABOVE_GROUND = 0.3;
+
+    /**
+     * Share of its health below which the Blood Dragon begins to cast its arcane seal.
+     */
+    private static final double SEAL_HEALTH = 0.7;
+
+    /**
      * Sideways speed the arcane seal throws players with, about 30 blocks far.
      */
     private static final double SEAL_PUSH = 2.7;
@@ -2032,8 +2042,9 @@ public final class DefaultMobs implements BloodNightNodes {
 
     /**
      * The Blood Dragon's arcane seal, once a minute while a player is within {@value #SEAL_REACH} blocks: it hangs
-     * still, draws a magic circle {@value #SEAL_BELOW} blocks below itself and, once the circle is complete, throws
-     * every player in that reach it can see about 30 blocks away. A player behind a pillar is safe.
+     * still, draws a magic circle {@value #SEAL_BELOW} blocks below itself, or just above the ground when that is
+     * closer, and, once the circle is complete, throws every player in that reach it can see about 30 blocks away. A
+     * player behind a pillar is safe. It only casts once its health is below {@value #SEAL_HEALTH} of its maximum.
      *
      * @return the chain that casts it
      */
@@ -2042,6 +2053,21 @@ public final class DefaultMobs implements BloodNightNodes {
                 .input("location", graph.selfRead(), "location")
                 .literal("radius", SEAL_REACH)
                 .id();
+        String down = graph.node(VECTOR_CREATE)
+                .literal("x", 0.0)
+                .literal("y", -1.0)
+                .literal("z", 0.0)
+                .id();
+        Graphs.NodeBuilder trace = graph.node(WORLD_LINE_TRACE)
+                .config("hits", "BLOCKS")
+                .input("start", graph.selfRead(), "location")
+                .input("direction", down, RESULT)
+                .literal("distance", SEAL_BELOW)
+                .input("ignore", graph.self(), "entity");
+        String drop = graph.node(MATH_SUBTRACT)
+                .input("first", trace.id(), "hit_distance")
+                .literal("second", SEAL_ABOVE_GROUND)
+                .id();
         String below = graph.node(LOCATION_CREATE)
                 .input("world", graph.selfRead(), "world")
                 .input("x", graph.selfRead(), "x")
@@ -2049,7 +2075,7 @@ public final class DefaultMobs implements BloodNightNodes {
                         "y",
                         graph.node(MATH_SUBTRACT)
                                 .input("first", graph.selfRead(), "y")
-                                .literal("second", SEAL_BELOW)
+                                .input("second", drop, RESULT)
                                 .id(),
                         RESULT)
                 .input("z", graph.selfRead(), "z")
@@ -2061,16 +2087,36 @@ public final class DefaultMobs implements BloodNightNodes {
                         playersAround(graph, SEAL_REACH, player -> throwAway(graph, player)),
                         casting(graph, false))
                 .id();
+        trace.chain(
+                "next",
+                casting(graph, true),
+                ai(graph, false),
+                graph.playEffect("bloodnight:arcane_seal", below, RESULT).id(),
+                release);
         return graph.present(
-                nearest,
-                "player",
-                graph.every(
-                        SEAL_COOLDOWN,
-                        casting(graph, true),
-                        ai(graph, false),
-                        graph.playEffect("bloodnight:arcane_seal", below, RESULT)
-                                .id(),
-                        release));
+                nearest, "player", healthBelow(graph, SEAL_HEALTH, graph.every(SEAL_COOLDOWN, trace.id())));
+    }
+
+    /**
+     * Runs a chain while the mob's health is below a share of its maximum.
+     *
+     * @param share the share, e.g. 0.5 for half
+     */
+    private static String healthBelow(MobGraph graph, double share, String... chain) {
+        String attribute = graph.node(LIVING_ENTITY_ATTRIBUTE)
+                .input(TARGET, graph.self(), "entity")
+                .literal("attribute", "minecraft:max_health")
+                .id();
+        String max = graph.node(ATTRIBUTE_READ).input(TARGET, attribute, RESULT).id();
+        String limit = graph.node(MATH_MULTIPLY)
+                .input("first", max, VALUE)
+                .literal("second", share)
+                .id();
+        String low = graph.node(LOGIC_LESS)
+                .input("first", graph.selfRead(), "health")
+                .input("second", limit, RESULT)
+                .id();
+        return graph.present(attribute, RESULT, graph.when(low, RESULT, chain));
     }
 
     /**
