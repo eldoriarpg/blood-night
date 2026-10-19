@@ -742,6 +742,29 @@ test('the preview arranges a graph without positions', async ({page}) => {
     expect(stage.changes).toEqual([])
 })
 
+/** A move made while a graph without positions is still being arranged stays: the view is not fitted over it. */
+test('a view moved while the graph is arranged stays where it was moved', async ({page}) => {
+    const stage = await stageEditor(page, {}, true)
+    await page.route(/elk.*bundled/, async route => {
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        await route.continue()
+    })
+    await page.goto(stage.link)
+    const canvas = page.locator('.bn-canvas')
+    await expect(canvas).toHaveAttribute('data-arranged', 'false')
+
+    const pane = await page.locator('.vue-flow__pane').boundingBox()
+    if (!pane) throw new Error('no pane')
+    await page.mouse.move(pane.x + 20, pane.y + 20)
+    await page.mouse.down()
+    await page.mouse.move(pane.x + 140, pane.y + 70, {steps: 10})
+    await page.mouse.up()
+    const moved = await page.locator('.vue-flow__transformationpane').getAttribute('style')
+
+    await expect(canvas).toHaveAttribute('data-arranged', 'true')
+    expect(await page.locator('.vue-flow__transformationpane').getAttribute('style')).toBe(moved)
+})
+
 /** Values their modifier ignores stay hidden until the modifier uses them. */
 test('mob attributes show only the values that are used', async ({page}) => {
     const stage = await stageEditor(page)
