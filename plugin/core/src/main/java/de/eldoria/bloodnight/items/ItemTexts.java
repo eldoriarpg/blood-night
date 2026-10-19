@@ -27,6 +27,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
@@ -47,7 +48,8 @@ import java.util.TreeMap;
 /**
  * Writes what the editor sets on an item onto an item stack, and reads it back: name and lore as MiniMessage,
  * enchantments, glint, model, durability, dye colour, armour trim, attribute modifiers and the hidden tooltip parts.
- * What does not fit the item, such as a trim on a sword, is left out, and so are unknown keys.
+ * What does not fit the item, such as a trim on a sword, is left out, and so are unknown keys. An enchanted book stores
+ * its enchantments, so it works in an anvil like a book from an enchanting table.
  */
 public final class ItemTexts {
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
@@ -83,11 +85,7 @@ public final class ItemTexts {
                     look.lore().isEmpty()
                             ? null
                             : look.lore().stream().map(ItemTexts::text).toList());
-            meta.getEnchants().keySet().forEach(meta::removeEnchant);
-            look.enchantments().forEach((key, level) -> {
-                Enchantment enchantment = registered(RegistryKey.ENCHANTMENT, key);
-                if (enchantment != null) meta.addEnchant(enchantment, Math.max(level, 1), true);
-            });
+            enchant(meta, look.enchantments());
             meta.setEnchantmentGlintOverride(look.glint());
             String model = look.model();
             meta.setItemModel(model == null || model.isBlank() ? null : NamespacedKey.fromString(model));
@@ -108,6 +106,26 @@ public final class ItemTexts {
     }
 
     /**
+     * Sets an item's enchantments, replacing the ones it had. An enchanted book stores them, as books from an enchanting
+     * table do, so an anvil can put them onto gear; any other item carries them itself.
+     *
+     * @param enchantments levels by enchantment key; unknown keys are left out
+     */
+    private static void enchant(ItemMeta meta, Map<String, Integer> enchantments) {
+        if (meta instanceof EnchantmentStorageMeta book) {
+            book.getStoredEnchants().keySet().forEach(book::removeStoredEnchant);
+        }
+        meta.getEnchants().keySet().forEach(meta::removeEnchant);
+        enchantments.forEach((key, level) -> {
+            Enchantment enchantment = registered(RegistryKey.ENCHANTMENT, key);
+            if (enchantment == null) return;
+            if (meta instanceof EnchantmentStorageMeta book)
+                book.addStoredEnchant(enchantment, Math.max(level, 1), true);
+            else meta.addEnchant(enchantment, Math.max(level, 1), true);
+        });
+    }
+
+    /**
      * @param item an item
      * @return everything the editor shows of it
      */
@@ -118,9 +136,10 @@ public final class ItemTexts {
         Component name = meta.displayName();
         List<Component> lore = meta.lore();
         Map<String, Integer> enchantments = new TreeMap<>();
-        item.getEnchantments()
-                .forEach((enchantment, level) ->
-                        enchantments.put(enchantment.getKey().asString(), level));
+        Map<Enchantment, Integer> held =
+                meta instanceof EnchantmentStorageMeta book ? book.getStoredEnchants() : item.getEnchantments();
+        held.forEach(
+                (enchantment, level) -> enchantments.put(enchantment.getKey().asString(), level));
         NamespacedKey model = meta.hasItemModel() ? meta.getItemModel() : null;
         int maxDurability = maxDurability(item);
         Double wear = meta instanceof Damageable damageable && damageable.hasDamage() && maxDurability > 0
