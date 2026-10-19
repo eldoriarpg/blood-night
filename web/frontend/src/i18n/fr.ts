@@ -1070,6 +1070,8 @@ export default {
                 item: 'Objet',
                 ticks: 'Vol (ticks)',
                 toward: 'Vole vers',
+                towardOther: 'Vole vers l\'autre bout',
+                towardOtherHint: 'Une traînée vole vers l\'autre bout de l\'effet, par ex. de la cible à la créature. Désactivé : elle vole vers le point que tu choisis.',
                 unsupported: 'Les effets ne peuvent pas dessiner cette particule. Choisis-en une autre.',
             },
             anchor: {

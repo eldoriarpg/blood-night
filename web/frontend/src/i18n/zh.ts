@@ -1070,6 +1070,8 @@ export default {
                 item: '物品',
                 ticks: '飞行（刻）',
                 toward: '飞向',
+                towardOther: '飞向另一端',
+                towardOtherHint: '轨迹飞向效果的另一端，例如从目标飞向生物。关闭时飞向你设置的点。',
                 unsupported: '效果无法绘制此粒子。请选择其他粒子。',
             },
             anchor: {

@@ -43,7 +43,7 @@ your own copy with a new id.
 | `bloodnight:arcane_glow` | Enchanting letters and a purple ring above the head |
 | `bloodnight:shadow_wings` | Dark wings on the target's back that flap |
 | `bloodnight:arcane_lines` | Two magic arcs from the source to the target |
-| `bloodnight:drain_beam` | A red beam of particles from the source to the target, with a ring where it hits |
+| `bloodnight:drain_beam` | Red trails flowing from the target into the source, as if it drains them, with a ring around the target |
 | `bloodnight:lightning_bolt` | A crackling bolt from the sky to the ground |
 | `bloodnight:blood_spear` | A glowing spear that flies through the target |
 | `bloodnight:rune_circle` | A turning rune on the ground |

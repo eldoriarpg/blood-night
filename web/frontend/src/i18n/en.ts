@@ -828,6 +828,8 @@ export default {
                 item: 'Item',
                 ticks: 'Flight (ticks)',
                 toward: 'Flies to',
+                towardOther: 'Flies to the other end',
+                towardOtherHint: 'A trail flies to the other end of the effect, e.g. from the target to the mob. Off: it flies to the point you set.',
                 unsupported: 'Effects cannot draw this particle. Pick another one.',
             },
             anchor: {

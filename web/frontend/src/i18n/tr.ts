@@ -1070,6 +1070,8 @@ export default {
                 item: 'Eşya',
                 ticks: 'Uçuş (tick)',
                 toward: 'Şuraya uçar',
+                towardOther: 'Diğer uca uçar',
+                towardOtherHint: 'İz, efektin diğer ucuna uçar, örn. hedeften yaratığa. Kapalı: belirlediğin noktaya uçar.',
                 unsupported: 'Efektler bu parçacığı çizemez. Başka birini seç.',
             },
             anchor: {

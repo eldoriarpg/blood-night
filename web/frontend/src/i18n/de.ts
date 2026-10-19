@@ -832,6 +832,8 @@ export default {
                 item: 'Item',
                 ticks: 'Flug (Ticks)',
                 toward: 'Fliegt zu',
+                towardOther: 'Fliegt zum anderen Ende',
+                towardOtherHint: 'Eine Spur fliegt zum anderen Ende des Effekts, z. B. vom Ziel zum Mob. Aus: Sie fliegt zu dem Punkt, den du festlegst.',
                 unsupported: 'Effekte können dieses Partikel nicht zeichnen. Wähle ein anderes.',
             },
             anchor: {

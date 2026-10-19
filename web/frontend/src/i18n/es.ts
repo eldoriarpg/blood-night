@@ -1070,6 +1070,8 @@ export default {
                 item: 'Objeto',
                 ticks: 'Vuelo (ticks)',
                 toward: 'Vuela hacia',
+                towardOther: 'Vuela al otro extremo',
+                towardOtherHint: 'Una estela vuela al otro extremo del efecto, p. ej. del objetivo a la criatura. Desactivado: vuela al punto que indiques.',
                 unsupported: 'Los efectos no pueden dibujar esta partícula. Elige otra.',
             },
             anchor: {

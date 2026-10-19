@@ -1070,6 +1070,8 @@ export default {
                 item: 'Item',
                 ticks: 'Terbang (tick)',
                 toward: 'Terbang ke',
+                towardOther: 'Terbang ke hujung lain',
+                towardOtherHint: 'Jejak terbang ke hujung lain kesan, cth. dari sasaran ke makhluk. Mati: ia terbang ke titik yang anda tetapkan.',
                 unsupported: 'Kesan tidak boleh melukis partikel ini. Pilih yang lain.',
             },
             anchor: {

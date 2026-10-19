@@ -274,15 +274,15 @@ effects:
     name: Drain beam
     duration: 60
     emitters:
-      - particle: minecraft:dust
-        data: {color: "#ff1010", size: 0.9}
-        anchor: {at: EYES, aim: CENTER}
-        shape: {type: BEAM, density: 4}
+      - particle: minecraft:trail
+        data: {color: "#ff1010", ticks: 16}
+        anchor: {at: CENTER, on: TARGET, aim: EYES}
+        shape: {type: SPHERE, radius: 0.5, points: 4}
         every: 1
-      - particle: minecraft:dust
-        data: {color: "#ff9090", size: 0.5}
-        anchor: {at: EYES, aim: CENTER}
-        shape: {type: BEAM, density: 2, jitter: 0.12}
+      - particle: minecraft:trail
+        data: {color: "#8a0000", ticks: 10}
+        anchor: {at: CENTER, on: TARGET, aim: EYES}
+        shape: {type: BEAM, density: 1, jitter: 0.15}
         every: 2
         chance: 0.7
       - particle: minecraft:dust_color_transition

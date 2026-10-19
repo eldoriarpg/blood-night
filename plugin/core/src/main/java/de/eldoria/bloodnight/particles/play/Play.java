@@ -155,13 +155,13 @@ public final class Play {
                 : Shapes.around(shape, frame.at(base), moment);
         if (points.isEmpty()) return;
         try {
-            send(emitter, frame, own.world(), base, points);
+            send(emitter, frame, own.world(), base, far, points);
         } catch (IllegalArgumentException e) {
             broken[index] = true;
         }
     }
 
-    private void send(Emitter emitter, Frame frame, World world, Vec3 base, List<Vec3> points) {
+    private void send(Emitter emitter, Frame frame, World world, Vec3 base, @Nullable Vec3 far, List<Vec3> points) {
         Particle particle = EffectChecks.particle(emitter.particle());
         if (particle == null) throw new IllegalArgumentException("Unknown particle " + emitter.particle());
         List<Player> seeing =
@@ -181,14 +181,19 @@ public final class Play {
         for (Vec3 point : points) {
             if (trail)
                 data = ParticleDatas.build(
-                        particle, emitter.data(), trailEnd(world, frame, point, emitter), stage.items());
+                        particle, emitter.data(), trailEnd(world, frame, point, far, emitter), stage.items());
             builder.location(world, point.x(), point.y(), point.z()).data(data).spawn();
         }
     }
 
-    private static Location trailEnd(World world, Frame frame, Vec3 point, Emitter emitter) {
+    /**
+     * @return where a trail flies to: its {@code toward}, else the other end of the play, else a block up
+     */
+    private static Location trailEnd(World world, Frame frame, Vec3 point, @Nullable Vec3 far, Emitter emitter) {
         Vec3 toward = emitter.data().toward();
-        Vec3 end = frame.at(point).world(toward == null ? new Vec3(0, 1, 0) : toward);
+        Vec3 end = toward == null && far != null
+                ? far
+                : frame.at(point).world(toward == null ? new Vec3(0, 1, 0) : toward);
         return new Location(world, end.x(), end.y(), end.z());
     }
 }
