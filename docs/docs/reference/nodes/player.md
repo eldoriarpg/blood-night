@@ -50,7 +50,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Sneaking (optional) | Boolean | Sets the sneak mode the player |
 | Spectator Target (optional) | Entity | Sets the entity which is followed by the camera when in SPECTATOR. |
 | Sprinting (optional) | Boolean | Sets whether the player is sprinting or not. |
-| Starvation Rate (optional) | Integer | Get the starvation rate (1 health per x ticks) of the HumanEntity. |
+| Starvation Rate (optional) | Integer | Set the starvation rate (1 health per x ticks) of the HumanEntity. |
 | Total Experience (optional) | Integer | Sets the players current experience points. |
 | Unsaturated Regen Rate (optional) | Integer | Get the regeneration rate (1 health per x ticks) of the HumanEntity when they have no saturation and their food level is &gt;= 18. |
 | View Distance (optional) | Integer | Sets the view distance for this player |
@@ -226,9 +226,11 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
+| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
+| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -239,6 +241,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
+| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -247,7 +250,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | In World | Boolean | Checks if this entity has been spawned in a world. |
 | Inside Vehicle | Boolean | Returns whether this entity is inside a vehicle. |
 | Invisible | Boolean | Gets whether the entity is invisible or not. |
-| Invulnerable | Boolean | Gets whether the entity is invulnerable or not. |
+| Marked Invulnerable | Boolean | Gets the current invulnerability state of the entity set by setInvulnerable(boolean). |
 | Max Fire Ticks | Integer | Returns the entity's maximum fire ticks. |
 | Max Freeze Ticks | Integer | Returns the entity's maximum freeze ticks (amount of ticks before it will be fully frozen) |
 | Op | Boolean | Checks if this object is a server operator |
@@ -279,6 +282,7 @@ Changes the properties of a Player that are given, the others stay as they are, 
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
+| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |
@@ -437,9 +441,11 @@ Reads the properties of a Player
 | Swimming | Boolean | Checks to see if an entity is swimming. |
 | Upwards Movement | Float | Retrieves the upwards movement direction of the entity. |
 | Waypoint Color | Color | Gets the current color of the waypoint icon, if any. |
+| Air Drag | Float | Returns the air drag factor applied to this entity. |
 | As String | Text | Get this entity as an NBT string. |
 | Custom Name Visible | Boolean | Gets whether or not the mob's custom name is displayed client side. |
 | Dead | Boolean | Returns true if this entity has been marked for removal. |
+| Default Gravity | Number | Returns the default acceleration due to gravity (in blocks per tick). |
 | Empty | Boolean | Check if a vehicle has passengers. |
 | Entity Id | Integer | Returns the network protocol ID for this entity. |
 | Entity Spawn Reason | SpawnReason | \{@return the org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason that initially spawned this entity or null if not yet spawned\} |
@@ -450,6 +456,7 @@ Reads the properties of a Player
 | Freeze Ticks | Integer | Returns the entity's current freeze ticks (amount of ticks the entity has been in powdered snow). |
 | Frozen | Boolean | Gets if the entity is fully frozen (it has been in powdered snow for max freeze ticks). |
 | Glowing | Boolean | Gets whether the entity is glowing or not. |
+| Gravity | Number | Returns the acceleration due to gravity (in blocks per tick). |
 | Height | Number | Gets the entity's height |
 | In Lava | Boolean | Check if entity is in lava |
 | In Powdered Snow | Boolean | Check if entity is inside powdered snow. |
@@ -458,7 +465,7 @@ Reads the properties of a Player
 | In World | Boolean | Checks if this entity has been spawned in a world. |
 | Inside Vehicle | Boolean | Returns whether this entity is inside a vehicle. |
 | Invisible | Boolean | Gets whether the entity is invisible or not. |
-| Invulnerable | Boolean | Gets whether the entity is invulnerable or not. |
+| Marked Invulnerable | Boolean | Gets the current invulnerability state of the entity set by setInvulnerable(boolean). |
 | Max Fire Ticks | Integer | Returns the entity's maximum fire ticks. |
 | Max Freeze Ticks | Integer | Returns the entity's maximum freeze ticks (amount of ticks before it will be fully frozen) |
 | Op | Boolean | Checks if this object is a server operator |
@@ -490,6 +497,7 @@ Reads the properties of a Player
 | Velocity | Vector | Gets this entity's current velocity |
 | Visible By Default | Boolean | Gets whether or not this entity is visible by default. |
 | Visual Fire | TriState | Retrieves the visual fire state of the entity. |
+| Weapon | Item | Gets the item being used as a weapon by this entity. |
 | Width | Number | Gets the entity's width |
 | World | World | Gets the current world this entity resides in |
 | X | Number | Gets the x-coordinate of this entity |

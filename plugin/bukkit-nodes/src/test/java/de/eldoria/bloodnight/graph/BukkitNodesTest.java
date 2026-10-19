@@ -401,7 +401,7 @@ class BukkitNodesTest {
                 .build();
         tick(graph);
         assertEquals(1, ((WorldMock) world).getSpawnedParticles().size());
-        assertEquals(0.25, ((WorldMock) world).getSpawnedParticles().getFirst().extra());
+        assertEquals(0.25, ((WorldMock) world).getSpawnedParticles().getFirst().speedX());
     }
 
     /**
