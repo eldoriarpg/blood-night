@@ -12,6 +12,7 @@ import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.loot.assign.ServerLoot;
 import de.eldoria.bloodnight.loot.assign.WorldLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.MobTypes;
 import de.eldoria.bloodnight.mob.equipment.Equipment;
 import de.eldoria.bloodnight.particles.BuiltInEffects;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Checks a result from the editor against the server before it is applied: each mob is stored under its own id, mobs
@@ -71,7 +73,14 @@ public final class EditorChecks {
             }
             unknownTables(result, mob.loot().tables())
                     .forEach(table -> problems.add("Mob %s uses unknown loot table %s".formatted(mob.id(), table)));
-            unknownEffects(result, effectsOf(mob.behaviour()))
+            List<String> effects = new ArrayList<>(effectsOf(mob.behaviour()));
+            MobParticles looks = mob.particles();
+            if (looks != null) {
+                Stream.of(looks.ambient(), looks.spawn(), looks.death())
+                        .filter(Objects::nonNull)
+                        .forEach(effects::add);
+            }
+            unknownEffects(result, effects)
                     .forEach(effect ->
                             problems.add("Mob %s uses unknown particle effect %s".formatted(mob.id(), effect)));
         }

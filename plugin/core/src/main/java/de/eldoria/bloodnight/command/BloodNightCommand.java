@@ -136,7 +136,7 @@ final class BloodNightCommand {
         subcommands.put("setup", "setup");
         subcommands.put("night", "night [force | cancel] [world]");
         subcommands.put("editor", "editor [new | apply [force] | cancel]");
-        subcommands.put("store", "store [list <pack> | install <pack | mob> | update [pack | mob]]");
+        subcommands.put("store", "store [list <pack> | install <pack | mob> | update [--particles] [pack | mob]]");
         subcommands.put("spawn", "spawn <mob>");
         subcommands.put("item", "item <register | remove <id>>");
         subcommands.put("settings", "settings <server | world> <path> [value]");

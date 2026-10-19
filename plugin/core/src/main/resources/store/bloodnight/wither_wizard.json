@@ -575,7 +575,8 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
-    }
+    },
+    "particles" : null
   },
   "lootTables" : {
     "wither_wizard" : {
@@ -626,5 +627,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

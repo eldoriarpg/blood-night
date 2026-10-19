@@ -353,6 +353,41 @@ export type WeatherChange = 'UNCHANGED' | 'CLEAR' | 'RAIN' | 'THUNDER';
 export type RaidChange = 'UNCHANGED' | 'ALLOW' | 'DENY';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "BodyPoint".
+ */
+export type BodyPoint = 'FEET' | 'CENTER' | 'EYES' | 'ABOVE';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "EffectEnd".
+ */
+export type EffectEnd = 'SOURCE' | 'TARGET' | 'PIECE';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ShapeType".
+ */
+export type ShapeType = 'POINT' | 'RING' | 'SPHERE' | 'LINE' | 'SPIRAL' | 'BEAM' | 'ARC' | 'PATTERN';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Facing".
+ */
+export type Facing = 'UP' | 'LOOK' | 'BODY' | 'PATH';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MotionType".
+ */
+export type MotionType = 'TRAVEL';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Ease".
+ */
+export type Ease = 'LINEAR' | 'IN' | 'OUT';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "PieceKind".
+ */
+export type PieceKind = 'ITEM' | 'BLOCK' | 'SPAN';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "StoreState".
  */
 export type StoreState = 'OWN' | 'CURRENT' | 'OUTDATED' | 'CHANGED' | 'CHANGED_OUTDATED' | 'ORPHANED';
@@ -401,6 +436,7 @@ export interface CustomMob {
   spawn: SpawnRules;
   origin?: MobOrigin;
   movement: Movement;
+  particles?: MobParticles;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -586,6 +622,15 @@ export interface Movement {
   farthest: number;
   seconds: number;
   fleeBelow: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MobParticles".
+ */
+export interface MobParticles {
+  ambient?: string;
+  spawn?: string;
+  death?: string;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1290,6 +1335,142 @@ export interface Offer {
   lootTables: {
     [k: string]: LootTable;
   };
+  particleEffects: {
+    [k: string]: ParticleEffect;
+  };
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ParticleEffect".
+ */
+export interface ParticleEffect {
+  name?: string;
+  duration?: number;
+  emitters?: Emitter[];
+  pieces?: Piece[];
+  self?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Emitter".
+ */
+export interface Emitter {
+  particle?: string;
+  data?: ParticleDataSpec;
+  anchor?: Anchor;
+  offset?: Vec3;
+  shape?: Shape;
+  motion?: Motion;
+  count?: number;
+  spread?: Vec3;
+  speed?: number;
+  every?: number;
+  delay?: number;
+  chance?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ParticleDataSpec".
+ */
+export interface ParticleDataSpec {
+  color?: string;
+  to?: string;
+  size?: number;
+  power?: number;
+  delay?: number;
+  block?: string;
+  item?: string;
+  ticks?: number;
+  toward?: Vec3;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Vec3".
+ */
+export interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Anchor".
+ */
+export interface Anchor {
+  at?: BodyPoint;
+  on?: EffectEnd;
+  piece?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Shape".
+ */
+export interface Shape {
+  type?: ShapeType;
+  radius?: number;
+  points?: number;
+  to?: Vec3;
+  height?: number;
+  turns?: number;
+  strands?: number;
+  density?: number;
+  jitter?: number;
+  bend?: number;
+  twist?: number;
+  rows?: string[];
+  scale?: number;
+  mirror?: boolean;
+  flap?: Flap;
+  spin?: number;
+  grow?: boolean;
+  facing?: Facing;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Flap".
+ */
+export interface Flap {
+  degrees: number;
+  ticks: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Motion".
+ */
+export interface Motion {
+  type?: MotionType;
+  ticks?: number;
+  through?: number;
+  ease?: Ease;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Piece".
+ */
+export interface Piece {
+  kind?: PieceKind;
+  item?: string;
+  block?: string;
+  scale?: number;
+  rotation?: Rotation;
+  anchor?: Anchor;
+  offset?: Vec3;
+  facing?: Facing;
+  motion?: Motion;
+  stick?: number;
+  glow?: boolean;
+  color?: string;
+  width?: number;
+  grow?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Rotation".
+ */
+export interface Rotation {
+  pitch: number;
+  yaw: number;
+  roll: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1441,6 +1622,13 @@ export const AmountMode = {
     RANGE: "RANGE",
 } as const;
 
+export const BodyPoint = {
+    ABOVE: "ABOVE",
+    CENTER: "CENTER",
+    EYES: "EYES",
+    FEET: "FEET",
+} as const;
+
 export const Color = {
     BLUE: "BLUE",
     GREEN: "GREEN",
@@ -1457,6 +1645,18 @@ export const DifficultyChange = {
     NORMAL: "NORMAL",
     PEACEFUL: "PEACEFUL",
     UNCHANGED: "UNCHANGED",
+} as const;
+
+export const Ease = {
+    IN: "IN",
+    LINEAR: "LINEAR",
+    OUT: "OUT",
+} as const;
+
+export const EffectEnd = {
+    PIECE: "PIECE",
+    SOURCE: "SOURCE",
+    TARGET: "TARGET",
 } as const;
 
 export const EntityType = {
@@ -1627,6 +1827,13 @@ export const ExtensionType = {
     RIDER: "RIDER",
 } as const;
 
+export const Facing = {
+    BODY: "BODY",
+    LOOK: "LOOK",
+    PATH: "PATH",
+    UP: "UP",
+} as const;
+
 export const Flag = {
     CREATE_WORLD_FOG: "CREATE_WORLD_FOG",
     DARKEN_SCREEN: "DARKEN_SCREEN",
@@ -1675,6 +1882,10 @@ export const Method = {
     TITLE: "TITLE",
 } as const;
 
+export const MotionType = {
+    TRAVEL: "TRAVEL",
+} as const;
+
 export const MovementPreset = {
     AGGRESSIVE: "AGGRESSIVE",
     COWARD: "COWARD",
@@ -1715,6 +1926,12 @@ export const Overlay = {
     PROGRESS: "PROGRESS",
 } as const;
 
+export const PieceKind = {
+    BLOCK: "BLOCK",
+    ITEM: "ITEM",
+    SPAN: "SPAN",
+} as const;
+
 export const RaidChange = {
     ALLOW: "ALLOW",
     DENY: "DENY",
@@ -1736,6 +1953,17 @@ export const Scare = {
 export const Severity = {
     ERROR: "ERROR",
     WARNING: "WARNING",
+} as const;
+
+export const ShapeType = {
+    ARC: "ARC",
+    BEAM: "BEAM",
+    LINE: "LINE",
+    PATTERN: "PATTERN",
+    POINT: "POINT",
+    RING: "RING",
+    SPHERE: "SPHERE",
+    SPIRAL: "SPIRAL",
 } as const;
 
 export const Source = {

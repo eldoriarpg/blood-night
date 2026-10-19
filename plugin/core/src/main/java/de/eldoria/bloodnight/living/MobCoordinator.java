@@ -13,6 +13,7 @@ import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.living.movement.Steering;
 import de.eldoria.bloodnight.living.spawn.MobOutfitter;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.spawn.NightEnd;
 import de.eldoria.bloodnight.particles.play.Effects;
 import de.eldoria.bloodnight.tasks.Tasks;
@@ -26,6 +27,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -157,6 +159,7 @@ public final class MobCoordinator {
         Entity extension = outfitter.outfit(entity, mob);
         ActiveMob active = track(entity, mob, extension);
         guard(active, "mob.spawn", () -> active.behaviour().onSpawn());
+        effects.spawned(entity, looks(mob).spawn());
         return active;
     }
 
@@ -202,6 +205,16 @@ public final class MobCoordinator {
     public Optional<ActiveMob> mob(Entity entity) {
         Tracked tracked = mobs.get(entity.getUniqueId());
         return tracked == null ? Optional.empty() : Optional.of(tracked.active);
+    }
+
+    /**
+     * A mob died: plays its death effect where it died. Forgetting it is left to {@link #remove}.
+     *
+     * @param entity the entity
+     */
+    public void died(LivingEntity entity) {
+        Tracked tracked = mobs.get(entity.getUniqueId());
+        if (tracked != null) effects.died(entity, looks(tracked.active.mob()).death());
     }
 
     /**
@@ -304,6 +317,7 @@ public final class MobCoordinator {
             }
         }
         guard(mob, "mob.tick", () -> mob.behaviour().onTick());
+        effects.ticked(mob.entity(), looks(mob.mob()).ambient());
         return true;
     }
 
@@ -328,7 +342,12 @@ public final class MobCoordinator {
         forget(mob.entity().getUniqueId());
     }
 
+    private static MobParticles looks(CustomMob mob) {
+        return Objects.requireNonNullElse(mob.particles(), MobParticles.NONE);
+    }
+
     private void forget(UUID id) {
+        effects.forget(id);
         Tracked tracked = mobs.remove(id);
         if (tracked == null) return;
         Entity extension = tracked.active.extension();

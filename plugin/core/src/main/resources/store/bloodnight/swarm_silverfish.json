@@ -290,7 +290,8 @@
       "farthest" : 10.0,
       "seconds" : 3.0,
       "fleeBelow" : 0.3
-    }
+    },
+    "particles" : null
   },
   "lootTables" : {
     "swarm_silverfish" : {
@@ -319,5 +320,6 @@
         "wear" : null
       } ]
     }
-  }
+  },
+  "particleEffects" : { }
 }

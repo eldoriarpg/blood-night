@@ -20,6 +20,20 @@
       "type" : "string",
       "enum" : [ "RANGE", "CHOICES" ]
     },
+    "Anchor" : {
+      "type" : "object",
+      "properties" : {
+        "at" : {
+          "$ref" : "#/$defs/BodyPoint"
+        },
+        "on" : {
+          "$ref" : "#/$defs/EffectEnd"
+        },
+        "piece" : {
+          "type" : "integer"
+        }
+      }
+    },
     "AnnouncementSettings" : {
       "type" : "object",
       "properties" : {
@@ -253,6 +267,10 @@
         }
       },
       "required" : [ "name", "entityType", "exactType", "healthModifier", "health", "damageModifier", "damage", "changes", "mythicType", "mythicLevel" ]
+    },
+    "BodyPoint" : {
+      "type" : "string",
+      "enum" : [ "FEET", "CENTER", "EYES", "ABOVE" ]
     },
     "BossBarSettings" : {
       "type" : "object",
@@ -565,6 +583,9 @@
         },
         "movement" : {
           "$ref" : "#/$defs/Movement"
+        },
+        "particles" : {
+          "$ref" : "#/$defs/MobParticles"
         }
       },
       "required" : [ "id", "attributes", "behaviour", "loot", "extension", "spawn", "movement" ]
@@ -662,6 +683,10 @@
     "DifficultyChange" : {
       "type" : "string",
       "enum" : [ "UNCHANGED", "PEACEFUL", "EASY", "NORMAL", "HARD" ]
+    },
+    "Ease" : {
+      "type" : "string",
+      "enum" : [ "LINEAR", "IN", "OUT" ]
     },
     "Edge" : {
       "type" : "object",
@@ -986,6 +1011,51 @@
       },
       "required" : [ "packs", "offers", "states" ]
     },
+    "EffectEnd" : {
+      "type" : "string",
+      "enum" : [ "SOURCE", "TARGET", "PIECE" ]
+    },
+    "Emitter" : {
+      "type" : "object",
+      "properties" : {
+        "particle" : {
+          "type" : "string"
+        },
+        "data" : {
+          "$ref" : "#/$defs/ParticleDataSpec"
+        },
+        "anchor" : {
+          "$ref" : "#/$defs/Anchor"
+        },
+        "offset" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "shape" : {
+          "$ref" : "#/$defs/Shape"
+        },
+        "motion" : {
+          "$ref" : "#/$defs/Motion"
+        },
+        "count" : {
+          "type" : "integer"
+        },
+        "spread" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "speed" : {
+          "type" : "number"
+        },
+        "every" : {
+          "type" : "integer"
+        },
+        "delay" : {
+          "type" : "integer"
+        },
+        "chance" : {
+          "type" : "number"
+        }
+      }
+    },
     "EntityType" : {
       "type" : "string",
       "enum" : [ "ACACIA_BOAT", "ACACIA_CHEST_BOAT", "ALLAY", "AREA_EFFECT_CLOUD", "ARMADILLO", "ARMOR_STAND", "ARROW", "AXOLOTL", "BAMBOO_CHEST_RAFT", "BAMBOO_RAFT", "BAT", "BEE", "BIRCH_BOAT", "BIRCH_CHEST_BOAT", "BLAZE", "BLOCK_DISPLAY", "BOGGED", "BREEZE", "BREEZE_WIND_CHARGE", "CAMEL", "CAMEL_HUSK", "CAT", "CAVE_SPIDER", "CHERRY_BOAT", "CHERRY_CHEST_BOAT", "CHEST_MINECART", "CHICKEN", "COD", "COMMAND_BLOCK_MINECART", "COPPER_GOLEM", "COW", "CREAKING", "CREEPER", "DARK_OAK_BOAT", "DARK_OAK_CHEST_BOAT", "DOLPHIN", "DONKEY", "DRAGON_FIREBALL", "DROWNED", "EGG", "ELDER_GUARDIAN", "END_CRYSTAL", "ENDER_DRAGON", "ENDER_PEARL", "ENDERMAN", "ENDERMITE", "EVOKER", "EVOKER_FANGS", "EXPERIENCE_BOTTLE", "EXPERIENCE_ORB", "EYE_OF_ENDER", "FALLING_BLOCK", "FIREBALL", "FIREWORK_ROCKET", "FISHING_BOBBER", "FOX", "FROG", "FURNACE_MINECART", "GHAST", "GIANT", "GLOW_ITEM_FRAME", "GLOW_SQUID", "GOAT", "GUARDIAN", "HAPPY_GHAST", "HOGLIN", "HOPPER_MINECART", "HORSE", "HUSK", "ILLUSIONER", "INTERACTION", "IRON_GOLEM", "ITEM", "ITEM_DISPLAY", "ITEM_FRAME", "JUNGLE_BOAT", "JUNGLE_CHEST_BOAT", "LEASH_KNOT", "LIGHTNING_BOLT", "LINGERING_POTION", "LLAMA", "LLAMA_SPIT", "MAGMA_CUBE", "MANGROVE_BOAT", "MANGROVE_CHEST_BOAT", "MANNEQUIN", "MARKER", "MINECART", "MOOSHROOM", "MULE", "NAUTILUS", "OAK_BOAT", "OAK_CHEST_BOAT", "OCELOT", "OMINOUS_ITEM_SPAWNER", "PAINTING", "PALE_OAK_BOAT", "PALE_OAK_CHEST_BOAT", "PANDA", "PARCHED", "PARROT", "PHANTOM", "PIG", "PIGLIN", "PIGLIN_BRUTE", "PILLAGER", "PLAYER", "POLAR_BEAR", "PUFFERFISH", "RABBIT", "RAVAGER", "SALMON", "SHEEP", "SHULKER", "SHULKER_BULLET", "SILVERFISH", "SKELETON", "SKELETON_HORSE", "SLIME", "SMALL_FIREBALL", "SNIFFER", "SNOW_GOLEM", "SNOWBALL", "SPAWNER_MINECART", "SPECTRAL_ARROW", "SPIDER", "SPLASH_POTION", "SPRUCE_BOAT", "SPRUCE_CHEST_BOAT", "SQUID", "STRAY", "STRIDER", "SULFUR_CUBE", "TADPOLE", "TEXT_DISPLAY", "TNT", "TNT_MINECART", "TRADER_LLAMA", "TRIDENT", "TROPICAL_FISH", "TURTLE", "VEX", "VILLAGER", "VINDICATOR", "WANDERING_TRADER", "WARDEN", "WIND_CHARGE", "WITCH", "WITHER", "WITHER_SKELETON", "WITHER_SKULL", "WOLF", "ZOGLIN", "ZOMBIE", "ZOMBIE_HORSE", "ZOMBIE_NAUTILUS", "ZOMBIE_VILLAGER", "ZOMBIFIED_PIGLIN", "UNKNOWN" ]
@@ -1058,9 +1128,25 @@
       "type" : "string",
       "enum" : [ "NONE", "RIDER", "CARRIER" ]
     },
+    "Facing" : {
+      "type" : "string",
+      "enum" : [ "UP", "LOOK", "BODY", "PATH" ]
+    },
     "Flag" : {
       "type" : "string",
       "enum" : [ "DARKEN_SCREEN", "PLAY_BOSS_MUSIC", "CREATE_WORLD_FOG" ]
+    },
+    "Flap" : {
+      "type" : "object",
+      "properties" : {
+        "degrees" : {
+          "type" : "number"
+        },
+        "ticks" : {
+          "type" : "integer"
+        }
+      },
+      "required" : [ "degrees", "ticks" ]
     },
     "ForeignMobSettings" : {
       "type" : "object",
@@ -1409,6 +1495,20 @@
       },
       "required" : [ "store", "entry", "hash" ]
     },
+    "MobParticles" : {
+      "type" : "object",
+      "properties" : {
+        "ambient" : {
+          "type" : "string"
+        },
+        "spawn" : {
+          "type" : "string"
+        },
+        "death" : {
+          "type" : "string"
+        }
+      }
+    },
     "MobSettings" : {
       "type" : "object",
       "properties" : {
@@ -1512,6 +1612,27 @@
           }
         }
       }
+    },
+    "Motion" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "$ref" : "#/$defs/MotionType"
+        },
+        "ticks" : {
+          "type" : "integer"
+        },
+        "through" : {
+          "type" : "number"
+        },
+        "ease" : {
+          "$ref" : "#/$defs/Ease"
+        }
+      }
+    },
+    "MotionType" : {
+      "type" : "string",
+      "enum" : [ "TRAVEL" ]
     },
     "Movement" : {
       "type" : "object",
@@ -1878,9 +1999,15 @@
           "additionalProperties" : {
             "$ref" : "#/$defs/LootTable"
           }
+        },
+        "particleEffects" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/ParticleEffect"
+          }
         }
       },
-      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob", "lootTables" ]
+      "required" : [ "id", "pack", "names", "descriptions", "requires", "hash", "mob", "lootTables", "particleEffects" ]
     },
     "Operation" : {
       "type" : "string",
@@ -1955,6 +2082,64 @@
       "type" : "string",
       "enum" : [ "PROGRESS", "NOTCHED_6", "NOTCHED_10", "NOTCHED_12", "NOTCHED_20" ]
     },
+    "ParticleDataSpec" : {
+      "type" : "object",
+      "properties" : {
+        "color" : {
+          "type" : "string"
+        },
+        "to" : {
+          "type" : "string"
+        },
+        "size" : {
+          "type" : "number"
+        },
+        "power" : {
+          "type" : "number"
+        },
+        "delay" : {
+          "type" : "integer"
+        },
+        "block" : {
+          "type" : "string"
+        },
+        "item" : {
+          "type" : "string"
+        },
+        "ticks" : {
+          "type" : "integer"
+        },
+        "toward" : {
+          "$ref" : "#/$defs/Vec3"
+        }
+      }
+    },
+    "ParticleEffect" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "duration" : {
+          "type" : "integer"
+        },
+        "emitters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Emitter"
+          }
+        },
+        "pieces" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/Piece"
+          }
+        },
+        "self" : {
+          "type" : "boolean"
+        }
+      }
+    },
     "ParticleSettings" : {
       "type" : "object",
       "properties" : {
@@ -1992,6 +2177,57 @@
           "default" : [ 50, 50, 50 ]
         }
       }
+    },
+    "Piece" : {
+      "type" : "object",
+      "properties" : {
+        "kind" : {
+          "$ref" : "#/$defs/PieceKind"
+        },
+        "item" : {
+          "type" : "string"
+        },
+        "block" : {
+          "type" : "string"
+        },
+        "scale" : {
+          "type" : "number"
+        },
+        "rotation" : {
+          "$ref" : "#/$defs/Rotation"
+        },
+        "anchor" : {
+          "$ref" : "#/$defs/Anchor"
+        },
+        "offset" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "facing" : {
+          "$ref" : "#/$defs/Facing"
+        },
+        "motion" : {
+          "$ref" : "#/$defs/Motion"
+        },
+        "stick" : {
+          "type" : "integer"
+        },
+        "glow" : {
+          "type" : "boolean"
+        },
+        "color" : {
+          "type" : "string"
+        },
+        "width" : {
+          "type" : "number"
+        },
+        "grow" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "PieceKind" : {
+      "type" : "string",
+      "enum" : [ "ITEM", "BLOCK", "SPAN" ]
     },
     "PlaceholderSettings" : {
       "type" : "object",
@@ -2137,6 +2373,21 @@
         }
       }
     },
+    "Rotation" : {
+      "type" : "object",
+      "properties" : {
+        "pitch" : {
+          "type" : "number"
+        },
+        "yaw" : {
+          "type" : "number"
+        },
+        "roll" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "pitch", "yaw", "roll" ]
+    },
     "Scare" : {
       "type" : "string",
       "enum" : [ "FLINCH", "SCREAM", "GUARDIAN" ]
@@ -2216,6 +2467,72 @@
     "Severity" : {
       "type" : "string",
       "enum" : [ "ERROR", "WARNING" ]
+    },
+    "Shape" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "$ref" : "#/$defs/ShapeType"
+        },
+        "radius" : {
+          "type" : "number"
+        },
+        "points" : {
+          "type" : "integer"
+        },
+        "to" : {
+          "$ref" : "#/$defs/Vec3"
+        },
+        "height" : {
+          "type" : "number"
+        },
+        "turns" : {
+          "type" : "number"
+        },
+        "strands" : {
+          "type" : "integer"
+        },
+        "density" : {
+          "type" : "number"
+        },
+        "jitter" : {
+          "type" : "number"
+        },
+        "bend" : {
+          "type" : "number"
+        },
+        "twist" : {
+          "type" : "number"
+        },
+        "rows" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "scale" : {
+          "type" : "number"
+        },
+        "mirror" : {
+          "type" : "boolean"
+        },
+        "flap" : {
+          "$ref" : "#/$defs/Flap"
+        },
+        "spin" : {
+          "type" : "number"
+        },
+        "grow" : {
+          "type" : "boolean"
+        },
+        "facing" : {
+          "$ref" : "#/$defs/Facing"
+        }
+      }
+    },
+    "ShapeType" : {
+      "type" : "string",
+      "enum" : [ "POINT", "RING", "SPHERE", "LINE", "SPIRAL", "BEAM", "ARC", "PATTERN" ]
     },
     "ShockwaveSettings" : {
       "type" : "object",
@@ -2608,6 +2925,21 @@
     "VanillaLoot" : {
       "type" : "string",
       "enum" : [ "KEEP", "MULTIPLY", "CLEAR" ]
+    },
+    "Vec3" : {
+      "type" : "object",
+      "properties" : {
+        "x" : {
+          "type" : "number"
+        },
+        "y" : {
+          "type" : "number"
+        },
+        "z" : {
+          "type" : "number"
+        }
+      },
+      "required" : [ "x", "y", "z" ]
     },
     "WeatherChange" : {
       "type" : "string",

@@ -14,6 +14,7 @@ import de.eldoria.bloodnight.loot.LootEntry;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.loot.assign.MobLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.mob.MobParticles;
 import de.eldoria.bloodnight.mob.MobTypes;
 import de.eldoria.bloodnight.mob.attributes.Attributes;
 import de.eldoria.bloodnight.mob.equipment.Equipment;
@@ -77,7 +78,10 @@ class EditorChecksTest {
                 Map.of(
                         "a", Mobs.zombie("a", playing("bloodnight:blood_aura")),
                         "b", Mobs.zombie("b", playing("own")),
-                        "c", Mobs.zombie("c", playing("gone"))),
+                        "c", Mobs.zombie("c", playing("gone")),
+                        "d",
+                                Mobs.zombie("d", Graph.builder().build())
+                                        .withParticles(new MobParticles("own", null, "lost"))),
                 List.of(new Macro("m", "M", "", "", playing("missing"))),
                 Map.of(),
                 Map.of(),
@@ -88,6 +92,7 @@ class EditorChecksTest {
                 List.of(
                         "Macro m uses unknown particle effect missing",
                         "Mob c uses unknown particle effect gone",
+                        "Mob d uses unknown particle effect lost",
                         "Particle effect bloodnight:copy cannot use the built-in namespace"),
                 EditorChecks.problems(result, item -> true).stream().sorted().toList());
     }
