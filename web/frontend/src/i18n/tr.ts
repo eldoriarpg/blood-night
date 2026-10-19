@@ -811,6 +811,7 @@ export default {
                 TITLE: 'Başlık',
                 SUBTITLE: 'Alt başlık',
                 ACTION_BAR: 'Eylem çubuğu',
+                NONE: 'Hiçbiri',
             },
             NightEnd: {
                 REMOVE: 'Kaldır',
@@ -836,11 +837,6 @@ export default {
                 NOTCHED_10: '10 bölüm',
                 NOTCHED_12: '12 bölüm',
                 NOTCHED_20: '20 bölüm',
-            },
-            Reach: {
-                SERVER: 'Bütün sunucu',
-                WORLD: 'Bu dünya',
-                NONE: 'Hiç kimse',
             },
             Source: {
                 MASTER: 'Ana ses',
@@ -1435,7 +1431,7 @@ export default {
             maxLight: 'En parlak blok ışığı',
             maxSeconds: 'En uzun süre (sn)',
             maxY: 'En yüksek blok',
-            method: 'Gösterim',
+            method: 'Gecenin dünyasında gösterim',
             min: 'En az',
             minInterval: 'En kısa ara (sn)',
             minSeconds: 'En kısa efekt (sn)',
@@ -1483,7 +1479,7 @@ export default {
             rain: 'Yağmur',
             random: 'Rastgele',
             range: 'Menzil (blok)',
-            reach: 'Duyurulacak yer',
+            elsewhereMethod: 'Diğer dünyalarda gösterim',
             reasons: 'Doğma nedenleri',
             redDawn: 'Geceden sonra kızıl gün doğumu',
             required: 'Zorunlu (reddeden oyuncuların bağlantısı kesilir)',

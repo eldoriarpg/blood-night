@@ -322,14 +322,9 @@ export type PieceKind = 'ITEM' | 'BLOCK' | 'SPAN';
 export type Severity = 'ERROR' | 'WARNING';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Reach".
- */
-export type Reach = 'SERVER' | 'WORLD' | 'NONE';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Method".
  */
-export type Method = 'CHAT' | 'TITLE' | 'SUBTITLE' | 'ACTION_BAR';
+export type Method = 'CHAT' | 'TITLE' | 'SUBTITLE' | 'ACTION_BAR' | 'NONE';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Language".
@@ -931,8 +926,8 @@ export interface ConfigFile {
  */
 export interface Announcements {
   prefix?: string;
-  reach?: Reach & string;
   method?: Method & string;
+  elsewhereMethod?: Method & string;
   personalMethod?: Method & string;
   fallbackLocale?: Language & string;
   money?: boolean;
@@ -1924,6 +1919,7 @@ export const LengthMode = {
 export const Method = {
     ACTION_BAR: "ACTION_BAR",
     CHAT: "CHAT",
+    NONE: "NONE",
     SUBTITLE: "SUBTITLE",
     TITLE: "TITLE",
 } as const;
@@ -1982,12 +1978,6 @@ export const RaidChange = {
     ALLOW: "ALLOW",
     DENY: "DENY",
     UNCHANGED: "UNCHANGED",
-} as const;
-
-export const Reach = {
-    NONE: "NONE",
-    SERVER: "SERVER",
-    WORLD: "WORLD",
 } as const;
 
 export const Scare = {

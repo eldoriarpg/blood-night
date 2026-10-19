@@ -19,8 +19,8 @@ Messages are set for the whole server in `config.yml`:
 ```yaml
 announcements:
   prefix: "<dark_red>[<red>BN</red>]</dark_red> "
-  reach: SERVER
-  method: SUBTITLE
+  method: TITLE
+  elsewhereMethod: CHAT
   personalMethod: ACTION_BAR
   fallbackLocale: en_US
   money: true
@@ -29,8 +29,8 @@ announcements:
 | Key | What it does |
 |---|---|
 | `prefix` | Text in front of every chat message of BloodNight, command answers included. It uses [MiniMessage](https://docs.advntr.dev/minimessage/format.html). Titles and the action bar have no prefix. |
-| `reach` | Who hears that a blood night begins or ends: `SERVER` (everyone), `WORLD` (players in that world) or `NONE`. |
-| `method` | How they see it: `CHAT`, `TITLE`, `SUBTITLE` or `ACTION_BAR`. |
+| `method` | How players in the world of the blood night see that it begins or ends: `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR` or `NONE`. |
+| `elsewhereMethod` | How players in all other worlds see it. `NONE` keeps it to the world of the night. |
 | `personalMethod` | How a single player sees messages meant for them, like "you entered a world with a blood night". |
 | `fallbackLocale` | The language for players whose language BloodNight does not have: `en_US`, `de_DE`, `es_ES`, `fr_FR`, `ms_MY`, `tr_TR` or `zh_CN`. |
 | `money` | Whether players see how much [money](../mobs/loot-tables.md#money) a kill paid them. They see it the `personalMethod` way. |

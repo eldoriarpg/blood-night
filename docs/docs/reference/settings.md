@@ -24,9 +24,9 @@ Settings for the whole server.
 | Key | Type | Default |
 |---|---|---|
 | `announcements.prefix` | text | `<dark_red>[<red>BN</red>]</dark_red>` |
-| `announcements.reach` | `SERVER`, `WORLD`, `NONE` | `SERVER` |
-| `announcements.method` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR` | `SUBTITLE` |
-| `announcements.personalMethod` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR` | `ACTION_BAR` |
+| `announcements.method` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR`, `NONE` | `TITLE` |
+| `announcements.elsewhereMethod` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR`, `NONE` | `CHAT` |
+| `announcements.personalMethod` | `CHAT`, `TITLE`, `SUBTITLE`, `ACTION_BAR`, `NONE` | `ACTION_BAR` |
 | `announcements.fallbackLocale` | `en_US`, `de_DE`, `es_ES`, `fr_FR`, `ms_MY`, `tr_TR`, `zh_CN` | `en_US` |
 | `announcements.money` | true or false | `true` |
 | `editor.url` | text | `https://bloodnight.eldoria.de` |
@@ -63,12 +63,12 @@ The whole file with its defaults:
 
 ```yaml
 announcements:
+  elsewhereMethod: CHAT
   fallbackLocale: en_US
-  method: SUBTITLE
+  method: TITLE
   money: true
   personalMethod: ACTION_BAR
   prefix: "<dark_red>[<red>BN</red>]</dark_red> "
-  reach: SERVER
 editor:
   timeoutSeconds: 30
   url: https://bloodnight.eldoria.de

@@ -811,6 +811,7 @@ export default {
                 TITLE: 'Titre',
                 SUBTITLE: 'Sous-titre',
                 ACTION_BAR: 'Barre d\'action',
+                NONE: 'Aucun',
             },
             NightEnd: {
                 REMOVE: 'Retirer',
@@ -836,11 +837,6 @@ export default {
                 NOTCHED_10: '10 segments',
                 NOTCHED_12: '12 segments',
                 NOTCHED_20: '20 segments',
-            },
-            Reach: {
-                SERVER: 'Tout le serveur',
-                WORLD: 'Ce monde',
-                NONE: 'Personne',
             },
             Source: {
                 MASTER: 'Volume général',
@@ -1440,7 +1436,7 @@ export default {
             maxLight: 'Lumière de bloc maximale',
             maxSeconds: 'Durée la plus longue (s)',
             maxY: 'Bloc le plus haut',
-            method: 'Affiché comme',
+            method: 'Affiché dans le monde de la nuit comme',
             min: 'Minimum',
             minInterval: 'Pause la plus courte (s)',
             minSeconds: 'Effet le plus court (s)',
@@ -1488,7 +1484,7 @@ export default {
             rain: 'Pluie',
             random: 'Aléatoire',
             range: 'Portée (blocs)',
-            reach: 'Annoncer à',
+            elsewhereMethod: 'Affiché dans les autres mondes comme',
             reasons: 'Raisons d\'apparition',
             redDawn: 'Lever de soleil rouge après la nuit',
             required: 'Obligatoire (les joueurs qui refusent sont déconnectés)',

@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.legacy;
 
 import de.eldoria.bloodnight.configuration.ConfigFile;
+import de.eldoria.bloodnight.configuration.server.Announcements;
 import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.configuration.world.mobsettings.AttributeOverride;
 import de.eldoria.bloodnight.configuration.world.nightselection.NightSelectionType;
@@ -100,6 +101,10 @@ class LegacyConverterTest {
         assertEquals(NightSelectionType.CURVE, world.nightSelection().type());
         assertFalse(result.worlds().get("world_nether").enabled());
         assertEquals("<red>[BN]", result.main().announcements().prefix());
+        assertEquals(
+                Announcements.Method.SUBTITLE, result.main().announcements().method());
+        assertEquals(
+                Announcements.Method.SUBTITLE, result.main().announcements().elsewhereMethod());
     }
 
     @Test

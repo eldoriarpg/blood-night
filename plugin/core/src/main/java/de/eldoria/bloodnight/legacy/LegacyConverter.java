@@ -144,8 +144,16 @@ public final class LegacyConverter {
     private ConfigFile server(ConfigFile main, Map<String, Object> general) {
         ObjectNode tree = MAPPER.valueToTree(main);
         copy(general, "prefix", tree, "announcements.prefix");
-        copy(general, "broadcastLevel", tree, "announcements.reach");
         copy(general, "broadcastMethod", tree, "announcements.method");
+        copy(general, "broadcastMethod", tree, "announcements.elsewhereMethod");
+        switch (String.valueOf(general.get("broadcastLevel"))) {
+            case "WORLD" -> set(tree, "announcements.elsewhereMethod", MAPPER.valueToTree("NONE"));
+            case "NONE" -> {
+                set(tree, "announcements.method", MAPPER.valueToTree("NONE"));
+                set(tree, "announcements.elsewhereMethod", MAPPER.valueToTree("NONE"));
+            }
+            default -> {}
+        }
         copy(general, "messageMethod", tree, "announcements.personalMethod");
         copy(general, "language", tree, "announcements.fallbackLocale");
         nameLanguage = String.valueOf(general.getOrDefault("language", MobName.ENGLISH))
