@@ -27,7 +27,7 @@ public final class LynaSource implements ReleaseSource {
     /**
      * Lyna's product id of BloodNight.
      */
-    public static final int BLOODNIGHT = 4;
+    public static final int BLOODNIGHT = 29;
 
     private static final URI HOST = URI.create("https://lyna.eldoria.de/");
     private static final JsonMapper MAPPER = JsonMapper.builder().build();
