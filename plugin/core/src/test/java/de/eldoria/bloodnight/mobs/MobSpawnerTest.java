@@ -7,9 +7,9 @@ package de.eldoria.bloodnight.mobs;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import de.eldoria.bloodnight.Mobs;
-import de.eldoria.bloodnight.api.event.CustomMobNightEndEvent;
-import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
-import de.eldoria.bloodnight.api.event.NightEndAction;
+import de.eldoria.bloodnight.api.event.mob.CustomMobNightEndEvent;
+import de.eldoria.bloodnight.api.event.mob.CustomMobSpawnEvent;
+import de.eldoria.bloodnight.api.event.mob.NightEndAction;
 import de.eldoria.bloodnight.configuration.elements.ForeignMobSettings;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.NightSelection;

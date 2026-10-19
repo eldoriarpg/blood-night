@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.api.MobContext;
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MobContext;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.Bukkit;

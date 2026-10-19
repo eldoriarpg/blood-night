@@ -6,7 +6,13 @@
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.ClassName;
-import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
+import de.eldoria.bloodnight.graph.trigger.MobBindings;
+import de.eldoria.bloodnight.graph.trigger.Trigger;
+import de.eldoria.bloodnight.graph.trigger.TriggerDispatcher;
+import de.eldoria.bloodnight.graph.trigger.Triggers;
+import de.eldoria.bloodnight.graph.types.BukkitRules;
+import de.eldoria.bloodnight.graph.types.RegistryCodec;
 import de.eldoria.graph.compiler.CompiledGraph;
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.GraphCompiler;

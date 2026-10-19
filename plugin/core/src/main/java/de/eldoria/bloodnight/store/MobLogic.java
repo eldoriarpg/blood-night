@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.store;
 
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.editor.EditorPayload;
 import de.eldoria.bloodnight.mob.CustomMob;
 import tools.jackson.databind.JsonNode;

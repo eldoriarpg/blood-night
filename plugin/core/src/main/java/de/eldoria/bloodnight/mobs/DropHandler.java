@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.api.event.BloodNightLootEvent;
+import de.eldoria.bloodnight.api.event.mob.BloodNightLootEvent;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.items.ItemTexts;

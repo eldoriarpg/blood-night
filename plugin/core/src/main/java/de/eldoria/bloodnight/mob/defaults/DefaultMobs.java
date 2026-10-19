@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.mob.defaults;
 
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.graph.BloodNightNodes;
-import de.eldoria.bloodnight.graph.runtime.ProjectileKind;
+import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
 import de.eldoria.bloodnight.loot.MobLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.meta.Attributes;

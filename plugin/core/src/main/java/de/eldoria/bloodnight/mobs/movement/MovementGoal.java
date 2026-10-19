@@ -8,7 +8,7 @@ package de.eldoria.bloodnight.mobs.movement;
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.mob.meta.Movement;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.GameMode;

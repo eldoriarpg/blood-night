@@ -13,7 +13,7 @@ import de.eldoria.bloodnight.behaviour.BytecodeCache;
 import de.eldoria.bloodnight.configuration.elements.world.MobSettings;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
-import de.eldoria.bloodnight.graph.TriggerDispatcher;
+import de.eldoria.bloodnight.graph.trigger.TriggerDispatcher;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mobs.movement.Steering;

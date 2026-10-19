@@ -7,7 +7,7 @@ package de.eldoria.bloodnight.mob.meta;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;

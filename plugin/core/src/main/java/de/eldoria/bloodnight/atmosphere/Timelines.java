@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
-import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
-import de.eldoria.bloodnight.api.event.BloodNightEndEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
 import de.eldoria.bloodnight.night.BloodNights;
 import org.bukkit.Server;
 import org.bukkit.World;

@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.graph.runtime.Carrying;
+import de.eldoria.bloodnight.graph.runtime.world.Carrying;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

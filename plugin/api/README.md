@@ -19,36 +19,37 @@ The module is small on purpose. It contains no logic, only the contract between 
 only the triggers its graph uses. Each living mob gets its own instance, which is why state such as cooldowns is per
 mob.
 
-Both packages are `@NullMarked` (JSpecify): everything is non-null unless annotated `@Nullable`.
+All packages are `@NullMarked` (JSpecify): everything is non-null unless annotated `@Nullable`.
 
 ## Layout
 
-- `de.eldoria.bloodnight.api.CompiledBehaviour` (internal, for generated code): behaviour of a custom mob. Lifecycle methods (`onSpawn`,
-  `onNightEnd`, `onTick`, `onDebug`) and event methods that receive the Bukkit event (`onDamage`,
+- `de.eldoria.bloodnight.api.internal.CompiledBehaviour` (for generated code): behaviour of a custom mob. Lifecycle
+  methods (`onSpawn`, `onNightEnd`, `onTick`, `onDebug`) and event methods that receive the Bukkit event (`onDamage`,
   `onDamageByEntity`, `onDamageByPlayer`, `onHit`, `onKill`, `onDeath`, `onTeleport`,
   `onTargetChange`, `onProjectileShoot`, `onProjectileHit`, `onExplosionPrime`, `onExplode`, `onExtensionDamage`,
   `onExtensionDeath`).
-- `de.eldoria.bloodnight.api.MobContext` (internal, for generated code): what a behaviour knows about its mob: the entity, its extension (the entity
-  riding or carrying it, if any) and `item(id)`, a copy of an item from the plugin's item registry.
+- `de.eldoria.bloodnight.api.internal.MobContext` (for generated code): what a behaviour knows about its mob: the
+  entity, its extension (the entity riding or carrying it, if any) and `item(id)`, a copy of an item from the plugin's
+  item registry.
 - `de.eldoria.bloodnight.api.BloodNightService`: whether and which blood nights run (`RunningNight`), the next one
   (`NightForecast`), the chance of a coming night, force and cancel; whether an entity is a BloodNight mob, its id,
   and spawning a mob; a mob's details (`MobInfo`: names by language, entity type, store, weight) and its weight in a
   world; whether and how a world has blood nights (`WorldInfo`). Registered with Paper's services manager;
   `BloodNightProvider.get()` finds it from anywhere.
-- `de.eldoria.bloodnight.api.event.BloodNightBeginEvent`: a blood night is about to begin in a world. Cancellable;
+- `de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent`: a blood night is about to begin in a world. Cancellable;
   cancelling it keeps the night an ordinary one.
-- `de.eldoria.bloodnight.api.event.BloodNightEndEvent`: a blood night has ended in a world; `reason()` tells why
+- `de.eldoria.bloodnight.api.event.night.BloodNightEndEvent`: a blood night has ended in a world; `reason()` tells why
   (`TIME`, `CANCELLED`, `DISABLED`, `RELEASED` after a dragon fight, `SHUTDOWN`).
-- `de.eldoria.bloodnight.api.event.CustomMobSpawnEvent`: a spawning entity is about to become a BloodNight mob.
-  Cancellable; cancelling it keeps the entity as it is.
-- `de.eldoria.bloodnight.api.event.CustomMobDeathEvent`: a BloodNight mob died; its drops can still be changed.
-- `de.eldoria.bloodnight.api.event.CustomMobNightEndEvent`: a BloodNight mob's night is over and it is about to go or
-  turn ordinary. Cancellable; `action(...)` changes what happens (`REMOVE`, `REVERT`, `KEEP`).
+- `de.eldoria.bloodnight.api.event.mob.CustomMobSpawnEvent`: a spawning entity is about to become a BloodNight
+  mob. Cancellable; cancelling it keeps the entity as it is.
+- `de.eldoria.bloodnight.api.event.mob.CustomMobDeathEvent`: a BloodNight mob died; its drops can still be changed.
+- `de.eldoria.bloodnight.api.event.mob.CustomMobNightEndEvent`: a BloodNight mob's night is over and it is about to
+  go or turn ordinary. Cancellable; `action(...)` changes what happens (`REMOVE`, `REVERT`, `KEEP`).
 - `de.eldoria.bloodnight.api.event.DeathActionEvent`: a death is about to cause lightning, thunder or a shockwave.
   Cancellable, per action.
 - `de.eldoria.bloodnight.api.event.BloodNightSettingsChangeEvent`: the settings changed and are in use; `cause()`
   tells why (`RELOAD`, `EDITOR`, `COMMAND`, `STORE`, `CONVERT`).
-- `MovementPreset` (internal, for generated code): how a mob moves on top of its vanilla AI.
+- `de.eldoria.bloodnight.api.internal.MovementPreset` (for generated code): how a mob moves on top of its vanilla AI.
 
 Nights carry their number, `night()`: the day the night begins on, or the period for worlds without a day cycle (the
 Nether and the End have timed blood nights). The night events are world events, so `getWorld()` names the world.

@@ -7,7 +7,7 @@ package de.eldoria.bloodnight.mobs.movement;
 
 import com.destroystokyo.paper.entity.ai.MobGoals;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.mob.meta.Movement;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;

@@ -6,9 +6,17 @@
 package de.eldoria.bloodnight.graph;
 
 import com.palantir.javapoet.CodeBlock;
-import de.eldoria.bloodnight.api.CompiledBehaviour;
-import de.eldoria.bloodnight.api.MobContext;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
+import de.eldoria.bloodnight.api.internal.MobContext;
 import de.eldoria.bloodnight.graph.runtime.BukkitRuntime;
+import de.eldoria.bloodnight.graph.runtime.FoliaGuards;
+import de.eldoria.bloodnight.graph.trigger.KillVictim;
+import de.eldoria.bloodnight.graph.trigger.MobBindings;
+import de.eldoria.bloodnight.graph.trigger.Trigger;
+import de.eldoria.bloodnight.graph.trigger.Triggers;
+import de.eldoria.bloodnight.graph.types.BukkitRules;
+import de.eldoria.bloodnight.graph.types.BukkitTypes;
+import de.eldoria.bloodnight.graph.types.ParticleData;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.platform.GraphPlatform;

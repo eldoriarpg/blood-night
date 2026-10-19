@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs.movement;
 
-import de.eldoria.bloodnight.api.MovementPreset;
+import de.eldoria.bloodnight.api.internal.MovementPreset;
 import de.eldoria.bloodnight.mob.meta.Movement;
 import org.junit.jupiter.api.Test;
 

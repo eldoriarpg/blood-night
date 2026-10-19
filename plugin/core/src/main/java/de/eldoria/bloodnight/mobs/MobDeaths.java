@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.api.event.CustomMobDeathEvent;
+import de.eldoria.bloodnight.api.event.mob.CustomMobDeathEvent;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;

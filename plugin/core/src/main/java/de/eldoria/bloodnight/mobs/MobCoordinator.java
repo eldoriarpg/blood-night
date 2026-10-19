@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.api.CompiledBehaviour;
-import de.eldoria.bloodnight.api.event.CustomMobNightEndEvent;
-import de.eldoria.bloodnight.api.event.NightEndAction;
+import de.eldoria.bloodnight.api.event.mob.CustomMobNightEndEvent;
+import de.eldoria.bloodnight.api.event.mob.NightEndAction;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.mob.CustomMob;

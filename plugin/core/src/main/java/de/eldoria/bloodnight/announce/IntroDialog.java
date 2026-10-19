@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.announce;
 
-import de.eldoria.bloodnight.api.event.BloodNightBeginEvent;
+import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
 import de.eldoria.bloodnight.configuration.elements.world.AnnouncementSettings;
 import de.eldoria.bloodnight.night.BloodNights;
 import io.papermc.paper.dialog.Dialog;

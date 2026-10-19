@@ -5,7 +5,9 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
-import de.eldoria.bloodnight.api.MobContext;
+import de.eldoria.bloodnight.api.internal.MobContext;
+import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
+import de.eldoria.bloodnight.graph.runtime.world.Reach;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;

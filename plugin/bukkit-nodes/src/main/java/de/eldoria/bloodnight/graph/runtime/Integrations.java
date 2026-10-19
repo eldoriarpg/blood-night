@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
-import de.eldoria.bloodnight.api.MobContext;
+import de.eldoria.bloodnight.api.internal.MobContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;

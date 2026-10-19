@@ -39,7 +39,7 @@ import de.eldoria.bloodnight.enchantments.NightGear;
 import de.eldoria.bloodnight.graph.BloodNightPlatform;
 import de.eldoria.bloodnight.graph.CompileClasspath;
 import de.eldoria.bloodnight.graph.PluginNodes;
-import de.eldoria.bloodnight.graph.TriggerDispatcher;
+import de.eldoria.bloodnight.graph.trigger.TriggerDispatcher;
 import de.eldoria.bloodnight.integration.placeholders.CommandText;
 import de.eldoria.bloodnight.integration.placeholders.MiniExpansion;
 import de.eldoria.bloodnight.integration.placeholders.PapiCommandText;

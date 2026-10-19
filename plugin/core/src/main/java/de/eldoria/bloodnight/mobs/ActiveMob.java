@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
 import de.eldoria.bloodnight.mob.CustomMob;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

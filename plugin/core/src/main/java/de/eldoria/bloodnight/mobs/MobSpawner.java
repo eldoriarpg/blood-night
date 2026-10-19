@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.mobs;
 
-import de.eldoria.bloodnight.api.event.CustomMobSpawnEvent;
+import de.eldoria.bloodnight.api.event.mob.CustomMobSpawnEvent;
 import de.eldoria.bloodnight.configuration.elements.WorldSettings;
 import de.eldoria.bloodnight.configuration.elements.world.mobsettings.MobSpawning;
 import de.eldoria.bloodnight.graph.runtime.Integrations;

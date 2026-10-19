@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.behaviour;
 
-import de.eldoria.bloodnight.api.CompiledBehaviour;
+import de.eldoria.bloodnight.api.internal.CompiledBehaviour;
 import de.eldoria.graph.compiler.CompiledGraph;
 import de.eldoria.graph.compiler.macro.MacroLibrary;
 import de.eldoria.graph.compiler.validate.GraphProblem;
