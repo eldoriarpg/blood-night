@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.announce.night.NightBars;
 import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
 import de.eldoria.bloodnight.configuration.server.Announcements;
+import de.eldoria.bloodnight.configuration.server.Announcements.Method;
 import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.configuration.world.announcement.NightEffect;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
@@ -33,8 +34,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +41,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Lets players know about blood nights: announces begin and end, shows a boss bar while one runs, applies the night
+ * Lets players know about blood nights: announces begin and end (one way to the players in the world, another to
+ * everyone else), shows a boss bar while one runs, applies the night
  * effect at begin and end, plays the begin, end and ambience sounds, warns players entering or leaving a world with a
  * running blood night and tells sleepers that a blood night cannot be slept through.
  * <p>
@@ -227,15 +227,10 @@ public final class Announcer implements Listener {
 
     private void broadcast(World world, String key) {
         Announcements config = announcements.get();
-        Collection<? extends Player> audience =
-                switch (config.reach()) {
-                    case SERVER -> server.getOnlinePlayers();
-                    case WORLD -> world.getPlayers();
-                    case NONE -> List.of();
-                };
         var worldName = Placeholder.component("world", names.apply(world));
-        for (Player player : audience) {
-            tasks.entityNow(player, () -> Delivery.send(player, config.method(), key, worldName));
+        for (Player player : server.getOnlinePlayers()) {
+            Method method = player.getWorld().equals(world) ? config.method() : config.elsewhereMethod();
+            if (method != Method.NONE) tasks.entityNow(player, () -> Delivery.send(player, method, key, worldName));
         }
     }
 

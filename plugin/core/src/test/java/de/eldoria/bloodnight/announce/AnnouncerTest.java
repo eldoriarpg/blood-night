@@ -61,7 +61,7 @@ class AnnouncerTest {
         NightSelector selector = new NightSelector(ignored -> always, ignored -> TIMES, Clock.systemUTC(), () -> 20);
         nights = new BloodNights(
                 selector, candidate -> candidate.equals(world), server.getPluginManager(), Logger.getLogger("test"));
-        reach("SERVER");
+        methods("CHAT", "CHAT");
         var plugin = MockBukkit.createMockPlugin();
         Texts.create(plugin, "<dark_red>[BN]</dark_red>", "en_US");
         announcer = new Announcer(
@@ -81,9 +81,10 @@ class AnnouncerTest {
         MockBukkit.unmock();
     }
 
-    private void reach(String reach) {
+    private void methods(String method, String elsewhere) {
         announcements = MAPPER.readValue(
-                "{\"reach\":\"%s\",\"method\":\"CHAT\",\"personalMethod\":\"ACTION_BAR\"}".formatted(reach),
+                "{\"method\":\"%s\",\"elsewhereMethod\":\"%s\",\"personalMethod\":\"ACTION_BAR\"}"
+                        .formatted(method, elsewhere),
                 Announcements.class);
     }
 
@@ -123,8 +124,18 @@ class AnnouncerTest {
     }
 
     @Test
-    void worldReachSkipsOtherWorlds() {
-        reach("WORLD");
+    void otherWorldsHearItTheirOwnWay() {
+        methods("TITLE", "CHAT");
+        PlayerMock inside = player(world);
+        PlayerMock outside = player(other);
+        at(13_000);
+        assertNull(inside.nextComponentMessage());
+        assertEquals("[BN] A blood night has begun in world.", plain(outside.nextComponentMessage()));
+    }
+
+    @Test
+    void otherWorldsCanHearNothing() {
+        methods("CHAT", "NONE");
         PlayerMock inside = player(world);
         PlayerMock outside = player(other);
         at(13_000);
@@ -135,7 +146,7 @@ class AnnouncerTest {
 
     @Test
     void playersChangingWorldsAreWarned() {
-        reach("NONE");
+        methods("NONE", "NONE");
         PlayerMock player = player(other);
         at(13_000);
         player.teleport(world.getSpawnLocation());

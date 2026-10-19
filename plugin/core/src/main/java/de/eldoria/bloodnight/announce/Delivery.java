@@ -12,7 +12,8 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 
 /**
- * Shows a text the way an {@link Method} says; only chat messages carry the prefix.
+ * Shows a text the way an {@link Method} says, or not at all for {@link Method#NONE}; only chat messages carry the
+ * prefix.
  */
 public final class Delivery {
     private Delivery() {}
@@ -30,6 +31,7 @@ public final class Delivery {
             case TITLE -> sender.sendTitle(player, key, "", Title.DEFAULT_TIMES, arguments);
             case SUBTITLE -> sender.sendTitle(player, "", key, Title.DEFAULT_TIMES, arguments);
             case ACTION_BAR -> sender.sendActionBar(player, key, arguments);
+            case NONE -> {}
         }
     }
 }

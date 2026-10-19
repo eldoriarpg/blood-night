@@ -811,6 +811,7 @@ export default {
                 TITLE: '标题',
                 SUBTITLE: '副标题',
                 ACTION_BAR: '动作栏',
+                NONE: '不显示',
             },
             NightEnd: {
                 REMOVE: '移除',
@@ -836,11 +837,6 @@ export default {
                 NOTCHED_10: '10 段',
                 NOTCHED_12: '12 段',
                 NOTCHED_20: '20 段',
-            },
-            Reach: {
-                SERVER: '整个服务器',
-                WORLD: '这个世界',
-                NONE: '无人',
             },
             Source: {
                 MASTER: '主音量',
@@ -1431,7 +1427,7 @@ export default {
             maxLight: '最亮的方块光照',
             maxSeconds: '最长时长（秒）',
             maxY: '最高方块',
-            method: '显示方式',
+            method: '在血夜所在世界的显示方式',
             min: '最小值',
             minInterval: '最短间隔（秒）',
             minSeconds: '最短效果（秒）',
@@ -1479,7 +1475,7 @@ export default {
             rain: '雨',
             random: '随机',
             range: '范围（格）',
-            reach: '公告对象',
+            elsewhereMethod: '在其他世界的显示方式',
             reasons: '生成原因',
             redDawn: '夜晚过后的红色日出',
             required: '必需（拒绝的玩家会被断开连接）',

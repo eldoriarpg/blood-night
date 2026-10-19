@@ -811,6 +811,7 @@ export default {
                 TITLE: 'Tajuk',
                 SUBTITLE: 'Sari kata',
                 ACTION_BAR: 'Bar tindakan',
+                NONE: 'Tiada',
             },
             NightEnd: {
                 REMOVE: 'Buang',
@@ -836,11 +837,6 @@ export default {
                 NOTCHED_10: '10 segmen',
                 NOTCHED_12: '12 segmen',
                 NOTCHED_20: '20 segmen',
-            },
-            Reach: {
-                SERVER: 'Seluruh pelayan',
-                WORLD: 'Dunia ini',
-                NONE: 'Tiada sesiapa',
             },
             Source: {
                 MASTER: 'Kelantangan utama',
@@ -1440,7 +1436,7 @@ export default {
             maxLight: 'Cahaya blok paling terang',
             maxSeconds: 'Tempoh paling lama (s)',
             maxY: 'Blok paling tinggi',
-            method: 'Ditunjukkan sebagai',
+            method: 'Dipaparkan di dunia malam itu sebagai',
             min: 'Minimum',
             minInterval: 'Jeda paling singkat (s)',
             minSeconds: 'Kesan paling singkat (s)',
@@ -1488,7 +1484,7 @@ export default {
             rain: 'Hujan',
             random: 'Rawak',
             range: 'Jarak (blok)',
-            reach: 'Umumkan kepada',
+            elsewhereMethod: 'Dipaparkan di dunia lain sebagai',
             reasons: 'Sebab kemunculan',
             redDawn: 'Matahari terbit merah selepas malam',
             required: 'Wajib (pemain yang menolak akan diputuskan sambungan)',

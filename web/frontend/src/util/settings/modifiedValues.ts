@@ -74,11 +74,10 @@ const SHOW_RULES: readonly ShowRule[] = [
     {fields: ['name', 'healthModifier', 'health', 'damageModifier', 'damage', 'changes'], reads: ['mythicType'], shows: read => blank(read('mythicType'))},
     {fields: ['mythicLevel'], reads: ['mythicType'], shows: read => !blank(read('mythicType'))},
     {fields: ['entityType', 'equipment'], reads: ['type', 'entityType'], shows: read => read('type') !== 'NONE'},
-    {fields: ['method'], reads: ['reach'], shows: read => read('reach') !== 'NONE'},
     {
         fields: ['prefix'],
-        reads: ['reach', 'method', 'personalMethod'],
-        shows: read => (read('reach') !== 'NONE' && read('method') === 'CHAT') || read('personalMethod') === 'CHAT',
+        reads: ['method', 'elsewhereMethod', 'personalMethod'],
+        shows: read => ['method', 'elsewhereMethod', 'personalMethod'].some(key => read(key) === 'CHAT'),
     },
     {fields: ['url', 'required', 'prompt'], reads: ['offer'], shows: read => read('offer') !== false},
     {fields: ['markerKeys'], reads: ['wrap', 'rules'], shows: read => !(read('wrap') === true && read('rules') === true)},

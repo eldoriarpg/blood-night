@@ -79,17 +79,17 @@
           "type" : "string",
           "default" : "<dark_red>[<red>BN</red>]</dark_red> "
         },
-        "reach" : {
-          "allOf" : [ {
-            "$ref" : "#/$defs/Reach"
-          } ],
-          "default" : "SERVER"
-        },
         "method" : {
           "allOf" : [ {
             "$ref" : "#/$defs/Method"
           } ],
-          "default" : "SUBTITLE"
+          "default" : "TITLE"
+        },
+        "elsewhereMethod" : {
+          "allOf" : [ {
+            "$ref" : "#/$defs/Method"
+          } ],
+          "default" : "CHAT"
         },
         "personalMethod" : {
           "allOf" : [ {
@@ -386,12 +386,12 @@
             "$ref" : "#/$defs/Announcements"
           } ],
           "default" : {
+            "elsewhereMethod" : "CHAT",
             "fallbackLocale" : "en_US",
-            "method" : "SUBTITLE",
+            "method" : "TITLE",
             "money" : true,
             "personalMethod" : "ACTION_BAR",
-            "prefix" : "<dark_red>[<red>BN</red>]</dark_red> ",
-            "reach" : "SERVER"
+            "prefix" : "<dark_red>[<red>BN</red>]</dark_red> "
           }
         },
         "editor" : {
@@ -1455,7 +1455,7 @@
     },
     "Method" : {
       "type" : "string",
-      "enum" : [ "CHAT", "TITLE", "SUBTITLE", "ACTION_BAR" ]
+      "enum" : [ "CHAT", "TITLE", "SUBTITLE", "ACTION_BAR", "NONE" ]
     },
     "MobLoot" : {
       "type" : "object",
@@ -2364,10 +2364,6 @@
           "default" : 60
         }
       }
-    },
-    "Reach" : {
-      "type" : "string",
-      "enum" : [ "SERVER", "WORLD", "NONE" ]
     },
     "ResourcePackSettings" : {
       "type" : "object",
