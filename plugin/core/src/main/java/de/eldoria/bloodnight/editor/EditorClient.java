@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.editor;
 
-import de.eldoria.bloodnight.configuration.elements.EditorSettings;
+import de.eldoria.bloodnight.configuration.server.EditorSettings;
 import de.eldoria.bloodnight.web.api.editor.EditorArea;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
 import de.eldoria.bloodnight.web.api.editor.SessionView;

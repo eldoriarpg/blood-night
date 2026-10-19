@@ -5,9 +5,9 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
-import de.eldoria.bloodnight.configuration.elements.world.AtmosphereSettings;
-import de.eldoria.bloodnight.configuration.elements.world.atmosphere.AmbientParticle;
-import de.eldoria.bloodnight.configuration.elements.world.atmosphere.Scare;
+import de.eldoria.bloodnight.configuration.world.atmosphere.AmbientParticle;
+import de.eldoria.bloodnight.configuration.world.atmosphere.Scare;
+import de.eldoria.bloodnight.configuration.world.presentation.AtmosphereSettings;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;

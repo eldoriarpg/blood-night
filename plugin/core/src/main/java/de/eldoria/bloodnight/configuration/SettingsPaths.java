@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.configuration;
 
-import de.eldoria.bloodnight.editor.EditorPayload;
+import de.eldoria.bloodnight.editor.payload.EditorPayload;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;

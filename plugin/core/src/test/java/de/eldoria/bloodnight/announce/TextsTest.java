@@ -89,8 +89,9 @@ class TextsTest {
     void everyCommandTextTheCommandsUseExists() throws IOException {
         Pattern used = Pattern.compile("Replies\\.(?:send|text)\\(\\s*sender,\\s*\"([a-z_.]+)\"(?!\\s*\\+)");
         Set<String> english = bundle("en_US").stringPropertyNames();
-        try (Stream<Path> files = Files.list(Path.of("src/main/java/de/eldoria/bloodnight/command"))) {
-            for (Path file : files.toList()) {
+        try (Stream<Path> files = Files.walk(Path.of("src/main/java/de/eldoria/bloodnight/command"))) {
+            for (Path file :
+                    files.filter(path -> path.toString().endsWith(".java")).toList()) {
                 Matcher matcher = used.matcher(Files.readString(file));
                 while (matcher.find()) {
                     assertTrue(

@@ -5,7 +5,9 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
-import de.eldoria.bloodnight.configuration.elements.world.AtmosphereSettings;
+import de.eldoria.bloodnight.atmosphere.timeline.TimelineGroup;
+import de.eldoria.bloodnight.atmosphere.timeline.Timelines;
+import de.eldoria.bloodnight.configuration.world.presentation.AtmosphereSettings;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Location;

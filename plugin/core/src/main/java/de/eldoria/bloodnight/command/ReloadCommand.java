@@ -19,15 +19,15 @@ import static de.eldoria.bloodnight.command.Replies.arg;
  */
 @Subcommand("reload")
 @Permission("bloodnight.command.reload")
-final class ReloadCommand {
+public final class ReloadCommand {
     private final BloodNight plugin;
 
-    ReloadCommand(BloodNight plugin) {
+    public ReloadCommand(BloodNight plugin) {
         this.plugin = plugin;
     }
 
     @Executes
-    void reload(CommandSender sender) {
+    public void reload(CommandSender sender) {
         plugin.tasks().globalNow(() -> reload(plugin, sender, SettingsChangeCause.RELOAD));
     }
 
@@ -39,7 +39,7 @@ final class ReloadCommand {
      * @param sender who hears about it
      * @param cause  what made the settings change
      */
-    static void reload(BloodNight plugin, CommandSender sender, SettingsChangeCause cause) {
+    public static void reload(BloodNight plugin, CommandSender sender, SettingsChangeCause cause) {
         plugin.configuration().reload();
         plugin.configuration().mobs();
         plugin.configuration().items();

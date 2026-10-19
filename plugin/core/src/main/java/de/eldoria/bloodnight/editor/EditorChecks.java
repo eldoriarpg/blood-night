@@ -5,13 +5,14 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import de.eldoria.bloodnight.editor.payload.SettingsPayload;
 import de.eldoria.bloodnight.loot.LootEntry;
 import de.eldoria.bloodnight.loot.LootTable;
-import de.eldoria.bloodnight.loot.ServerLoot;
-import de.eldoria.bloodnight.loot.WorldLoot;
+import de.eldoria.bloodnight.loot.assign.ServerLoot;
+import de.eldoria.bloodnight.loot.assign.WorldLoot;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.MobTypes;
-import de.eldoria.bloodnight.mob.meta.Equipment;
+import de.eldoria.bloodnight.mob.equipment.Equipment;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.jspecify.annotations.Nullable;

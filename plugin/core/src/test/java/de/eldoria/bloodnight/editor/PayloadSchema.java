@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.editor;
 
+import de.eldoria.bloodnight.editor.payload.EditorPayload;
 import de.eldoria.bloodnight.schema.JsonSchemas;
 import de.eldoria.graph.payload.Catalog;
 import tools.jackson.databind.SerializationFeature;

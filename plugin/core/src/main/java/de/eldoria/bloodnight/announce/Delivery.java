@@ -5,7 +5,7 @@
  */
 package de.eldoria.bloodnight.announce;
 
-import de.eldoria.bloodnight.configuration.elements.Announcements.Method;
+import de.eldoria.bloodnight.configuration.server.Announcements.Method;
 import de.eldoria.eldoutilities.messages.MessageSender;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.title.Title;

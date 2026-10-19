@@ -5,8 +5,8 @@
  */
 package de.eldoria.bloodnight.configuration;
 
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
-import de.eldoria.bloodnight.configuration.elements.world.rules.WeatherChange;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.rules.WeatherChange;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

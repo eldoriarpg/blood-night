@@ -6,13 +6,13 @@
 package de.eldoria.bloodnight.announce;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import de.eldoria.bloodnight.configuration.elements.Announcements;
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
+import de.eldoria.bloodnight.configuration.server.Announcements;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
-import de.eldoria.bloodnight.night.NightSelector;
-import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.selection.NightSelector;
+import de.eldoria.bloodnight.night.selection.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;

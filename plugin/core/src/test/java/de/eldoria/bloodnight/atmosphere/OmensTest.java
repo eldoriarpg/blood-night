@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.atmosphere;
 
+import de.eldoria.bloodnight.atmosphere.timeline.TimelineGroup;
+import de.eldoria.bloodnight.atmosphere.timeline.Timelines;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Wolf;

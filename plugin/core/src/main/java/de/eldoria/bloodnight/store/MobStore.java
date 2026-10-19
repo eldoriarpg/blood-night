@@ -7,7 +7,8 @@ package de.eldoria.bloodnight.store;
 
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
-import de.eldoria.bloodnight.mob.meta.MobOrigin;
+import de.eldoria.bloodnight.mob.MobOrigin;
+import de.eldoria.bloodnight.store.build.MobLogic;
 
 import java.util.ArrayList;
 import java.util.Collection;

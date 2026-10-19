@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.metrics;
 
 import de.eldoria.bloodnight.configuration.Configuration;
-import de.eldoria.bloodnight.configuration.elements.EditorSettings;
+import de.eldoria.bloodnight.configuration.server.EditorSettings;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;

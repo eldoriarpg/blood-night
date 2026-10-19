@@ -7,9 +7,12 @@ package de.eldoria.bloodnight.night;
 
 import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
-import de.eldoria.bloodnight.configuration.elements.world.NightSelection;
-import de.eldoria.bloodnight.configuration.elements.world.NightSettings;
-import de.eldoria.bloodnight.configuration.elements.world.night.TimedNights;
+import de.eldoria.bloodnight.configuration.world.NightSelection;
+import de.eldoria.bloodnight.configuration.world.NightSettings;
+import de.eldoria.bloodnight.configuration.world.night.TimedNights;
+import de.eldoria.bloodnight.night.selection.NightSelector;
+import de.eldoria.bloodnight.night.selection.NightTimes;
+import de.eldoria.bloodnight.night.selection.Prediction;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

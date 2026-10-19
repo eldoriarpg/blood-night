@@ -6,6 +6,8 @@
 package de.eldoria.bloodnight.store;
 
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.store.build.MobLogic;
+import de.eldoria.bloodnight.store.files.MobPackage;
 
 /**
  * A mob a store offers: its package and the hash of its logic ({@link MobLogic}); a changed hash is a new version.

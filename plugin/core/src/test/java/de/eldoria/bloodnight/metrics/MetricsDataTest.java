@@ -6,7 +6,7 @@
 package de.eldoria.bloodnight.metrics;
 
 import de.eldoria.bloodnight.Mobs;
-import de.eldoria.bloodnight.mob.meta.MobOrigin;
+import de.eldoria.bloodnight.mob.MobOrigin;
 import de.eldoria.bloodnight.rules.Settings;
 import de.eldoria.graph.model.Graph;
 import org.junit.jupiter.api.Test;

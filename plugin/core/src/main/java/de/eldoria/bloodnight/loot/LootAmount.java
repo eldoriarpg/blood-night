@@ -5,6 +5,8 @@
  */
 package de.eldoria.bloodnight.loot;
 
+import de.eldoria.bloodnight.loot.roll.Weighted;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;

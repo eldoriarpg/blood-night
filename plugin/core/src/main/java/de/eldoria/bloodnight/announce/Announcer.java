@@ -5,15 +5,17 @@
  */
 package de.eldoria.bloodnight.announce;
 
+import de.eldoria.bloodnight.announce.night.Ambience;
+import de.eldoria.bloodnight.announce.night.NightBars;
 import de.eldoria.bloodnight.api.event.night.BloodNightBeginEvent;
 import de.eldoria.bloodnight.api.event.night.BloodNightEndEvent;
-import de.eldoria.bloodnight.configuration.elements.Announcements;
-import de.eldoria.bloodnight.configuration.elements.WorldSettings;
-import de.eldoria.bloodnight.configuration.elements.world.announcement.NightEffect;
+import de.eldoria.bloodnight.configuration.server.Announcements;
+import de.eldoria.bloodnight.configuration.world.WorldSettings;
+import de.eldoria.bloodnight.configuration.world.announcement.NightEffect;
 import de.eldoria.bloodnight.integration.regions.RegionFlag;
 import de.eldoria.bloodnight.integration.regions.RegionRules;
 import de.eldoria.bloodnight.night.BloodNights;
-import de.eldoria.bloodnight.night.NightTimes;
+import de.eldoria.bloodnight.night.selection.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.Effects;
 import net.kyori.adventure.text.Component;

@@ -7,6 +7,9 @@ package de.eldoria.bloodnight.items;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.eldoria.bloodnight.items.look.ItemAttribute;
+import de.eldoria.bloodnight.items.look.ItemTrim;
+import de.eldoria.bloodnight.items.look.TooltipPart;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
