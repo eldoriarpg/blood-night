@@ -157,6 +157,7 @@ Settings for one world. Every world has its own file.
 | `mobSettings.damageModifier` | number | `2` |
 | `mobSettings.healthMultiplier` | number | `2` |
 | `mobSettings.overrides` | map | `{}` |
+| `mobSettings.withers` | map | `{"blink_wither":1,"blood_wither":1,"grave_wither":1}` |
 | `announcement.bossBar.enabled` | true or false | `true` |
 | `announcement.bossBar.title` | text | `<red><bold><name>` |
 | `announcement.bossBar.color` | `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, `WHITE` | `RED` |
@@ -306,6 +307,10 @@ mobSettings:
       - CUSTOM
     mobs: {}
     spawnPercentage: 50
+  withers:
+    blink_wither: 1
+    blood_wither: 1
+    grave_wither: 1
 announcement:
   bossBar:
     color: RED

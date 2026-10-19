@@ -1157,6 +1157,9 @@ export interface MobSettings {
   overrides?: {
     [k: string]: AttributeOverride;
   };
+  withers?: {
+    [k: string]: number;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

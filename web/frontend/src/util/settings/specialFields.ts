@@ -59,7 +59,7 @@ export function specialField(field: Field, parent: string | undefined): SpecialF
             if (field.key === 'slots') return 'dropWeights'
             if (field.key === 'gameRules') return 'gameRules'
             if (parent === 'spawning' && field.key === 'mobs') return 'worldMobs'
-            if (field.key === 'overrides') return 'mobMap'
+            if (field.key === 'overrides' || (parent === 'mobSettings' && field.key === 'withers')) return 'mobMap'
             return undefined
         case 'texts':
             return field.key === 'tables' && (parent === 'loot' || parent === 'ordinary') ? 'lootTables' : undefined

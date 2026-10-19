@@ -1309,6 +1309,7 @@ export default {
         help: {
             translateMobNames: 'Ad etiketleri bunun için kaynak paketine ihtiyaç duyar. Kapalı: her oyuncu adı paketle ya da paketsiz sunucunun yedek dilinde görür.',
             creakingsWake: 'Gıcırtılar solgun bahçelerdeki gıcırtı kalplerinden çıkar. Normalde yalnızca normal bir gecede avlanırlar. Bu açıkken, gece daha uzun sürse ya da dünyada gece olmasa bile bütün Lanetli Gece boyunca avlanırlar.',
+            withers: 'Lanetli Gece sırasında oyuncuların kurduğu bir wither, ağırlığa göre seçilen bu yaratıklardan biri olur. Boş: wither\'lar normal kalır. Lanetli Geceler dışında wither\'lar hep normaldir.',
             biomes: 'Tek biyomlar ya da bütün gruplar, örneğin bütün okyanus biyomları. Boş, her yer demektir.',
             exactType: 'Açık: bu yaratık yalnızca tam olarak kendi türündeki doğan yaratıkların yerini alır. Kapalı: benzerlerinin de, örneğin hiçbir yaratık onlara dayanmıyorsa bir zombi yaratığı kurumuş zombilerin, boğulmuşların ve zombi köylülerin de yerini alır.',
             channel: 'Oyuncuların Müzik ve Sesler ayarlarındaki hangi ses kaydırıcısının bu sesleri kontrol ettiği.',
@@ -1525,6 +1526,7 @@ export default {
             weather: 'Hava',
             weight: 'Ağırlık',
             weights: 'Ağırlıklar',
+            withers: 'Lanetli Gecede kurulan Wither\'lar',
             worldParticles: 'Dünyada kül ve sporlar (oyuncuların çevresindeki parçacıkların yerine geçer)',
             worlds: 'Dünyalar',
             wrap: 'Özel yaratığa dönüşebilir',

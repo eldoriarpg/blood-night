@@ -1049,6 +1049,7 @@ export default {
         help: {
             translateMobNames: 'Namensschilder brauchen dafür das Ressourcenpaket. Aus: Alle Spieler sehen den Namen in der Ausweichsprache des Servers, mit oder ohne Paket.',
             creakingsWake: 'Knarze kommen aus den Knarzherzen in Blassen Gärten. Sonst jagen sie nur in einer normalen Nacht. Ist das an, jagen sie die ganze Blutnacht lang, auch wenn sie länger dauert oder die Welt keine Nacht hat.',
+            withers: 'Während einer Blutnacht wird ein Wither, den Spieler bauen, zu einem dieser Mobs, nach Gewicht gewählt. Leer: Wither bleiben normal. Außerhalb von Blutnächten sind Wither immer normal.',
             biomes: 'Einzelne Biome oder ganze Gruppen, z. B. alle Ozean-Biome. Leer heißt überall.',
             exactType: 'An: Dieser Mob ersetzt nur spawnende Mobs genau seines Typs. Aus: auch verwandte, z. B. ersetzt ein Zombie-Mob auch Wüstenzombies, Ertrunkene und Zombiedorfbewohner, wenn keiner der Mobs auf diesen basiert.',
             channel: 'Welcher Lautstärkeregler in den Musik-und-Geräusche-Einstellungen der Spieler diese Geräusche steuert.',
@@ -1243,6 +1244,7 @@ export default {
             weather: 'Wetter',
             weight: 'Gewicht',
             weights: 'Gewichte',
+            withers: 'In einer Blutnacht gebaute Wither',
             worldParticles: 'Asche und Sporen in der Welt (ersetzt Partikel um Spieler)',
             worlds: 'Welten',
             wrap: 'Dürfen Spezialmobs werden',

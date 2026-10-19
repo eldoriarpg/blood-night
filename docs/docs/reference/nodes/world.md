@@ -23,6 +23,24 @@ The block at a location
 |---|---|---|
 | Result | Block | The block; on Folia missing when the location is in another region |
 
+## Break Blocks
+
+`world.break_blocks`
+
+Breaks the blocks in a radius around a location as a wither does: bedrock and the other blocks a wither cannot break stay, nothing breaks while mob griefing is off, and protection plugins can keep blocks
+
+| In | Type | What it is |
+|---|---|---|
+| Location | Location | The middle |
+| Radius | Number | How far around, in blocks |
+| Drops (optional) | Boolean | Whether the blocks drop as items; no drops when not given |
+
+| Out | Type | What it is |
+|---|---|---|
+| Broken | Integer | How many blocks broke |
+
+Goes on with: **Next**
+
 ## Create Block Data
 
 `block_type.create_block_data`
@@ -452,6 +470,23 @@ Shows floating text for a while, facing whoever looks at it and seen through wal
 | Seconds | Number | How long it shows |
 | Size (optional) | Number | Its scale, 1 for normal; 1 when not given |
 | For (optional) | Player | The only player who sees it; everyone when not given |
+
+Goes on with: **Next**
+
+## Spawn Entity
+
+`world.spawn_entity`
+
+Spawns a vanilla entity, e.g. guards around a boss; it is no special mob
+
+| In | Type | What it is |
+|---|---|---|
+| Location | Location | Where it spawns |
+| Type | Entity Type | What spawns, e.g. a wither skeleton |
+
+| Out | Type | What it is |
+|---|---|---|
+| Entity | Entity | The entity; missing when the place belongs to another region on Folia |
 
 Goes on with: **Next**
 

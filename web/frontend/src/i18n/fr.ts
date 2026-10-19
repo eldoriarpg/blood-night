@@ -1314,6 +1314,7 @@ export default {
         help: {
             translateMobNames: 'Les noms au-dessus des têtes ont besoin du pack de ressources pour cela. Désactivé : tous les joueurs voient le nom dans la langue de secours du serveur, avec ou sans le pack.',
             creakingsWake: 'Les grinceurs sortent des cœurs de grinceur dans les jardins pâles. Normalement, ils ne chassent que pendant une nuit normale. Avec cette option, ils chassent pendant toute la nuit de sang, même si elle dure plus longtemps ou si le monde n\'a pas de nuit.',
+            withers: 'Pendant une nuit de sang, un wither construit par les joueurs devient l\'une de ces créatures, choisie selon son poids. Vide : les withers restent normaux. En dehors des nuits de sang, ils sont toujours normaux.',
             biomes: 'Des biomes seuls ou des groupes entiers, par ex. tous les biomes océaniques. Vide signifie partout.',
             exactType: 'Activé : cette créature remplace seulement les créatures qui apparaissent et sont exactement de son type. Désactivé : aussi les types proches, par ex. une créature zombie remplace aussi les zombies momifiés, les noyés et les zombies-villageois quand aucune des créatures n\'est basée sur eux.',
             channel: 'Le curseur de volume des paramètres Musique et sons des joueurs qui contrôle ces sons.',
@@ -1530,6 +1531,7 @@ export default {
             weather: 'Météo',
             weight: 'Poids',
             weights: 'Poids',
+            withers: 'Withers construits pendant une nuit de sang',
             worldParticles: 'Cendres et spores dans le monde (remplace les particules autour des joueurs)',
             worlds: 'Mondes',
             wrap: 'Peuvent devenir des créatures spéciales',

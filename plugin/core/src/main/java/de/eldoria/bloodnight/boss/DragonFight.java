@@ -3,11 +3,12 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-package de.eldoria.bloodnight.night;
+package de.eldoria.bloodnight.boss;
 
 import de.eldoria.bloodnight.configuration.world.night.TimedNights;
 import de.eldoria.bloodnight.living.MobCoordinator;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;

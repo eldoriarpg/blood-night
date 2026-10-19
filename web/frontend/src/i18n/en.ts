@@ -1045,6 +1045,7 @@ export default {
         help: {
             translateMobNames: 'Name tags need the resource pack for that. Off: every player sees the name in the server\'s fallback language, with or without the pack.',
             creakingsWake: 'Creakings come out of the creaking hearts in pale gardens. Normally they only hunt during a normal night. With this on, they hunt for the whole blood night, even when it lasts longer or the world has no night.',
+            withers: 'During a blood night, a wither players build becomes one of these mobs, picked by weight. Empty: withers stay vanilla. Outside blood nights withers are always vanilla.',
             biomes: 'Single biomes or whole groups of them, e.g. all ocean biomes. Empty means anywhere.',
             exactType: 'On: this mob only takes the place of spawning mobs of exactly its type. Off: also of related ones, e.g. a zombie mob also replaces husks, drowned and zombie villagers when none of the mobs is based on those.',
             channel: 'Which volume slider in the players\' Music & Sounds settings controls these sounds.',
@@ -1239,6 +1240,7 @@ export default {
             weather: 'Weather',
             weight: 'Weight',
             weights: 'Weights',
+            withers: 'Withers built in a blood night',
             worldParticles: 'Ash and spores in the world (replaces particles around players)',
             worlds: 'Worlds',
             wrap: 'May become special mobs',

@@ -1314,6 +1314,7 @@ export default {
         help: {
             translateMobNames: 'Tanda nama memerlukan pek sumber untuk itu. Mati: setiap pemain melihat nama dalam bahasa sandaran pelayan, dengan atau tanpa pek.',
             creakingsWake: 'Creaking keluar dari Creaking Heart di Pale Garden. Biasanya ia hanya memburu pada malam biasa. Dengan ini hidup, ia memburu sepanjang blood night, walaupun malam itu lebih lama atau dunia tiada malam.',
+            withers: 'Semasa blood night, wither yang dibina pemain menjadi salah satu makhluk ini, dipilih mengikut pemberat. Kosong: wither kekal biasa. Di luar blood night wither sentiasa biasa.',
             biomes: 'Biom tunggal atau seluruh kumpulan biom, contohnya semua biom lautan. Kosong bermaksud di mana-mana.',
             exactType: 'Hidup: mob ini hanya menggantikan mob yang muncul daripada jenis yang sama. Mati: juga yang berkaitan, contohnya mob zombi juga menggantikan husk, drowned dan penduduk kampung zombi apabila tiada mob yang berasaskan jenis itu.',
             channel: 'Peluncur kelantangan mana dalam tetapan Muzik & Bunyi pemain yang mengawal bunyi ini.',
@@ -1530,6 +1531,7 @@ export default {
             weather: 'Cuaca',
             weight: 'Pemberat',
             weights: 'Pemberat',
+            withers: 'Wither yang dibina semasa blood night',
             worldParticles: 'Abu dan spora di dunia (menggantikan partikel di sekeliling pemain)',
             worlds: 'Dunia',
             wrap: 'Boleh menjadi mob khas',

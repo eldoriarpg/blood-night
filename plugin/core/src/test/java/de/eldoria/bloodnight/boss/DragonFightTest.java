@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-package de.eldoria.bloodnight.night;
+package de.eldoria.bloodnight.boss;
 
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.configuration.world.MobSettings;
@@ -17,6 +17,8 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.attributes.Attributes;
 import de.eldoria.bloodnight.mob.attributes.MobName;
 import de.eldoria.bloodnight.mob.attributes.ValueModifier;
+import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.night.Selections;
 import de.eldoria.bloodnight.night.selection.NightSelector;
 import de.eldoria.bloodnight.night.selection.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;

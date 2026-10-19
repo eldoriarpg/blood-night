@@ -1314,6 +1314,7 @@ export default {
         help: {
             translateMobNames: 'Los nombres sobre la cabeza necesitan el paquete de recursos para ello. Desactivado: todos los jugadores ven el nombre en el idioma de reserva del servidor, con o sin el paquete.',
             creakingsWake: 'Los crujidores salen de los corazones de crujidor en los jardines pálidos. Normalmente solo cazan durante una noche normal. Con esto activado, cazan durante toda la noche sangrienta, aunque dure más o el mundo no tenga noche.',
+            withers: 'Durante una noche sangrienta, un wither que construyan los jugadores se convierte en una de estas criaturas, elegida por peso. Vacío: los withers siguen siendo normales. Fuera de las noches sangrientas siempre son normales.',
             biomes: 'Biomas sueltos o grupos enteros, p. ej. todos los biomas de océano. Vacío significa en cualquier lugar.',
             exactType: 'Activado: esta criatura solo sustituye a las criaturas que aparecen de exactamente su tipo. Desactivado: también a las parecidas, p. ej. una criatura zombi también sustituye a zombis momificados, ahogados y aldeanos zombi cuando ninguna criatura se basa en ellos.',
             channel: 'Qué control de volumen de los ajustes de Música y sonidos de los jugadores regula estos sonidos.',
@@ -1530,6 +1531,7 @@ export default {
             weather: 'Clima',
             weight: 'Peso',
             weights: 'Pesos',
+            withers: 'Withers construidos en una noche sangrienta',
             worldParticles: 'Ceniza y esporas en el mundo (sustituye a las partículas alrededor de los jugadores)',
             worlds: 'Mundos',
             wrap: 'Pueden convertirse en criaturas especiales',

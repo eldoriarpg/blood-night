@@ -27,6 +27,7 @@ describe('special fields', () => {
         expect(specialField(field('gameRules', 'map'), 'nightRules')).toBe('gameRules')
         expect(specialField(field('mobs', 'map'), 'spawning')).toBe('worldMobs')
         expect(specialField(field('overrides', 'map'), 'mobSettings')).toBe('mobMap')
+        expect(specialField(field('withers', 'map'), 'mobSettings')).toBe('mobMap')
         expect(specialField(field('probabilities', 'map'), 'moonPhase')).toBe('moonPhases')
         expect(specialField(field('probabilities', 'any'), 'phase')).toBe('phaseCycle')
         expect(specialField(field('curve', 'group'), 'nightSelection')).toBe('curve')

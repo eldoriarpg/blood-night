@@ -1582,6 +1582,17 @@
             "$ref" : "#/$defs/AttributeOverride"
           },
           "default" : { }
+        },
+        "withers" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          },
+          "default" : {
+            "blink_wither" : 1,
+            "blood_wither" : 1,
+            "grave_wither" : 1
+          }
         }
       }
     },
@@ -3123,6 +3134,11 @@
               "ignoredReasons" : [ "CUSTOM" ],
               "mobs" : { },
               "spawnPercentage" : 50
+            },
+            "withers" : {
+              "blink_wither" : 1,
+              "blood_wither" : 1,
+              "grave_wither" : 1
             }
           }
         },
