@@ -7,6 +7,7 @@ package de.eldoria.graph.compiler.validate;
 
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.emit.Routines;
+import de.eldoria.graph.compiler.emit.States;
 import de.eldoria.graph.compiler.macro.MacroBoundary;
 import de.eldoria.graph.compiler.macro.MacroExpander;
 import de.eldoria.graph.compiler.macro.MacroLibrary;
@@ -55,6 +56,7 @@ public final class Graphs {
         this.macroBody = macroBody;
         Map<String, NodeDefinition> known = new LinkedHashMap<>(macros.definitions());
         if (macroBody) MacroBoundary.definitions(platform.types()).forEach(node -> known.put(node.id(), node));
+        States.definitions().forEach(node -> known.put(node.id(), node));
         this.extra = known;
     }
 

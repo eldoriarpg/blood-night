@@ -19,7 +19,11 @@ import de.eldoria.graph.compiler.validate.ValidatedGraph;
 import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.model.Graph;
 import de.eldoria.graph.platform.GraphPlatform;
+import de.eldoria.graph.runtime.StateMachine;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -63,8 +67,25 @@ public final class GraphCompiler<T> {
                     "Platform host is " + platform.host().getName());
         this.platform = platform;
         this.host = host;
-        this.compiler = new RuntimeCompiler(platform.classpath(), parent);
+        this.compiler = new RuntimeCompiler(withRuntime(platform.classpath()), parent);
         this.macros = macros;
+    }
+
+    /**
+     * @return the classpath with the location of the compiler's own runtime classes, such as {@link StateMachine},
+     *     which generated code uses whatever the platform is
+     */
+    private static List<Path> withRuntime(List<Path> classpath) {
+        List<Path> all = new ArrayList<>(classpath);
+        CodeSource source = StateMachine.class.getProtectionDomain().getCodeSource();
+        if (source == null) return all;
+        try {
+            Path own = Path.of(source.getLocation().toURI());
+            if (!all.contains(own)) all.add(own);
+        } catch (URISyntaxException e) {
+            return all;
+        }
+        return all;
     }
 
     /**

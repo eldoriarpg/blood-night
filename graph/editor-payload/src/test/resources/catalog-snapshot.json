@@ -1,6 +1,6 @@
 {
   "format" : 1,
-  "version" : "c6de34f3f00ba702",
+  "version" : "782d23a15a35d9b4",
   "nodes" : [ {
     "id" : "cast",
     "kind" : "pure",
@@ -1501,6 +1501,211 @@
       },
       "defaultValue" : null,
       "beside" : "option_7"
+    } ]
+  }, {
+    "id" : "state.can_enter",
+    "kind" : "pure",
+    "category" : "state",
+    "name" : "Can Enter State",
+    "description" : "Whether the graph may enter the state this node lies in; without one it always may",
+    "inputs" : [ {
+      "id" : "allowed",
+      "name" : "Allowed",
+      "description" : "True: the state may be entered",
+      "type" : {
+        "id" : "boolean"
+      },
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "allowed",
+      "name" : "Allowed",
+      "description" : "True: the state may be entered",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ]
+  }, {
+    "id" : "state.current",
+    "kind" : "value",
+    "category" : "state",
+    "name" : "Current State",
+    "description" : "The name of the innermost state the graph is in",
+    "outputs" : [ {
+      "id" : "name",
+      "name" : "Name",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "state.enter",
+    "kind" : "entry",
+    "category" : "state",
+    "name" : "On Enter State",
+    "description" : "Runs when the graph enters the state this node lies in",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "state.exit",
+    "kind" : "entry",
+    "category" : "state",
+    "name" : "On Exit State",
+    "description" : "Runs when the graph leaves the state this node lies in",
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ]
+  }, {
+    "id" : "state.go_to",
+    "kind" : "action",
+    "category" : "state",
+    "name" : "Go To State",
+    "description" : "Leaves the current state and enters another; nothing happens when the graph is in it already or the state says no",
+    "outputs" : [ {
+      "id" : "moved",
+      "name" : "Moved",
+      "description" : "True: the graph moved",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "state",
+      "name" : "State",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "state.go_to_one_of",
+    "kind" : "action",
+    "category" : "state",
+    "name" : "Go To One Of",
+    "description" : "Goes to one of up to four states, picked by weight among those that can be entered",
+    "inputs" : [ {
+      "id" : "weight_1",
+      "name" : "Weight 1",
+      "description" : "How likely state 1 is; 1 when not given, 0 leaves it out",
+      "type" : {
+        "id" : "double"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "weight_2",
+      "name" : "Weight 2",
+      "description" : "How likely state 2 is; 1 when not given, 0 leaves it out",
+      "type" : {
+        "id" : "double"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "weight_3",
+      "name" : "Weight 3",
+      "description" : "How likely state 3 is; 1 when not given, 0 leaves it out",
+      "type" : {
+        "id" : "double"
+      },
+      "optional" : true,
+      "literal" : true
+    }, {
+      "id" : "weight_4",
+      "name" : "Weight 4",
+      "description" : "How likely state 4 is; 1 when not given, 0 leaves it out",
+      "type" : {
+        "id" : "double"
+      },
+      "optional" : true,
+      "literal" : true
+    } ],
+    "outputs" : [ {
+      "id" : "moved",
+      "name" : "Moved",
+      "description" : "True: the graph moved",
+      "type" : {
+        "id" : "boolean"
+      }
+    }, {
+      "id" : "state",
+      "name" : "State",
+      "description" : "The state it moved to; empty if none",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ],
+    "executions" : [ {
+      "id" : "next",
+      "name" : "Next"
+    } ],
+    "config" : [ {
+      "id" : "state_1",
+      "name" : "State 1",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    }, {
+      "id" : "state_2",
+      "name" : "State 2",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    }, {
+      "id" : "state_3",
+      "name" : "State 3",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    }, {
+      "id" : "state_4",
+      "name" : "State 4",
+      "type" : {
+        "id" : "java.lang.String"
+      },
+      "defaultValue" : ""
+    } ]
+  }, {
+    "id" : "state.in",
+    "kind" : "value",
+    "category" : "state",
+    "name" : "In State",
+    "description" : "Whether the graph is in a state or in a state inside it",
+    "outputs" : [ {
+      "id" : "result",
+      "name" : "Result",
+      "type" : {
+        "id" : "boolean"
+      }
+    } ],
+    "config" : [ {
+      "id" : "state",
+      "name" : "State",
+      "type" : {
+        "id" : "java.lang.String"
+      }
+    } ]
+  }, {
+    "id" : "state.time",
+    "kind" : "value",
+    "category" : "state",
+    "name" : "Time In State",
+    "description" : "Seconds since the graph last moved to another state",
+    "outputs" : [ {
+      "id" : "seconds",
+      "name" : "Seconds",
+      "type" : {
+        "id" : "double"
+      }
     } ]
   }, {
     "id" : "timer.elapsed",

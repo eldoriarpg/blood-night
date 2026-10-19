@@ -484,7 +484,8 @@ public final class StandardNodes {
     /**
      * A node that holds the rest of its chain back for a while, through the graph's {@link Delays}, which the
      * platform's clock hands back. Nodes after an enclosing node, such as the {@code next} of a branch around it, do
-     * not wait. A retriggerable delay drops what it still holds back when it starts again.
+     * not wait. A retriggerable delay drops what it still holds back when it starts again. A delay inside a state
+     * drops what it holds back when the graph leaves the state.
      */
     private static StatementDefinition delay(String id, String name, String description) {
         return new StatementDefinition(
@@ -500,9 +501,10 @@ public final class StandardNodes {
                 ctx -> {
                     CodeBlock chain = ctx.chain(NEXT);
                     if (chain.isEmpty()) return CodeBlock.builder().build();
-                    CodeBlock delays = ctx.sharedField(
+                    CodeBlock delays = ctx.stateField(
                             "delays", ClassName.get(Delays.class), CodeBlock.of("new $T()", Delays.class));
                     ctx.everyTick(CodeBlock.of("$L.tick()", delays));
+                    ctx.onLeave(CodeBlock.of("$L.clear()", delays));
                     CodeBlock millis = CodeBlock.of("$L.toMillis($L)", ctx.config(UNIT), ctx.input(DURATION));
                     CodeBlock start = id.equals(StdNodes.FLOW_DELAY)
                             ? CodeBlock.of("$L.after($L, () -> {\n$>", delays, millis)

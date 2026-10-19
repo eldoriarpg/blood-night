@@ -54,6 +54,13 @@ public final class Delays {
     }
 
     /**
+     * Drops every chain held back, e.g. when the state that started them ends.
+     */
+    public void clear() {
+        pending.clear();
+    }
+
+    /**
      * @return how many chains are held back
      */
     public int waiting() {

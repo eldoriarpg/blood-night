@@ -9,6 +9,7 @@ import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.model.NodeInstance;
+import de.eldoria.graph.model.State;
 import de.eldoria.graph.platform.GraphPlatform;
 
 import java.util.List;
@@ -20,10 +21,15 @@ import java.util.Map;
  * @param platform the platform it was checked against
  * @param nodes    every node by instance id
  * @param entries  ids of entry nodes, in id order
+ * @param states   the graph's states, parents before their children
  * @param warnings problems that do not prevent compilation
  */
 public record ValidatedGraph(
-        GraphPlatform platform, Map<String, Node> nodes, List<String> entries, List<GraphProblem> warnings) {
+        GraphPlatform platform,
+        Map<String, Node> nodes,
+        List<String> entries,
+        List<State> states,
+        List<GraphProblem> warnings) {
 
     /**
      * One checked node instance.

@@ -6,6 +6,7 @@
 package de.eldoria.graph.payload;
 
 import de.eldoria.graph.compiler.emit.Routines;
+import de.eldoria.graph.compiler.emit.States;
 import de.eldoria.graph.compiler.macro.MacroBoundary;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.descriptor.NodeDescriptor;
@@ -145,6 +146,7 @@ public final class CatalogGenerator {
         platform.nodes().values().forEach(node -> nodes.add(node(node, false)));
         MacroBoundary.definitions(types).forEach(node -> nodes.add(node(node, true)));
         Routines.boundary(types).forEach(node -> nodes.add(node(node, false)));
+        States.definitions().forEach(node -> nodes.add(node(node, false)));
         nodes.sort(Comparator.comparing(NodeType::id));
 
         Map<String, String> selectable = new TreeMap<>();

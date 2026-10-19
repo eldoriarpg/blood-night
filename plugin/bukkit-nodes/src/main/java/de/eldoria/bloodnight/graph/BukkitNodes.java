@@ -344,8 +344,9 @@ public final class BukkitNodes {
             ctx -> {
                 CodeBlock arrived = ctx.chain("arrived");
                 CodeBlock delays =
-                        ctx.sharedField("delays", ClassName.get(Delays.class), CodeBlock.of("new $T()", Delays.class));
+                        ctx.stateField("delays", ClassName.get(Delays.class), CodeBlock.of("new $T()", Delays.class));
                 ctx.everyTick(CodeBlock.of("$L.tick()", delays));
+                ctx.onLeave(CodeBlock.of("$L.clear()", delays));
                 CodeBlock call = CodeBlock.of(
                         "$T.effect($L, $L, $L, $L, $L, $L, ",
                         BukkitRuntime.class,

@@ -513,6 +513,7 @@ export interface Graph {
   comments?: {
     [k: string]: Comment;
   };
+  states?: State[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -532,6 +533,7 @@ export interface NodeInstance {
   executions?: {
     [k: string]: string[];
   };
+  state?: string;
   editor?: unknown;
 }
 /**
@@ -555,6 +557,15 @@ export interface Comment {
   width: number;
   height: number;
   collapsed: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "State".
+ */
+export interface State {
+  name: string;
+  parent?: string;
+  initial?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

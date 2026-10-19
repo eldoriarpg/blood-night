@@ -103,6 +103,39 @@ public interface EmitContext {
     CodeBlock sharedField(String name, TypeName type, CodeBlock initializer);
 
     /**
+     * Declares a field shared like {@link #sharedField}, but one per state of the graph: nodes of the same state share
+     * it, the part that always runs has its own. Together with {@link #onLeave} this is how work a state started ends
+     * with the state, such as waiting chains.
+     *
+     * @param name        name, shared across the nodes of one state
+     * @param type        field type
+     * @param initializer initial value
+     * @return an expression referring to the field
+     */
+    CodeBlock stateField(String name, TypeName type, CodeBlock initializer);
+
+    /**
+     * Runs a statement whenever the graph leaves the state the node belongs to; nothing for a node of the part that
+     * always runs. The same statement added twice runs once.
+     *
+     * @param statement the statement, without its semicolon
+     */
+    void onLeave(CodeBlock statement);
+
+    /**
+     * @return an expression referring to the graph's {@link de.eldoria.graph.runtime.StateMachine}
+     * @throws IllegalStateException when the graph has no states
+     */
+    CodeBlock stateMachine();
+
+    /**
+     * @param name a state's name
+     * @return the state's number in the {@link #stateMachine()}
+     * @throws IllegalArgumentException when the graph has no such state
+     */
+    int stateNumber(String name);
+
+    /**
      * Calls a static helper method by its simple name, with a static import, e.g. {@code nextDouble(-2.0d, 2.0d)}. When
      * another class's method already holds that name in the generated class, the call is qualified instead.
      *

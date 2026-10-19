@@ -1223,6 +1223,12 @@
           "additionalProperties" : {
             "$ref" : "#/$defs/Comment"
           }
+        },
+        "states" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/State"
+          }
         }
       },
       "required" : [ "nodes" ]
@@ -1947,6 +1953,9 @@
               "type" : "string"
             }
           }
+        },
+        "state" : {
+          "type" : "string"
         },
         "editor" : { }
       }
@@ -2810,6 +2819,21 @@
         }
       },
       "required" : [ "weight", "nightOnly", "nightEnd", "reasons", "conditions" ]
+    },
+    "State" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "parent" : {
+          "type" : "string"
+        },
+        "initial" : {
+          "type" : "boolean"
+        }
+      },
+      "required" : [ "name" ]
     },
     "StorePack" : {
       "type" : "object",
