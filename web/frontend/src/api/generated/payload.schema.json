@@ -327,6 +327,36 @@
       "type" : "string",
       "enum" : [ "PINK", "BLUE", "RED", "GREEN", "YELLOW", "PURPLE", "WHITE" ]
     },
+    "Comment" : {
+      "type" : "object",
+      "properties" : {
+        "title" : {
+          "type" : "string"
+        },
+        "note" : {
+          "type" : "string"
+        },
+        "color" : {
+          "type" : "string"
+        },
+        "x" : {
+          "type" : "number"
+        },
+        "y" : {
+          "type" : "number"
+        },
+        "width" : {
+          "type" : "number"
+        },
+        "height" : {
+          "type" : "number"
+        },
+        "collapsed" : {
+          "type" : "boolean"
+        }
+      },
+      "required" : [ "title", "note", "color", "x", "y", "width", "height", "collapsed" ]
+    },
     "ConfigFile" : {
       "type" : "object",
       "properties" : {
@@ -1060,9 +1090,15 @@
           "additionalProperties" : {
             "$ref" : "#/$defs/NodeInstance"
           }
+        },
+        "comments" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/Comment"
+          }
         }
       },
-      "required" : [ "nodes" ]
+      "required" : [ "nodes", "comments" ]
     },
     "GraphProblem" : {
       "type" : "object",

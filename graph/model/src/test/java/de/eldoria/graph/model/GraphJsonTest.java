@@ -15,6 +15,7 @@ import tools.jackson.databind.node.StringNode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,6 +55,7 @@ class GraphJsonTest {
         String json = GraphJson.write(sample());
 
         assertTrue(json.startsWith("{\"nodes\":{\"add\":"), json);
+        assertFalse(json.contains("comments"), json);
         assertTrue(json.contains("\"other\":{\"type\":\"debug.print\"}"), json);
         assertTrue(json.contains("\"executions\":{\"next\":[\"print\",\"other\"]}"), json);
     }
@@ -71,6 +73,29 @@ class GraphJsonTest {
 
         assertEquals(
                 List.of("print", "other"), read.nodes().get("tick").executions().get("next"));
+    }
+
+    @Test
+    void commentsRoundTripAndKeepTheirFrame() {
+        Graph graph = Graph.builder()
+                .node("tick", NodeInstance.of("entry.tick"))
+                .comment("charge", new Comment("Charge attack", "Every 5 seconds", "red", 10, -20, 300, 200, true))
+                .build();
+
+        Graph read = GraphJson.read(GraphJson.write(graph));
+
+        assertEquals(graph, read);
+        assertEquals(
+                new Comment("Charge attack", "Every 5 seconds", "red", 10, -20, 300, 200, true),
+                read.comments().get("charge"));
+    }
+
+    @Test
+    void commentsMissingPartsReadAsEmpty() {
+        Graph read = GraphJson.read("{\"nodes\":{},\"comments\":{\"c\":{\"x\":1,\"y\":2}}}");
+
+        assertEquals(
+                new Comment("", "", "grey", 1, 2, 0, 0, false), read.comments().get("c"));
     }
 
     @Test

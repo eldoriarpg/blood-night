@@ -5,6 +5,8 @@
  */
 package de.eldoria.graph.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -13,12 +15,24 @@ import java.util.TreeMap;
 /**
  * A node graph as stored and exchanged with the editor.
  *
- * @param nodes nodes by instance id
+ * @param nodes    nodes by instance id
+ * @param comments the editor's comment frames by id; left out of the JSON when there are none
  */
-public record Graph(Map<String, NodeInstance> nodes) {
+public record Graph(
+        Map<String, NodeInstance> nodes,
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) Map<String, Comment> comments) {
     public Graph {
         nodes = nodes == null ? Map.of() : Collections.unmodifiableMap(new TreeMap<>(nodes));
         nodes.keySet().forEach(Graph::checkId);
+        comments = comments == null ? Map.of() : Collections.unmodifiableMap(new TreeMap<>(comments));
+        comments.keySet().forEach(Graph::checkId);
+    }
+
+    /**
+     * @param nodes nodes by instance id
+     */
+    public Graph(Map<String, NodeInstance> nodes) {
+        this(nodes, Map.of());
     }
 
     /**
@@ -41,7 +55,7 @@ public record Graph(Map<String, NodeInstance> nodes) {
     }
 
     private static void checkId(String id) {
-        if (id == null || id.isBlank()) throw new IllegalArgumentException("Node id must not be blank");
+        if (id == null || id.isBlank()) throw new IllegalArgumentException("Id must not be blank");
     }
 
     /**
@@ -49,6 +63,7 @@ public record Graph(Map<String, NodeInstance> nodes) {
      */
     public static final class Builder {
         private final Map<String, NodeInstance> nodes = new TreeMap<>();
+        private final Map<String, Comment> comments = new TreeMap<>();
 
         private Builder() {}
 
@@ -76,10 +91,23 @@ public record Graph(Map<String, NodeInstance> nodes) {
         }
 
         /**
+         * Adds a comment frame.
+         *
+         * @param id      comment id, unique among the graph's comments
+         * @param comment the comment
+         * @return this builder
+         */
+        public Builder comment(String id, Comment comment) {
+            if (comments.putIfAbsent(id, comment) != null)
+                throw new IllegalArgumentException("Duplicate comment id " + id);
+            return this;
+        }
+
+        /**
          * @return the graph
          */
         public Graph build() {
-            return new Graph(nodes);
+            return new Graph(nodes, comments);
         }
     }
 }
