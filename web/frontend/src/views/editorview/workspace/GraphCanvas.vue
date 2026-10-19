@@ -31,7 +31,8 @@ import type {PatchOperation} from '~/util/patch/jsonPatch'
  * wired; a double click on the empty canvas opens the same picker with every node, so nodes can be added without the
  * palette. A double click on a node opens its details. Dragging on the empty canvas selects the nodes in a box; holding
  * Space drags the view instead. A preview drags the view without Space. Every node keeps the position saved with it: a graph opened without any is arranged
- * (see {@link arrange}) and saved, or while read only just shown arranged; unplaced nodes of a placed graph are saved
+ * (see {@link arrange}) and saved, or while read only just shown arranged, and the view fitted to it unless the user
+ * moved the view in the meantime; unplaced nodes of a placed graph are saved
  * where they are shown, so moving one node never moves another. Arrange lays the whole graph out again. Read only while someone else holds the graph's
  * section. The play button of a node starting a chain lights up the nodes and wires it reaches, one after another in
  * the order they run (see {@link executionOrder}), each with its step number. Nodes snap to the grid the background dots draw; holding Alt while dragging places them freely. Settings and
@@ -311,7 +312,7 @@ async function arrangeAll(): Promise<void> {
   if (props.readOnly || flow.getNodes.value.length === 0) return
   const arranged = await arrange(measured(), view.value.edges)
   const positions = new Map([...arranged].map(([id, position]) => [id, onGrid(position)]))
-  if (await save(positions)) void nextTick(() => flow.fitView())
+  if (await save(positions)) void nextTick(fitUnlessMoved)
 }
 
 /** Lays out a graph that may not be changed, for this view only, so a read-only graph without positions is readable. */
@@ -319,7 +320,20 @@ async function arrangeShown(): Promise<void> {
   if (flow.getNodes.value.length === 0) return
   const arranged = await arrange(measured(), view.value.edges)
   shownPositions.value = new Map([...arranged].map(([id, position]) => [id, onGrid(position)]))
-  void nextTick(() => flow.fitView())
+  void nextTick(fitUnlessMoved)
+}
+
+/** Whether every node has its place and the view was fitted to them; the canvas carries it as `data-arranged`. */
+const arranged = ref(false)
+let movedWhileArranging = false
+
+flow.onMoveStart(({event}) => {
+  if (!arranged.value && (event as {sourceEvent?: unknown}).sourceEvent) movedWhileArranging = true
+})
+
+/** Fits the view to the arranged graph, unless the user moved it while the graph was being arranged. */
+function fitUnlessMoved(): void {
+  if (!movedWhileArranging) void flow.fitView()
 }
 
 /**
@@ -343,7 +357,11 @@ async function placeUnplaced(): Promise<void> {
 }
 
 flow.onNodesInitialized(() => {
-  void placeUnplaced()
+  arranged.value = false
+  movedWhileArranging = false
+  void placeUnplaced().then(() => nextTick()).then(() => {
+    arranged.value = true
+  })
 })
 
 /** Adds a node of a type in the middle of what the canvas shows. */
@@ -378,6 +396,7 @@ defineExpose({add})
         pan-activation-key-code="Space"
         :zoom-on-double-click="false"
         :style="grid"
+        :data-arranged="arranged"
         class="bn-canvas"
         fit-view-on-init
         @connect="connected"

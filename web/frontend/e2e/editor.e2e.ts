@@ -730,6 +730,7 @@ test('the preview arranges a graph without positions', async ({page}) => {
         return first !== null && second !== null && first.x + first.width <= second.x
     }).toBe(true)
 
+    await expect(page.locator('.bn-canvas[data-arranged="true"]')).toBeVisible()
     const before = await settledBox(tick)
     const pane = await page.locator('.vue-flow__pane').boundingBox()
     if (!pane) throw new Error('no pane')
@@ -739,6 +740,29 @@ test('the preview arranges a graph without positions', async ({page}) => {
     await page.mouse.up()
     await expect.poll(async () => ((await tick.boundingBox())?.x ?? 0) - before.x).toBeGreaterThan(20)
     expect(stage.changes).toEqual([])
+})
+
+/** A move made while a graph without positions is still being arranged stays: the view is not fitted over it. */
+test('a view moved while the graph is arranged stays where it was moved', async ({page}) => {
+    const stage = await stageEditor(page, {}, true)
+    await page.route(/elk.*bundled/, async route => {
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        await route.continue()
+    })
+    await page.goto(stage.link)
+    const canvas = page.locator('.bn-canvas')
+    await expect(canvas).toHaveAttribute('data-arranged', 'false')
+
+    const pane = await page.locator('.vue-flow__pane').boundingBox()
+    if (!pane) throw new Error('no pane')
+    await page.mouse.move(pane.x + 20, pane.y + 20)
+    await page.mouse.down()
+    await page.mouse.move(pane.x + 140, pane.y + 70, {steps: 10})
+    await page.mouse.up()
+    const moved = await page.locator('.vue-flow__transformationpane').getAttribute('style')
+
+    await expect(canvas).toHaveAttribute('data-arranged', 'true')
+    expect(await page.locator('.vue-flow__transformationpane').getAttribute('style')).toBe(moved)
 })
 
 /** Values their modifier ignores stay hidden until the modifier uses them. */
