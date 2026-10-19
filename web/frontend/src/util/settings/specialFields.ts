@@ -27,9 +27,10 @@ import type {Field} from '~/util/settings/schemaFields'
  *     <li>`phaseCycle`: a cycle of nights with a chance each, as an equalizer</li>
  *     <li>`curve`: the curve night selection with a graph of its chances</li>
  *     <li>`mobName`: a mob's name per language with one style</li>
+ *     <li>`particleEffect`: a particle effect a mob wears, picked by name, with a preview</li>
  * </ul>
  */
-export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'lootTables' | 'experience' | 'money' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName'
+export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'lootTables' | 'experience' | 'money' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName' | 'particleEffect'
 
 const PERCENT: ReadonlySet<string> = new Set(['chance', 'chancePerMinute', 'lightningChance', 'thunderChance', 'loseExperienceChance', 'loseInventoryChance', 'probability', 'spawnPercentage'])
 const MINI_MESSAGE: ReadonlySet<string> = new Set(['title', 'prompt', 'prefix', 'displayName'])
@@ -49,6 +50,7 @@ export function specialField(field: Field, parent: string | undefined): SpecialF
             return undefined
         case 'text':
             if (field.key === 'effect') return 'effect'
+            if (parent === 'particles' && ['ambient', 'spawn', 'death'].includes(field.key)) return 'particleEffect'
             if (parent === 'timed' && field.key === 'dragon') return 'mob'
             if (MINI_MESSAGE.has(field.key)) return 'miniMessage'
             return undefined
@@ -76,10 +78,12 @@ export function specialField(field: Field, parent: string | undefined): SpecialF
 /**
  * @param path an object's JSON pointer, e.g. `/mobs/zombie/loot`
  * @returns the key its fields' labels and help are looked up under: its own key, or `mobLoot` for a mob's loot, which
- *     reads differently from a world's or the server's
+ *     reads differently from a world's or the server's, and `mobParticles` for the particle effects a mob wears
  */
 export function groupKey(path: string): string | undefined {
-    return /^\/mobs\/[^/]+\/loot$/.test(path) ? 'mobLoot' : path.split('/').at(-1)
+    if (/^\/mobs\/[^/]+\/loot$/.test(path)) return 'mobLoot'
+    if (/^\/mobs\/[^/]+\/particles$/.test(path)) return 'mobParticles'
+    return path.split('/').at(-1)
 }
 
 /**

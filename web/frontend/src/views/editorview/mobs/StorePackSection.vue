@@ -18,6 +18,8 @@ import {section} from '~/util/session/sections'
 const props = defineProps<{
   pack: StorePack
   offers: readonly Offer[]
+  /** Whether updates take the store's particle effects too. */
+  particles: boolean
 }>()
 
 const emit = defineEmits<{
@@ -43,6 +45,6 @@ const available = computed(() => {
       </div>
       <SecondaryButton v-if="available.length > 0" compact icon="download" @click="emit('install', available)">{{ t('editor.store.installPack', {count: available.length}) }}</SecondaryButton>
     </div>
-    <StoreOfferRow v-for="offer in offers" :key="offer.id" :offer="offer" @install="emit('install', [offer])" @update="emit('update', offer)"/>
+    <StoreOfferRow v-for="offer in offers" :key="offer.id" :offer="offer" :particles="particles" @install="emit('install', [offer])" @update="emit('update', offer)"/>
   </section>
 </template>

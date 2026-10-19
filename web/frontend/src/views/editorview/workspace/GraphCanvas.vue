@@ -16,6 +16,7 @@ import NodePicker from '~/views/editorview/workspace/NodePicker.vue'
 import type {Catalog} from '~/api/generated/schema'
 import type {Graph, Macro} from '~/api/generated/payload'
 import {graphView, handles, type EdgeView, type NodeView} from '~/util/graph/graphView'
+import {effectLabels, PLAY_EFFECT} from '~/util/particles/particleEffects'
 import {addableNodes, nodeMatches, pulledPin, type NodeMatch, type PulledPin} from '~/util/graph/nodeMatches'
 import {channelsEdit, configEdit} from '~/util/graph/nodeEdits'
 import {arrange, type LayoutNode} from '~/util/graph/autoLayout'
@@ -93,14 +94,16 @@ useEventListener('keyup', (event: KeyboardEvent) => {
   freely.value = event.altKey
 })
 
-const view = computed(() => graphView(props.graph, props.catalog, props.macros, props.bindings))
+const session = useEditorSession()
+const effects = computed(() => effectLabels(session.payload.value))
+const sessionChoices = computed(() => ({[`${PLAY_EFFECT}|effect`]: {options: Object.keys(effects.value), labels: effects.value}}))
+const view = computed(() => graphView(props.graph, props.catalog, props.macros, props.bindings, sessionChoices.value))
 const edgesById = computed(() => new Map(view.value.edges.map(edge => [edge.id, edge])))
 const playback = graphPlayback()
 const shownPositions = ref<ReadonlyMap<string, Position>>(new Map())
 watch(() => Object.keys(props.graph.nodes ?? {}).join(), () => {
   shownPositions.value = new Map()
 })
-const session = useEditorSession()
 const frames = useCanvasFrames({
   graph: () => props.graph,
   base: () => props.base,

@@ -38,4 +38,5 @@ export const SERVER_SECTIONS: readonly ServerSection[] = [
     {key: 'plugins', properties: ['placeholders', 'foreignMobs']},
     {key: 'updates', properties: ['updates']},
     {key: 'loot', properties: ['loot']},
+    {key: 'particles', properties: ['particles']},
 ]

@@ -10,6 +10,7 @@ import WorkspaceArea from '~/views/editorview/workspace/WorkspaceArea.vue'
 import MobsArea from '~/views/editorview/mobs/MobsArea.vue'
 import ItemsArea from '~/views/editorview/items/ItemsArea.vue'
 import LootArea from '~/views/editorview/loot/LootArea.vue'
+import ParticlesArea from '~/views/editorview/particles/ParticlesArea.vue'
 import SettingsArea from '~/views/editorview/settings/SettingsArea.vue'
 import RevisionsArea from '~/views/editorview/revisions/RevisionsArea.vue'
 import EditorStatus from '~/views/editorview/EditorStatus.vue'
@@ -47,6 +48,7 @@ onBeforeUnmount(() => session.close())
       <WorkspaceArea v-else-if="place.area === 'macros'" kind="macros"/>
       <ItemsArea v-else-if="place.area === 'items'"/>
       <LootArea v-else-if="place.area === 'loot'"/>
+      <ParticlesArea v-else-if="place.area === 'particles'"/>
       <SettingsArea v-else-if="place.area === 'settings'"/>
       <RevisionsArea v-else/>
     </template>

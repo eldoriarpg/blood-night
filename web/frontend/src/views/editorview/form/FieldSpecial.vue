@@ -22,6 +22,7 @@ import FieldPhaseCycle from '~/views/editorview/form/FieldPhaseCycle.vue'
 import FieldCurve from '~/views/editorview/form/FieldCurve.vue'
 import FieldWorldMobs from '~/views/editorview/form/FieldWorldMobs.vue'
 import FieldMobName from '~/views/editorview/form/FieldMobName.vue'
+import FieldParticleEffect from '~/views/editorview/particles/FieldParticleEffect.vue'
 import type {Field} from '~/util/settings/schemaFields'
 import type {SpecialField} from '~/util/settings/specialFields'
 import {mobLabel} from '~/util/mobs/mobName'
@@ -116,6 +117,7 @@ const samples = computed(() => ({name: t('editor.miniMessage.nightName'), player
   <FieldCurve v-else-if="special === 'curve'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldPhaseCycle v-else-if="special === 'phaseCycle'" :help="help" :label="label" :read-only="readOnly" :value="numbers" @save="emit('save', $event)"/>
   <FieldMoonPhases v-else-if="special === 'moonPhases'" :help="help" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
+  <FieldParticleEffect v-else-if="special === 'particleEffect'" :help="help" :label="label" :read-only="readOnly" :value="text" @save="emit('save', $event)"/>
   <FieldGameRules v-else-if="special === 'gameRules'" :label="label" :read-only="readOnly" :value="object" @save="emit('save', $event)"/>
   <FieldMiniMessage v-else :help="help" :label="label" :read-only="readOnly" :samples="samples" :value="text" @save="emit('save', $event)"/>
 </template>

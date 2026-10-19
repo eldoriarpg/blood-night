@@ -5,7 +5,7 @@
  */
 import {describe, expect, it} from 'vitest'
 import type {CustomMob, EditorPayload, Offer} from '~/api/generated/payload'
-import {installOffer, installOffers, localized, offerState, updateOffer} from '~/util/session/storeOffers'
+import {installOffer, installOffers, localized, looksDiffer, offerState, updateOffer} from '~/util/session/storeOffers'
 
 function mob(id: string, hash?: string): CustomMob {
     return {id, origin: hash ? {store: 'bloodnight', entry: id, hash} : undefined} as unknown as CustomMob
@@ -40,6 +40,19 @@ describe('store offers', () => {
         expect(installOffer(withTables, own).map(operation => operation.path)).toEqual(['/mobs/speed_zombie', '/lootTables/speed_zombie'])
         expect(installOffers([withTables, withTables], payload([])).map(operation => operation.path))
             .toEqual(['/mobs/speed_zombie', '/mobs/speed_zombie', '/lootTables', '/lootTables/speed_zombie', '/lootTables/bones'])
+    })
+
+    it('takes the store\'s particle effects only when asked', () => {
+        const glowing = {...offer, mob: {...offer.mob, particles: {ambient: 'glow'}}, particleEffects: {glow: {name: 'Glow'}}} as unknown as Offer
+        const restyled = {...mob('speed_zombie', 'new'), particles: {ambient: 'mine'}} as unknown as CustomMob
+        const session = payload([restyled])
+        expect(looksDiffer(glowing, session)).toBe(true)
+        expect(updateOffer(glowing, session).map(operation => operation.path)).not.toContain('/mobs/speed_zombie/particles')
+        expect(updateOffer(glowing, session, true).map(operation => operation.path)).toEqual([
+            '/mobs/speed_zombie/behaviour', '/mobs/speed_zombie/extension', '/mobs/speed_zombie/movement', '/mobs/speed_zombie/origin',
+            '/mobs/speed_zombie/particles', '/particleEffects', '/particleEffects/glow',
+        ])
+        expect(installOffer(glowing, payload([])).map(operation => operation.path)).toEqual(['/mobs/speed_zombie', '/particleEffects', '/particleEffects/glow'])
     })
 
     it('picks the editor language, then English', () => {

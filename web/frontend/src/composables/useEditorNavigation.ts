@@ -19,6 +19,10 @@ export function useEditorNavigation() {
         openLootTable(id: string): void {
             place.value = {...place.value, area: 'loot', lootTable: id}
         },
+        /** Opens a particle effect in the particles area. */
+        openEffect(id: string): void {
+            place.value = {...place.value, area: 'particles', particleEffect: id}
+        },
         /** Opens a mob in the mobs area. */
         openMob(id: string): void {
             selection.value.mobs = id
