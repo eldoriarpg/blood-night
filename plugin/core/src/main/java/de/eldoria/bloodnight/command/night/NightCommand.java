@@ -84,6 +84,13 @@ public final class NightCommand {
 
     private void force(CommandSender sender, World world) {
         plugin.tasks().globalNow(() -> {
+            if (!plugin.bloodNights().enabled(world)) {
+                Replies.send(
+                        sender,
+                        "night.disabled",
+                        Replies.arg("world", plugin.worldNames().name(world)));
+                return;
+            }
             long night = plugin.bloodNights().force(world);
             if (plugin.bloodNights().running(world).isPresent()) {
                 Replies.send(

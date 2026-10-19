@@ -23,6 +23,8 @@ import de.eldoria.bloodnight.atmosphere.timeline.Timelines;
 import de.eldoria.bloodnight.behaviour.BehaviourService;
 import de.eldoria.bloodnight.behaviour.Behaviours;
 import de.eldoria.bloodnight.behaviour.BytecodeCache;
+import de.eldoria.bloodnight.boss.DragonFight;
+import de.eldoria.bloodnight.boss.WitherFight;
 import de.eldoria.bloodnight.command.BloodNightCommandBrigadier;
 import de.eldoria.bloodnight.command.item.ItemDropBox;
 import de.eldoria.bloodnight.command.store.StoreIds;
@@ -70,7 +72,6 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.attributes.MobName;
 import de.eldoria.bloodnight.mob.defaults.DefaultMobs;
 import de.eldoria.bloodnight.night.BloodNights;
-import de.eldoria.bloodnight.night.DragonFight;
 import de.eldoria.bloodnight.night.NightCommands;
 import de.eldoria.bloodnight.night.NightSkipGuard;
 import de.eldoria.bloodnight.night.NightStretch;
@@ -239,9 +240,13 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         tasks.globalTimer(1, budget::reset);
         effects = new EffectPlayer(
                 new EffectLibrary(() -> configuration.particleEffects()),
-                new Stage(tasks, viewers, budget, () -> configuration.main().particles(), id -> configuration
-                        .items()
-                        .item(id)),
+                new Stage(
+                        tasks,
+                        viewers,
+                        budget,
+                        () -> configuration.main().particles(),
+                        id -> configuration.items().item(id),
+                        tasks::send),
                 this);
         PaperSteering steering = new PaperSteering(getServer().getMobGoals());
         getServer().getPluginManager().registerEvents(steering, this);
@@ -373,6 +378,14 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                         bloodNights,
                         world ->
                                 configuration.worldConfig(world).nightSettings().timed(),
+                        id -> configuration.mobs().get(id),
+                        coordinator,
+                        tasks),
+                this);
+        plugins.registerEvents(
+                new WitherFight(
+                        bloodNights,
+                        world -> configuration.worldConfig(world).mobSettings().withers(),
                         id -> configuration.mobs().get(id),
                         coordinator,
                         tasks),

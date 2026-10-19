@@ -12,6 +12,8 @@ import NodeInspector from '~/views/editorview/workspace/NodeInspector.vue'
 import EntrySheet from '~/views/editorview/workspace/EntrySheet.vue'
 import ProblemsPanel from '~/views/editorview/workspace/ProblemsPanel.vue'
 import NewEntryDialog from '~/views/editorview/workspace/NewEntryDialog.vue'
+import StateBar from '~/views/editorview/workspace/StateBar.vue'
+import StateOverview from '~/views/editorview/workspace/StateOverview.vue'
 import SecondaryButton from '@/components/button/SecondaryButton.vue'
 import PrimaryButton from '@/components/button/PrimaryButton.vue'
 import EmptyState from '@/components/feedback/EmptyState.vue'
@@ -19,6 +21,8 @@ import {workspaceEntries, type WorkspaceKind} from '~/views/editorview/workspace
 import {mobBindings} from '~/util/graph/graphBindings'
 import {withRoutines} from '~/util/graph/routineCalls'
 import {withVariants} from '~/util/graph/mutate'
+import {stateCatalog, stateRows} from '~/util/graph/graphStates'
+import {segments} from '~/util/patch/jsonPointer'
 
 /**
  * The workspace of mobs or macros: the open entry's graph filling the area, with the switcher, the node palette, the
@@ -48,6 +52,8 @@ const paletteOpen = ref(true)
 const sheetOpen = ref(false)
 const problemsOpen = ref(false)
 const creating = ref(false)
+const state = ref<string | undefined>()
+const overviewOpen = ref(false)
 
 const entries = computed(() => session.payload.value ? workspaceEntries(session.payload.value, props.kind) : [])
 const entry = computed(() => entries.value.find(candidate => candidate.id === selection.value[props.kind]) ?? entries.value[0])
@@ -73,7 +79,11 @@ watch(() => entry.value?.section, (now, before) => {
   if (before) void locks.release(before)
   if (now) void locks.take(now)
   selectedNode.value = null
+  state.value = undefined
 }, {immediate: true})
+watch(() => entry.value ? stateRows(entry.value.graph).map(row => row.name) : [], names => {
+  if (state.value !== undefined && !names.includes(state.value)) state.value = undefined
+})
 
 onBeforeUnmount(() => {
   if (entry.value) void locks.release(entry.value.section)
@@ -85,13 +95,26 @@ const graphCatalog = computed(() => session.catalog.value && entry.value ? withR
 function pick(id: string): void {
   selection.value[props.kind] = id
 }
+
+/** The catalog the palette offers in the open state. */
+const addable = computed(() => entry.value && graphCatalog.value ? stateCatalog(graphCatalog.value, entry.value.graph, state.value) : undefined)
+
+/** Opens the state of the node a problem is about, and the node. */
+function openProblem(path: string): void {
+  if (!entry.value || !path.startsWith(entry.value.path + '/')) return
+  const parts = segments(path.slice(entry.value.path.length))
+  const node = parts[0] === 'behaviour' && parts[1] === 'nodes' ? parts[2] : undefined
+  if (!node || !entry.value.graph.nodes?.[node]) return
+  state.value = entry.value.graph.nodes[node]?.state
+  selectedNode.value = node
+}
 </script>
 
 <template>
   <div class="relative flex-1 overflow-hidden">
     <template v-if="entry && session.catalog.value">
       <GraphCanvas
-          :key="`${kind}:${entry.id}`"
+          :key="`${kind}:${entry.id}:${state ?? ''}`"
           ref="canvas"
           :base="entry.base"
           :bindings="bindings"
@@ -102,6 +125,7 @@ function pick(id: string): void {
           :macros="session.payload.value?.macros ?? []"
           :problem-count="problems.length"
           :read-only="readOnly"
+          :state="state"
           @problems="problemsOpen = !problemsOpen"
           @inspect="node => selectedNode = node"
       />
@@ -113,11 +137,12 @@ function pick(id: string): void {
           <InfoBadge v-if="heldBy">{{ t('editor.workspace.readOnly', {name: heldBy}) }}</InfoBadge>
           <InfoBadge v-else-if="denied">{{ t('editor.permission.readOnly') }}</InfoBadge>
         </div>
+        <StateBar v-if="kind === 'mobs'" v-model:state="state" :base="entry.base" :graph="entry.graph" :read-only="readOnly" class="pointer-events-auto" @overview="overviewOpen = !overviewOpen"/>
       </div>
       <div class="pointer-events-none absolute bottom-20 left-4 top-16 flex">
         <NodePalette
             v-if="paletteOpen"
-            :catalog="graphCatalog ?? session.catalog.value"
+            :catalog="addable ?? session.catalog.value"
             :in-macro="kind === 'macros'"
             :macros="kind === 'mobs' ? session.payload.value?.macros ?? [] : []"
             :read-only="readOnly"
@@ -141,7 +166,8 @@ function pick(id: string): void {
             @close="selectedNode = null"
         />
       </div>
-      <ProblemsPanel v-if="problemsOpen" :problems="problems" @close="problemsOpen = false"/>
+      <ProblemsPanel v-if="problemsOpen" :problems="problems" @close="problemsOpen = false" @open="openProblem"/>
+      <StateOverview v-if="overviewOpen && kind === 'mobs'" v-model:state="state" :graph="entry.graph" @close="overviewOpen = false"/>
     </template>
     <div v-else class="flex h-full flex-col items-center justify-center gap-4">
       <EmptyState :message="t(`editor.workspace.empty.${kind}`)"/>

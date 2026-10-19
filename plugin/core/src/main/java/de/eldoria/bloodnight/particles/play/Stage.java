@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.tasks.Tasks;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -21,10 +22,12 @@ import java.util.function.Supplier;
  * @param budget   how many particles may still be sent this tick
  * @param settings the current particle settings
  * @param items    the item registry's items by id
+ * @param sender   sends particles off the tick threads when the settings say so
  */
 public record Stage(
         Tasks tasks,
         Viewers viewers,
         Budget budget,
         Supplier<ParticleSettings> settings,
-        Function<String, @Nullable ItemStack> items) {}
+        Function<String, @Nullable ItemStack> items,
+        Executor sender) {}

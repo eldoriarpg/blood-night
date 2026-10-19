@@ -67,6 +67,16 @@ public final class BloodEnchantments {
     public static final NamespacedKey BLOOD_MOON_CURSE = new NamespacedKey("bloodnight", "blood_moon_curse");
 
     /**
+     * Boots enchantment: special mobs cannot teleport or carry the wearer away, e.g. into the sky.
+     */
+    public static final NamespacedKey EARTH_BOUND = new NamespacedKey("bloodnight", "earth_bound");
+
+    /**
+     * Helmet enchantment: the wearer is never blinded.
+     */
+    public static final NamespacedKey ARCANE_VISION = new NamespacedKey("bloodnight", "arcane_vision");
+
+    /**
      * The slots armor is worn in.
      */
     static final List<EquipmentSlot> ARMOR =

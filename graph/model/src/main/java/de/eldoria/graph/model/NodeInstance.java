@@ -25,6 +25,7 @@ import java.util.TreeMap;
  * @param inputs     data edges by input port id
  * @param literals   values typed directly into inputs instead of connecting an edge, by input port id, still unchecked
  * @param executions chained node ids by execution port id, in execution order
+ * @param state      the state of the graph the node belongs to, or {@code null} for the part that always runs
  * @param editor     editor state such as position or colour, or {@code null}; never read by the framework
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -34,6 +35,7 @@ public record NodeInstance(
         Map<String, Edge> inputs,
         Map<String, JsonNode> literals,
         Map<String, List<String>> executions,
+        @Nullable String state,
         @Nullable JsonNode editor) {
     public NodeInstance {
         Objects.requireNonNull(type, "type");
@@ -41,6 +43,7 @@ public record NodeInstance(
         inputs = sorted(inputs);
         literals = sorted(literals);
         executions = sortedLists(executions);
+        if (state != null && state.isBlank()) state = null;
         editor = editor == null || editor.isNull() || editor.isMissingNode() ? null : editor;
     }
 
@@ -74,6 +77,7 @@ public record NodeInstance(
         private final Map<String, Edge> inputs = new TreeMap<>();
         private final Map<String, JsonNode> literals = new TreeMap<>();
         private final Map<String, List<String>> executions = new TreeMap<>();
+        private @Nullable String state;
         private @Nullable JsonNode editor;
 
         private Builder(String type) {
@@ -130,6 +134,17 @@ public record NodeInstance(
         }
 
         /**
+         * Puts the node into a state of the graph.
+         *
+         * @param state the state's name
+         * @return this builder
+         */
+        public Builder state(@Nullable String state) {
+            this.state = state;
+            return this;
+        }
+
+        /**
          * Sets the editor state.
          *
          * @param editor editor state
@@ -144,7 +159,7 @@ public record NodeInstance(
          * @return the node
          */
         public NodeInstance build() {
-            return new NodeInstance(type, config, inputs, literals, executions, editor);
+            return new NodeInstance(type, config, inputs, literals, executions, state, editor);
         }
     }
 }

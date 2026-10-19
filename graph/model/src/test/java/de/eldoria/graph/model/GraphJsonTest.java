@@ -79,14 +79,15 @@ class GraphJsonTest {
     void commentsRoundTripAndKeepTheirFrame() {
         Graph graph = Graph.builder()
                 .node("tick", NodeInstance.of("entry.tick"))
-                .comment("charge", new Comment("Charge attack", "Every 5 seconds", "red", 10, -20, 300, 200, true))
+                .comment(
+                        "charge", new Comment("Charge attack", "Every 5 seconds", "red", 10, -20, 300, 200, true, null))
                 .build();
 
         Graph read = GraphJson.read(GraphJson.write(graph));
 
         assertEquals(graph, read);
         assertEquals(
-                new Comment("Charge attack", "Every 5 seconds", "red", 10, -20, 300, 200, true),
+                new Comment("Charge attack", "Every 5 seconds", "red", 10, -20, 300, 200, true, null),
                 read.comments().get("charge"));
     }
 
@@ -95,7 +96,8 @@ class GraphJsonTest {
         Graph read = GraphJson.read("{\"nodes\":{},\"comments\":{\"c\":{\"x\":1,\"y\":2}}}");
 
         assertEquals(
-                new Comment("", "", "grey", 1, 2, 0, 0, false), read.comments().get("c"));
+                new Comment("", "", "grey", 1, 2, 0, 0, false, null),
+                read.comments().get("c"));
     }
 
     @Test
@@ -134,5 +136,21 @@ class GraphJsonTest {
     @Test
     void rejectsBlankIds() {
         assertThrows(JacksonException.class, () -> GraphJson.read("{\"nodes\":{\" \":{\"type\":\"x\"}}}"));
+    }
+
+    @Test
+    void statesAndTheNodesInThemSurviveTheRoundTrip() {
+        Graph graph = Graph.builder()
+                .state(new State("fight", null, true))
+                .state(new State("calm", "fight", true))
+                .node("start", NodeInstance.of("mob.tick").state("calm"))
+                .comment("c", new Comment("", "", "grey", 0, 0, 0, 0, false, "calm"))
+                .build();
+
+        Graph read = GraphJson.read(GraphJson.write(graph));
+
+        assertEquals(graph.states(), read.states());
+        assertEquals("calm", read.nodes().get("start").state());
+        assertEquals("calm", read.comments().get("c").state());
     }
 }

@@ -56,6 +56,7 @@ public interface BloodNightNodes extends StdNodes {
     String LIVING_ENTITY_HAS_LINE_OF_SIGHT = "living_entity.has_line_of_sight";
     String MOB_READ = "mob.read";
     String CREEPER_READ = "creeper.read";
+    String ENDER_DRAGON_READ = "ender_dragon.read";
     String PLAYER_READ = "player.read";
     String PROJECTILE_READ = "projectile.read";
     String LOCATION_READ = "location.read";
@@ -92,6 +93,8 @@ public interface BloodNightNodes extends StdNodes {
     String WORLD_DROP_LOOT = "world.drop_loot";
     String SERVER_RUN_COMMAND = "server.run_command";
     String WORLD_SPAWN_TNT = "world.spawn_tnt";
+    String WORLD_SPAWN_ENTITY = "world.spawn_entity";
+    String WORLD_BREAK_BLOCKS = "world.break_blocks";
     String WORLD_SHOW_MARKER = "world.show_marker";
     String WORLD_PLAY_EFFECT = "world.play_effect";
     String WORLD_SHOW_TEXT = "world.show_text";
@@ -125,6 +128,8 @@ public interface BloodNightNodes extends StdNodes {
     String LIVING_ENTITY_MUTATE = "living_entity.mutate";
     String MOB_MUTATE = "mob.mutate";
     String CREEPER_MUTATE = "creeper.mutate";
+    String ENDER_DRAGON_MUTATE = "ender_dragon.mutate";
+    String LOCATION_MUTATE = "location.mutate";
     String CANCELLABLE_MUTATE = "cancellable.mutate";
     String ATTRIBUTE_MUTATE = "attribute.mutate";
     String EVENT_DATA_EXPLOSION_PRIME_MUTATE = "event_data.explosion_prime.mutate";

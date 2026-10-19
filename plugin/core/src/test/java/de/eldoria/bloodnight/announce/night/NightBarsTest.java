@@ -25,16 +25,16 @@ class NightBarsTest {
     @Test
     void barEmptiesOverTheNight() {
         NightTimes times = new NightTimes(13_000, 23_000);
-        assertEquals(1f, NightBars.remaining(times, 2, 2 * 24_000 + 13_000));
-        assertEquals(0.5f, NightBars.remaining(times, 2, 2 * 24_000 + 18_000));
-        assertEquals(0f, NightBars.remaining(times, 2, 2 * 24_000 + 23_000));
-        assertEquals(1f, NightBars.remaining(times, 2, 2 * 24_000 + 12_000));
+        assertEquals(1f, NightBars.remaining(times, times.endOf(2), 2 * 24_000 + 13_000));
+        assertEquals(0.5f, NightBars.remaining(times, times.endOf(2), 2 * 24_000 + 18_000));
+        assertEquals(0f, NightBars.remaining(times, times.endOf(2), 2 * 24_000 + 23_000));
+        assertEquals(1f, NightBars.remaining(times, times.endOf(2), 2 * 24_000 + 12_000));
     }
 
     @Test
     void barFollowsANightPastMidnight() {
         NightTimes times = new NightTimes(20_000, 4_000);
-        assertEquals(0.5f, NightBars.remaining(times, 0, 24_000));
+        assertEquals(0.5f, NightBars.remaining(times, times.endOf(0), 24_000));
     }
 
     @Test
@@ -45,11 +45,11 @@ class NightBarsTest {
             PlayerMock player = server.addPlayer();
             player.teleport(world.getSpawnLocation());
             NightBars bars = new NightBars();
-            bars.update(player, new BossBarSettings(), new NightTimes(13_000, 23_000), 0, "bloodnight.night.name");
+            bars.update(player, new BossBarSettings(), 1f, "bloodnight.night.name");
 
             bars.darken(player, true);
             assertTrue(flags(player).contains(BossBar.Flag.DARKEN_SCREEN));
-            bars.update(player, new BossBarSettings(), new NightTimes(13_000, 23_000), 0, "bloodnight.night.name");
+            bars.update(player, new BossBarSettings(), 1f, "bloodnight.night.name");
             assertTrue(flags(player).contains(BossBar.Flag.DARKEN_SCREEN));
 
             bars.darken(player, false);

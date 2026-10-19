@@ -106,7 +106,17 @@ Cave spiders can become these too.
 | `launcher_enderman` | Grabs you. Sneak within a second, or it carries you up to 20 blocks into the air and lets go. |
 | `grabber_enderman` | Every 10 seconds it grabs mobs around it and puts them down in front of you. |
 | `fuse_enderman` | Lays lit TNT next to you every 6 seconds. It hurts but breaks no blocks. |
-| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning. Every 8 seconds it throws a blood spear at the nearest player, which hurts when it lands. Its hits wither and draw a red beam. It never spawns by chance. |
+| `blood_dragon` | The ender dragon of a [dragon fight](../nights/nether-and-end.md#the-dragon-fight). Twice the health, harder hits, dragon fireballs and lightning. Every 8 seconds it throws a blood spear at the nearest player, which hurts when it lands. Its hits wither and drain the player. Below 70% health, once a minute, it roars, rises and hovers in an arcane aura, facing you, and draws an arcane seal 50 blocks across below it. It makes no other attack while it casts; after 8 seconds every player within 200 blocks it can see is thrown about 30 blocks away. Hide behind a pillar. It never spawns by chance. |
+
+## Withers
+
+A wither built during a blood night becomes one of these. See [Withers](../nights/withers.md).
+
+| ID | What it does |
+|---|---|
+| `blink_wither` | Blinks behind you every 6 seconds and teleports out of any cage, boat or trap. Blocks do not choke it. |
+| `blood_wither` | Its skulls heal it. Below half health four wither skeletons rise, and it throws blood spears at everyone it can see. |
+| `grave_wither` | Breaks the blocks around it every 4 seconds, wraps you in darkness and pulls you toward it. |
 
 Open any of them in the [web editor](../editor/sessions.md) to see how they work. They are good examples for your
 own mobs.

@@ -30,8 +30,11 @@ export const PLAY_EFFECT = 'world.play_effect'
 export const BUILT_IN = 'bloodnight:'
 /** The slots of a mob's Particles part. */
 export const WORN = ['ambient', 'spawn', 'death'] as const
-/** The most emitters and pieces one effect has, and particles per emission, as on the server. */
-export const LIMITS = {emitters: 8, pieces: 4, perEmission: 256, duration: 600} as const
+/**
+ * The most emitters and pieces one effect has, particles per emission and the longest play, as on the server; the
+ * view distance an effect sets, and the one it starts with.
+ */
+export const LIMITS = {emitters: 8, pieces: 4, perEmission: 256, duration: 600, minView: 8, maxView: 128, startView: 64} as const
 /** Particles per second per player above which the editor warns. */
 export const COSTLY = 400
 
@@ -170,18 +173,27 @@ function played(graph: Graph | undefined, id: string): string[] {
         .map(([node]) => node)
 }
 
+/** What an effect costs each player near it: particles per second, or in total for a play shorter than a second. */
+export interface EffectCost {
+    count: number
+    total: boolean
+}
+
 /**
  * @param effect an effect
- * @returns about how many particles each player near it gets per second while it plays
+ * @returns about how many particles each player near it gets while it plays; a beam or arc without its own end is
+ *     taken as 16 blocks long
  */
-export function perSecond(effect: ParticleEffect): number {
+export function effectCost(effect: ParticleEffect): EffectCost {
     const duration = Math.max(effect.duration ?? 20, 0) + 1
     const total = (effect.emitters ?? []).reduce((sum, emitter) => {
         const every = Math.max(emitter.every ?? 1, 1)
         const emissions = Math.max(0, Math.ceil((duration - (emitter.delay ?? 0)) / every))
-        return sum + emissions * (emitter.chance ?? 1) * pointCount(emitter.shape) * (emitter.count ?? 1)
+        const share = 1 / Math.max(emitter.tiles ?? 1, 1)
+        return sum + emissions * (emitter.chance ?? 1) * Math.ceil(pointCount(emitter.shape) * share) * (emitter.count ?? 1)
     }, 0)
-    return Math.round(total * 20 / duration)
+    if (duration < 20) return {count: Math.round(total), total: true}
+    return {count: Math.round(total * 20 / duration), total: false}
 }
 
 /**

@@ -43,10 +43,12 @@ your own copy with a new id.
 | `bloodnight:arcane_glow` | Enchanting letters and a purple ring above the head |
 | `bloodnight:shadow_wings` | Dark wings on the target's back that flap |
 | `bloodnight:arcane_lines` | Two magic arcs from the source to the target |
-| `bloodnight:drain_beam` | A red beam of particles from the source to the target, with a ring where it hits |
+| `bloodnight:drain_beam` | Red trails flowing from the target into the source, as if it drains them, with a ring around the target |
 | `bloodnight:lightning_bolt` | A crackling bolt from the sky to the ground |
 | `bloodnight:blood_spear` | A glowing spear that flies through the target |
 | `bloodnight:rune_circle` | A turning rune on the ground |
+| `bloodnight:arcane_seal` | A magic circle 50 blocks across that fills in over 8 seconds and ends in a ring of explosions. Seen from 128 blocks. The Blood Dragon casts it. |
+| `bloodnight:seal_aura` | Enchanting letters, a turning ring of end rods and a purple spiral around the source for 8 seconds. Seen from 128 blocks. |
 
 ## Your own effects
 
@@ -72,6 +74,8 @@ effects:
 - `pieces`: display pieces, see below. An effect has up to 4.
 - `self`: whether a player the effect plays on sees it. Turn it off for wings on a player's back, so they do not block
   the view. Everyone else still sees them.
+- `viewDistance`: how far away players see this effect, 8 to 128 blocks. Leave it out to use the server's
+  `particles.viewDistance`. Give it to big warnings, like a boss charging an attack.
 
 ## Emitters
 
@@ -91,6 +95,7 @@ An emitter draws one particle in a shape, again and again while the effect plays
 | `every` | Ticks between two emissions |
 | `delay` | Ticks into the play before the first emission |
 | `chance` | How likely each emission is, from 0 to 1. Use it for flicker. |
+| `tiles` | How many emissions the shape is built over. With `tiles: 4` each emission draws a quarter of the points, so the shape costs a quarter of the particles. Good for particles that stay a while, like `dust`; short-lived ones flicker. |
 
 ## Shapes
 
@@ -112,11 +117,11 @@ Every shape can also use:
 - `spin`: degrees the shape turns at each emission.
 - `grow`: the shape grows from nothing to its size during the play. Beams and arcs grow in length.
 
-A shape has at most 64 points. One emission draws at most 256 particles, points times `count`.
+A shape has at most 256 points. One emission draws at most 256 particles, points times `count`.
 
 ### Pictures
 
-A `PATTERN` is a picture of up to 16 by 16 cells. In the editor you click the cells. In the file, `x` is a point and `.`
+A `PATTERN` is a picture of up to 32 by 32 cells. In the editor you click the cells. In the file, `x` is a point and `.`
 is none.
 
 ```yaml
@@ -221,6 +226,7 @@ particles:
   viewDistance: 32
   budgetPerTick: 2000
   perMob: 4
+  asyncDispatch: true
 ```
 
 - `enabled`: turns all particle effects off. Spawn Particle nodes still work.
@@ -229,8 +235,12 @@ particles:
 - `budgetPerTick`: how many particles all effects together send per tick. Each player who sees a particle counts. When
   it is used up, the effects mobs wear wait first. Effects from graphs go on up to twice as much.
 - `perMob`: how many effects one mob plays at once. The effect it wears counts too.
+- `asyncDispatch`: sends the particles to players on a thread of its own, so the server's ticks stay short. Switch it
+  off if particles go missing on your server software.
 
-The editor shows about how many particles an effect sends per second, and warns when it is a lot.
+The editor shows about how many particles an effect sends per second, or in total for an effect shorter than a second,
+and warns when it is a lot. It takes a beam or arc without its own end as 16 blocks long. To make a looping shape
+cheaper, build it over several emissions with `tiles`.
 
 ## Players can switch effects off
 

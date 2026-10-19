@@ -174,8 +174,9 @@ class EditorClientTest {
     }
 
     @Test
-    void anOpenSessionCanBeViewed() {
+    void anOpenSessionCanBeViewedWithThePullToken() {
         assertEquals(3, client.view(SESSION).join().orElseThrow().revision());
+        assertTrue(requests.contains("GET /api/v1/editor/sessions/id Bearer " + SESSION.pullToken()));
         sessionGone = true;
         assertTrue(client.view(SESSION).join().isEmpty());
     }

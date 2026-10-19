@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.graph.runtime;
 
+import de.eldoria.bloodnight.api.event.mob.CustomMobMoveEntityEvent;
 import de.eldoria.bloodnight.api.internal.MobContext;
 import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
 import de.eldoria.bloodnight.graph.runtime.world.Reach;
@@ -14,19 +15,26 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
+import org.bukkit.GameRules;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -101,12 +109,15 @@ public final class BukkitRuntime {
     }
 
     /**
-     * Starts moving an entity to a location. The move finishes once the target is loaded; on Folia a move into another
-     * region always finishes later.
+     * Starts moving an entity to a location, unless a listener of {@link CustomMobMoveEntityEvent} keeps it in place.
+     * The move finishes once the target is loaded; on Folia a move into another region always finishes later.
      *
-     * @return true, the move has started
+     * @return whether the move has started
      */
     public static boolean teleport(Entity entity, Location location) {
+        if (!new CustomMobMoveEntityEvent(entity, CustomMobMoveEntityEvent.Kind.TELEPORT, location).callEvent()) {
+            return false;
+        }
         entity.teleportAsync(location);
         return true;
     }
@@ -190,6 +201,49 @@ public final class BukkitRuntime {
             tnt.setSource(mob);
             tnt.getPersistentDataContainer().set(HARMLESS, PersistentDataType.BOOLEAN, true);
         }));
+    }
+
+    /**
+     * Spawns a vanilla entity, when the current thread owns the location.
+     *
+     * @return the entity, or {@code null} when another region owns the location
+     */
+    public static @Nullable Entity spawnEntity(Location location, EntityType type) {
+        if (!Bukkit.isOwnedByCurrentRegion(location)) return null;
+        return location.getWorld().spawnEntity(location, type, CreatureSpawnEvent.SpawnReason.CUSTOM);
+    }
+
+    /**
+     * Breaks the blocks within a radius around a location, as a wither does: blocks tagged
+     * {@code minecraft:wither_immune}, such as bedrock, stay, nothing breaks while the world's {@code mob_griefing}
+     * rule is off, and every block is offered to protection plugins first as an {@link EntityChangeBlockEvent} of the
+     * mob. Blocks other regions own stay.
+     *
+     * @param drops whether the blocks drop as items
+     * @return how many blocks broke
+     */
+    public static int breakBlocks(MobContext context, Location center, double radius, boolean drops) {
+        World world = center.getWorld();
+        if (Boolean.FALSE.equals(world.getGameRuleValue(GameRules.MOB_GRIEFING))) return 0;
+        LivingEntity mob = context.entity();
+        BlockData air = Material.AIR.createBlockData();
+        int reach = (int) Math.ceil(Math.max(radius, 0));
+        int broken = 0;
+        for (int x = -reach; x <= reach; x++) {
+            for (int y = -reach; y <= reach; y++) {
+                for (int z = -reach; z <= reach; z++) {
+                    if (x * x + y * y + z * z > radius * radius) continue;
+                    Block block = center.clone().add(x, y, z).getBlock();
+                    if (!Bukkit.isOwnedByCurrentRegion(block.getLocation())) continue;
+                    if (block.isEmpty() || Tag.WITHER_IMMUNE.isTagged(block.getType())) continue;
+                    if (!new EntityChangeBlockEvent(mob, block, air).callEvent()) continue;
+                    if (drops) block.breakNaturally();
+                    else block.setType(Material.AIR);
+                    broken++;
+                }
+            }
+        }
+        return broken;
     }
 
     /**

@@ -1,0 +1,1177 @@
+{
+  "format" : 1,
+  "id" : "blink_wither",
+  "pack" : "withers",
+  "names" : {
+    "de" : "Blinzelwither",
+    "en" : "Blink Wither",
+    "es" : "Wither Parpadeante",
+    "fr" : "Wither clignotant",
+    "ms" : "Wither Kelip",
+    "tr" : "Işınlanan Wither",
+    "zh" : "闪烁凋灵"
+  },
+  "descriptions" : {
+    "de" : "Ein Wither, der während einer Blutnacht gebaut wurde. Er taucht hinter dir auf und teleportiert sich aus jedem Käfig, Boot und jeder Falle.",
+    "en" : "A wither built during a blood night. It blinks behind you and teleports out of any cage, boat or trap.",
+    "es" : "Un wither construido durante una noche sangrienta. Aparece detrás de ti y se teletransporta fuera de cualquier jaula, barca o trampa.",
+    "fr" : "Un wither construit pendant une nuit de sang. Il apparaît derrière toi et se téléporte hors de toute cage, barque ou piège.",
+    "ms" : "Wither yang dibina semasa blood night. Ia muncul di belakang anda dan berteleport keluar dari sebarang sangkar, bot atau perangkap.",
+    "tr" : "Lanetli Gece sırasında kurulan bir wither. Arkanda belirir ve her kafesten, tekneden ya da tuzaktan ışınlanarak kurtulur.",
+    "zh" : "血夜期间召唤的凋灵。它会闪现到你身后，并从任何笼子、船或陷阱中传送出来。"
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "blink_wither",
+    "equipment" : null,
+    "attributes" : {
+      "name" : {
+        "style" : "<dark_red>",
+        "texts" : {
+          "de" : "Blinzelwither",
+          "en" : "Blink Wither",
+          "es" : "Wither Parpadeante",
+          "fr" : "Wither clignotant",
+          "ms" : "Wither Kelip",
+          "tr" : "Işınlanan Wither",
+          "zh" : "闪烁凋灵"
+        }
+      },
+      "entityType" : "WITHER",
+      "exactType" : true,
+      "healthModifier" : "VALUE",
+      "health" : 450.0,
+      "damageModifier" : "MULTIPLY",
+      "damage" : 1.3,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "add_12" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_6",
+              "port" : "y"
+            }
+          },
+          "literals" : {
+            "second" : 1.0
+          },
+          "state" : "hunting"
+        },
+        "add_29" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_26",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "random_number_28",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "add_30" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_26",
+              "port" : "y"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          },
+          "state" : "hunting"
+        },
+        "add_32" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_26",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "random_number_31",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "add_48" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_45",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "random_number_47",
+              "port" : "result"
+            }
+          }
+        },
+        "add_49" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_45",
+              "port" : "y"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          }
+        },
+        "add_51" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_45",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "random_number_50",
+              "port" : "result"
+            }
+          }
+        },
+        "add_77" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_74",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "random_number_76",
+              "port" : "result"
+            }
+          }
+        },
+        "add_78" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_74",
+              "port" : "y"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          }
+        },
+        "add_80" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_74",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "random_number_79",
+              "port" : "result"
+            }
+          }
+        },
+        "branch_19" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_18",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_15", "teleport_16", "play_effect_17" ]
+          },
+          "state" : "hunting"
+        },
+        "branch_21" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_20",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_19" ]
+          },
+          "state" : "hunting"
+        },
+        "branch_36" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_24",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_33", "teleport_34", "play_effect_35" ]
+          },
+          "state" : "hunting"
+        },
+        "branch_38" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_37",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_36" ]
+          },
+          "state" : "hunting"
+        },
+        "branch_40" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_39",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_38" ]
+          },
+          "state" : "hunting"
+        },
+        "branch_42" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_41",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_40", "set_25" ]
+          },
+          "state" : "hunting"
+        },
+        "branch_56" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_55",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "play_effect_52", "teleport_53", "play_effect_54" ]
+          }
+        },
+        "branch_58" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_57",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "drop_passengers_44", "branch_56" ]
+          }
+        },
+        "branch_59" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "read_1",
+              "port" : "inside_vehicle"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_58" ]
+          }
+        },
+        "branch_64" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_63",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_61" ]
+          }
+        },
+        "branch_65" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_62",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_64" ]
+          }
+        },
+        "branch_85" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_84",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_81", "teleport_82", "play_effect_83" ]
+          }
+        },
+        "branch_87" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_86",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_85" ]
+          }
+        },
+        "branch_88" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "or_68",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_73", "branch_87" ]
+          }
+        },
+        "cooldown_18" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 6000
+          },
+          "state" : "hunting"
+        },
+        "cooldown_41" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 3000
+          },
+          "state" : "hunting"
+        },
+        "cooldown_57" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 1000
+          }
+        },
+        "cooldown_84" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 1000
+          }
+        },
+        "create_27" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_26",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_29",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "add_30",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "add_32",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "create_46" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_45",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_48",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "add_49",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "add_51",
+              "port" : "result"
+            }
+          }
+        },
+        "create_75" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_74",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_77",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "add_78",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "add_80",
+              "port" : "result"
+            }
+          }
+        },
+        "create_9" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_6",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "subtract_10",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "add_12",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "subtract_13",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "damage_67" : {
+          "type" : "event.damage",
+          "executions" : {
+            "next" : [ "branch_88" ]
+          }
+        },
+        "delay_3" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 12.0
+          },
+          "executions" : {
+            "next" : [ "go_to_4" ]
+          },
+          "state" : "charging"
+        },
+        "distance_23" : {
+          "type" : "location.distance",
+          "inputs" : {
+            "other" : {
+              "node" : "get_22",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "state" : "hunting"
+        },
+        "drop_passengers_44" : {
+          "type" : "entity.drop_passengers",
+          "inputs" : {
+            "target" : {
+              "node" : "read_1",
+              "port" : "vehicle"
+            }
+          }
+        },
+        "enter_5" : {
+          "type" : "state.enter",
+          "executions" : {
+            "next" : [ "delay_3" ]
+          },
+          "state" : "charging"
+        },
+        "equal_70" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_67",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_69",
+              "port" : "value"
+            }
+          }
+        },
+        "equal_72" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "damage_67",
+              "port" : "cause"
+            },
+            "second" : {
+              "node" : "value_71",
+              "port" : "value"
+            }
+          }
+        },
+        "get_22" : {
+          "type" : "variable.get",
+          "config" : {
+            "name" : "last",
+            "type" : "location"
+          },
+          "state" : "hunting"
+        },
+        "go_to_4" : {
+          "type" : "state.go_to",
+          "config" : {
+            "state" : "hunting"
+          },
+          "state" : "charging"
+        },
+        "is_null_20" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_1",
+              "port" : "target"
+            }
+          },
+          "state" : "hunting"
+        },
+        "is_null_37" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "get_22",
+              "port" : "value"
+            }
+          },
+          "state" : "hunting"
+        },
+        "is_null_39" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          },
+          "state" : "hunting"
+        },
+        "is_null_55" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_62" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_1",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_63" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_60",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_86" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "less_24" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "distance_23",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "second" : 1.0
+          },
+          "state" : "hunting"
+        },
+        "multiply_11" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 8.0
+          },
+          "state" : "hunting"
+        },
+        "multiply_14" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 8.0
+          },
+          "state" : "hunting"
+        },
+        "mutate_61" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "nearest_player_60",
+              "port" : "player"
+            }
+          }
+        },
+        "mutate_73" : {
+          "type" : "cancellable.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "damage_67",
+              "port" : "event"
+            }
+          },
+          "literals" : {
+            "cancelled" : true
+          }
+        },
+        "nearest_player_0" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 32.0
+          }
+        },
+        "nearest_player_60" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 16.0
+          }
+        },
+        "or_68" : {
+          "type" : "logic.or",
+          "inputs" : {
+            "first" : {
+              "node" : "equal_70",
+              "port" : "result"
+            },
+            "second" : {
+              "node" : "equal_72",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_15" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_17" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_9",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_33" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_35" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_27",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "play_effect_52" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "play_effect_54" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_46",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_81" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "play_effect_83" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:teleport_puff"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_75",
+              "port" : "result"
+            }
+          }
+        },
+        "random_number_28" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          },
+          "state" : "hunting"
+        },
+        "random_number_31" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          },
+          "state" : "hunting"
+        },
+        "random_number_47" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          }
+        },
+        "random_number_50" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          }
+        },
+        "random_number_76" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          }
+        },
+        "random_number_79" : {
+          "type" : "function.random_number",
+          "literals" : {
+            "lower" : -8.0,
+            "upper" : 8.0
+          }
+        },
+        "read_1" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "read_26" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          },
+          "state" : "hunting"
+        },
+        "read_45" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "read_6" : {
+          "type" : "living_entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_1",
+              "port" : "target"
+            }
+          },
+          "state" : "hunting"
+        },
+        "read_7" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_8",
+              "port" : "direction"
+            }
+          },
+          "state" : "hunting"
+        },
+        "read_74" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_0",
+              "port" : "player"
+            }
+          }
+        },
+        "read_8" : {
+          "type" : "location.read",
+          "inputs" : {
+            "target" : {
+              "node" : "read_6",
+              "port" : "location"
+            }
+          },
+          "state" : "hunting"
+        },
+        "self_2" : {
+          "type" : "mob.self"
+        },
+        "set_25" : {
+          "type" : "variable.set",
+          "config" : {
+            "name" : "last",
+            "type" : "location"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "state" : "hunting"
+        },
+        "subtract_10" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_6",
+              "port" : "x"
+            },
+            "second" : {
+              "node" : "multiply_11",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "subtract_13" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_6",
+              "port" : "z"
+            },
+            "second" : {
+              "node" : "multiply_14",
+              "port" : "result"
+            }
+          },
+          "state" : "hunting"
+        },
+        "teleport_16" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_9",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "teleport_34" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_27",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "hunting"
+        },
+        "teleport_53" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_46",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "teleport_82" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_75",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          }
+        },
+        "tick_43" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_21", "branch_42" ]
+          },
+          "state" : "hunting"
+        },
+        "tick_66" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_65", "branch_59" ]
+          }
+        },
+        "value_69" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "SUFFOCATION"
+          }
+        },
+        "value_71" : {
+          "type" : "value",
+          "config" : {
+            "type" : "damage_cause",
+            "value" : "CRAMMING"
+          }
+        }
+      },
+      "states" : [ {
+        "name" : "charging",
+        "initial" : true
+      }, {
+        "name" : "hunting"
+      } ]
+    },
+    "loot" : {
+      "tables" : [ "blink_wither" ],
+      "slots" : {
+        "2" : 1,
+        "3" : 2,
+        "4" : 1
+      },
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null,
+      "money" : null
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 0,
+      "nightOnly" : false,
+      "nightEnd" : "KEEP",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null,
+    "movement" : {
+      "preset" : "VANILLA",
+      "range" : 24.0,
+      "closest" : 6.0,
+      "farthest" : 10.0,
+      "seconds" : 3.0,
+      "fleeBelow" : 0.3
+    },
+    "particles" : {
+      "ambient" : "bloodnight:void_shimmer",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
+  },
+  "lootTables" : {
+    "blink_wither" : {
+      "name" : "Blink Wither",
+      "entries" : [ {
+        "item" : "minecraft:nether_star",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:experience_bottle",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 8,
+          "max" : 16,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:diamond",
+        "weight" : 4,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 5,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:ender_pearl",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 4,
+          "max" : 8,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      } ]
+    }
+  },
+  "particleEffects" : { }
+}

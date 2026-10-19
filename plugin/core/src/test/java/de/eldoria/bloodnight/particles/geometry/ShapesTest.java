@@ -7,6 +7,7 @@ package de.eldoria.bloodnight.particles.geometry;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -281,5 +282,20 @@ class ShapesTest {
                 null);
         List<Vec3> points = Shapes.between(beam, Vec3.ZERO, new Vec3(4, 0, 0), new Moment(0.5, 0, 0), new Random(1));
         assertEquals(2, points.getLast().x(), EPSILON);
+    }
+
+    @Test
+    void aTiledShapeIsDrawnWholeOverItsTiles() {
+        List<Vec3> points = new ArrayList<>();
+        for (int index = 0; index < 10; index++) points.add(new Vec3(index, 0, 0));
+        List<Vec3> drawn = new ArrayList<>();
+        for (int emission = 0; emission < 3; emission++) {
+            List<Vec3> share = Shapes.tile(points, 3, emission);
+            assertTrue(share.size() <= 4);
+            drawn.addAll(share);
+        }
+        assertEquals(10, drawn.size());
+        assertTrue(drawn.containsAll(points));
+        assertEquals(points, Shapes.tile(points, 1, 5));
     }
 }

@@ -132,7 +132,7 @@ function fieldLabels(field: ConfigView): Record<string, string> {
   </div>
   <div
       v-else
-      :class="[selected ? 'border-focus' : 'border-line', editable ? 'min-w-72' : 'min-w-60']"
+      :class="[selected ? 'border-focus' : 'border-line', editable ? 'min-w-72' : 'min-w-60', data.borrowed ? 'opacity-50' : '']"
       class="w-max max-w-[36rem] rounded-node border bg-raised/85 text-xs text-ink"
   >
     <div :class="tone" class="flex items-center gap-2 rounded-t-node px-3 py-1.5">

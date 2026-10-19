@@ -241,6 +241,8 @@ class BloodNightsTest {
         end.setGameTime(3 * 12_000 + 5_000);
         assertEquals(3, timedNights.force(end));
         assertEquals(3, timedNights.running(end).getAsLong());
+        NightTimes times = NightTimes.of(end, settings);
+        assertEquals(3 * 12_000 + 5_000 + times.length(), timedNights.endOf(end, times, 3));
 
         end.setGameTime(3 * 12_000 + 7_000);
         timedNights.check(List.of(end));
@@ -258,7 +260,7 @@ class BloodNightsTest {
     @Test
     void heldBloodNightsLastUntilReleased() {
         world.setFullTime(1_000);
-        nights.hold(world);
+        nights.hold(world, () -> 1);
         assertTrue(nights.running(world).isPresent());
 
         world.setFullTime(5_000);
@@ -267,5 +269,45 @@ class BloodNightsTest {
 
         nights.release(world);
         assertTrue(nights.running(world).isEmpty());
+    }
+
+    @Test
+    void aHoldThatEndsTheNightFillsTheBar() {
+        world.setFullTime(1_000);
+        nights.hold(world, () -> 0.4);
+        assertEquals(0.4, nights.holdLeft(world).orElseThrow(), 1e-9);
+
+        nights.release(world);
+        assertTrue(nights.holdLeft(world).isEmpty());
+    }
+
+    @Test
+    void aForcedNightRunsOutItsTimeAfterTheHoldLetsGo() {
+        WorldMock end = new WorldMock();
+        end.setName("the_end");
+        end.setEnvironment(World.Environment.THE_END);
+        server.addWorld(end);
+        NightSettings settings = Selections.read(
+                "{\"timed\":{\"everyMinutes\":10,\"chance\":0,\"lengthMinutes\":2}}", NightSettings.class);
+        TimedNights timed = settings.timed();
+        BloodNights timedNights = new BloodNights(
+                new NightSelector(ignored -> timed, ignored -> NightTimes.of(end, settings), CLOCK, () -> 20),
+                ignored -> true,
+                server.getPluginManager(),
+                Logger.getLogger("test"));
+
+        end.setGameTime(3 * 12_000 + 5_000);
+        timedNights.force(end);
+        timedNights.hold(end, () -> 0.5);
+        assertTrue(timedNights.holdLeft(end).isEmpty());
+
+        end.setGameTime(3 * 12_000 + 5_500);
+        timedNights.release(end);
+        timedNights.check(List.of(end));
+        assertTrue(timedNights.running(end).isPresent());
+
+        end.setGameTime(3 * 12_000 + 7_500);
+        timedNights.check(List.of(end));
+        assertTrue(timedNights.running(end).isEmpty());
     }
 }

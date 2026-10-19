@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.graph.runtime.world;
 
+import de.eldoria.bloodnight.api.event.mob.CustomMobMoveEntityEvent;
 import de.eldoria.bloodnight.api.internal.MobContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,12 +40,15 @@ public final class Carrying {
     private Carrying() {}
 
     /**
-     * Puts an entity on the carrier, taking it off whatever it rode before.
+     * Puts an entity on the carrier, taking it off whatever it rode before, unless a listener of
+     * {@link CustomMobMoveEntityEvent} keeps it on the ground.
      *
-     * @return whether the carrier now carries it; false for the carrier itself and entities of another region
+     * @return whether the carrier now carries it; false for the carrier itself, entities of another region and kept ones
      */
     public static boolean carry(Entity carrier, Entity passenger) {
         if (carrier.equals(passenger) || !Bukkit.isOwnedByCurrentRegion(passenger)) return false;
+        if (!new CustomMobMoveEntityEvent(passenger, CustomMobMoveEntityEvent.Kind.CARRY, null).callEvent())
+            return false;
         Entity vehicle = passenger.getVehicle();
         if (vehicle != null && !vehicle.equals(carrier) && !vehicle.removePassenger(passenger)) return false;
         if (!carrier.getPassengers().contains(passenger) && !carrier.addPassenger(passenger)) return false;

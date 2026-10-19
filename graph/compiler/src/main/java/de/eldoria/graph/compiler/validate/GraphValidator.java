@@ -8,6 +8,7 @@ package de.eldoria.graph.compiler.validate;
 import com.palantir.javapoet.CodeBlock;
 import de.eldoria.graph.compiler.GraphCompilationException;
 import de.eldoria.graph.compiler.emit.Routines;
+import de.eldoria.graph.compiler.emit.States;
 import de.eldoria.graph.definition.EntryDefinition;
 import de.eldoria.graph.definition.NodeDefinition;
 import de.eldoria.graph.definition.StatementDefinition;
@@ -104,6 +105,8 @@ public final class GraphValidator {
             Routines.definitions(graph.nodes(), platform.types())
                     .forEach(definition -> routines.put(definition.id(), definition));
             problems.addAll(Routines.check(graph.nodes(), platform.types()));
+            problems.addAll(States.check(graph));
+            States.definitions().forEach(definition -> routines.put(definition.id(), definition));
             graph.nodes().forEach((id, node) -> platform.node(node.type())
                     .or(() -> Optional.ofNullable(extra.get(node.type())))
                     .or(() -> Optional.ofNullable(routines.get(node.type())))
@@ -137,7 +140,7 @@ public final class GraphValidator {
                     .filter(entry -> entry.getValue() instanceof EntryDefinition)
                     .map(Map.Entry::getKey)
                     .toList();
-            return new ValidatedGraph(platform, nodes, entries, List.copyOf(problems));
+            return new ValidatedGraph(platform, nodes, entries, graph.states(), List.copyOf(problems));
         }
 
         private void checkRules(String id, NodeDefinition definition) {

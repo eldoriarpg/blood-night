@@ -57,6 +57,10 @@ night to wait for, so `force` starts a blood night right away. It lasts as long 
 When the ender dragon appears in the End, a Blood Eclipse begins. Players read "The Blood Dragon awakens". It lasts
 until the dragon dies, no matter what the clock says.
 
+While the dragon alone keeps the Blood Eclipse going, its boss bar shows the dragon's health. When a Blood Eclipse
+was already running, by the clock or [forced](#by-the-clock), it goes on after the dragon dies until its own time is
+up, and its bar shows that time.
+
 The dragon also becomes a **Blood Dragon**:
 
 - It has twice the health.

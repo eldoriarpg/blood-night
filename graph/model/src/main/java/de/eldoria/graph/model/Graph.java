@@ -7,7 +7,9 @@ package de.eldoria.graph.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -17,22 +19,33 @@ import java.util.TreeMap;
  *
  * @param nodes    nodes by instance id
  * @param comments the editor's comment frames by id; left out of the JSON when there are none
+ * @param states   the graph's states, parents before their children; left out of the JSON when there are none
  */
 public record Graph(
         Map<String, NodeInstance> nodes,
-        @JsonInclude(JsonInclude.Include.NON_EMPTY) Map<String, Comment> comments) {
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) Map<String, Comment> comments,
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) List<State> states) {
     public Graph {
         nodes = nodes == null ? Map.of() : Collections.unmodifiableMap(new TreeMap<>(nodes));
         nodes.keySet().forEach(Graph::checkId);
         comments = comments == null ? Map.of() : Collections.unmodifiableMap(new TreeMap<>(comments));
         comments.keySet().forEach(Graph::checkId);
+        states = states == null ? List.of() : List.copyOf(states);
+    }
+
+    /**
+     * @param nodes    nodes by instance id
+     * @param comments the editor's comment frames by id
+     */
+    public Graph(Map<String, NodeInstance> nodes, Map<String, Comment> comments) {
+        this(nodes, comments, List.of());
     }
 
     /**
      * @param nodes nodes by instance id
      */
     public Graph(Map<String, NodeInstance> nodes) {
-        this(nodes, Map.of());
+        this(nodes, Map.of(), List.of());
     }
 
     /**
@@ -64,6 +77,7 @@ public record Graph(
     public static final class Builder {
         private final Map<String, NodeInstance> nodes = new TreeMap<>();
         private final Map<String, Comment> comments = new TreeMap<>();
+        private final List<State> states = new ArrayList<>();
 
         private Builder() {}
 
@@ -104,10 +118,21 @@ public record Graph(
         }
 
         /**
+         * Adds a state; a parent is added before its children.
+         *
+         * @param state the state
+         * @return this builder
+         */
+        public Builder state(State state) {
+            states.add(state);
+            return this;
+        }
+
+        /**
          * @return the graph
          */
         public Graph build() {
-            return new Graph(nodes, comments);
+            return new Graph(nodes, comments, states);
         }
     }
 }

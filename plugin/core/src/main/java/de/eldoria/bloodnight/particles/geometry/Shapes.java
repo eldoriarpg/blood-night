@@ -18,17 +18,35 @@ import java.util.random.RandomGenerator;
  */
 public final class Shapes {
     /** The most points one shape has. */
-    public static final int MAX_POINTS = 64;
+    public static final int MAX_POINTS = 256;
 
     /** The longest beam or arc, in blocks; longer ones are not drawn. */
     public static final double MAX_SPAN = 32;
 
     /** The largest picture, in cells each way. */
-    public static final int MAX_CELLS = 16;
+    public static final int MAX_CELLS = 32;
 
     private static final double GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
     private Shapes() {}
+
+    /**
+     * The share of a shape's points one emission draws when the shape is built over several emissions: every
+     * {@code tiles}th point, starting one further each emission.
+     *
+     * @param points   all points of the shape
+     * @param tiles    emissions the shape is built over
+     * @param emission the number of the emission
+     * @return the points to draw now
+     */
+    public static List<Vec3> tile(List<Vec3> points, int tiles, int emission) {
+        if (tiles <= 1) return points;
+        List<Vec3> share = new ArrayList<>(points.size() / tiles + 1);
+        for (int index = Math.floorMod(emission, tiles); index < points.size(); index += tiles) {
+            share.add(points.get(index));
+        }
+        return share;
+    }
 
     /**
      * @param shape  a shape that does not need both ends

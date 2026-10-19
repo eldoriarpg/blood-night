@@ -24,7 +24,12 @@ export class GraphChanges {
      * @param base the pointer of the graph in the payload
      * @param graph the graph as it is now
      */
-    constructor(private readonly base: string, private readonly graph: Graph) {}
+    /**
+     * @param base  the graph's pointer
+     * @param graph the graph
+     * @param state the state new nodes and comment frames join; undefined for the part that always runs
+     */
+    constructor(private readonly base: string, private readonly graph: Graph, private readonly state?: string) {}
 
     private node(id: string): string {
         return `${this.base}/nodes/${escape(id)}`
@@ -37,9 +42,10 @@ export class GraphChanges {
     /** Adds a comment frame with a fresh id; the graph's comment map is made when it has none yet. */
     addComment(comment: Comment): {id: string, operations: PatchOperation[]} {
         const id = freshId('comment', Object.keys(this.graph.comments ?? {}))
+        const placed = this.state ? {...comment, state: this.state} : comment
         const operations: PatchOperation[] = this.graph.comments
-            ? [{op: 'add', path: this.comment(id), value: comment}]
-            : [{op: 'add', path: `${this.base}/comments`, value: {[id]: comment}}]
+            ? [{op: 'add', path: this.comment(id), value: placed}]
+            : [{op: 'add', path: `${this.base}/comments`, value: {[id]: placed}}]
         return {id, operations}
     }
 
@@ -68,8 +74,8 @@ export class GraphChanges {
             return comment ? this.editComment(id, {x: Math.round(comment.x + by.x), y: Math.round(comment.y + by.y)}) : []
         })
         const moved = nodes.flatMap(id => {
-            const editor = (this.instance(id).editor ?? {}) as {x?: number, y?: number}
-            return this.move(id, {x: (editor.x ?? 0) + by.x, y: (editor.y ?? 0) + by.y})
+            const at = this.position(id)
+            return this.move(id, {x: (at?.x ?? 0) + by.x, y: (at?.y ?? 0) + by.y})
         })
         return [...frames, ...moved]
     }
@@ -80,17 +86,40 @@ export class GraphChanges {
         return instance
     }
 
-    /** Moves a node, keeping what else the editor stored with it. */
-    move(id: string, position: Position): PatchOperation[] {
-        const editor = (this.instance(id).editor ?? {}) as Record<string, unknown>
-        return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, x: Math.round(position.x), y: Math.round(position.y)}}]
+    /**
+     * Whether a node lies outside the state this edits and is only shown in it because a node there reads it; such a
+     * node keeps a place of its own in every state that shows it, so moving it there leaves its own state alone.
+     */
+    private borrowed(id: string): boolean {
+        return this.state !== undefined && this.instance(id).state !== this.state
     }
 
-    /** Adds a node of a type at a position, with a fresh id and, if given, the wires leaving or feeding it and its config. */
+    /** Where a node is placed in the state this edits, if it is. */
+    private position(id: string): Position | undefined {
+        const editor = (this.instance(id).editor ?? {}) as {x?: number, y?: number, at?: Record<string, Position>}
+        if (this.borrowed(id)) return editor.at?.[this.state!]
+        return typeof editor.x === 'number' && typeof editor.y === 'number' ? {x: editor.x, y: editor.y} : undefined
+    }
+
+    /** Moves a node, keeping what else the editor stored with it; a borrowed node only in the state this edits. */
+    move(id: string, position: Position): PatchOperation[] {
+        const editor = (this.instance(id).editor ?? {}) as Record<string, unknown>
+        const placed = {x: Math.round(position.x), y: Math.round(position.y)}
+        if (this.borrowed(id)) {
+            const at = (editor.at ?? {}) as Record<string, Position>
+            return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, at: {...at, [this.state!]: placed}}}]
+        }
+        return [{op: 'add', path: `${this.node(id)}/editor`, value: {...editor, ...placed}}]
+    }
+
+    /**
+     * Adds a node of a type at a position, with a fresh id, in the state this edits, and, if given, the wires leaving or
+     * feeding it and its config.
+     */
     add(type: string, position: Position, wires: Pick<NodeInstance, 'inputs' | 'executions' | 'config'> = {}): {id: string, operations: PatchOperation[]} {
         const id = freshId(type, Object.keys(this.graph.nodes ?? {}))
         const operations: PatchOperation[] = this.graph.nodes ? [] : [{op: 'add', path: `${this.base}/nodes`, value: {}}]
-        operations.push({op: 'add', path: this.node(id), value: {type, ...wires, editor: {x: Math.round(position.x), y: Math.round(position.y)}}})
+        operations.push({op: 'add', path: this.node(id), value: {type, ...wires, ...(this.state ? {state: this.state} : {}), editor: {x: Math.round(position.x), y: Math.round(position.y)}}})
         return {id, operations}
     }
 

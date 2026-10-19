@@ -35,7 +35,7 @@ class BuiltInEffectsTest {
                 .forEach((id, effect) ->
                         problems.addAll(EffectChecks.problems(id, effect, key -> Material.matchMaterial(key) != null)));
         assertEquals(List.of(), problems);
-        assertEquals(24, BuiltInEffects.all().size());
+        assertEquals(26, BuiltInEffects.all().size());
         assertTrue(BuiltInEffects.all().keySet().stream().allMatch(BuiltInEffects::builtIn));
     }
 

@@ -61,6 +61,26 @@
       "tr" : "Seni fırlatan, yakalayan ve havaya uçuran Endermanlar, ayrıca ejderha savaşları için Kan Ejderhası.",
       "zh" : "会把你抛起、抓住和炸飞的末影人，以及用于龙战的血龙。"
     }
+  }, {
+    "id" : "withers",
+    "names" : {
+      "de" : "Blutwither",
+      "en" : "Blood withers",
+      "es" : "Withers de sangre",
+      "fr" : "Withers de sang",
+      "ms" : "Wither Darah",
+      "tr" : "Kan Wither'ları",
+      "zh" : "血凋灵"
+    },
+    "descriptions" : {
+      "de" : "Wither, die während einer Blutnacht gebaut werden, werden zu einem dieser Bosse.",
+      "en" : "Withers built during a blood night become one of these bosses.",
+      "es" : "Los withers construidos durante una noche sangrienta se convierten en uno de estos jefes.",
+      "fr" : "Les withers construits pendant une nuit de sang deviennent l'un de ces boss.",
+      "ms" : "Wither yang dibina semasa blood night menjadi salah satu bos ini.",
+      "tr" : "Lanetli Gece sırasında kurulan wither'lar bu boss'lardan birine dönüşür.",
+      "zh" : "血夜期间召唤的凋灵会变成这些首领之一。"
+    }
   } ],
-  "entries" : [ "armored_zombie", "knight_zombie", "invisible_zombie", "speed_zombie", "invisible_skeleton", "magic_skeleton", "speed_creeper", "toxic_creeper", "unstable_creeper", "nervous_powered_creeper", "ender_creeper", "ghost_creeper", "fearful_enderman", "toxic_enderman", "fearful_phantom", "fire_phantom", "phantom_soul", "carrier_phantom", "fire_wizard", "thunder_wizard", "wither_wizard", "blaze_rider", "speed_skeleton_rider", "wither_skeleton_rider", "toxic_slime", "storm_breeze", "spore_bogged", "volley_pillager", "tide_drowned", "swarm_silverfish", "assassin_spider", "launcher_enderman", "grabber_enderman", "fuse_enderman", "blood_dragon" ]
+  "entries" : [ "armored_zombie", "knight_zombie", "invisible_zombie", "speed_zombie", "invisible_skeleton", "magic_skeleton", "speed_creeper", "toxic_creeper", "unstable_creeper", "nervous_powered_creeper", "ender_creeper", "ghost_creeper", "fearful_enderman", "toxic_enderman", "fearful_phantom", "fire_phantom", "phantom_soul", "carrier_phantom", "fire_wizard", "thunder_wizard", "wither_wizard", "blaze_rider", "speed_skeleton_rider", "wither_skeleton_rider", "toxic_slime", "storm_breeze", "spore_bogged", "volley_pillager", "tide_drowned", "swarm_silverfish", "assassin_spider", "launcher_enderman", "grabber_enderman", "fuse_enderman", "blood_dragon", "blink_wither", "blood_wither", "grave_wither" ]
 }

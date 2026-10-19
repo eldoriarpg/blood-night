@@ -24,6 +24,7 @@ import {executionOrder} from '~/util/graph/executionOrder'
 import {graphPlayback} from '~/util/graph/graphPlayback'
 import {storedPosition, type Position} from '~/util/graph/graphLayout'
 import {COMMENT_NODE, type CommentView} from '~/util/graph/comments'
+import {stateCatalog, stateChoices, stateGraph} from '~/util/graph/graphStates'
 import type {GraphBindings} from '~/util/graph/graphBindings'
 
 /**
@@ -56,6 +57,8 @@ const props = defineProps<{
   preview?: boolean
   heldBy: string | null
   problemCount: number
+  /** The state whose nodes the canvas shows and new nodes join; undefined for the part that always runs. */
+  state?: string
 }>()
 
 const panOnDrag = props.preview === true
@@ -75,9 +78,10 @@ const wired = ref(false)
 const picking = ref(false)
 const pickAt = ref({x: 0, y: 0})
 const dropAt = ref({x: 0, y: 0})
+const addable = computed(() => stateCatalog(props.catalog, props.graph, props.state))
 const matches = computed(() => pulled.value
-  ? nodeMatches(props.catalog, pulled.value, props.inMacro)
-  : addableNodes(props.catalog, props.macros, props.inMacro))
+  ? nodeMatches(addable.value, pulled.value, props.inMacro)
+  : addableNodes(addable.value, props.macros, props.inMacro))
 
 const GRID = 22
 const freely = ref(false)
@@ -96,16 +100,23 @@ useEventListener('keyup', (event: KeyboardEvent) => {
 
 const session = useEditorSession()
 const effects = computed(() => effectLabels(session.payload.value))
-const sessionChoices = computed(() => ({[`${PLAY_EFFECT}|effect`]: {options: Object.keys(effects.value), labels: effects.value}}))
-const view = computed(() => graphView(props.graph, props.catalog, props.macros, props.bindings, sessionChoices.value))
+const sessionChoices = computed(() => ({
+  [`${PLAY_EFFECT}|effect`]: {options: Object.keys(effects.value), labels: effects.value},
+  ...stateChoices(props.graph),
+}))
+const stateView = computed(() => stateGraph(props.graph, props.state))
+const view = computed(() => {
+  const {nodes, edges} = graphView(stateView.value.graph, props.catalog, props.macros, props.bindings, sessionChoices.value)
+  return {nodes: nodes.map(node => stateView.value.borrowed.has(node.id) ? {...node, borrowed: true} : node), edges}
+})
 const edgesById = computed(() => new Map(view.value.edges.map(edge => [edge.id, edge])))
 const playback = graphPlayback()
 const shownPositions = ref<ReadonlyMap<string, Position>>(new Map())
-watch(() => Object.keys(props.graph.nodes ?? {}).join(), () => {
+watch(() => Object.keys(stateView.value.graph.nodes ?? {}).join(), () => {
   shownPositions.value = new Map()
 })
 const frames = useCanvasFrames({
-  graph: () => props.graph,
+  graph: () => stateView.value.graph,
   base: () => props.base,
   readOnly: () => props.readOnly,
   view,
@@ -341,7 +352,7 @@ function fitUnlessMoved(): void {
  * nodes where they are shown.
  */
 async function placeUnplaced(): Promise<void> {
-  const nodes = props.graph.nodes ?? {}
+  const nodes = stateView.value.graph.nodes ?? {}
   const unplaced = Object.keys(nodes).filter(id => !storedPosition(nodes[id]!))
   if (unplaced.length === 0) return
   if (props.readOnly) {

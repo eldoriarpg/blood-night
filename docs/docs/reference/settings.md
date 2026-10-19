@@ -49,6 +49,7 @@ Settings for the whole server.
 | `particles.viewDistance` | whole number | `32` |
 | `particles.budgetPerTick` | whole number | `2000` |
 | `particles.perMob` | whole number | `4` |
+| `particles.asyncDispatch` | true or false | `true` |
 | `advancements` | true or false | `true` |
 | `loot.tables` | list of text |  |
 | `loot.slots` | map |  |
@@ -93,6 +94,7 @@ setup:
   done: false
 particles:
   ambient: true
+  asyncDispatch: true
   budgetPerTick: 2000
   enabled: true
   perMob: 4
@@ -155,6 +157,7 @@ Settings for one world. Every world has its own file.
 | `mobSettings.damageModifier` | number | `2` |
 | `mobSettings.healthMultiplier` | number | `2` |
 | `mobSettings.overrides` | map | `{}` |
+| `mobSettings.withers` | map | `{"blink_wither":1,"blood_wither":1,"grave_wither":1}` |
 | `announcement.bossBar.enabled` | true or false | `true` |
 | `announcement.bossBar.title` | text | `<red><bold><name>` |
 | `announcement.bossBar.color` | `PINK`, `BLUE`, `RED`, `GREEN`, `YELLOW`, `PURPLE`, `WHITE` | `RED` |
@@ -304,6 +307,10 @@ mobSettings:
       - CUSTOM
     mobs: {}
     spawnPercentage: 50
+  withers:
+    blink_wither: 1
+    blood_wither: 1
+    grave_wither: 1
 announcement:
   bossBar:
     color: RED

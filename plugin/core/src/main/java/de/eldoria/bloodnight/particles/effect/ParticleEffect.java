@@ -6,6 +6,7 @@
 package de.eldoria.bloodnight.particles.effect;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,9 +21,17 @@ import java.util.Objects;
  * @param pieces   display pieces, at most {@value #MAX_PIECES}
  * @param self     whether a player the effect plays on sees it too; wings right behind the camera would block
  *                 the view
+ * @param viewDistance how far away in blocks players see it, {@value #MIN_VIEW} to {@value #MAX_VIEW}; without it the
+ *                 server's particle view distance
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ParticleEffect(String name, Integer duration, List<Emitter> emitters, List<Piece> pieces, Boolean self) {
+public record ParticleEffect(
+        String name,
+        Integer duration,
+        List<Emitter> emitters,
+        List<Piece> pieces,
+        Boolean self,
+        @Nullable Integer viewDistance) {
     /** The longest play, in ticks. */
     public static final int MAX_DURATION = 600;
 
@@ -35,11 +44,26 @@ public record ParticleEffect(String name, Integer duration, List<Emitter> emitte
     /** The most particles one emission of one emitter draws, points times count. */
     public static final int MAX_PER_EMISSION = 256;
 
+    /** The shortest view distance an effect sets, in blocks. */
+    public static final int MIN_VIEW = 8;
+
+    /** The longest view distance an effect sets, in blocks. */
+    public static final int MAX_VIEW = 128;
+
     public ParticleEffect {
         name = Objects.requireNonNullElse(name, "");
         duration = Math.clamp(Objects.requireNonNullElse(duration, 20), 0, MAX_DURATION);
         emitters = List.copyOf(Objects.requireNonNullElse(emitters, List.of()));
         pieces = List.copyOf(Objects.requireNonNullElse(pieces, List.of()));
         self = Objects.requireNonNullElse(self, true);
+        if (viewDistance != null) viewDistance = Math.clamp(viewDistance, MIN_VIEW, MAX_VIEW);
+    }
+
+    /**
+     * @param server the server's particle view distance
+     * @return how far away in blocks players see this effect
+     */
+    public int viewDistance(int server) {
+        return viewDistance == null ? server : viewDistance;
     }
 }

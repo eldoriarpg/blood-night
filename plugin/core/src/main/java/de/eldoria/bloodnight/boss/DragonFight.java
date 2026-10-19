@@ -3,14 +3,17 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-package de.eldoria.bloodnight.night;
+package de.eldoria.bloodnight.boss;
 
 import de.eldoria.bloodnight.configuration.world.night.TimedNights;
 import de.eldoria.bloodnight.living.MobCoordinator;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,9 +24,10 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import java.util.function.Function;
 
 /**
- * Makes a dragon fight a blood night: when an ender dragon appears, a blood night begins in its world and lasts until
- * the dragon dies, and the dragon becomes the world's dragon mob, see {@link TimedNights}. The night is begun and let
- * go on the global region, the dragon is changed on its own thread.
+ * Makes a dragon fight a blood night: when an ender dragon appears in a world with blood nights switched on, a blood
+ * night begins in its world and lasts until the dragon dies, and the dragon becomes the world's dragon mob, see
+ * {@link TimedNights}. In a world with blood nights switched off the dragon stays a vanilla one. The night is begun
+ * and let go on the global region, the dragon is changed on its own thread.
  */
 public final class DragonFight implements Listener {
     private final BloodNights nights;
@@ -57,13 +61,22 @@ public final class DragonFight implements Listener {
         if (!(event.getEntity() instanceof EnderDragon dragon)) return;
         World world = dragon.getWorld();
         TimedNights timed = settings.apply(world);
-        if (!timed.dragonFight()) return;
-        tasks.global(() -> nights.hold(world));
+        if (!timed.dragonFight() || !nights.enabled(world)) return;
+        tasks.global(() -> nights.hold(world, () -> left(dragon)));
         CustomMob mob = timed.dragon().isBlank() ? null : mobs.apply(timed.dragon());
         if (mob == null || !mob.attributes().isAssignable(dragon.getType())) return;
         tasks.entity(dragon, () -> {
             if (dragon.isValid() && !MobTags.isCustomMob(dragon)) coordinator.register(dragon, mob);
         });
+    }
+
+    /**
+     * @return the dragon's share of its health, 0 once it is gone; read from any thread, at most a tick old
+     */
+    private static double left(EnderDragon dragon) {
+        if (!dragon.isValid()) return 0;
+        AttributeInstance max = dragon.getAttribute(Attribute.MAX_HEALTH);
+        return max == null || max.getValue() <= 0 ? 1 : dragon.getHealth() / max.getValue();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

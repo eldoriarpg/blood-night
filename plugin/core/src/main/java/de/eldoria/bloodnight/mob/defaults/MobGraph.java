@@ -9,8 +9,10 @@ import de.eldoria.bloodnight.graph.BloodNightNodes;
 import de.eldoria.bloodnight.graph.runtime.world.ProjectileKind;
 import de.eldoria.bloodnight.graph.trigger.MobBindings;
 import de.eldoria.graph.compiler.emit.Routines;
+import de.eldoria.graph.compiler.emit.States;
 import de.eldoria.graph.compiler.validate.Graphs;
 import de.eldoria.graph.model.Graph;
+import de.eldoria.graph.model.State;
 import de.eldoria.graph.platform.GraphPlatform;
 import de.eldoria.graph.std.StdNodes;
 import org.bukkit.entity.Creeper;
@@ -49,6 +51,7 @@ final class MobGraph implements BloodNightNodes {
     private final Map<String, String> shared = new HashMap<>();
     private final Map<String, Graphs.NodeBuilder> entries = new HashMap<>();
     private int next;
+    private @Nullable String state;
 
     /**
      * @param platform  the platform
@@ -83,27 +86,62 @@ final class MobGraph implements BloodNightNodes {
      * Places a node with a generated id.
      */
     Graphs.NodeBuilder node(String type) {
-        return graphs.node("%s_%d".formatted(type.substring(type.lastIndexOf('.') + 1), next++), type);
+        return graphs.node("%s_%d".formatted(type.substring(type.lastIndexOf('.') + 1), next++), type)
+                .state(state);
+    }
+
+    /**
+     * Declares a state of the graph; a parent is declared before its children.
+     *
+     * @param name    the state's name
+     * @param parent  the state it lies in, or {@code null} at the top
+     * @param initial whether it is entered first among its siblings
+     */
+    void state(String name, @Nullable String parent, boolean initial) {
+        graphs.state(new State(name, parent, initial));
+    }
+
+    /**
+     * Builds part of the graph inside a state: every node placed meanwhile belongs to it, and entries and triggers are
+     * the state's own.
+     */
+    void inState(String name, Runnable build) {
+        String outer = state;
+        state = name;
+        try {
+            build.run();
+        } finally {
+            state = outer;
+        }
+    }
+
+    /**
+     * @return a node moving the graph to a state
+     */
+    String goTo(String target) {
+        return node(States.GO_TO).config("state", target).id();
     }
 
     /**
      * The entry or trigger node of a type; there is one per graph.
      */
     String entry(String type) {
-        Graphs.NodeBuilder entry = entries.get(type);
+        String key = state == null ? type : state + '|' + type;
+        Graphs.NodeBuilder entry = entries.get(key);
         if (entry == null) {
             entry = node(type);
-            entries.put(type, entry);
+            entries.put(key, entry);
         }
         return entry.id();
     }
 
     /**
-     * Appends nodes to what an entry or trigger runs.
+     * Appends nodes to what an entry or trigger runs; inside {@link #inState} the state's own one.
      */
     void on(String type, String... chain) {
+        String key = state == null ? type : state + '|' + type;
         entry(type);
-        entries.get(type).chain(NEXT, chain);
+        entries.get(key).chain(NEXT, chain);
     }
 
     /**
@@ -522,10 +560,19 @@ final class MobGraph implements BloodNightNodes {
         on(EVENT_TARGET_CHANGE, present(extension(), "entity", target));
     }
 
+    /**
+     * A node every chain shares, placed in the part that always runs so every state can read it.
+     */
     private String once(String key, Supplier<String> create) {
         String id = shared.get(key);
         if (id == null) {
-            id = create.get();
+            String outer = state;
+            state = null;
+            try {
+                id = create.get();
+            } finally {
+                state = outer;
+            }
             shared.put(key, id);
         }
         return id;

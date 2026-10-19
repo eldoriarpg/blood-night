@@ -3,7 +3,7 @@
  *
  *     Copyright (C) RainbowDashLabs and Contributor
  */
-package de.eldoria.bloodnight.night;
+package de.eldoria.bloodnight.boss;
 
 import de.eldoria.bloodnight.Mobs;
 import de.eldoria.bloodnight.configuration.world.MobSettings;
@@ -17,6 +17,8 @@ import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.attributes.Attributes;
 import de.eldoria.bloodnight.mob.attributes.MobName;
 import de.eldoria.bloodnight.mob.attributes.ValueModifier;
+import de.eldoria.bloodnight.night.BloodNights;
+import de.eldoria.bloodnight.night.Selections;
 import de.eldoria.bloodnight.night.selection.NightSelector;
 import de.eldoria.bloodnight.night.selection.NightTimes;
 import de.eldoria.bloodnight.tasks.Tasks;
@@ -42,9 +44,11 @@ import java.util.OptionalLong;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DragonFightTest {
+    private boolean enabled = true;
     private ServerMock server;
     private World end;
     private BloodNights nights;
@@ -63,7 +67,7 @@ class DragonFightTest {
         nights = new BloodNights(
                 new NightSelector(
                         ignored -> timed, ignored -> NightTimes.of(end, settings), Clock.systemUTC(), () -> 20),
-                ignored -> true,
+                ignored -> enabled,
                 server.getPluginManager(),
                 Logger.getLogger("test"));
         CustomMob plain = Mobs.zombie("blood_dragon", Graph.builder().build());
@@ -127,5 +131,16 @@ class DragonFightTest {
         server.getScheduler().performOneTick();
 
         assertEquals(OptionalLong.empty(), nights.running(end));
+    }
+
+    @Test
+    void aDisabledWorldKeepsItsVanillaDragon() {
+        enabled = false;
+        EnderDragon dragon = end.spawn(new Location(end, 0, 80, 0), EnderDragon.class);
+        server.getScheduler().performOneTick();
+        nights.check(List.of(end));
+
+        assertEquals(OptionalLong.empty(), nights.running(end));
+        assertFalse(MobTags.isCustomMob(dragon));
     }
 }

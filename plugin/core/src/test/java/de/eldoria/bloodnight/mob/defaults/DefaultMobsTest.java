@@ -48,8 +48,8 @@ class DefaultMobsTest {
 
     @Test
     void everyLegacyMobNewMobsAndTheBloodDragonAreThere() {
-        assertEquals(35, mobs.size());
-        assertEquals(35, mobs.stream().map(CustomMob::id).distinct().count());
+        assertEquals(38, mobs.size());
+        assertEquals(38, mobs.stream().map(CustomMob::id).distinct().count());
         assertTrue(mobs.stream().anyMatch(mob -> mob.id().equals(DefaultMobs.BLOOD_DRAGON)));
     }
 
@@ -87,6 +87,9 @@ class DefaultMobsTest {
                 speedZombie.contains(
                         "private static final PotionEffectType SPEED = Registries.entry(RegistryKey.MOB_EFFECT, \"minecraft:speed\");"),
                 speedZombie);
+        String dragon = behaviours.of("blood_dragon").orElseThrow().source();
+        assertTrue(dragon.contains("setAI(false)") && dragon.contains("setAI(true)"), dragon);
+        assertTrue(dragon.contains("bloodnight:arcane_seal") && dragon.contains("setVelocity("), dragon);
         mobs.forEach(mob -> {
             String source = behaviours.of(mob.id()).orElseThrow().source();
             assertFalse(source.contains("__v"), source);
@@ -98,7 +101,7 @@ class DefaultMobsTest {
     void everyParticleGetsTheDataItNeeds() {
         MockBukkit.mock();
         try {
-            assertEquals(35, DefaultMobs.create(platform).size());
+            assertEquals(38, DefaultMobs.create(platform).size());
         } finally {
             MockBukkit.unmock();
         }

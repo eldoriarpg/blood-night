@@ -30,6 +30,7 @@ import de.eldoria.graph.definition.port.ExecutionPort;
 import de.eldoria.graph.definition.port.PortType;
 import de.eldoria.graph.model.Edge;
 import de.eldoria.graph.model.NodeInstance;
+import de.eldoria.graph.runtime.StateMachine;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.NullNode;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,6 +101,9 @@ public final class GraphEmitter {
 
     private final boolean inline;
     private final Map<String, Routines.Routine> routines;
+    private final States.@Nullable Layout layout;
+    private final Map<String, Set<CodeBlock>> leaving = new LinkedHashMap<>();
+    private @Nullable String machineField;
 
     /**
      * @param graph  the graph
@@ -110,6 +115,7 @@ public final class GraphEmitter {
         Map<String, NodeInstance> instances = new LinkedHashMap<>();
         graph.nodes().forEach((id, node) -> instances.put(id, node.instance()));
         this.routines = Routines.of(instances, graph.platform().types());
+        this.layout = graph.states().isEmpty() ? null : States.layout(graph.states());
     }
 
     /**
@@ -131,11 +137,14 @@ public final class GraphEmitter {
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(host);
 
+        stateMachine();
         Map<Method, List<String>> entriesByMethod = new LinkedHashMap<>();
         for (String entry : graph.entries()) {
             EntryDefinition definition =
                     (EntryDefinition) graph.nodes().get(entry).definition();
-            if (definition.id().equals(Routines.DEFINE)) continue;
+            if (definition.id().equals(Routines.DEFINE)
+                    || definition.id().equals(States.ENTER)
+                    || definition.id().equals(States.EXIT)) continue;
             entriesByMethod
                     .computeIfAbsent(hostMethod(definition), key -> new ArrayList<>())
                     .add(entry);
@@ -144,6 +153,10 @@ public final class GraphEmitter {
         entriesByMethod.forEach((method, entries) -> methods.put(method, entryMethod(method, entries)));
         List<MethodSpec> routineMethods = new ArrayList<>();
         routines.values().forEach(routine -> routineMethod(routine).ifPresent(routineMethods::add));
+        if (layout != null) {
+            graph.platform().clock().ifPresent(clock -> ticking.add(CodeBlock.of("this.$N.start()", machineField)));
+            routineMethods.addAll(stateMethods(layout));
+        }
         graph.platform()
                 .clock()
                 .filter(clock -> !ticking.isEmpty())
@@ -235,6 +248,144 @@ public final class GraphEmitter {
     }
 
     /**
+     * Declares the field holding the graph's state machine, built in the constructor after every other field.
+     */
+    private void stateMachine() {
+        if (machineField != null || layout == null) return;
+        machineField = fieldNames.claim("states");
+        fieldSpecs.add(
+                FieldSpec.builder(ClassName.get(StateMachine.class), machineField, Modifier.PRIVATE, Modifier.FINAL)
+                        .build());
+    }
+
+    /**
+     * The methods states need: per state its enter, exit and enter condition where it has them, and three methods
+     * picking them by number for the {@link StateMachine}. The exits come last, since they also end what the nodes of
+     * the state asked to end on leaving it.
+     */
+    private List<MethodSpec> stateMethods(States.Layout layout) {
+        Map<String, String> enters = new LinkedHashMap<>();
+        Map<String, String> exits = new LinkedHashMap<>();
+        Map<String, String> conditions = new LinkedHashMap<>();
+        graph.nodes().forEach((id, node) -> {
+            String state = node.instance().state();
+            if (state == null) return;
+            switch (node.definition().id()) {
+                case States.ENTER -> enters.put(state, id);
+                case States.EXIT -> exits.put(state, id);
+                case States.CAN_ENTER -> conditions.put(state, id);
+                default -> {}
+            }
+        });
+        List<MethodSpec> methods = new ArrayList<>();
+        Map<String, String> enterMethods = new LinkedHashMap<>();
+        enters.forEach((state, node) -> {
+            String name = fieldNames.claim(Identifiers.lowerCamel("enter_" + state));
+            enterMethods.put(state, name);
+            methods.add(twoPass(() -> chainMethod(name, node)));
+        });
+        Map<String, String> conditionMethods = new LinkedHashMap<>();
+        conditions.forEach((state, node) -> {
+            String name = fieldNames.claim(Identifiers.lowerCamel("can_enter_" + state));
+            conditionMethods.put(state, name);
+            methods.add(twoPass(() -> conditionMethod(name, node)));
+        });
+        Map<String, String> exitMethods = new LinkedHashMap<>();
+        List<MethodSpec> exitSpecs = new ArrayList<>();
+        exits.forEach((state, node) -> {
+            String name = fieldNames.claim(Identifiers.lowerCamel("exit_" + state));
+            exitMethods.put(state, name);
+            exitSpecs.add(twoPass(() -> chainMethod(name, node)));
+        });
+        methods.addAll(exitSpecs);
+        methods.add(dispatch(
+                "enterState",
+                layout,
+                state -> enterMethods.containsKey(state) ? CodeBlock.of("$N();\n", enterMethods.get(state)) : null));
+        methods.add(dispatch("exitState", layout, state -> {
+            CodeBlock.Builder code = CodeBlock.builder();
+            if (exitMethods.containsKey(state)) code.addStatement("$N()", exitMethods.get(state));
+            leaving.getOrDefault(state, Set.of()).forEach(code::addStatement);
+            return code.isEmpty() ? null : code.build();
+        }));
+        MethodSpec.Builder allowed = MethodSpec.methodBuilder("mayEnterState")
+                .addModifiers(Modifier.PRIVATE)
+                .returns(boolean.class)
+                .addParameter(int.class, "state");
+        if (conditionMethods.isEmpty()) {
+            allowed.addStatement("return true");
+        } else {
+            allowed.beginControlFlow("switch (state)");
+            conditionMethods.forEach(
+                    (state, method) -> allowed.addStatement("case $L: return $N()", layout.number(state), method));
+            allowed.addStatement("default: return true").endControlFlow();
+        }
+        methods.add(allowed.build());
+        fieldInitializers.addStatement(
+                "this.$N = new $T(new String[] {$L}, new int[] {$L}, new int[] {$L}, new int[] {$L}, $L,"
+                        + " this::enterState, this::exitState, this::mayEnterState)",
+                machineField,
+                StateMachine.class,
+                layout.names().stream().map(name -> CodeBlock.of("$S", name)).collect(CodeBlock.joining(", ")),
+                numbers(layout.parents()),
+                numbers(layout.lasts()),
+                numbers(layout.initialChildren()),
+                layout.initial());
+        return methods;
+    }
+
+    private static CodeBlock numbers(int[] values) {
+        return Arrays.stream(values)
+                .mapToObj(value -> CodeBlock.of("$L", value))
+                .collect(CodeBlock.joining(", "));
+    }
+
+    private MethodSpec dispatch(String name, States.Layout layout, Function<String, @Nullable CodeBlock> body) {
+        MethodSpec.Builder method =
+                MethodSpec.methodBuilder(name).addModifiers(Modifier.PRIVATE).addParameter(int.class, "state");
+        method.beginControlFlow("switch (state)");
+        for (String state : layout.names()) {
+            CodeBlock code = body.apply(state);
+            if (code == null) continue;
+            method.addCode("case $L:\n", layout.number(state))
+                    .addCode("$>$L", code)
+                    .addStatement("break$<");
+        }
+        method.addCode("default:\n").addStatement("$>break$<").endControlFlow();
+        return method.build();
+    }
+
+    /**
+     * A private method running the chain of a state's enter or exit node.
+     */
+    private MethodSpec chainMethod(String name, String node) {
+        MethodSpec.Builder builder = MethodSpec.methodBuilder(name).addModifiers(Modifier.PRIVATE);
+        Scope root = Scope.root(node, new HashSet<>());
+        builder.addCode(marker(node));
+        for (ExecutionPort port :
+                graph.nodes().get(node).definition().descriptor().executions()) {
+            builder.addCode(chain(node, port, root, Map.of(), true));
+        }
+        return builder.addCode(sourceMap.boundary()).build();
+    }
+
+    /**
+     * A private method returning a state's enter condition.
+     */
+    private MethodSpec conditionMethod(String name, String node) {
+        MethodSpec.Builder builder =
+                MethodSpec.methodBuilder(name).addModifiers(Modifier.PRIVATE).returns(boolean.class);
+        Scope root = Scope.root(node, new HashSet<>());
+        CodeBlock.Builder prelude = CodeBlock.builder();
+        CodeBlock allowed = new Expression(graph.nodes().get(node), root, prelude).input(States.ALLOWED);
+        return builder.addCode(marker(node))
+                .addCode(prelude.build())
+                .addStatement("return $L", allowed)
+                .addCode(sourceMap.boundary())
+                .build();
+    }
+
+    /**
      * Emits a method twice, see the class documentation: counting reads, then naming and inlining.
      */
     private MethodSpec twoPass(Supplier<MethodSpec> emit) {
@@ -274,17 +425,31 @@ public final class GraphEmitter {
         MethodSpec.Builder builder = override(method, parameters);
         boolean returnsNothing = method.getReturnType() == void.class;
         List<ExecutionPort> ports = definition.descriptor().executions();
+        boolean clock = graph.platform().clock().map(method::equals).orElse(false);
+        if (layout != null && !clock) builder.addStatement("this.$N.start()", machineField);
         for (String entry : entries) {
             Scope root = Scope.root(entry, methodNames);
             builder.addCode(marker(entry));
+            String state = graph.nodes().get(entry).instance().state();
+            boolean ownBlock = entries.size() > 1;
+            if (state != null && layout != null) {
+                builder.beginControlFlow("if (this.$N.in($L))", machineField, layout.number(state));
+            } else if (ownBlock) {
+                builder.addCode("{\n$>");
+            }
             Optional<CodeBlock> guard =
                     definition.guard().condition(new Entry(graph.nodes().get(entry), root, CodeBlock.builder()));
             guard.ifPresent(condition -> builder.beginControlFlow("if ($L)", condition));
             for (ExecutionPort port : ports) {
-                boolean last = returnsNothing && entry.equals(entries.getLast()) && port.equals(ports.getLast());
+                boolean last = returnsNothing
+                        && state == null
+                        && entry.equals(entries.getLast())
+                        && port.equals(ports.getLast());
                 builder.addCode(chain(entry, port, root, Map.of(), last));
             }
             guard.ifPresent(condition -> builder.endControlFlow());
+            if (state != null && layout != null) builder.endControlFlow();
+            else if (ownBlock) builder.addCode("$<}\n");
         }
         return builder.addCode(sourceMap.boundary()).build();
     }
@@ -668,6 +833,40 @@ public final class GraphEmitter {
                 fieldInitializers.addStatement("this.$N = $L", field, initializer);
                 return CodeBlock.of("this.$N", field);
             });
+        }
+
+        @Override
+        public CodeBlock stateField(String name, TypeName type, CodeBlock initializer) {
+            String state = node.instance().state();
+            if (state == null) return sharedField(name, type, initializer);
+            pass.touchedState = true;
+            return fields.computeIfAbsent(Scope.key("state " + state, name), key -> {
+                String field = fieldNames.claim(Identifiers.lowerCamel(name + "_" + state));
+                fieldSpecs.add(FieldSpec.builder(type, field, Modifier.PRIVATE).build());
+                fieldInitializers.add(marker(node.id()));
+                fieldInitializers.addStatement("this.$N = $L", field, initializer);
+                return CodeBlock.of("this.$N", field);
+            });
+        }
+
+        @Override
+        public void onLeave(CodeBlock statement) {
+            String state = node.instance().state();
+            if (state != null)
+                leaving.computeIfAbsent(state, key -> new LinkedHashSet<>()).add(statement);
+        }
+
+        @Override
+        public CodeBlock stateMachine() {
+            if (layout == null) throw new IllegalStateException("The graph has no states");
+            GraphEmitter.this.stateMachine();
+            return CodeBlock.of("this.$N", machineField);
+        }
+
+        @Override
+        public int stateNumber(String name) {
+            if (layout == null) throw new IllegalArgumentException("The graph has no states");
+            return layout.number(name);
         }
 
         @Override

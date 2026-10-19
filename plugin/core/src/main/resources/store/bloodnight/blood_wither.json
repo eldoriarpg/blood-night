@@ -1,0 +1,1221 @@
+{
+  "format" : 1,
+  "id" : "blood_wither",
+  "pack" : "withers",
+  "names" : {
+    "de" : "Blutwither",
+    "en" : "Blood Wither",
+    "es" : "Wither de Sangre",
+    "fr" : "Wither de sang",
+    "ms" : "Wither Darah",
+    "tr" : "Kan Wither'ı",
+    "zh" : "血之凋灵"
+  },
+  "descriptions" : {
+    "de" : "Ein Wither, der während einer Blutnacht gebaut wurde. Seine Schädel heilen ihn, und unter halber Gesundheit ruft er Wachen und wirft Blutspeere.",
+    "en" : "A wither built during a blood night. Its skulls heal it, and below half health it raises guards and throws blood spears.",
+    "es" : "Un wither construido durante una noche sangrienta. Sus calaveras lo curan y, con menos de media salud, invoca guardias y lanza lanzas de sangre.",
+    "fr" : "Un wither construit pendant une nuit de sang. Ses crânes le soignent et, sous la moitié de sa vie, il lève des gardes et lance des lances de sang.",
+    "ms" : "Wither yang dibina semasa blood night. Tengkoraknya memulihkannya, dan di bawah separuh nyawa ia memanggil pengawal dan melontar lembing darah.",
+    "tr" : "Lanetli Gece sırasında kurulan bir wither. Kafatasları onu iyileştirir; canı yarının altına düşünce muhafızlar çağırır ve kan mızrakları fırlatır.",
+    "zh" : "血夜期间召唤的凋灵。它的头颅会为它回血，生命低于一半时会召唤护卫并投掷血矛。"
+  },
+  "requires" : [ ],
+  "mob" : {
+    "id" : "blood_wither",
+    "equipment" : null,
+    "attributes" : {
+      "name" : {
+        "style" : "<dark_red>",
+        "texts" : {
+          "de" : "Blutwither",
+          "en" : "Blood Wither",
+          "es" : "Wither de Sangre",
+          "fr" : "Wither de sang",
+          "ms" : "Wither Darah",
+          "tr" : "Kan Wither'ı",
+          "zh" : "血之凋灵"
+        }
+      },
+      "entityType" : "WITHER",
+      "exactType" : true,
+      "healthModifier" : "VALUE",
+      "health" : 450.0,
+      "damageModifier" : "MULTIPLY",
+      "damage" : 1.3,
+      "changes" : [ ],
+      "mythicType" : "",
+      "mythicLevel" : 1
+    },
+    "behaviour" : {
+      "nodes" : {
+        "add_30" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          },
+          "state" : "raging"
+        },
+        "add_31" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          },
+          "state" : "raging"
+        },
+        "add_39" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : -3.0
+          },
+          "state" : "raging"
+        },
+        "add_40" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          },
+          "state" : "raging"
+        },
+        "add_48" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          },
+          "state" : "raging"
+        },
+        "add_49" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 3.0
+          },
+          "state" : "raging"
+        },
+        "add_57" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          },
+          "state" : "raging"
+        },
+        "add_58" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : -3.0
+          },
+          "state" : "raging"
+        },
+        "add_6" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "health"
+            }
+          },
+          "literals" : {
+            "second" : 4.0
+          }
+        },
+        "apply_effect_35" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_34",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          },
+          "state" : "raging"
+        },
+        "apply_effect_44" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_43",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          },
+          "state" : "raging"
+        },
+        "apply_effect_53" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_52",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          },
+          "state" : "raging"
+        },
+        "apply_effect_62" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_61",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:strength",
+            "seconds" : 600.0
+          },
+          "state" : "raging"
+        },
+        "apply_effect_67" : {
+          "type" : "living_entity.apply_effect",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "amplifier" : 1,
+            "effect" : "minecraft:speed",
+            "seconds" : 60.0,
+            "visible" : false
+          },
+          "state" : "raging"
+        },
+        "attribute_2" : {
+          "type" : "living_entity.attribute",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "attribute" : "minecraft:max_health"
+          }
+        },
+        "attribute_21" : {
+          "type" : "living_entity.attribute",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "attribute" : "minecraft:max_health"
+          },
+          "state" : "feeding"
+        },
+        "branch_10" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_9",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_8" ]
+          }
+        },
+        "branch_12" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_1",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_10", "play_effect_11" ]
+          }
+        },
+        "branch_17" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_16",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_14" ]
+          }
+        },
+        "branch_18" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_15",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_17" ]
+          }
+        },
+        "branch_25" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_24",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "go_to_20" ]
+          },
+          "state" : "feeding"
+        },
+        "branch_27" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_26",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_25" ]
+          },
+          "state" : "feeding"
+        },
+        "branch_37" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_34",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_35", "play_effect_36" ]
+          },
+          "state" : "raging"
+        },
+        "branch_46" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_43",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_44", "play_effect_45" ]
+          },
+          "state" : "raging"
+        },
+        "branch_55" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_52",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_53", "play_effect_54" ]
+          },
+          "state" : "raging"
+        },
+        "branch_64" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_61",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_62", "play_effect_63" ]
+          },
+          "state" : "raging"
+        },
+        "branch_69" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_68",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_67" ]
+          },
+          "state" : "raging"
+        },
+        "branch_77" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_76",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "damage_74" ]
+          },
+          "state" : "raging"
+        },
+        "branch_78" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_73",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_75" ]
+          },
+          "state" : "raging"
+        },
+        "branch_79" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_72",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_78" ]
+          },
+          "state" : "raging"
+        },
+        "branch_81" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_80",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "for_each_71" ]
+          },
+          "state" : "raging"
+        },
+        "cast_1" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_0",
+              "port" : "entity"
+            }
+          }
+        },
+        "cast_34" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_32",
+              "port" : "entity"
+            }
+          },
+          "state" : "raging"
+        },
+        "cast_43" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_41",
+              "port" : "entity"
+            }
+          },
+          "state" : "raging"
+        },
+        "cast_52" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_50",
+              "port" : "entity"
+            }
+          },
+          "state" : "raging"
+        },
+        "cast_61" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "living_entity"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "spawn_entity_59",
+              "port" : "entity"
+            }
+          },
+          "state" : "raging"
+        },
+        "cast_72" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_71",
+              "port" : "element"
+            }
+          },
+          "state" : "raging"
+        },
+        "clamp_5" : {
+          "type" : "math.clamp",
+          "inputs" : {
+            "upper" : {
+              "node" : "read_4",
+              "port" : "value"
+            },
+            "value" : {
+              "node" : "add_6",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "lower" : 0.0
+          }
+        },
+        "cooldown_68" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 30000
+          },
+          "state" : "raging"
+        },
+        "cooldown_80" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 5000
+          },
+          "state" : "raging"
+        },
+        "create_29" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_30",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_31",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "create_38" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_39",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_40",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "create_47" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_48",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_49",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "create_56" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_7",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "add_57",
+              "port" : "result"
+            },
+            "y" : {
+              "node" : "read_7",
+              "port" : "y"
+            },
+            "z" : {
+              "node" : "add_58",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "damage_74" : {
+          "type" : "living_entity.damage",
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_72",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "amount" : 6.0
+          },
+          "state" : "raging"
+        },
+        "enter_66" : {
+          "type" : "state.enter",
+          "executions" : {
+            "next" : [ "spawn_entity_32", "spawn_entity_41", "spawn_entity_50", "spawn_entity_59", "play_effect_65" ]
+          },
+          "state" : "raging"
+        },
+        "for_each_71" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_70",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_79" ]
+          },
+          "state" : "raging"
+        },
+        "go_to_20" : {
+          "type" : "state.go_to",
+          "config" : {
+            "state" : "raging"
+          },
+          "state" : "feeding"
+        },
+        "has_line_of_sight_73" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "cast_72",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "state" : "raging"
+        },
+        "hit_0" : {
+          "type" : "event.hit",
+          "executions" : {
+            "next" : [ "branch_12" ]
+          }
+        },
+        "is_null_15" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "read_7",
+              "port" : "target"
+            }
+          }
+        },
+        "is_null_16" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_13",
+              "port" : "player"
+            }
+          }
+        },
+        "is_null_26" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_21",
+              "port" : "result"
+            }
+          },
+          "state" : "feeding"
+        },
+        "is_null_76" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "cast_72",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "is_null_9" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_2",
+              "port" : "result"
+            }
+          }
+        },
+        "less_24" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "read_7",
+              "port" : "health"
+            },
+            "second" : {
+              "node" : "multiply_23",
+              "port" : "result"
+            }
+          },
+          "state" : "feeding"
+        },
+        "multiply_23" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_22",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "second" : 0.5
+          },
+          "state" : "feeding"
+        },
+        "mutate_14" : {
+          "type" : "mob.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target_value" : {
+              "node" : "nearest_player_13",
+              "port" : "player"
+            }
+          }
+        },
+        "mutate_8" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "health" : {
+              "node" : "clamp_5",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "nearby_entities_70" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 32.0,
+            "y" : 16.0,
+            "z" : 32.0
+          },
+          "state" : "raging"
+        },
+        "nearest_player_13" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_7",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 16.0
+          }
+        },
+        "play_effect_11" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:drain_beam"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_1",
+              "port" : "result"
+            }
+          }
+        },
+        "play_effect_36" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_34",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "play_effect_45" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_43",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "play_effect_54" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_52",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "play_effect_63" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:spawn_rise"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "cast_61",
+              "port" : "result"
+            }
+          },
+          "state" : "raging"
+        },
+        "play_effect_65" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:death_burst"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          },
+          "state" : "raging"
+        },
+        "play_effect_75" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:blood_spear"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_3",
+              "port" : "entity"
+            },
+            "target" : {
+              "node" : "cast_72",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "arrived" : [ "branch_77" ]
+          },
+          "state" : "raging"
+        },
+        "read_22" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_21",
+              "port" : "result"
+            }
+          },
+          "state" : "feeding"
+        },
+        "read_4" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_2",
+              "port" : "result"
+            }
+          }
+        },
+        "read_7" : {
+          "type" : "mob.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_3",
+              "port" : "entity"
+            }
+          }
+        },
+        "self_3" : {
+          "type" : "mob.self"
+        },
+        "spawn_entity_32" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_29",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_33",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_37" ]
+          },
+          "state" : "raging"
+        },
+        "spawn_entity_41" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_38",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_42",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_46" ]
+          },
+          "state" : "raging"
+        },
+        "spawn_entity_50" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_47",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_51",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_55" ]
+          },
+          "state" : "raging"
+        },
+        "spawn_entity_59" : {
+          "type" : "world.spawn_entity",
+          "inputs" : {
+            "location" : {
+              "node" : "create_56",
+              "port" : "result"
+            },
+            "type" : {
+              "node" : "value_60",
+              "port" : "value"
+            }
+          },
+          "executions" : {
+            "next" : [ "branch_64" ]
+          },
+          "state" : "raging"
+        },
+        "tick_19" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_18" ]
+          }
+        },
+        "tick_28" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_27" ]
+          },
+          "state" : "feeding"
+        },
+        "tick_82" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_69", "branch_81" ]
+          },
+          "state" : "raging"
+        },
+        "value_33" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          },
+          "state" : "raging"
+        },
+        "value_42" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          },
+          "state" : "raging"
+        },
+        "value_51" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          },
+          "state" : "raging"
+        },
+        "value_60" : {
+          "type" : "value",
+          "config" : {
+            "type" : "entity_type",
+            "value" : "minecraft:wither_skeleton"
+          },
+          "state" : "raging"
+        }
+      },
+      "states" : [ {
+        "name" : "feeding",
+        "initial" : true
+      }, {
+        "name" : "raging"
+      } ]
+    },
+    "loot" : {
+      "tables" : [ "blood_wither" ],
+      "slots" : {
+        "2" : 1,
+        "3" : 2,
+        "4" : 1
+      },
+      "inherit" : true,
+      "replaceSame" : true,
+      "vanillaLoot" : "KEEP",
+      "experience" : null,
+      "money" : null
+    },
+    "extension" : {
+      "type" : "NONE",
+      "entityType" : null,
+      "equipment" : null
+    },
+    "spawn" : {
+      "weight" : 0,
+      "nightOnly" : false,
+      "nightEnd" : "KEEP",
+      "reasons" : [ ],
+      "conditions" : {
+        "worlds" : [ ],
+        "biomes" : [ ],
+        "minY" : null,
+        "maxY" : null,
+        "maxLight" : null,
+        "surface" : "ANY"
+      }
+    },
+    "origin" : null,
+    "movement" : {
+      "preset" : "VANILLA",
+      "range" : 24.0,
+      "closest" : 6.0,
+      "farthest" : 10.0,
+      "seconds" : 3.0,
+      "fleeBelow" : 0.3
+    },
+    "particles" : {
+      "ambient" : "bloodnight:blood_aura",
+      "spawn" : "bloodnight:spawn_rise",
+      "death" : "bloodnight:death_burst"
+    }
+  },
+  "lootTables" : {
+    "blood_wither" : {
+      "name" : "Blood Wither",
+      "entries" : [ {
+        "item" : "minecraft:nether_star",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:experience_bottle",
+        "weight" : 6,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 8,
+          "max" : 16,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:diamond",
+        "weight" : 4,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 5,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:wither_skeleton_skull",
+        "weight" : 2,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 1,
+          "max" : 1,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      }, {
+        "item" : "minecraft:redstone_block",
+        "weight" : 4,
+        "amount" : {
+          "mode" : "RANGE",
+          "min" : 2,
+          "max" : 6,
+          "choices" : { }
+        },
+        "repeatable" : false,
+        "wear" : null
+      } ]
+    }
+  },
+  "particleEffects" : { }
+}

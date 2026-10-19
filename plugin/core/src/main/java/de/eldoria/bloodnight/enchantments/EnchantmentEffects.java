@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.enchantments;
 
+import de.eldoria.bloodnight.api.event.mob.CustomMobMoveEntityEvent;
 import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.NamespacedKey;
@@ -20,6 +21,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -39,6 +41,9 @@ import java.util.function.ToIntBiFunction;
  * Dawnbringer adds {@value #DAWNBRINGER_PER_LEVEL} of the damage per level to melee hits on special mobs, at any time
  * of day. Hunter's Mark makes whatever an arrow from its bow or crossbow hits glow for {@value #MARK_SECONDS_PER_LEVEL}
  * seconds per level.
+ * <p>
+ * Earth Bound and Arcane Vision work at any time: special mobs cannot teleport or carry away a player whose boots have
+ * Earth Bound, and a player whose helmet has Arcane Vision is never blinded.
  */
 public final class EnchantmentEffects implements Listener {
     static final double WARD_PER_LEVEL = 0.025;
@@ -92,6 +97,24 @@ public final class EnchantmentEffects implements Listener {
         if (level <= 0) return;
         target.addPotionEffect(new PotionEffect(
                 PotionEffectType.GLOWING, level * MARK_SECONDS_PER_LEVEL * 20, 0, false, false, false));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onMove(CustomMobMoveEntityEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (levels.applyAsInt(player.getInventory().getItem(EquipmentSlot.FEET), BloodEnchantments.EARTH_BOUND) > 0) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlind(EntityPotionEffectEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        PotionEffect added = event.getNewEffect();
+        if (added == null || !added.getType().equals(PotionEffectType.BLINDNESS)) return;
+        if (levels.applyAsInt(player.getInventory().getItem(EquipmentSlot.HEAD), BloodEnchantments.ARCANE_VISION) > 0) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

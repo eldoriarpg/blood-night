@@ -374,6 +374,9 @@
         },
         "collapsed" : {
           "type" : "boolean"
+        },
+        "state" : {
+          "type" : "string"
         }
       },
       "required" : [ "title", "note", "color", "x", "y", "width", "height", "collapsed" ]
@@ -464,6 +467,7 @@
           } ],
           "default" : {
             "ambient" : true,
+            "asyncDispatch" : true,
             "budgetPerTick" : 2000,
             "enabled" : true,
             "perMob" : 4,
@@ -1078,6 +1082,9 @@
         },
         "chance" : {
           "type" : "number"
+        },
+        "tiles" : {
+          "type" : "integer"
         }
       }
     },
@@ -1218,6 +1225,12 @@
           "type" : "object",
           "additionalProperties" : {
             "$ref" : "#/$defs/Comment"
+          }
+        },
+        "states" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/State"
           }
         }
       },
@@ -1578,6 +1591,17 @@
             "$ref" : "#/$defs/AttributeOverride"
           },
           "default" : { }
+        },
+        "withers" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "integer"
+          },
+          "default" : {
+            "blink_wither" : 1,
+            "blood_wither" : 1,
+            "grave_wither" : 1
+          }
         }
       }
     },
@@ -1933,6 +1957,9 @@
             }
           }
         },
+        "state" : {
+          "type" : "string"
+        },
         "editor" : { }
       }
     },
@@ -2162,6 +2189,9 @@
         },
         "self" : {
           "type" : "boolean"
+        },
+        "viewDistance" : {
+          "type" : "integer"
         }
       }
     },
@@ -2187,6 +2217,10 @@
         "perMob" : {
           "type" : "integer",
           "default" : 4
+        },
+        "asyncDispatch" : {
+          "type" : "boolean",
+          "default" : true
         }
       }
     },
@@ -2789,6 +2823,21 @@
       },
       "required" : [ "weight", "nightOnly", "nightEnd", "reasons", "conditions" ]
     },
+    "State" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "parent" : {
+          "type" : "string"
+        },
+        "initial" : {
+          "type" : "boolean"
+        }
+      },
+      "required" : [ "name" ]
+    },
     "StorePack" : {
       "type" : "object",
       "properties" : {
@@ -3112,6 +3161,11 @@
               "ignoredReasons" : [ "CUSTOM" ],
               "mobs" : { },
               "spawnPercentage" : 50
+            },
+            "withers" : {
+              "blink_wither" : 1,
+              "blood_wither" : 1,
+              "grave_wither" : 1
             }
           }
         },

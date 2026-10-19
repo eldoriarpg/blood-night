@@ -513,6 +513,7 @@ export interface Graph {
   comments?: {
     [k: string]: Comment;
   };
+  states?: State[];
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -532,6 +533,7 @@ export interface NodeInstance {
   executions?: {
     [k: string]: string[];
   };
+  state?: string;
   editor?: unknown;
 }
 /**
@@ -555,6 +557,16 @@ export interface Comment {
   width: number;
   height: number;
   collapsed: boolean;
+  state?: string;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "State".
+ */
+export interface State {
+  name: string;
+  parent?: string;
+  initial?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -750,6 +762,7 @@ export interface ParticleEffect {
   emitters?: Emitter[];
   pieces?: Piece[];
   self?: boolean;
+  viewDistance?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -768,6 +781,7 @@ export interface Emitter {
   every?: number;
   delay?: number;
   chance?: number;
+  tiles?: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -999,6 +1013,7 @@ export interface ParticleSettings {
   viewDistance?: number;
   budgetPerTick?: number;
   perMob?: number;
+  asyncDispatch?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1153,6 +1168,9 @@ export interface MobSettings {
   healthMultiplier?: number;
   overrides?: {
     [k: string]: AttributeOverride;
+  };
+  withers?: {
+    [k: string]: number;
   };
 }
 /**

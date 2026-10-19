@@ -20,7 +20,8 @@ import org.jspecify.annotations.Nullable;
  * @param block  block key for crumbling and falling blocks, e.g. {@code minecraft:redstone_block}
  * @param item   item id or material key for item bits
  * @param ticks  how long a trail flies
- * @param toward where a trail flies to, from the point it starts at, as x right, y up, z forward
+ * @param toward where a trail flies to, from the point it starts at, as x right, y up, z forward; without it, to the
+ *               other end of the play, or a block up without one
  */
 public record ParticleDataSpec(
         @Nullable String color,

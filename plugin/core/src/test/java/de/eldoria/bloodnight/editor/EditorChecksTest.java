@@ -73,7 +73,7 @@ class EditorChecksTest {
 
     @Test
     void graphsOnlyPlayEffectsThatExist() {
-        ParticleEffect own = new ParticleEffect("Own", null, null, null, null);
+        ParticleEffect own = new ParticleEffect("Own", null, null, null, null, null);
         EditorResult result = new EditorResult(
                 Map.of(
                         "a", Mobs.zombie("a", playing("bloodnight:blood_aura")),

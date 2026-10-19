@@ -1,0 +1,91 @@
+{
+  "pack": "withers",
+  "names": {
+    "en": "Blood Wither",
+    "de": "Blutwither",
+    "es": "Wither de Sangre",
+    "fr": "Wither de sang",
+    "ms": "Wither Darah",
+    "tr": "Kan Wither'ı",
+    "zh": "血之凋灵"
+  },
+  "descriptions": {
+    "en": "A wither built during a blood night. Its skulls heal it, and below half health it raises guards and throws blood spears.",
+    "de": "Ein Wither, der während einer Blutnacht gebaut wurde. Seine Schädel heilen ihn, und unter halber Gesundheit ruft er Wachen und wirft Blutspeere.",
+    "es": "Un wither construido durante una noche sangrienta. Sus calaveras lo curan y, con menos de media salud, invoca guardias y lanza lanzas de sangre.",
+    "fr": "Un wither construit pendant une nuit de sang. Ses crânes le soignent et, sous la moitié de sa vie, il lève des gardes et lance des lances de sang.",
+    "ms": "Wither yang dibina semasa blood night. Tengkoraknya memulihkannya, dan di bawah separuh nyawa ia memanggil pengawal dan melontar lembing darah.",
+    "tr": "Lanetli Gece sırasında kurulan bir wither. Kafatasları onu iyileştirir; canı yarının altına düşünce muhafızlar çağırır ve kan mızrakları fırlatır.",
+    "zh": "血夜期间召唤的凋灵。它的头颅会为它回血，生命低于一半时会召唤护卫并投掷血矛。"
+  },
+  "requires": [],
+  "loot": {
+    "slots": {
+      "2": 1,
+      "3": 2,
+      "4": 1
+    },
+    "tables": {
+      "blood_wither": {
+        "name": "Blood Wither",
+        "entries": [
+          {
+            "item": "minecraft:nether_star",
+            "weight": 2,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:experience_bottle",
+            "weight": 6,
+            "amount": {
+              "mode": "RANGE",
+              "min": 8,
+              "max": 16,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:diamond",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 5,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:wither_skeleton_skull",
+            "weight": 2,
+            "amount": {
+              "mode": "RANGE",
+              "min": 1,
+              "max": 1,
+              "choices": {}
+            },
+            "repeatable": false
+          },
+          {
+            "item": "minecraft:redstone_block",
+            "weight": 4,
+            "amount": {
+              "mode": "RANGE",
+              "min": 2,
+              "max": 6,
+              "choices": {}
+            },
+            "repeatable": false
+          }
+        ]
+      }
+    }
+  }
+}

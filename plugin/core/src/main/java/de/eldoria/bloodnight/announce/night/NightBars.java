@@ -36,11 +36,10 @@ public final class NightBars {
      *
      * @param player   a player in a world with a running blood night
      * @param settings the world's boss bar settings
-     * @param times    the world's night times
-     * @param night    the running night's number
+     * @param left     the share of the night still to come, 1 at its begin and 0 at its end
      * @param name     the key of the night's name, filled into the title's {@code <name>}
      */
-    public void update(Player player, BossBarSettings settings, NightTimes times, long night, String name) {
+    public void update(Player player, BossBarSettings settings, float left, String name) {
         if (!settings.enabled()) {
             hide(player);
             return;
@@ -53,7 +52,7 @@ public final class NightBars {
                 .color(settings.color())
                 .overlay(settings.overlay())
                 .flags(flags(player, settings))
-                .progress(remaining(times, night, NightTimes.now(player.getWorld())));
+                .progress(left);
         player.showBossBar(bar);
     }
 
@@ -87,10 +86,11 @@ public final class NightBars {
     }
 
     /**
+     * @param end the time the night ends at
      * @return the share of the night still to come, 1 at its begin and 0 at its end
      */
-    static float remaining(NightTimes times, long night, long fullTime) {
-        float share = (float) (times.endOf(night) - fullTime) / times.length();
+    public static float remaining(NightTimes times, long end, long fullTime) {
+        float share = (float) (end - fullTime) / times.length();
         return Math.clamp(share, 0f, 1f);
     }
 }

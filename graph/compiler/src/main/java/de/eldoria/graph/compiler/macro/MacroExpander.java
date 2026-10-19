@@ -102,7 +102,8 @@ public final class MacroExpander {
             for (String use : uses)
                 new Splice(use, macros.get(nodes.get(use).type()), nodes, origins, inputs, problems).run();
         }
-        Expansion expansion = new Expansion(new Graph(nodes), Map.copyOf(origins), Map.copyOf(inputs));
+        Expansion expansion =
+                new Expansion(new Graph(nodes, Map.of(), graph.states()), Map.copyOf(origins), Map.copyOf(inputs));
         if (!problems.isEmpty()) throw new GraphCompilationException(expansion.locate(List.copyOf(problems)), null);
         return expansion;
     }
@@ -152,7 +153,13 @@ public final class MacroExpander {
                 nodes.put(
                         prefix + id,
                         new NodeInstance(
-                                node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
+                                node.type(),
+                                node.config(),
+                                inputs,
+                                node.literals(),
+                                executions,
+                                use.state(),
+                                node.editor()));
                 List<MacroFrame> trace = new ArrayList<>(useOrigin.trace());
                 trace.add(new MacroFrame(definition.macro().id(), id));
                 origins.put(prefix + id, new Origin(useOrigin.node(), trace));
@@ -175,7 +182,8 @@ public final class MacroExpander {
             Map<String, JsonNode> literals = literal == null ? Map.of() : Map.of(MacroBoundary.VALUE, literal);
             nodes.put(
                     prefix + node,
-                    new NodeInstance(MacroBoundary.PASS_PREFIX + type, Map.of(), edges, literals, Map.of(), null));
+                    new NodeInstance(
+                            MacroBoundary.PASS_PREFIX + type, Map.of(), edges, literals, Map.of(), use.state(), null));
             origins.put(prefix + node, useOrigin);
             inputs.put(prefix + node, name);
         }
@@ -243,7 +251,13 @@ public final class MacroExpander {
                     nodes.put(
                             id,
                             new NodeInstance(
-                                    node.type(), node.config(), inputs, node.literals(), executions, node.editor()));
+                                    node.type(),
+                                    node.config(),
+                                    inputs,
+                                    node.literals(),
+                                    executions,
+                                    node.state(),
+                                    node.editor()));
             }
         }
 

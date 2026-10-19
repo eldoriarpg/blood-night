@@ -28,6 +28,8 @@ import java.util.Objects;
  * @param every    ticks between two emissions, at least 1
  * @param delay    ticks into the play before the first emission
  * @param chance   share of emissions that happen, 0 to 1, for flicker
+ * @param tiles    emissions the shape is built over: each draws every {@code tiles}th point, the next one the points
+ *                 after, so a shape of long-lived particles stays whole at a fraction of the particles
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record Emitter(
@@ -42,7 +44,11 @@ public record Emitter(
         Double speed,
         Integer every,
         Integer delay,
-        Double chance) {
+        Double chance,
+        Integer tiles) {
+    /** The most emissions a shape is built over. */
+    public static final int MAX_TILES = 20;
+
     public Emitter {
         particle = Objects.requireNonNullElse(particle, "minecraft:flame");
         data = Objects.requireNonNullElse(data, ParticleDataSpec.NONE);
@@ -55,6 +61,7 @@ public record Emitter(
         every = Math.clamp(Objects.requireNonNullElse(every, 1), 1, ParticleEffect.MAX_DURATION);
         delay = Math.clamp(Objects.requireNonNullElse(delay, 0), 0, ParticleEffect.MAX_DURATION);
         chance = Math.clamp(Objects.requireNonNullElse(chance, 1.0), 0, 1);
+        tiles = Math.clamp(Objects.requireNonNullElse(tiles, 1), 1, MAX_TILES);
     }
 
     /**
@@ -75,6 +82,7 @@ public record Emitter(
                 0.0,
                 1,
                 0,
-                1.0);
+                1.0,
+                1);
     }
 }

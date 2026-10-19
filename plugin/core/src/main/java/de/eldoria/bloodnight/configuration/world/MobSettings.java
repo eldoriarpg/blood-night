@@ -31,6 +31,8 @@ public class MobSettings {
     private double damageModifier = 2;
     private double healthMultiplier = 2;
     private Map<String, AttributeOverride> overrides = new HashMap<>();
+    private Map<String, Integer> withers =
+            new HashMap<>(Map.of("blink_wither", 1, "blood_wither", 1, "grave_wither", 1));
 
     public MobSpawning spawning() {
         return spawning;
@@ -53,6 +55,14 @@ public class MobSettings {
      */
     public double damageModifier() {
         return Math.max(damageModifier, 0);
+    }
+
+    /**
+     * @return the mobs a wither built during a blood night becomes, by id, with their weights; empty keeps withers
+     *     vanilla
+     */
+    public Map<String, Integer> withers() {
+        return withers;
     }
 
     /**

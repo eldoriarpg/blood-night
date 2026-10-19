@@ -58,7 +58,8 @@ function flap(on: boolean): void {
   <div class="flex flex-wrap gap-4">
     <div class="flex flex-col gap-1">
       <FieldLabel>{{ t('editor.particles.pattern.picture') }}</FieldLabel>
-      <div :aria-label="t('editor.particles.pattern.picture')" class="grid w-fit gap-px rounded-control border border-line bg-line-soft p-px" role="grid" style="grid-template-columns: repeat(16, 1rem)">
+      <div class="max-w-full overflow-x-auto">
+      <div :aria-label="t('editor.particles.pattern.picture')" :style="{gridTemplateColumns: `repeat(${SIZE}, 0.75rem)`}" class="grid w-fit gap-px rounded-control border border-line bg-line-soft p-px" role="grid">
         <template v-for="(line, row) in rows" :key="row">
           <BareButton
               v-for="column in SIZE"
@@ -67,10 +68,11 @@ function flap(on: boolean): void {
               :aria-pressed="filled(row, column - 1)"
               :class="filled(row, column - 1) ? 'bg-accent' : 'bg-surface hover:bg-raised'"
               :disabled="readOnly"
-              class="h-4 w-4"
+              class="h-3 w-3"
               @click="toggle(row, column - 1)"
           />
         </template>
+      </div>
       </div>
       <MutedText size="sm" tag="p">{{ t(shape.mirror ? 'editor.particles.pattern.mirroredHint' : 'editor.particles.pattern.hint') }}</MutedText>
     </div>

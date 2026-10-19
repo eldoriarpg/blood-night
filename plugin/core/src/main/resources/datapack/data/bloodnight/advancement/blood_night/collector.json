@@ -10,7 +10,13 @@
     "blaze_rider": {
       "trigger": "minecraft:impossible"
     },
+    "blink_wither": {
+      "trigger": "minecraft:impossible"
+    },
     "blood_dragon": {
+      "trigger": "minecraft:impossible"
+    },
+    "blood_wither": {
       "trigger": "minecraft:impossible"
     },
     "carrier_phantom": {
@@ -38,6 +44,9 @@
       "trigger": "minecraft:impossible"
     },
     "grabber_enderman": {
+      "trigger": "minecraft:impossible"
+    },
+    "grave_wither": {
       "trigger": "minecraft:impossible"
     },
     "invisible_skeleton": {
@@ -135,7 +144,13 @@
       "blaze_rider"
     ],
     [
+      "blink_wither"
+    ],
+    [
       "blood_dragon"
+    ],
+    [
+      "blood_wither"
     ],
     [
       "carrier_phantom"
@@ -163,6 +178,9 @@
     ],
     [
       "grabber_enderman"
+    ],
+    [
+      "grave_wither"
     ],
     [
       "invisible_skeleton"

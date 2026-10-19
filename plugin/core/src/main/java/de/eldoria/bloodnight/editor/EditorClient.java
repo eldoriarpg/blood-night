@@ -76,7 +76,7 @@ public final class EditorClient {
      * @return the session as the editor sees it; empty when it expired or was closed
      */
     public CompletableFuture<Optional<SessionView>> view(SessionCreated session) {
-        return send(request(EditorRoutes.path(EditorRoutes.SESSION, session.id()))
+        return send(authorized(EditorRoutes.path(EditorRoutes.SESSION, session.id()), session)
                         .GET())
                 .thenApply(response -> response.statusCode() == 404
                         ? Optional.empty()

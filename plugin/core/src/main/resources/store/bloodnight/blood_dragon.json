@@ -49,11 +49,63 @@
     },
     "behaviour" : {
       "nodes" : {
-        "apply_effect_29" : {
+        "add_67" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_1",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.01
+          },
+          "state" : "casting"
+        },
+        "add_69" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_63",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          },
+          "state" : "casting"
+        },
+        "add_92" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_88",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.01
+          },
+          "state" : "casting"
+        },
+        "add_94" : {
+          "type" : "math.add",
+          "inputs" : {
+            "first" : {
+              "node" : "read_89",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 0.0
+          },
+          "state" : "casting"
+        },
+        "apply_effect_123" : {
           "type" : "living_entity.apply_effect",
           "inputs" : {
             "target" : {
-              "node" : "cast_27",
+              "node" : "cast_121",
               "port" : "result"
             }
           },
@@ -62,6 +114,19 @@
             "effect" : "minecraft:wither",
             "seconds" : 5.0
           }
+        },
+        "attribute_37" : {
+          "type" : "living_entity.attribute",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "attribute" : "minecraft:max_health"
+          },
+          "state" : "calm"
         },
         "branch_10" : {
           "type" : "flow.branch",
@@ -73,57 +138,124 @@
           },
           "executions" : {
             "false" : [ "damage_7" ]
-          }
+          },
+          "state" : "fighting"
         },
-        "branch_13" : {
+        "branch_111" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_12",
+              "node" : "cast_108",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_sound_109" ]
+          },
+          "state" : "casting"
+        },
+        "branch_126" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_125",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_effect_124" ]
+          }
+        },
+        "branch_127" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_122",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_126" ]
+          }
+        },
+        "branch_128" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_121",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "apply_effect_123", "branch_127" ]
+          }
+        },
+        "branch_20" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "equal_15",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_17" ]
+          },
+          "state" : "fighting"
+        },
+        "branch_23" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_22",
               "port" : "result"
             }
           },
           "executions" : {
             "false" : [ "launch_projectile_3" ]
-          }
+          },
+          "state" : "fighting"
         },
-        "branch_15" : {
+        "branch_25" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_14",
+              "node" : "cooldown_24",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_13" ]
-          }
+            "true" : [ "branch_23" ]
+          },
+          "state" : "fighting"
         },
-        "branch_17" : {
+        "branch_27" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "is_null_16",
+              "node" : "is_null_26",
               "port" : "result"
             }
           },
           "executions" : {
             "false" : [ "strike_lightning_5", "play_effect_6" ]
-          }
+          },
+          "state" : "fighting"
         },
-        "branch_19" : {
+        "branch_29" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_18",
+              "node" : "cooldown_28",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "branch_17" ]
-          }
+            "true" : [ "branch_27" ]
+          },
+          "state" : "fighting"
         },
-        "branch_20" : {
+        "branch_30" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
@@ -133,108 +265,243 @@
           },
           "executions" : {
             "true" : [ "play_effect_8" ]
-          }
-        },
-        "branch_22" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "is_null_21",
-              "port" : "result"
-            }
           },
-          "executions" : {
-            "false" : [ "branch_20" ]
-          }
-        },
-        "branch_24" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "cooldown_23",
-              "port" : "result"
-            }
-          },
-          "executions" : {
-            "true" : [ "branch_22" ]
-          }
+          "state" : "fighting"
         },
         "branch_32" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cooldown_31",
+              "node" : "is_null_31",
               "port" : "result"
             }
           },
           "executions" : {
-            "true" : [ "play_effect_30" ]
-          }
-        },
-        "branch_33" : {
-          "type" : "flow.branch",
-          "inputs" : {
-            "condition" : {
-              "node" : "has_line_of_sight_28",
-              "port" : "result"
-            }
+            "false" : [ "branch_30" ]
           },
-          "executions" : {
-            "true" : [ "branch_32" ]
-          }
+          "state" : "fighting"
         },
         "branch_34" : {
           "type" : "flow.branch",
           "inputs" : {
             "condition" : {
-              "node" : "cast_27",
+              "node" : "cooldown_33",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "branch_32" ]
+          },
+          "state" : "fighting"
+        },
+        "branch_41" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "less_40",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "go_to_36" ]
+          },
+          "state" : "calm"
+        },
+        "branch_43" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_42",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_41" ]
+          },
+          "state" : "calm"
+        },
+        "branch_48" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cooldown_47",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "go_to_46" ]
+          },
+          "state" : "raging"
+        },
+        "branch_50" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_49",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "branch_48" ]
+          },
+          "state" : "raging"
+        },
+        "branch_78" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "has_line_of_sight_62",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "true" : [ "mutate_70", "play_sound_76" ]
+          },
+          "state" : "casting"
+        },
+        "branch_79" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_61",
               "port" : "matches"
             }
           },
           "executions" : {
-            "true" : [ "apply_effect_29", "branch_33" ]
-          }
+            "true" : [ "branch_78" ]
+          },
+          "state" : "casting"
         },
-        "cast_27" : {
+        "branch_85" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "cast_82",
+              "port" : "matches"
+            }
+          },
+          "executions" : {
+            "true" : [ "play_sound_83" ]
+          },
+          "state" : "casting"
+        },
+        "branch_99" : {
+          "type" : "flow.branch",
+          "inputs" : {
+            "condition" : {
+              "node" : "is_null_98",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "false" : [ "mutate_95" ]
+          },
+          "state" : "casting"
+        },
+        "cast_102" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "ender_dragon"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "casting"
+        },
+        "cast_108" : {
           "type" : "cast",
           "config" : {
             "type" : "player"
           },
           "inputs" : {
             "value" : {
-              "node" : "hit_26",
+              "node" : "for_each_107",
+              "port" : "element"
+            }
+          },
+          "state" : "casting"
+        },
+        "cast_117" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "ender_dragon"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "casting"
+        },
+        "cast_121" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "hit_120",
               "port" : "entity"
             }
           }
         },
-        "cooldown_14" : {
-          "type" : "function.cooldown",
+        "cast_14" : {
+          "type" : "cast",
           "config" : {
-            "unit" : "MILLISECONDS"
+            "type" : "ender_dragon"
           },
-          "literals" : {
-            "duration" : 6000
-          }
+          "inputs" : {
+            "value" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "fighting"
         },
-        "cooldown_18" : {
-          "type" : "function.cooldown",
+        "cast_18" : {
+          "type" : "cast",
           "config" : {
-            "unit" : "MILLISECONDS"
+            "type" : "ender_dragon"
           },
-          "literals" : {
-            "duration" : 10000
-          }
+          "inputs" : {
+            "value" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "fighting"
         },
-        "cooldown_23" : {
-          "type" : "function.cooldown",
+        "cast_61" : {
+          "type" : "cast",
           "config" : {
-            "unit" : "MILLISECONDS"
+            "type" : "player"
           },
-          "literals" : {
-            "duration" : 8000
-          }
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_60",
+              "port" : "element"
+            }
+          },
+          "state" : "casting"
         },
-        "cooldown_31" : {
+        "cast_82" : {
+          "type" : "cast",
+          "config" : {
+            "type" : "player"
+          },
+          "inputs" : {
+            "value" : {
+              "node" : "for_each_81",
+              "port" : "element"
+            }
+          },
+          "state" : "casting"
+        },
+        "cooldown_125" : {
           "type" : "function.cooldown",
           "config" : {
             "unit" : "MILLISECONDS"
@@ -242,6 +509,188 @@
           "literals" : {
             "duration" : 3000
           }
+        },
+        "cooldown_24" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 6000
+          },
+          "state" : "fighting"
+        },
+        "cooldown_28" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 10000
+          },
+          "state" : "fighting"
+        },
+        "cooldown_33" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 8000
+          },
+          "state" : "fighting"
+        },
+        "cooldown_47" : {
+          "type" : "function.cooldown",
+          "config" : {
+            "unit" : "MILLISECONDS"
+          },
+          "literals" : {
+            "duration" : 60000
+          },
+          "state" : "raging"
+        },
+        "create_53" : {
+          "type" : "vector.create",
+          "literals" : {
+            "x" : 0.0,
+            "y" : -1.0,
+            "z" : 0.0
+          },
+          "state" : "casting"
+        },
+        "create_56" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "read_1",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "read_1",
+              "port" : "x"
+            },
+            "y" : {
+              "node" : "subtract_57",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_1",
+              "port" : "z"
+            }
+          },
+          "state" : "casting"
+        },
+        "create_66" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_67",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_1",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          },
+          "state" : "casting"
+        },
+        "create_68" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_69",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_63",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          },
+          "state" : "casting"
+        },
+        "create_71" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "multiply_73",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "multiply_75",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "y" : 0.9
+          },
+          "state" : "casting"
+        },
+        "create_91" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_92",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_88",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          },
+          "state" : "casting"
+        },
+        "create_93" : {
+          "type" : "vector.create",
+          "inputs" : {
+            "x" : {
+              "node" : "add_94",
+              "port" : "result"
+            },
+            "z" : {
+              "node" : "read_89",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "y" : 0.0
+          },
+          "state" : "casting"
+        },
+        "create_96" : {
+          "type" : "location.create",
+          "inputs" : {
+            "world" : {
+              "node" : "mutate_95",
+              "port" : "world"
+            },
+            "x" : {
+              "node" : "mutate_95",
+              "port" : "x"
+            },
+            "y" : {
+              "node" : "mutate_95",
+              "port" : "y"
+            },
+            "yaw" : {
+              "node" : "mutate_95",
+              "port" : "yaw"
+            },
+            "z" : {
+              "node" : "mutate_95",
+              "port" : "z"
+            }
+          },
+          "state" : "casting"
         },
         "damage_7" : {
           "type" : "living_entity.damage",
@@ -257,7 +706,151 @@
           },
           "literals" : {
             "amount" : 6.0
-          }
+          },
+          "state" : "fighting"
+        },
+        "delay_58" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 8.0
+          },
+          "executions" : {
+            "next" : [ "for_each_60", "for_each_81", "go_to_86" ]
+          },
+          "state" : "casting"
+        },
+        "delay_87" : {
+          "type" : "flow.delay",
+          "literals" : {
+            "duration" : 1.6
+          },
+          "executions" : {
+            "next" : [ "branch_99", "mutate_100", "mutate_101" ]
+          },
+          "state" : "casting"
+        },
+        "direction_65" : {
+          "type" : "vector.direction",
+          "inputs" : {
+            "from" : {
+              "node" : "create_66",
+              "port" : "result"
+            },
+            "to" : {
+              "node" : "create_68",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "direction_90" : {
+          "type" : "vector.direction",
+          "inputs" : {
+            "from" : {
+              "node" : "create_91",
+              "port" : "result"
+            },
+            "to" : {
+              "node" : "create_93",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "enter_114" : {
+          "type" : "state.enter",
+          "executions" : {
+            "next" : [ "line_trace_54" ]
+          },
+          "state" : "casting"
+        },
+        "enter_21" : {
+          "type" : "state.enter",
+          "executions" : {
+            "next" : [ "mutate_12", "branch_20" ]
+          },
+          "state" : "fighting"
+        },
+        "equal_15" : {
+          "type" : "logic.equal",
+          "inputs" : {
+            "first" : {
+              "node" : "read_13",
+              "port" : "phase"
+            },
+            "second" : {
+              "node" : "value_16",
+              "port" : "value"
+            }
+          },
+          "state" : "fighting"
+        },
+        "exit_119" : {
+          "type" : "state.exit",
+          "executions" : {
+            "next" : [ "mutate_115", "mutate_116" ]
+          },
+          "state" : "casting"
+        },
+        "for_each_107" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_106",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_111" ]
+          },
+          "state" : "casting"
+        },
+        "for_each_60" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_59",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_79" ]
+          },
+          "state" : "casting"
+        },
+        "for_each_81" : {
+          "type" : "flow.for_each",
+          "inputs" : {
+            "list" : {
+              "node" : "nearby_entities_80",
+              "port" : "result"
+            }
+          },
+          "executions" : {
+            "body" : [ "branch_85" ]
+          },
+          "state" : "casting"
+        },
+        "go_to_36" : {
+          "type" : "state.go_to",
+          "config" : {
+            "state" : "raging"
+          },
+          "state" : "calm"
+        },
+        "go_to_46" : {
+          "type" : "state.go_to",
+          "config" : {
+            "state" : "casting"
+          },
+          "state" : "raging"
+        },
+        "go_to_86" : {
+          "type" : "state.go_to",
+          "config" : {
+            "state" : "raging"
+          },
+          "state" : "casting"
         },
         "has_line_of_sight_11" : {
           "type" : "living_entity.has_line_of_sight",
@@ -270,13 +863,14 @@
               "node" : "self_2",
               "port" : "entity"
             }
-          }
+          },
+          "state" : "fighting"
         },
-        "has_line_of_sight_28" : {
+        "has_line_of_sight_122" : {
           "type" : "living_entity.has_line_of_sight",
           "inputs" : {
             "other" : {
-              "node" : "cast_27",
+              "node" : "cast_121",
               "port" : "result"
             },
             "target" : {
@@ -285,38 +879,75 @@
             }
           }
         },
-        "hit_26" : {
+        "has_line_of_sight_62" : {
+          "type" : "living_entity.has_line_of_sight",
+          "inputs" : {
+            "other" : {
+              "node" : "cast_61",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "casting"
+        },
+        "hit_120" : {
           "type" : "event.hit",
           "executions" : {
-            "next" : [ "branch_34" ]
+            "next" : [ "branch_128" ]
           }
         },
-        "is_null_12" : {
+        "is_null_22" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
               "node" : "nearest_player_0",
               "port" : "player"
             }
-          }
+          },
+          "state" : "fighting"
         },
-        "is_null_16" : {
+        "is_null_26" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
               "node" : "nearest_player_0",
               "port" : "player"
             }
-          }
+          },
+          "state" : "fighting"
         },
-        "is_null_21" : {
+        "is_null_31" : {
           "type" : "logic.is_null",
           "inputs" : {
             "value" : {
               "node" : "nearest_player_0",
               "port" : "player"
             }
-          }
+          },
+          "state" : "fighting"
+        },
+        "is_null_42" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "attribute_37",
+              "port" : "result"
+            }
+          },
+          "state" : "calm"
+        },
+        "is_null_49" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_45",
+              "port" : "player"
+            }
+          },
+          "state" : "raging"
         },
         "is_null_9" : {
           "type" : "logic.is_null",
@@ -325,7 +956,18 @@
               "node" : "nearest_player_0",
               "port" : "player"
             }
-          }
+          },
+          "state" : "fighting"
+        },
+        "is_null_98" : {
+          "type" : "logic.is_null",
+          "inputs" : {
+            "value" : {
+              "node" : "nearest_player_52",
+              "port" : "player"
+            }
+          },
+          "state" : "casting"
         },
         "launch_projectile_3" : {
           "type" : "living_entity.launch_projectile",
@@ -344,7 +986,272 @@
           },
           "literals" : {
             "speed" : 2.0
-          }
+          },
+          "state" : "fighting"
+        },
+        "less_40" : {
+          "type" : "logic.less",
+          "inputs" : {
+            "first" : {
+              "node" : "read_1",
+              "port" : "health"
+            },
+            "second" : {
+              "node" : "multiply_39",
+              "port" : "result"
+            }
+          },
+          "state" : "calm"
+        },
+        "lift_104" : {
+          "type" : "entity.lift",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "height" : 8.0,
+            "seconds" : 1.5
+          },
+          "state" : "casting"
+        },
+        "line_trace_54" : {
+          "type" : "world.line_trace",
+          "config" : {
+            "hits" : "BLOCKS"
+          },
+          "inputs" : {
+            "direction" : {
+              "node" : "create_53",
+              "port" : "result"
+            },
+            "ignore" : {
+              "node" : "self_2",
+              "port" : "entity"
+            },
+            "start" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "distance" : 6.0
+          },
+          "executions" : {
+            "next" : [ "mutate_105", "for_each_107", "lift_104", "play_effect_112", "play_effect_113", "delay_87", "delay_58" ]
+          },
+          "state" : "casting"
+        },
+        "multiply_39" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_38",
+              "port" : "value"
+            }
+          },
+          "literals" : {
+            "second" : 0.7
+          },
+          "state" : "calm"
+        },
+        "multiply_73" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_72",
+              "port" : "x"
+            }
+          },
+          "literals" : {
+            "second" : 2.7
+          },
+          "state" : "casting"
+        },
+        "multiply_75" : {
+          "type" : "math.multiply",
+          "inputs" : {
+            "first" : {
+              "node" : "read_74",
+              "port" : "z"
+            }
+          },
+          "literals" : {
+            "second" : 2.7
+          },
+          "state" : "casting"
+        },
+        "mutate_100" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "ai" : true
+          },
+          "state" : "casting"
+        },
+        "mutate_101" : {
+          "type" : "ender_dragon.mutate",
+          "inputs" : {
+            "phase" : {
+              "node" : "value_103",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "cast_102",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "mutate_105" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "ai" : false
+          },
+          "state" : "casting"
+        },
+        "mutate_115" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "ai" : true
+          },
+          "state" : "casting"
+        },
+        "mutate_116" : {
+          "type" : "ender_dragon.mutate",
+          "inputs" : {
+            "phase" : {
+              "node" : "value_118",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "cast_117",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "mutate_12" : {
+          "type" : "living_entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "ai" : true
+          },
+          "state" : "fighting"
+        },
+        "mutate_17" : {
+          "type" : "ender_dragon.mutate",
+          "inputs" : {
+            "phase" : {
+              "node" : "value_19",
+              "port" : "value"
+            },
+            "target" : {
+              "node" : "cast_18",
+              "port" : "result"
+            }
+          },
+          "state" : "fighting"
+        },
+        "mutate_70" : {
+          "type" : "entity.mutate",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_61",
+              "port" : "result"
+            },
+            "velocity" : {
+              "node" : "create_71",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "mutate_95" : {
+          "type" : "location.mutate",
+          "inputs" : {
+            "direction" : {
+              "node" : "direction_90",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "read_89",
+              "port" : "location"
+            }
+          },
+          "executions" : {
+            "next" : [ "teleport_97" ]
+          },
+          "state" : "casting"
+        },
+        "nearby_entities_106" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 200.0,
+            "y" : 100.0,
+            "z" : 200.0
+          },
+          "state" : "casting"
+        },
+        "nearby_entities_59" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 200.0,
+            "y" : 100.0,
+            "z" : 200.0
+          },
+          "state" : "casting"
+        },
+        "nearby_entities_80" : {
+          "type" : "entity.nearby_entities",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "literals" : {
+            "x" : 200.0,
+            "y" : 100.0,
+            "z" : 200.0
+          },
+          "state" : "casting"
         },
         "nearest_player_0" : {
           "type" : "world.nearest_player",
@@ -356,9 +1263,72 @@
           },
           "literals" : {
             "radius" : 128.0
-          }
+          },
+          "state" : "fighting"
         },
-        "play_effect_30" : {
+        "nearest_player_45" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 200.0
+          },
+          "state" : "raging"
+        },
+        "nearest_player_52" : {
+          "type" : "world.nearest_player",
+          "inputs" : {
+            "location" : {
+              "node" : "read_1",
+              "port" : "location"
+            }
+          },
+          "literals" : {
+            "radius" : 200.0
+          },
+          "state" : "casting"
+        },
+        "normalize_64" : {
+          "type" : "vector.normalize",
+          "inputs" : {
+            "value" : {
+              "node" : "direction_65",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "play_effect_112" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:arcane_seal"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "create_56",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "play_effect_113" : {
+          "type" : "world.play_effect",
+          "config" : {
+            "effect" : "bloodnight:seal_aura"
+          },
+          "inputs" : {
+            "source" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "casting"
+        },
+        "play_effect_124" : {
           "type" : "world.play_effect",
           "config" : {
             "effect" : "bloodnight:drain_beam"
@@ -369,7 +1339,7 @@
               "port" : "entity"
             },
             "target" : {
-              "node" : "cast_27",
+              "node" : "cast_121",
               "port" : "result"
             }
           }
@@ -384,7 +1354,8 @@
               "node" : "read_4",
               "port" : "location"
             }
-          }
+          },
+          "state" : "fighting"
         },
         "play_effect_8" : {
           "type" : "world.play_effect",
@@ -403,7 +1374,65 @@
           },
           "executions" : {
             "arrived" : [ "branch_10" ]
-          }
+          },
+          "state" : "fighting"
+        },
+        "play_sound_109" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_110",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_108",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.8,
+            "sound" : "minecraft:entity.ender_dragon.growl",
+            "volume" : 4.0
+          },
+          "state" : "casting"
+        },
+        "play_sound_76" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_77",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_61",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.6,
+            "sound" : "minecraft:entity.warden.sonic_boom",
+            "volume" : 2.0
+          },
+          "state" : "casting"
+        },
+        "play_sound_83" : {
+          "type" : "player.play_sound",
+          "inputs" : {
+            "location" : {
+              "node" : "read_84",
+              "port" : "location"
+            },
+            "target" : {
+              "node" : "cast_82",
+              "port" : "result"
+            }
+          },
+          "literals" : {
+            "pitch" : 0.8,
+            "sound" : "minecraft:entity.ender_dragon.growl",
+            "volume" : 4.0
+          },
+          "state" : "casting"
         },
         "read_1" : {
           "type" : "mob.read",
@@ -414,6 +1443,36 @@
             }
           }
         },
+        "read_110" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_108",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_13" : {
+          "type" : "ender_dragon.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_14",
+              "port" : "result"
+            }
+          },
+          "state" : "fighting"
+        },
+        "read_38" : {
+          "type" : "attribute.read",
+          "inputs" : {
+            "target" : {
+              "node" : "attribute_37",
+              "port" : "result"
+            }
+          },
+          "state" : "calm"
+        },
         "read_4" : {
           "type" : "entity.read",
           "inputs" : {
@@ -421,7 +1480,78 @@
               "node" : "nearest_player_0",
               "port" : "player"
             }
-          }
+          },
+          "state" : "fighting"
+        },
+        "read_63" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_61",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_72" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "normalize_64",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_74" : {
+          "type" : "vector.read",
+          "inputs" : {
+            "target" : {
+              "node" : "normalize_64",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_77" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_61",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_84" : {
+          "type" : "player.read",
+          "inputs" : {
+            "target" : {
+              "node" : "cast_82",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_88" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "nearest_player_52",
+              "port" : "player"
+            }
+          },
+          "state" : "casting"
+        },
+        "read_89" : {
+          "type" : "entity.read",
+          "inputs" : {
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "casting"
         },
         "self_2" : {
           "type" : "mob.self"
@@ -437,15 +1567,117 @@
               "node" : "read_1",
               "port" : "world"
             }
-          }
+          },
+          "state" : "fighting"
         },
-        "tick_25" : {
+        "subtract_55" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "line_trace_54",
+              "port" : "hit_distance"
+            }
+          },
+          "literals" : {
+            "second" : 0.3
+          },
+          "state" : "casting"
+        },
+        "subtract_57" : {
+          "type" : "math.subtract",
+          "inputs" : {
+            "first" : {
+              "node" : "read_1",
+              "port" : "y"
+            },
+            "second" : {
+              "node" : "subtract_55",
+              "port" : "result"
+            }
+          },
+          "state" : "casting"
+        },
+        "teleport_97" : {
+          "type" : "entity.teleport",
+          "inputs" : {
+            "location" : {
+              "node" : "create_96",
+              "port" : "result"
+            },
+            "target" : {
+              "node" : "self_2",
+              "port" : "entity"
+            }
+          },
+          "state" : "casting"
+        },
+        "tick_35" : {
           "type" : "mob.tick",
           "executions" : {
-            "next" : [ "branch_15", "branch_19", "branch_24" ]
-          }
+            "next" : [ "branch_25", "branch_29", "branch_34" ]
+          },
+          "state" : "fighting"
+        },
+        "tick_44" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_43" ]
+          },
+          "state" : "calm"
+        },
+        "tick_51" : {
+          "type" : "mob.tick",
+          "executions" : {
+            "next" : [ "branch_50" ]
+          },
+          "state" : "raging"
+        },
+        "value_103" : {
+          "type" : "value",
+          "config" : {
+            "type" : "dragon_phase",
+            "value" : "HOVER"
+          },
+          "state" : "casting"
+        },
+        "value_118" : {
+          "type" : "value",
+          "config" : {
+            "type" : "dragon_phase",
+            "value" : "CIRCLING"
+          },
+          "state" : "casting"
+        },
+        "value_16" : {
+          "type" : "value",
+          "config" : {
+            "type" : "dragon_phase",
+            "value" : "HOVER"
+          },
+          "state" : "fighting"
+        },
+        "value_19" : {
+          "type" : "value",
+          "config" : {
+            "type" : "dragon_phase",
+            "value" : "CIRCLING"
+          },
+          "state" : "fighting"
         }
-      }
+      },
+      "states" : [ {
+        "name" : "fighting",
+        "initial" : true
+      }, {
+        "name" : "calm",
+        "parent" : "fighting",
+        "initial" : true
+      }, {
+        "name" : "raging",
+        "parent" : "fighting"
+      }, {
+        "name" : "casting"
+      } ]
     },
     "loot" : {
       "tables" : [ "blood_dragon" ],

@@ -12,7 +12,7 @@ import tools.jackson.databind.json.JsonMapper;
 /**
  * Night selections for tests, read from JSON the way the configuration reads them: through fields.
  */
-final class Selections {
+public final class Selections {
     private static final JsonMapper MAPPER = JsonMapper.builder()
             .changeDefaultVisibility(checker -> checker.withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                     .withGetterVisibility(JsonAutoDetect.Visibility.NONE))
@@ -24,7 +24,7 @@ final class Selections {
         return MAPPER.readValue(json, NightSelection.class);
     }
 
-    static <T> T read(String json, Class<T> type) {
+    public static <T> T read(String json, Class<T> type) {
         return MAPPER.readValue(json, type);
     }
 

@@ -5,6 +5,7 @@
  */
 <script setup lang="ts">
 import LabelledField from '@/components/input/LabelledField.vue'
+import ToggleSetting from '@/components/input/toggle/ToggleSetting.vue'
 import ColorInput from '@/components/input/color/ColorInput.vue'
 import MutedText from '@/components/typography/MutedText.vue'
 import ItemPicker from '~/views/editorview/form/ItemPicker.vue'
@@ -37,6 +38,10 @@ function save(change: Partial<ParticleDataSpec>): void {
   emit('save', {...current.value, ...change})
 }
 
+function towardOther(other: boolean): void {
+  save({toward: other ? undefined : {x: 0, y: 1, z: 0}})
+}
+
 function color(key: 'color' | 'to', value: string | undefined): void {
   if (value) save({[key]: value})
 }
@@ -62,8 +67,16 @@ function color(key: 'color' | 'to', value: string | undefined): void {
       <ItemPicker :choices="items" :label="t('editor.particles.data.item')" :model-value="current.item" :read-only="readOnly" @update:model-value="item => save({item})"/>
     </LabelledField>
   </div>
-  <VecFields
+  <ToggleSetting
       v-if="fields.includes('ticks')"
+      :disabled="readOnly"
+      :hint="t('editor.particles.data.towardOtherHint')"
+      :label="t('editor.particles.data.towardOther')"
+      :model-value="current.toward === undefined"
+      @update:model-value="towardOther"
+  />
+  <VecFields
+      v-if="fields.includes('ticks') && current.toward !== undefined"
       :axes="[t('editor.particles.axes.right'), t('editor.particles.axes.up'), t('editor.particles.axes.forward')]"
       :label="t('editor.particles.data.toward')"
       :read-only="readOnly"

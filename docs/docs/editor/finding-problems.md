@@ -1,6 +1,6 @@
 ---
 title: Finding problems
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Finding problems

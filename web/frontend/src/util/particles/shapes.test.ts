@@ -34,7 +34,7 @@ describe('shapes', () => {
 
     it('counts points without drawing them', () => {
         expect(pointCount({type: 'PATTERN', rows: ['x.x'], mirror: true})).toBe(4)
-        expect(pointCount({type: 'SPIRAL', points: 40, strands: 2})).toBe(64)
+        expect(pointCount({type: 'SPIRAL', points: 200, strands: 2})).toBe(256)
         expect(cells(['.x', 'x '])).toEqual([[1, 0], [0, 1]])
     })
 

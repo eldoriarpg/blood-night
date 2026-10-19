@@ -21,6 +21,7 @@ import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -199,8 +200,19 @@ public final class PluginService implements BloodNightService {
             entity.remove();
             return Optional.empty();
         }
+        if (living instanceof EnderDragon dragon) takeOff(dragon, location);
         nights.running(living.getWorld()).ifPresent(night -> MobTags.markNight(living, night));
         coordinator.register(living, definition);
         return Optional.of(living);
+    }
+
+    /**
+     * Makes a spawned ender dragon fly: outside its fight a dragon hovers in place, so it circles where it was spawned
+     * instead, as around the End's portal.
+     */
+    private static void takeOff(EnderDragon dragon, Location location) {
+        if (dragon.getPhase() != EnderDragon.Phase.HOVER) return;
+        dragon.setPodium(location);
+        dragon.setPhase(EnderDragon.Phase.CIRCLING);
     }
 }
