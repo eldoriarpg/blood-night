@@ -10,6 +10,7 @@ import de.eldoria.bloodnight.particles.geometry.Vec3;
 import org.bukkit.Location;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Zombie;
+import org.bukkit.util.Vector;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,11 @@ class EndTest {
         Vec3 point = End.head(List.of(body, head));
 
         assertEquals(new Vec3(5, 70 + head.getHeight() / 2, 2), point);
+    }
+
+    @Test
+    void aDragonsMouthIsWhereItsFireballsLeave() {
+        assertEquals(new Vec3(0, 10.5, -1), End.mouth(new Vec3(0, 10, 0), new Vector(0, 0, 1)));
     }
 
     @Test

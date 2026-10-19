@@ -158,7 +158,7 @@ motion: {ticks: 8, through: 1.5, ease: IN}
 On the other end, an emitter or piece aims at the same point of the body as its anchor, unless the anchor sets
 `aim`: `anchor: {at: EYES, aim: CENTER}` starts at the mob's eyes and hits the player's chest. Aim at `CENTER` for
 anything aimed at a player: at their `EYES`, it ends right in front of their face and looks cut off and wide. An Ender
-Dragon's `EYES` are its head.
+Dragon's `EYES` are its mouth, where its fireballs come from.
 
 ## Display pieces
 
