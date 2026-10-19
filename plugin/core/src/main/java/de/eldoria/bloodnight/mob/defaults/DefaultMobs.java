@@ -80,6 +80,31 @@ public final class DefaultMobs implements BloodNightNodes {
     private static final double BACK_OFF_UP = 0.42;
 
     /**
+     * Milliseconds between two arcane seals of the Blood Dragon.
+     */
+    private static final int SEAL_COOLDOWN = 60000;
+
+    /**
+     * Seconds the Blood Dragon's arcane seal charges, the length of its effect.
+     */
+    private static final double SEAL_CHARGE = 8;
+
+    /**
+     * Blocks around the Blood Dragon within which its arcane seal reaches players.
+     */
+    private static final double SEAL_REACH = 200;
+
+    /**
+     * Sideways speed the arcane seal throws players with, about 30 blocks far.
+     */
+    private static final double SEAL_PUSH = 2.7;
+
+    /**
+     * Upward speed the arcane seal throws players with, so they fly instead of sliding.
+     */
+    private static final double SEAL_LIFT = 0.9;
+
+    /**
      * The magic skeleton's effects in the order its arrows bring them, with the dust colour that announces each.
      */
     private static final List<MagicEffect> MAGIC_EFFECTS = List.of(
@@ -1958,7 +1983,9 @@ public final class DefaultMobs implements BloodNightNodes {
                     MOB_TICK,
                     graph.every(6000, graph.present(nearest, "player", fireball)),
                     graph.every(10000, graph.present(nearest, "player", lightning, bolt)),
-                    graph.every(8000, graph.present(nearest, "player", graph.when(seesNearest, RESULT, spear))));
+                    graph.every(8000, graph.present(nearest, "player", graph.when(seesNearest, RESULT, spear))),
+                    graph.unless(casting(graph), VALUE, ai(graph, true)),
+                    arcaneSeal(graph));
             String hit = graph.entry(EVENT_HIT);
             String hitPlayer = graph.as("player", hit, "entity");
             String seesHit = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
@@ -1996,6 +2023,112 @@ public final class DefaultMobs implements BloodNightNodes {
                 null,
                 dragon.movement(),
                 dragon.particles());
+    }
+
+    /**
+     * The Blood Dragon's arcane seal, once a minute while a player is within {@value #SEAL_REACH} blocks: it hangs
+     * still, draws a magic circle on the ground below it and, once the circle is complete, throws every player in
+     * that reach it can see about 30 blocks away. A player behind a pillar is safe.
+     *
+     * @return the chain that casts it
+     */
+    private static String arcaneSeal(MobGraph graph) {
+        String nearest = graph.node(WORLD_NEAREST_PLAYER)
+                .input("location", graph.selfRead(), "location")
+                .literal("radius", SEAL_REACH)
+                .id();
+        String down = graph.node(VECTOR_CREATE)
+                .literal("x", 0.0)
+                .literal("y", -1.0)
+                .literal("z", 0.0)
+                .id();
+        Graphs.NodeBuilder trace = graph.node(WORLD_LINE_TRACE)
+                .config("hits", "BLOCKS")
+                .input("start", graph.selfRead(), "location")
+                .input("direction", down, RESULT)
+                .literal("distance", 128.0)
+                .input("ignore", graph.self(), "entity");
+        String ground = trace.id();
+        String release = graph.node(FLOW_DELAY)
+                .literal("duration", SEAL_CHARGE)
+                .chain(
+                        "next",
+                        playersAround(graph, SEAL_REACH, player -> throwAway(graph, player)),
+                        casting(graph, false))
+                .id();
+        String cast = graph.when(
+                ground,
+                "hit",
+                casting(graph, true),
+                ai(graph, false),
+                graph.playEffect("bloodnight:arcane_seal", ground, "location").id(),
+                release);
+        trace.chain("next", cast);
+        return graph.present(nearest, "player", graph.every(SEAL_COOLDOWN, ground));
+    }
+
+    /**
+     * Throws a player the dragon can see away from it, with a deep boom.
+     *
+     * @param player the node whose {@code result} is the player
+     */
+    private static String throwAway(MobGraph graph, String player) {
+        String sees = graph.node(LIVING_ENTITY_HAS_LINE_OF_SIGHT)
+                .input(TARGET, graph.self(), "entity")
+                .input("other", player, RESULT)
+                .id();
+        String read = graph.node(ENTITY_READ).input(TARGET, player, RESULT).id();
+        String away = graph.node(VECTOR_NORMALIZE)
+                .input(
+                        VALUE,
+                        graph.node(VECTOR_DIRECTION)
+                                .input("from", flat(graph, graph.selfRead(), 0.01), RESULT)
+                                .input("to", flat(graph, read, 0), RESULT)
+                                .id(),
+                        RESULT)
+                .id();
+        String thrown = graph.node(ENTITY_MUTATE)
+                .input(TARGET, player, RESULT)
+                .input(
+                        "velocity",
+                        graph.node(VECTOR_CREATE)
+                                .input("x", scaled(graph, away, "x", SEAL_PUSH), RESULT)
+                                .literal("y", SEAL_LIFT)
+                                .input("z", scaled(graph, away, "z", SEAL_PUSH), RESULT)
+                                .id(),
+                        RESULT)
+                .id();
+        return graph.when(
+                sees, RESULT, thrown, graph.sound(player, RESULT, "minecraft:entity.warden.sonic_boom", 2, 0.6));
+    }
+
+    /**
+     * @return the node whose {@code value} tells whether the dragon is casting its arcane seal; it is not kept over a
+     *     restart, so a dragon frozen by a cast that a restart cut off moves again
+     */
+    private static String casting(MobGraph graph) {
+        return graph.node(VARIABLE_GET)
+                .config("name", "casting")
+                .config("type", "boolean")
+                .id();
+    }
+
+    private static String casting(MobGraph graph, boolean casting) {
+        return graph.node(VARIABLE_SET)
+                .config("name", "casting")
+                .config("type", "boolean")
+                .literal(VALUE, casting)
+                .id();
+    }
+
+    /**
+     * @return a node switching the mob's AI on or off; off, a dragon hangs still in the air
+     */
+    private static String ai(MobGraph graph, boolean on) {
+        return graph.node(LIVING_ENTITY_MUTATE)
+                .input(TARGET, graph.self(), "entity")
+                .literal("ai", on)
+                .id();
     }
 
     private CustomMob mob(String id, EntityType type, Consumer<MobGraph> behaviour) {

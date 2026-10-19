@@ -87,6 +87,9 @@ class DefaultMobsTest {
                 speedZombie.contains(
                         "private static final PotionEffectType SPEED = Registries.entry(RegistryKey.MOB_EFFECT, \"minecraft:speed\");"),
                 speedZombie);
+        String dragon = behaviours.of("blood_dragon").orElseThrow().source();
+        assertTrue(dragon.contains("setAI(false)") && dragon.contains("setAI(true)"), dragon);
+        assertTrue(dragon.contains("bloodnight:arcane_seal") && dragon.contains("setVelocity("), dragon);
         mobs.forEach(mob -> {
             String source = behaviours.of(mob.id()).orElseThrow().source();
             assertFalse(source.contains("__v"), source);
