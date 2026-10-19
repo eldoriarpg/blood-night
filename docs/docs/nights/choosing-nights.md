@@ -114,7 +114,8 @@ blood night will be.
 
 ## Force or cancel a night
 
-- `/bloodnight night force [world]` makes the coming night a blood night. If it is night already, it starts now.
+- `/bloodnight night force [world]` makes the coming night a blood night. If it is night already, it starts now. In
+  the Nether and the End it always starts now.
 - `/bloodnight night cancel [world]` keeps the coming night normal. If a blood night runs, it ends now.
 
 ## Turn blood nights off in a world

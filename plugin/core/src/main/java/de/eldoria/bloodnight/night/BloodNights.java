@@ -30,7 +30,8 @@ import java.util.logging.Logger;
  * leaves that night, by sunrise or by a jump in time, it ends with {@link BloodNightEndEvent}. A server started in
  * the middle of a blood night picks it up, since the night's answer does not change. Worlds without a day cycle, like
  * the Nether and the End, have timed nights instead (see {@link NightTimes#of(World, NightSettings)}); disabled worlds
- * have no blood nights, and one running when its world is disabled ends.
+ * have no blood nights, and one running when its world is disabled ends. A blood night forced in such a world outside
+ * its night has no night to wait for: it begins at once and lasts as long as the world's nights.
  * <p>
  * Everything but {@link #running} runs on the global region, which owns world time and world data; {@link #running} is
  * read from every thread.
@@ -43,6 +44,7 @@ public final class BloodNights {
     private final Map<UUID, Long> running = new ConcurrentHashMap<>();
     private final Map<UUID, Long> decided = new ConcurrentHashMap<>();
     private final Set<UUID> held = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, Long> until = new ConcurrentHashMap<>();
 
     /**
      * @param selector decides the nights
@@ -69,6 +71,9 @@ public final class BloodNights {
                 continue;
             }
             long fullTime = NightTimes.now(world);
+            Long deadline = until.get(world.getUID());
+            if (deadline != null && (fullTime < deadline || held.contains(world.getUID()))) continue;
+            if (deadline != null) end(world, EndReason.TIME);
             Long current = running.get(world.getUID());
             NightTimes times = selector.times(world);
             long night = times.upcoming(fullTime);
@@ -93,13 +98,24 @@ public final class BloodNights {
     }
 
     /**
-     * Makes the world's coming night a blood night; when it is night already, the blood night begins now.
+     * Makes the world's coming night a blood night; when it is night already, the blood night begins now. A world
+     * without a day cycle has no night to wait for: outside its night, a blood night begins now, numbered by the
+     * period it is in, and lasts as long as its nights.
      *
      * @param world a world
      * @return the forced night's number
      */
     public long force(World world) {
-        long night = selector.times(world).upcoming(NightTimes.now(world));
+        NightTimes times = selector.times(world);
+        long now = NightTimes.now(world);
+        if (world.isFixedTime() && !times.isNight(now) && enabled.test(world) && !running.containsKey(world.getUID())) {
+            long night = Math.floorDiv(now - times.begin(), times.period());
+            until.put(world.getUID(), now + times.length());
+            begin(world, night);
+            if (!running.containsKey(world.getUID())) until.remove(world.getUID());
+            return night;
+        }
+        long night = times.upcoming(now);
         selector.force(world, night);
         decided.remove(world.getUID());
         check(List.of(world));
@@ -177,6 +193,7 @@ public final class BloodNights {
     }
 
     private void end(World world, EndReason reason) {
+        until.remove(world.getUID());
         Long night = running.remove(world.getUID());
         if (night == null) return;
         events.callEvent(new BloodNightEndEvent(world, night, reason));
