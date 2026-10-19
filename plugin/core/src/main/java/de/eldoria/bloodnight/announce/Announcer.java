@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,8 +111,7 @@ public final class Announcer implements Listener {
                 bars.update(
                         player,
                         worldSettings.announcement().bossBar(),
-                        times.apply(world),
-                        nights.endOf(world, times.apply(world), event.night()),
+                        left(world, event.night()),
                         NightKind.of(world).key("name"));
             });
         }
@@ -202,8 +202,7 @@ public final class Announcer implements Listener {
         bars.update(
                 player,
                 worldSettings.announcement().bossBar(),
-                times.apply(world),
-                nights.endOf(world, times.apply(world), night.getAsLong()),
+                left(world, night.getAsLong()),
                 NightKind.of(world).key("name"));
         ambience.tick(player, worldSettings.soundSettings());
     }
@@ -220,9 +219,19 @@ public final class Announcer implements Listener {
         bars.update(
                 player,
                 worldSettings.announcement().bossBar(),
-                times.apply(world),
-                nights.endOf(world, times.apply(world), night.getAsLong()),
+                left(world, night.getAsLong()),
                 NightKind.of(world).key("name"));
+    }
+
+    /**
+     * @return the share of the running night still to come for the boss bar: what is left of the hold, e.g. the
+     *     dragon's health, when the hold ends the night, otherwise of its time
+     */
+    private float left(World world, long night) {
+        OptionalDouble held = nights.holdLeft(world);
+        if (held.isPresent()) return (float) held.getAsDouble();
+        NightTimes worldTimes = times.apply(world);
+        return NightBars.remaining(worldTimes, nights.endOf(world, worldTimes, night), NightTimes.now(world));
     }
 
     private void broadcast(World world, String key) {

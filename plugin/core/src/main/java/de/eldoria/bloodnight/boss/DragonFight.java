@@ -12,6 +12,8 @@ import de.eldoria.bloodnight.night.BloodNights;
 import de.eldoria.bloodnight.tasks.Tasks;
 import de.eldoria.bloodnight.util.MobTags;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,12 +62,21 @@ public final class DragonFight implements Listener {
         World world = dragon.getWorld();
         TimedNights timed = settings.apply(world);
         if (!timed.dragonFight() || !nights.enabled(world)) return;
-        tasks.global(() -> nights.hold(world));
+        tasks.global(() -> nights.hold(world, () -> left(dragon)));
         CustomMob mob = timed.dragon().isBlank() ? null : mobs.apply(timed.dragon());
         if (mob == null || !mob.attributes().isAssignable(dragon.getType())) return;
         tasks.entity(dragon, () -> {
             if (dragon.isValid() && !MobTags.isCustomMob(dragon)) coordinator.register(dragon, mob);
         });
+    }
+
+    /**
+     * @return the dragon's share of its health, 0 once it is gone; read from any thread, at most a tick old
+     */
+    private static double left(EnderDragon dragon) {
+        if (!dragon.isValid()) return 0;
+        AttributeInstance max = dragon.getAttribute(Attribute.MAX_HEALTH);
+        return max == null || max.getValue() <= 0 ? 1 : dragon.getHealth() / max.getValue();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

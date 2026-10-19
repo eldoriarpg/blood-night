@@ -45,11 +45,11 @@ class NightBarsTest {
             PlayerMock player = server.addPlayer();
             player.teleport(world.getSpawnLocation());
             NightBars bars = new NightBars();
-            bars.update(player, new BossBarSettings(), new NightTimes(13_000, 23_000), 0, "bloodnight.night.name");
+            bars.update(player, new BossBarSettings(), 1f, "bloodnight.night.name");
 
             bars.darken(player, true);
             assertTrue(flags(player).contains(BossBar.Flag.DARKEN_SCREEN));
-            bars.update(player, new BossBarSettings(), new NightTimes(13_000, 23_000), 0, "bloodnight.night.name");
+            bars.update(player, new BossBarSettings(), 1f, "bloodnight.night.name");
             assertTrue(flags(player).contains(BossBar.Flag.DARKEN_SCREEN));
 
             bars.darken(player, false);

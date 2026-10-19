@@ -17,10 +17,12 @@ import org.bukkit.plugin.PluginManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.DoubleSupplier;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -45,6 +47,8 @@ public final class BloodNights {
     private final Map<UUID, Long> decided = new ConcurrentHashMap<>();
     private final Set<UUID> held = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Long> until = new ConcurrentHashMap<>();
+    private final Map<UUID, DoubleSupplier> holders = new ConcurrentHashMap<>();
+    private final Set<UUID> endsWithHold = ConcurrentHashMap.newKeySet();
 
     /**
      * @param selector decides the nights
@@ -70,6 +74,7 @@ public final class BloodNights {
                 end(world, EndReason.DISABLED);
                 continue;
             }
+            if (held.contains(world.getUID())) noteHold(world);
             long fullTime = NightTimes.now(world);
             Long deadline = until.get(world.getUID());
             if (deadline != null && (fullTime < deadline || held.contains(world.getUID()))) continue;
@@ -160,13 +165,49 @@ public final class BloodNights {
      * {@link #release}, e.g. for the length of a dragon fight.
      *
      * @param world a world
+     * @param left  how much of what holds it is left, from 1 down to 0, e.g. the dragon's share of its health
      */
-    public void hold(World world) {
+    public void hold(World world, DoubleSupplier left) {
         if (!enabled.test(world)) return;
         held.add(world.getUID());
+        holders.put(world.getUID(), left);
         if (!running.containsKey(world.getUID())) {
             begin(world, selector.times(world).upcoming(NightTimes.now(world)));
         }
+        noteHold(world);
+    }
+
+    /**
+     * @param world a world
+     * @return how much of what holds its blood night is left, 1 to 0, while the hold alone keeps the night running;
+     *     empty without a hold or when the night outlasts it
+     */
+    public OptionalDouble holdLeft(World world) {
+        DoubleSupplier left = holders.get(world.getUID());
+        if (left == null || !endsWithHold.contains(world.getUID())) return OptionalDouble.empty();
+        return OptionalDouble.of(Math.clamp(left.getAsDouble(), 0, 1));
+    }
+
+    /**
+     * Notes whether the world's blood night ends with its hold, so the hold's share can be read from any thread.
+     */
+    private void noteHold(World world) {
+        if (outlastsHold(world)) endsWithHold.remove(world.getUID());
+        else endsWithHold.add(world.getUID());
+    }
+
+    /**
+     * @return whether the running blood night goes on once its hold lets go: it was forced and its time is not up, or
+     *     the world's own nights have it running now
+     */
+    private boolean outlastsHold(World world) {
+        Long current = running.get(world.getUID());
+        if (current == null) return false;
+        long now = NightTimes.now(world);
+        Long deadline = until.get(world.getUID());
+        if (deadline != null && now < deadline) return true;
+        NightTimes times = selector.times(world);
+        return times.isNight(now) && times.upcoming(now) == current && selector.isBloodNight(world, current);
     }
 
     /**
@@ -177,19 +218,16 @@ public final class BloodNights {
     }
 
     /**
-     * Lets a held blood night go: it ends now, unless the world's own nights have a blood night running at this time.
+     * Lets a held blood night go: it ends now, unless it was forced and its time is not up, or the world's own nights
+     * have a blood night running at this time.
      *
      * @param world a world
      */
     public void release(World world) {
+        holders.remove(world.getUID());
+        endsWithHold.remove(world.getUID());
         if (!held.remove(world.getUID())) return;
-        Long current = running.get(world.getUID());
-        if (current == null) return;
-        long now = NightTimes.now(world);
-        NightTimes times = selector.times(world);
-        boolean scheduled =
-                times.isNight(now) && times.upcoming(now) == current && selector.isBloodNight(world, current);
-        if (!scheduled) end(world, EndReason.RELEASED);
+        if (running.containsKey(world.getUID()) && !outlastsHold(world)) end(world, EndReason.RELEASED);
     }
 
     /**
