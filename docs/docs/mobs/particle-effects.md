@@ -45,7 +45,7 @@ your own copy with a new id.
 | `bloodnight:arcane_lines` | Two magic arcs from the source to the target |
 | `bloodnight:drain_beam` | A red beam of particles from the source to the target, with a ring where it hits |
 | `bloodnight:lightning_bolt` | A crackling bolt from the sky to the ground |
-| `bloodnight:blood_spear` | A trident that flies through the target |
+| `bloodnight:blood_spear` | A glowing spear that flies through the target |
 | `bloodnight:rune_circle` | A turning rune on the ground |
 
 ## Your own effects
