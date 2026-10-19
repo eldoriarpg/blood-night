@@ -135,7 +135,7 @@ final class BloodNightCommand {
         Map<String, String> subcommands = new LinkedHashMap<>();
         subcommands.put("setup", "setup");
         subcommands.put("night", "night [force | cancel] [world]");
-        subcommands.put("editor", "editor [new | apply [force] | cancel]");
+        subcommands.put("editor", "editor [new | apply [force] | cancel | preview <effect>]");
         subcommands.put("store", "store [list <pack> | install <pack | mob> | update [--particles] [pack | mob]]");
         subcommands.put("spawn", "spawn <mob>");
         subcommands.put("item", "item <register | remove <id>>");
