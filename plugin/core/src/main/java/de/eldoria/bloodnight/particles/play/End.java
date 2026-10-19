@@ -11,9 +11,11 @@ import de.eldoria.bloodnight.particles.geometry.Vec3;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.ComplexLivingEntity;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -24,10 +26,12 @@ import java.util.Comparator;
  * <p>
  * An entity is read from whichever thread runs the play. On Folia that may be another region's thread; Paper reads an
  * entity's position there without a check, as vanilla does when it sends particles, so the value is at most a tick
- * old. The eyes of a body made of parts, such as an Ender Dragon, are the middle of its head.
+ * old. The eyes of a body made of parts are the middle of its head; an Ender Dragon's are its mouth.
  */
 public final class End {
     private static final double ABOVE = 0.3;
+    private static final double MOUTH_LIFT = 0.5;
+    private static final double MOUTH_AHEAD = 1;
     private final @Nullable Entity entity;
     private final Location fixed;
 
@@ -92,7 +96,8 @@ public final class End {
         if (at == Anchor.BodyPoint.EYES
                 && entity instanceof ComplexLivingEntity complex
                 && !complex.getParts().isEmpty()) {
-            return head(complex.getParts());
+            Vec3 head = head(complex.getParts());
+            return entity instanceof EnderDragon ? mouth(head, location.getDirection()) : head;
         }
         double height = entity.getHeight();
         double lift =
@@ -118,6 +123,18 @@ public final class End {
                 .orElseThrow();
         Location at = head.getLocation();
         return new Vec3(at.getX(), at.getY() + head.getHeight() / 2, at.getZ());
+    }
+
+    /**
+     * An Ender Dragon's mouth, where its own fireballs leave: half a block above the middle of its head and a block
+     * ahead of it. The dragon's view points backwards, so ahead is against it.
+     *
+     * @param head the middle of its head
+     * @param view the way its view points
+     * @return the mouth
+     */
+    static Vec3 mouth(Vec3 head, Vector view) {
+        return head.plus(new Vec3(-view.getX() * MOUTH_AHEAD, MOUTH_LIFT, -view.getZ() * MOUTH_AHEAD));
     }
 
     /**

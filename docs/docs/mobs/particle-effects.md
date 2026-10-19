@@ -43,7 +43,7 @@ your own copy with a new id.
 | `bloodnight:arcane_glow` | Enchanting letters and a purple ring above the head |
 | `bloodnight:shadow_wings` | Dark wings on the target's back that flap |
 | `bloodnight:arcane_lines` | Two magic arcs from the source to the target |
-| `bloodnight:drain_beam` | A red bar from the source to the target, with sparks |
+| `bloodnight:drain_beam` | A red beam of particles from the source to the target, with a ring where it hits |
 | `bloodnight:lightning_bolt` | A crackling bolt from the sky to the ground |
 | `bloodnight:blood_spear` | A trident that flies through the target |
 | `bloodnight:rune_circle` | A turning rune on the ground |
@@ -158,7 +158,7 @@ motion: {ticks: 8, through: 1.5, ease: IN}
 On the other end, an emitter or piece aims at the same point of the body as its anchor, unless the anchor sets
 `aim`: `anchor: {at: EYES, aim: CENTER}` starts at the mob's eyes and hits the player's chest. Aim at `CENTER` for
 anything aimed at a player: at their `EYES`, it ends right in front of their face and looks cut off and wide. An Ender
-Dragon's `EYES` are its head.
+Dragon's `EYES` are its mouth, where its fireballs come from.
 
 ## Display pieces
 
@@ -172,7 +172,7 @@ A piece shows something solid that particles cannot draw: an item, a block, or a
 | `anchor`, `offset`, `facing` | Where it sits and how it is turned, like emitters |
 | `motion` | Lets it fly to the other end |
 | `stick` | Ticks it stays where it landed |
-| `glow`, `color` | A glowing outline and its colour |
+| `glow`, `color` | A glowing outline and its colour. The outline shows through walls. |
 | `width`, `grow` | For a span: how thick it is, and the ticks it takes to reach the target |
 
 An emitter can sit on a piece with `anchor: {on: PIECE, piece: 0}`. Then the particles follow it, like a trail behind
