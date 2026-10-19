@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.editor.payload;
 import de.eldoria.bloodnight.graph.runtime.Integrations;
 import de.eldoria.bloodnight.mob.MobTypes;
 import de.eldoria.bloodnight.mob.SpawnReasons;
+import de.eldoria.bloodnight.particles.data.DataKind;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import org.bukkit.Bukkit;
@@ -48,6 +49,8 @@ import java.util.stream.Stream;
  * @param trimPatterns     the armour trim patterns, by key, sorted
  * @param trimMaterials    the armour trim materials, by key, sorted
  * @param economy          whether Vault and an economy plugin take payments, so kills can pay money
+ * @param particles        the kind of data each particle takes, by key, e.g. {@code minecraft:dust} to {@code DUST};
+ *                         see {@link DataKind}
  */
 public record EditorChoices(
         String minecraftVersion,
@@ -65,7 +68,48 @@ public record EditorChoices(
         List<String> commands,
         List<String> trimPatterns,
         List<String> trimMaterials,
-        boolean economy) {
+        boolean economy,
+        Map<String, DataKind> particles) {
+    /**
+     * Choices without particles.
+     */
+    public EditorChoices(
+            String minecraftVersion,
+            List<String> materials,
+            Map<String, MaterialInfo> materialInfo,
+            Map<String, Integer> enchantments,
+            Map<String, String> entityClasses,
+            List<String> mobTypes,
+            Map<String, List<String>> spawnReasons,
+            List<String> mythicTypes,
+            List<String> attributes,
+            List<String> biomes,
+            List<String> effects,
+            Map<String, GameRuleChoice> gameRules,
+            List<String> commands,
+            List<String> trimPatterns,
+            List<String> trimMaterials,
+            boolean economy) {
+        this(
+                minecraftVersion,
+                materials,
+                materialInfo,
+                enchantments,
+                entityClasses,
+                mobTypes,
+                spawnReasons,
+                mythicTypes,
+                attributes,
+                biomes,
+                effects,
+                gameRules,
+                commands,
+                trimPatterns,
+                trimMaterials,
+                economy,
+                Map.of());
+    }
+
     /**
      * @param type           {@code boolean} or {@code integer}, what the rule's value is
      * @param translationKey the key of the rule's name in Minecraft's language files, e.g. {@code gamerule.doInsomnia}
@@ -112,7 +156,16 @@ public record EditorChoices(
                 serverCommands(),
                 keys(RegistryKey.TRIM_PATTERN),
                 keys(RegistryKey.TRIM_MATERIAL),
-                Integrations.hasEconomy());
+                Integrations.hasEconomy(),
+                serverParticles());
+    }
+
+    private static Map<String, DataKind> serverParticles() {
+        Map<String, DataKind> particles = new TreeMap<>();
+        RegistryAccess.registryAccess()
+                .getRegistry(RegistryKey.PARTICLE_TYPE)
+                .forEach(particle -> particles.put(particle.getKey().asString(), DataKind.of(particle)));
+        return particles;
     }
 
     private static List<String> keys(RegistryKey<? extends Keyed> key) {

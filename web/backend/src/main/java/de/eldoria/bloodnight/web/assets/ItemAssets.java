@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -39,13 +40,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Minecraft's item icons and names and its sounds per version, fetched from Mojang once and kept in a cache directory.
+ * Minecraft's item icons and names, its sounds and its particle sprites per version, fetched from Mojang once and kept
+ * in a cache directory.
  * <p>
  * The first request for a version reads Mojang's version manifest, downloads that version's client jar and the
  * language files of every {@link Language} BloodNight ships (each checked against the sha1 Mojang publishes),
  * extracts the items with {@link ItemAssetExtractor} and writes {@code <cache>/<version>/items.json} and the icons
  * below {@code textures/}, and the sounds of {@code sounds.json} with {@link SoundAssetExtractor} into
- * {@code sounds.json}; the sounds themselves are fetched one by one when first played, into {@code sounds/}. The
+ * {@code sounds.json}, and the particles with {@link ParticleAssetExtractor} into {@code particles.json} with their
+ * sprites below {@code textures/particle/}; the sounds themselves are fetched one by one when first played, into
+ * {@code sounds/}. The
  * version's directory appears in one move once complete. Requests arriving meanwhile wait for the same download. A
  * failed download is not remembered, so the next request tries again. Nothing from Mojang is stored outside the cache.
  */
@@ -57,6 +61,8 @@ public final class ItemAssets {
     private static final Pattern HASH = Pattern.compile("[0-9a-f]{40}");
     private static final String SOUNDS = "sounds.json";
     private static final String SOUND_FILES = "sound-files.json";
+    private static final String PARTICLES = "particles.json";
+    private static final Set<String> FOLDERS = Set.of("item", "block", "particle");
     private final Path cache;
     private final HttpClient http;
     private final URI manifest;
@@ -130,6 +136,16 @@ public final class ItemAssets {
     }
 
     /**
+     * @param version a Minecraft version, e.g. {@code 26.3}
+     * @return the file holding the sprites of its particles, fetched first if needed
+     * @throws UnknownVersion when Mojang does not know the version
+     * @throws Unavailable    when it cannot be fetched now
+     */
+    public Path particles(String version) throws UnknownVersion, Unavailable {
+        return fetched(version).resolve(PARTICLES);
+    }
+
+    /**
      * Fetches a sound of a version's {@code sounds.json} from Mojang the first time it is asked for, checked against
      * its hash, and keeps it.
      *
@@ -164,7 +180,9 @@ public final class ItemAssets {
     }
 
     private static boolean complete(Path target) {
-        return Files.isRegularFile(target.resolve("items.json")) && Files.isRegularFile(target.resolve(SOUNDS));
+        return Files.isRegularFile(target.resolve("items.json"))
+                && Files.isRegularFile(target.resolve(SOUNDS))
+                && Files.isRegularFile(target.resolve(PARTICLES));
     }
 
     private Path fetched(String version) throws UnknownVersion, Unavailable {
@@ -198,13 +216,13 @@ public final class ItemAssets {
 
     /**
      * @param version a version whose items were fetched
-     * @param folder  {@code item} or {@code block}
+     * @param folder  {@code item}, {@code block} or {@code particle}
      * @param name    the texture's file name, e.g. {@code diamond_sword.png}
      * @return the icon, if the version's assets hold it
      */
     public Optional<Path> texture(String version, String folder, String name) {
         if (!VERSION.matcher(version).matches() || !NAME.matcher(name).matches()) return Optional.empty();
-        if (!folder.equals("item") && !folder.equals("block")) return Optional.empty();
+        if (!FOLDERS.contains(folder)) return Optional.empty();
         Path texture =
                 cache.resolve(version).resolve("textures").resolve(folder).resolve(name);
         return Files.isRegularFile(texture) ? Optional.of(texture) : Optional.empty();
@@ -254,6 +272,15 @@ public final class ItemAssets {
                     }
                 }
                 Files.write(staging.resolve("items.json"), EditorApp.MAPPER.writeValueAsBytes(extraction.index()));
+                ParticleAssetExtractor.Extraction particles = ParticleAssetExtractor.extract(version, zip);
+                for (var sprite : particles.textures().entrySet()) {
+                    Path file = staging.resolve("textures").resolve(sprite.getKey() + ".png");
+                    Files.createDirectories(Objects.requireNonNull(file.getParent()));
+                    try (InputStream in = zip.getInputStream(zip.getEntry(sprite.getValue()))) {
+                        Files.copy(in, file, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+                Files.write(staging.resolve(PARTICLES), EditorApp.MAPPER.writeValueAsBytes(particles.index()));
                 Map<String, Map<String, String>> all = new LinkedHashMap<>();
                 all.put("en_us", ItemAssetExtractor.language(zip, "assets/minecraft/lang/en_us.json"));
                 all.putAll(languages);

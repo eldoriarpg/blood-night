@@ -590,6 +590,10 @@
       },
       "required" : [ "id", "attributes", "behaviour", "loot", "extension", "spawn", "movement" ]
     },
+    "DataKind" : {
+      "type" : "string",
+      "enum" : [ "NONE", "DUST", "DUST_TRANSITION", "SPELL", "COLOR", "POWER", "DELAY", "BLOCK", "ITEM", "TRAIL", "UNSUPPORTED" ]
+    },
     "DeathActionSettings" : {
       "type" : "object",
       "properties" : {
@@ -795,9 +799,15 @@
         },
         "economy" : {
           "type" : "boolean"
+        },
+        "particles" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/DataKind"
+          }
         }
       },
-      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials", "economy" ]
+      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials", "economy", "particles" ]
     },
     "EditorItem" : {
       "type" : "object",
@@ -926,6 +936,18 @@
             "$ref" : "#/$defs/LootTable"
           }
         },
+        "particleEffects" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/ParticleEffect"
+          }
+        },
+        "builtInEffects" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/$defs/ParticleEffect"
+          }
+        },
         "problems" : {
           "type" : "object",
           "additionalProperties" : {
@@ -972,7 +994,7 @@
           "$ref" : "#/$defs/EditorLegacy"
         }
       },
-      "required" : [ "catalog", "mobs", "macros", "items", "lootTables", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
+      "required" : [ "catalog", "mobs", "macros", "items", "lootTables", "particleEffects", "builtInEffects", "problems", "macroProblems", "configProblems", "settings", "choices", "hashes", "store", "setup" ]
     },
     "EditorSettings" : {
       "type" : "object",

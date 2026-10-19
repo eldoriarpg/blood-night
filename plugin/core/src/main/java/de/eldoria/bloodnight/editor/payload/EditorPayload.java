@@ -12,6 +12,8 @@ import de.eldoria.bloodnight.editor.item.EditorItem;
 import de.eldoria.bloodnight.items.ItemRegistry;
 import de.eldoria.bloodnight.loot.LootTable;
 import de.eldoria.bloodnight.mob.CustomMob;
+import de.eldoria.bloodnight.particles.BuiltInEffects;
+import de.eldoria.bloodnight.particles.effect.ParticleEffect;
 import de.eldoria.bloodnight.store.MobStore;
 import de.eldoria.graph.compiler.validate.GraphProblem;
 import de.eldoria.graph.model.Macro;
@@ -42,6 +44,8 @@ import java.util.function.Function;
  * @param items          the items by id: registered from the game (name, lore and enchantments editable) and made in
  *                       the editor
  * @param lootTables     the loot tables by id
+ * @param particleEffects the server's own particle effects by id
+ * @param builtInEffects the built-in particle effects by id, read only; the editor copies one to change it
  * @param problems       problems per mob id
  * @param macroProblems  problems per macro id
  * @param configProblems files that could not be read, with the reason
@@ -60,6 +64,8 @@ public record EditorPayload(
         List<Macro> macros,
         Map<String, EditorItem> items,
         Map<String, LootTable> lootTables,
+        Map<String, ParticleEffect> particleEffects,
+        Map<String, ParticleEffect> builtInEffects,
         Map<String, List<GraphProblem>> problems,
         Map<String, List<GraphProblem>> macroProblems,
         Map<String, String> configProblems,
@@ -78,6 +84,43 @@ public record EditorPayload(
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
             .build();
+
+    /**
+     * A payload without particle effects.
+     */
+    public EditorPayload(
+            String catalog,
+            Map<String, CustomMob> mobs,
+            List<Macro> macros,
+            Map<String, EditorItem> items,
+            Map<String, LootTable> lootTables,
+            Map<String, List<GraphProblem>> problems,
+            Map<String, List<GraphProblem>> macroProblems,
+            Map<String, String> configProblems,
+            SettingsPayload settings,
+            EditorChoices choices,
+            Map<String, String> hashes,
+            EditorStore store,
+            boolean setup,
+            @Nullable EditorLegacy legacy) {
+        this(
+                catalog,
+                mobs,
+                macros,
+                items,
+                lootTables,
+                Map.of(),
+                Map.of(),
+                problems,
+                macroProblems,
+                configProblems,
+                settings,
+                choices,
+                hashes,
+                store,
+                setup,
+                legacy);
+    }
 
     /**
      * @param configuration the loaded configuration
@@ -106,6 +149,8 @@ public record EditorPayload(
                 configuration.macros().macros(),
                 items(configuration.items()),
                 configuration.lootTables().tables(),
+                configuration.particleEffects().effects(),
+                BuiltInEffects.all(),
                 behaviours.problems(),
                 behaviours.macroProblems(),
                 configuration.problems(),
@@ -128,6 +173,8 @@ public record EditorPayload(
                 macros,
                 items,
                 lootTables,
+                particleEffects,
+                builtInEffects,
                 problems,
                 macroProblems,
                 configProblems,

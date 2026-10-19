@@ -12,13 +12,14 @@ export interface Touched {
     everything: boolean
 }
 
-const READ_ONLY: ReadonlySet<string> = new Set(['choices', 'hashes', 'catalog', 'problems', 'macroProblems', 'configProblems', 'store', 'setup', 'legacy'])
+const READ_ONLY: ReadonlySet<string> = new Set(['choices', 'hashes', 'catalog', 'problems', 'macroProblems', 'configProblems', 'store', 'setup', 'legacy', 'builtInEffects'])
 
 /** Section names, as the service and the locks name them. */
 export const section = {
     mob: (id: string) => `mobs/${id}`,
     item: (id: string) => `items/${id}`,
     lootTable: (id: string) => `lootTables/${id}`,
+    particleEffect: (id: string) => `particleEffects/${id}`,
     macro: (id: string) => `macros/${id}`,
     main: 'settings/main',
     world: (uid: string) => `settings/worlds/${uid}`,
@@ -55,6 +56,7 @@ function sectionAt(document: unknown, path: string[], operation: PatchOperation)
     if (root === 'mobs') return second === undefined ? undefined : section.mob(second)
     if (root === 'items') return second === undefined ? undefined : section.item(second)
     if (root === 'lootTables') return second === undefined ? undefined : section.lootTable(second)
+    if (root === 'particleEffects') return second === undefined ? undefined : section.particleEffect(second)
     if (root === 'macros') return second === undefined ? undefined : section.macro(macroId(document, path, operation))
     if (root === 'settings') {
         if (second === 'main') return section.main

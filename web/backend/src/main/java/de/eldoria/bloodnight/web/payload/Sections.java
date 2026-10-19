@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  * Finds the sections of the payload a change touches: {@code mobs/<id>}, {@code macros/<id>}, {@code items/<id>}, {@code settings/main},
- * {@code lootTables/<id>} and {@code settings/worlds/<uid>}.
+ * {@code lootTables/<id>}, {@code particleEffects/<id>} and {@code settings/worlds/<uid>}.
  * <p>
  * Macros are a list, so a pointer into it names the macro at that index as the document stands when the operation
  * runs, or the added macro for an {@code add}. A pointer above section level, such as the whole payload or
@@ -24,7 +24,16 @@ import java.util.Set;
  */
 public final class Sections {
     private static final Set<String> READ_ONLY = Set.of(
-            "choices", "hashes", "catalog", "problems", "macroProblems", "configProblems", "store", "setup", "legacy");
+            "choices",
+            "hashes",
+            "catalog",
+            "problems",
+            "macroProblems",
+            "configProblems",
+            "store",
+            "setup",
+            "legacy",
+            "builtInEffects");
 
     private Sections() {}
 
@@ -75,6 +84,7 @@ public final class Sections {
             case "mobs" -> path.size() < 2 ? null : "mobs/" + path.get(1);
             case "items" -> path.size() < 2 ? null : "items/" + path.get(1);
             case "lootTables" -> path.size() < 2 ? null : "lootTables/" + path.get(1);
+            case "particleEffects" -> path.size() < 2 ? null : "particleEffects/" + path.get(1);
             case "macros" -> path.size() < 2 ? null : "macros/" + macroId(document, path, operation);
             case "settings" -> settings(path);
             default -> throw new JsonPatch.PatchException("Unknown part " + root);

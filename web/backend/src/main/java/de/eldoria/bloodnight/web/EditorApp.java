@@ -161,6 +161,7 @@ public final class EditorApp {
             javalin.routes.get(AssetRoutes.TEXTURE, this::texture);
             javalin.routes.get(AssetRoutes.SOUNDS, this::sounds);
             javalin.routes.get(AssetRoutes.SOUND, this::sound);
+            javalin.routes.get(AssetRoutes.PARTICLES, this::particles);
         });
     }
 
@@ -525,6 +526,21 @@ public final class EditorApp {
             throw new NotFoundResponse(e.getMessage());
         } catch (ItemAssets.Unavailable e) {
             log.warn("Sounds of {} are unavailable", version, e);
+            throw new ServiceUnavailableResponse("Minecraft's assets cannot be fetched right now");
+        }
+    }
+
+    private void particles(Context ctx) throws IOException {
+        String version = ctx.pathParam("version");
+        try {
+            Path index = assets.particles(version);
+            ctx.header("Cache-Control", IMMUTABLE)
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .result(Files.readAllBytes(index));
+        } catch (ItemAssets.UnknownVersion e) {
+            throw new NotFoundResponse(e.getMessage());
+        } catch (ItemAssets.Unavailable e) {
+            log.warn("Particle sprites of {} are unavailable", version, e);
             throw new ServiceUnavailableResponse("Minecraft's assets cannot be fetched right now");
         }
     }

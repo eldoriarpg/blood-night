@@ -28,8 +28,9 @@ import java.util.stream.Collectors;
  * against the server's catalog (known node types, ports, connections to existing nodes and outputs), that mobs and
  * loot tables only use items of the payload or material keys such as {@code minecraft:diamond_helmet}, whose existence is
  * left to the server like anything else that needs it (entity types, effect keys) when it pulls the result, and that
- * mobs, worlds and the server only assign loot tables of the payload. Catalogs leave empty port lists out, so a
- * missing list counts as empty.
+ * mobs, worlds and the server only assign loot tables of the payload, and that graphs and mobs only play particle
+ * effects of the payload or its built-in ones. Catalogs leave empty port lists out, so a missing list counts as
+ * empty.
  * <p>
  * Uses of macros ({@code macro.<id>}) need a macro of that id in the payload; uses of routines
  * ({@code routine.<name>}) need a {@code routine.define} of that name in the same graph, and their inputs are the
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
  */
 public final class PayloadValidator {
     private static final String ROUTINE = "routine.";
+    private static final String PLAY_EFFECT = "world.play_effect";
+    private static final List<String> WORN = List.of("ambient", "spawn", "death");
     private static final List<String> SLOTS = List.of("head", "chest", "legs", "feet", "mainHand", "offHand");
     private final Map<String, NodeType> nodes;
 
@@ -87,6 +90,7 @@ public final class PayloadValidator {
             if (!macro.path("id").isString()) problems.add(new PayloadProblem("/macros/" + i + "/id", "Missing id"));
             validateGraph("/macros/" + i + "/body", macro.path("body"), macros, problems);
         }
+        validateEffects(payload, problems);
         JsonNode settings = payload.path("settings");
         if (!settings.isMissingNode() && !settings.isObject()) {
             problems.add(new PayloadProblem("/settings", "Settings are no object"));
@@ -142,6 +146,40 @@ public final class PayloadValidator {
             String table = assigned.get(i).asString("");
             if (!tables.contains(table)) {
                 problems.add(new PayloadProblem(path + "/tables/" + i, "Unknown loot table " + table));
+            }
+        }
+    }
+
+    private static void validateEffects(JsonNode payload, List<PayloadProblem> problems) {
+        Set<String> effects = new HashSet<>(payload.path("particleEffects").propertyNames());
+        effects.addAll(payload.path("builtInEffects").propertyNames());
+        for (var mob : payload.path("mobs").properties()) {
+            String path = "/mobs/" + escape(mob.getKey());
+            validatePlayed(path + "/behaviour", mob.getValue().path("behaviour"), effects, problems);
+            JsonNode worn = mob.getValue().path("particles");
+            for (String slot : WORN) {
+                JsonNode effect = worn.path(slot);
+                if (effect.isString() && !effects.contains(effect.asString())) {
+                    problems.add(new PayloadProblem(
+                            path + "/particles/" + slot, "Unknown particle effect " + effect.asString()));
+                }
+            }
+        }
+        JsonNode macros = payload.path("macros");
+        for (int i = 0; i < macros.size(); i++) {
+            validatePlayed("/macros/" + i + "/body", macros.get(i).path("body"), effects, problems);
+        }
+    }
+
+    private static void validatePlayed(
+            String path, JsonNode graph, Set<String> effects, List<PayloadProblem> problems) {
+        for (var node : graph.path("nodes").properties()) {
+            if (!node.getValue().path("type").asString("").equals(PLAY_EFFECT)) continue;
+            JsonNode effect = node.getValue().path("config").path("effect");
+            if (effect.isString() && !effects.contains(effect.asString())) {
+                problems.add(new PayloadProblem(
+                        path + "/nodes/" + escape(node.getKey()) + "/config/effect",
+                        "Unknown particle effect " + effect.asString()));
             }
         }
     }

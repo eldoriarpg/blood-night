@@ -136,6 +136,9 @@ public final class MojangFixture implements AutoCloseable {
         entries.put("assets/minecraft/models/block/cube.json", text("{}"));
         entries.put("assets/minecraft/textures/item/diamond_sword.png", SWORD_PNG);
         entries.put("assets/minecraft/textures/block/stone.png", STONE_PNG);
+        entries.put("assets/minecraft/particles/flame.json", text("""
+                {"textures":["minecraft:flame","minecraft:missing"]}"""));
+        entries.put("assets/minecraft/textures/particle/flame.png", STONE_PNG);
         entries.put("assets/minecraft/lang/en_us.json", text("""
                 {"item.minecraft.diamond_sword":"Diamond Sword","block.minecraft.stone":"Stone","item.minecraft.compass":"Compass","block.minecraft.chest":"Chest","enchantment.minecraft.sharpness":"Sharpness","enchantment.minecraft.sharpness.desc":"More damage","entity.minecraft.creeper":"Creeper","biome.minecraft.plains":"Plains","subtitles.entity.zombie.ambient":"Zombie groans"}"""));
         ByteArrayOutputStream out = new ByteArrayOutputStream();

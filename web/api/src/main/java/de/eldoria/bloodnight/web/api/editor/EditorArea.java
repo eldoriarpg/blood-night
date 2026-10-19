@@ -22,7 +22,9 @@ public enum EditorArea {
     /** The server-wide settings, {@code settings/main}. */
     SERVER,
     /** The loot tables, {@code lootTables/<id>}. */
-    LOOT;
+    LOOT,
+    /** The server's own particle effects, {@code particleEffects/<id>}. */
+    PARTICLES;
 
     /**
      * @param section a lockable section, e.g. {@code mobs/speed_zombie}
@@ -35,6 +37,7 @@ public enum EditorArea {
         if (section.startsWith("settings/worlds/")) return WORLDS;
         if (section.equals("settings/main")) return SERVER;
         if (section.startsWith("lootTables/")) return LOOT;
+        if (section.startsWith("particleEffects/")) return PARTICLES;
         return null;
     }
 }

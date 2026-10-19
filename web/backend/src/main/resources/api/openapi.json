@@ -813,6 +813,42 @@
           }
         }
       }
+    },
+    "/api/v1/assets/{version}/particles" : {
+      "get" : {
+        "operationId" : "getParticleAssets",
+        "summary" : "The sprites of every particle of a Minecraft version",
+        "parameters" : [ {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ParticleIndex"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "An error, e.g. 404, 409 or 423 Locked",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -955,7 +991,7 @@
       },
       "EditorArea" : {
         "type" : "string",
-        "enum" : [ "MOBS", "MACROS", "ITEMS", "WORLDS", "SERVER", "LOOT" ]
+        "enum" : [ "MOBS", "MACROS", "ITEMS", "WORLDS", "SERVER", "LOOT", "PARTICLES" ]
       },
       "ErrorBody" : {
         "type" : "object",
@@ -1129,6 +1165,24 @@
           }
         },
         "required" : [ "name", "editorUrl" ]
+      },
+      "ParticleIndex" : {
+        "type" : "object",
+        "properties" : {
+          "version" : {
+            "type" : "string"
+          },
+          "particles" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "required" : [ "version", "particles" ]
       },
       "PayloadProblem" : {
         "type" : "object",

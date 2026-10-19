@@ -8,6 +8,7 @@ package de.eldoria.bloodnight.web;
 import de.eldoria.bloodnight.schema.JsonSchemas;
 import de.eldoria.bloodnight.web.api.assets.AssetRoutes;
 import de.eldoria.bloodnight.web.api.assets.ItemIndex;
+import de.eldoria.bloodnight.web.api.assets.ParticleIndex;
 import de.eldoria.bloodnight.web.api.assets.SoundIndex;
 import de.eldoria.bloodnight.web.api.editor.EditorRoutes;
 import de.eldoria.bloodnight.web.api.editor.SessionView;
@@ -223,7 +224,16 @@ final class ApiSpec {
                     null,
                     200,
                     SoundIndex.class),
-            new Operation("get", AssetRoutes.SOUND, "getSound", "A sound as Ogg Vorbis", null, null, 200, null));
+            new Operation("get", AssetRoutes.SOUND, "getSound", "A sound as Ogg Vorbis", null, null, 200, null),
+            new Operation(
+                    "get",
+                    AssetRoutes.PARTICLES,
+                    "getParticleAssets",
+                    "The sprites of every particle of a Minecraft version",
+                    null,
+                    null,
+                    200,
+                    ParticleIndex.class));
 
     private ApiSpec() {}
 

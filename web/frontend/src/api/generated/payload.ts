@@ -282,6 +282,41 @@ export type TooltipPart = 'ENCHANTMENTS' | 'ATTRIBUTES' | 'UNBREAKABLE' | 'DYE' 
 export type AmountMode = 'RANGE' | 'CHOICES';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "BodyPoint".
+ */
+export type BodyPoint = 'FEET' | 'CENTER' | 'EYES' | 'ABOVE';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "EffectEnd".
+ */
+export type EffectEnd = 'SOURCE' | 'TARGET' | 'PIECE';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ShapeType".
+ */
+export type ShapeType = 'POINT' | 'RING' | 'SPHERE' | 'LINE' | 'SPIRAL' | 'BEAM' | 'ARC' | 'PATTERN';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Facing".
+ */
+export type Facing = 'UP' | 'LOOK' | 'BODY' | 'PATH';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "MotionType".
+ */
+export type MotionType = 'TRAVEL';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Ease".
+ */
+export type Ease = 'LINEAR' | 'IN' | 'OUT';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "PieceKind".
+ */
+export type PieceKind = 'ITEM' | 'BLOCK' | 'SPAN';
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "Severity".
  */
 export type Severity = 'ERROR' | 'WARNING';
@@ -353,39 +388,20 @@ export type WeatherChange = 'UNCHANGED' | 'CLEAR' | 'RAIN' | 'THUNDER';
 export type RaidChange = 'UNCHANGED' | 'ALLOW' | 'DENY';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "BodyPoint".
+ * via the `definition` "DataKind".
  */
-export type BodyPoint = 'FEET' | 'CENTER' | 'EYES' | 'ABOVE';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "EffectEnd".
- */
-export type EffectEnd = 'SOURCE' | 'TARGET' | 'PIECE';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "ShapeType".
- */
-export type ShapeType = 'POINT' | 'RING' | 'SPHERE' | 'LINE' | 'SPIRAL' | 'BEAM' | 'ARC' | 'PATTERN';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Facing".
- */
-export type Facing = 'UP' | 'LOOK' | 'BODY' | 'PATH';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "MotionType".
- */
-export type MotionType = 'TRAVEL';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Ease".
- */
-export type Ease = 'LINEAR' | 'IN' | 'OUT';
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "PieceKind".
- */
-export type PieceKind = 'ITEM' | 'BLOCK' | 'SPAN';
+export type DataKind =
+  | 'NONE'
+  | 'DUST'
+  | 'DUST_TRANSITION'
+  | 'SPELL'
+  | 'COLOR'
+  | 'POWER'
+  | 'DELAY'
+  | 'BLOCK'
+  | 'ITEM'
+  | 'TRAIL'
+  | 'UNSUPPORTED';
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
  * via the `definition` "StoreState".
@@ -403,6 +419,12 @@ export interface EditorPayload {
   };
   lootTables: {
     [k: string]: LootTable;
+  };
+  particleEffects: {
+    [k: string]: ParticleEffect;
+  };
+  builtInEffects: {
+    [k: string]: ParticleEffect;
   };
   problems: {
     [k: string]: GraphProblem[];
@@ -722,6 +744,139 @@ export interface LootAmount {
 export interface LootWear {
   min: number;
   max: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ParticleEffect".
+ */
+export interface ParticleEffect {
+  name?: string;
+  duration?: number;
+  emitters?: Emitter[];
+  pieces?: Piece[];
+  self?: boolean;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Emitter".
+ */
+export interface Emitter {
+  particle?: string;
+  data?: ParticleDataSpec;
+  anchor?: Anchor;
+  offset?: Vec3;
+  shape?: Shape;
+  motion?: Motion;
+  count?: number;
+  spread?: Vec3;
+  speed?: number;
+  every?: number;
+  delay?: number;
+  chance?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "ParticleDataSpec".
+ */
+export interface ParticleDataSpec {
+  color?: string;
+  to?: string;
+  size?: number;
+  power?: number;
+  delay?: number;
+  block?: string;
+  item?: string;
+  ticks?: number;
+  toward?: Vec3;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Vec3".
+ */
+export interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Anchor".
+ */
+export interface Anchor {
+  at?: BodyPoint;
+  on?: EffectEnd;
+  piece?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Shape".
+ */
+export interface Shape {
+  type?: ShapeType;
+  radius?: number;
+  points?: number;
+  to?: Vec3;
+  height?: number;
+  turns?: number;
+  strands?: number;
+  density?: number;
+  jitter?: number;
+  bend?: number;
+  twist?: number;
+  rows?: string[];
+  scale?: number;
+  mirror?: boolean;
+  flap?: Flap;
+  spin?: number;
+  grow?: boolean;
+  facing?: Facing;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Flap".
+ */
+export interface Flap {
+  degrees: number;
+  ticks: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Motion".
+ */
+export interface Motion {
+  type?: MotionType;
+  ticks?: number;
+  through?: number;
+  ease?: Ease;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Piece".
+ */
+export interface Piece {
+  kind?: PieceKind;
+  item?: string;
+  block?: string;
+  scale?: number;
+  rotation?: Rotation;
+  anchor?: Anchor;
+  offset?: Vec3;
+  facing?: Facing;
+  motion?: Motion;
+  stick?: number;
+  glow?: boolean;
+  color?: string;
+  width?: number;
+  grow?: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Rotation".
+ */
+export interface Rotation {
+  pitch: number;
+  yaw: number;
+  roll: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1272,6 +1427,9 @@ export interface EditorChoices {
   trimPatterns: string[];
   trimMaterials: string[];
   economy: boolean;
+  particles: {
+    [k: string]: DataKind;
+  };
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1338,139 +1496,6 @@ export interface Offer {
   particleEffects: {
     [k: string]: ParticleEffect;
   };
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "ParticleEffect".
- */
-export interface ParticleEffect {
-  name?: string;
-  duration?: number;
-  emitters?: Emitter[];
-  pieces?: Piece[];
-  self?: boolean;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Emitter".
- */
-export interface Emitter {
-  particle?: string;
-  data?: ParticleDataSpec;
-  anchor?: Anchor;
-  offset?: Vec3;
-  shape?: Shape;
-  motion?: Motion;
-  count?: number;
-  spread?: Vec3;
-  speed?: number;
-  every?: number;
-  delay?: number;
-  chance?: number;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "ParticleDataSpec".
- */
-export interface ParticleDataSpec {
-  color?: string;
-  to?: string;
-  size?: number;
-  power?: number;
-  delay?: number;
-  block?: string;
-  item?: string;
-  ticks?: number;
-  toward?: Vec3;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Vec3".
- */
-export interface Vec3 {
-  x: number;
-  y: number;
-  z: number;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Anchor".
- */
-export interface Anchor {
-  at?: BodyPoint;
-  on?: EffectEnd;
-  piece?: number;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Shape".
- */
-export interface Shape {
-  type?: ShapeType;
-  radius?: number;
-  points?: number;
-  to?: Vec3;
-  height?: number;
-  turns?: number;
-  strands?: number;
-  density?: number;
-  jitter?: number;
-  bend?: number;
-  twist?: number;
-  rows?: string[];
-  scale?: number;
-  mirror?: boolean;
-  flap?: Flap;
-  spin?: number;
-  grow?: boolean;
-  facing?: Facing;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Flap".
- */
-export interface Flap {
-  degrees: number;
-  ticks: number;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Motion".
- */
-export interface Motion {
-  type?: MotionType;
-  ticks?: number;
-  through?: number;
-  ease?: Ease;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Piece".
- */
-export interface Piece {
-  kind?: PieceKind;
-  item?: string;
-  block?: string;
-  scale?: number;
-  rotation?: Rotation;
-  anchor?: Anchor;
-  offset?: Vec3;
-  facing?: Facing;
-  motion?: Motion;
-  stick?: number;
-  glow?: boolean;
-  color?: string;
-  width?: number;
-  grow?: number;
-}
-/**
- * This interface was referenced by `EditorPayload`'s JSON-Schema
- * via the `definition` "Rotation".
- */
-export interface Rotation {
-  pitch: number;
-  yaw: number;
-  roll: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1598,6 +1623,12 @@ export interface EditorPayload1 {
   lootTables: {
     [k: string]: LootTable;
   };
+  particleEffects: {
+    [k: string]: ParticleEffect;
+  };
+  builtInEffects: {
+    [k: string]: ParticleEffect;
+  };
   problems: {
     [k: string]: GraphProblem[];
   };
@@ -1637,6 +1668,20 @@ export const Color = {
     RED: "RED",
     WHITE: "WHITE",
     YELLOW: "YELLOW",
+} as const;
+
+export const DataKind = {
+    BLOCK: "BLOCK",
+    COLOR: "COLOR",
+    DELAY: "DELAY",
+    DUST: "DUST",
+    DUST_TRANSITION: "DUST_TRANSITION",
+    ITEM: "ITEM",
+    NONE: "NONE",
+    POWER: "POWER",
+    SPELL: "SPELL",
+    TRAIL: "TRAIL",
+    UNSUPPORTED: "UNSUPPORTED",
 } as const;
 
 export const DifficultyChange = {

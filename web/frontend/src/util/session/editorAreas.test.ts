@@ -14,6 +14,7 @@ describe('editor areas', () => {
         expect(areaOf('settings/worlds/1234')).toBe('WORLDS')
         expect(areaOf('settings/main')).toBe('SERVER')
         expect(areaOf('lootTables/gems')).toBe('LOOT')
+        expect(areaOf('particleEffects/glow')).toBe('PARTICLES')
         expect(areaOf('choices')).toBeNull()
     })
 

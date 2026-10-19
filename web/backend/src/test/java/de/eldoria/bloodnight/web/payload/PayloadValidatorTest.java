@@ -94,6 +94,19 @@ class PayloadValidatorTest {
     }
 
     @Test
+    void playedAndWornEffectsMustExist() {
+        String payload = """
+                {"particleEffects":{"glow":{}},"builtInEffects":{"bloodnight:blood_aura":{}},
+                 "mobs":{"a":{"id":"a","attributes":{"entityType":"ZOMBIE"},
+                   "particles":{"ambient":"bloodnight:blood_aura","spawn":"glow","death":"gone"},
+                   "behaviour":{"nodes":{"play":{"type":"world.play_effect","config":{"effect":"lost"}}}}}}}
+                """;
+        assertTrue(paths(payload)
+                .containsAll(List.of("/mobs/a/particles/death", "/mobs/a/behaviour/nodes/play/config/effect")));
+        assertTrue(paths(payload).stream().noneMatch(path -> path.contains("ambient") || path.contains("spawn")));
+    }
+
+    @Test
     void theShapeIsChecked() {
         assertTrue(paths("[]").contains(""));
         assertEquals(
