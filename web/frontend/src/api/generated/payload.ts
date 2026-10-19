@@ -499,6 +499,7 @@ export interface MobLoot {
   replaceSame: boolean;
   vanillaLoot: VanillaLoot;
   experience?: Experience;
+  money?: Money;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -507,6 +508,14 @@ export interface MobLoot {
 export interface Experience {
   modifier: ValueModifier;
   value: number;
+}
+/**
+ * This interface was referenced by `EditorPayload`'s JSON-Schema
+ * via the `definition` "Money".
+ */
+export interface Money {
+  min: number;
+  max: number;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -707,6 +716,7 @@ export interface Announcements {
   method?: Method & string;
   personalMethod?: Method & string;
   fallbackLocale?: Language & string;
+  money?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -776,6 +786,7 @@ export interface ServerLoot {
   };
   ordinary: Ordinary;
   experience: Experience;
+  money?: Money;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1120,6 +1131,7 @@ export interface WorldLoot {
   experience?: Experience;
   rewardLoot: boolean;
   ordinary: OrdinaryLoot;
+  money?: Money;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema
@@ -1136,6 +1148,7 @@ export interface OrdinaryLoot {
   xpValue: number;
   excludedTypes: EntityType[];
   excludedReasons: SpawnReason[];
+  money?: Money;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

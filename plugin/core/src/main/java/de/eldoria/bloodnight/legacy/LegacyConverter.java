@@ -510,7 +510,8 @@ public final class LegacyConverter {
                                 !own,
                                 current.replaceSame(),
                                 current.vanillaLoot(),
-                                current.experience())));
+                                current.experience(),
+                                current.money())));
             }
         });
         if (!natural.isEmpty() && !natural.containsValue(true)) {
@@ -524,7 +525,13 @@ public final class LegacyConverter {
     private static CustomMob withVanillaLoot(CustomMob mob, VanillaLoot vanillaLoot) {
         MobLoot loot = mob.loot();
         return mob.withLoot(new MobLoot(
-                loot.tables(), loot.slots(), loot.inherit(), loot.replaceSame(), vanillaLoot, loot.experience()));
+                loot.tables(),
+                loot.slots(),
+                loot.inherit(),
+                loot.replaceSame(),
+                vanillaLoot,
+                loot.experience(),
+                loot.money()));
     }
 
     private List<LootEntry> entries(@Nullable Object drops) {

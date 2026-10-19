@@ -93,7 +93,8 @@ public final class StoreGenerator {
                             true,
                             true,
                             plain.loot().vanillaLoot(),
-                            plain.loot().experience()));
+                            plain.loot().experience(),
+                            plain.loot().money()));
             packages.add(new MobPackage(
                     StoreFiles.FORMAT,
                     mob.id(),

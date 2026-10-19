@@ -5,6 +5,7 @@
  */
 package de.eldoria.bloodnight.loot.assign;
 
+import de.eldoria.bloodnight.loot.money.Money;
 import de.eldoria.bloodnight.loot.roll.LootLevel;
 import org.jspecify.annotations.Nullable;
 
@@ -21,6 +22,7 @@ import java.util.Objects;
  * @param replaceSame whether its items replace the same items of its world and the server
  * @param vanillaLoot what happens to its vanilla loot
  * @param experience  how its experience changes; null takes its world's, else the server's
+ * @param money       what a kill pays; null takes its world's, else the server's
  */
 public record MobLoot(
         List<String> tables,
@@ -28,7 +30,8 @@ public record MobLoot(
         Boolean inherit,
         Boolean replaceSame,
         VanillaLoot vanillaLoot,
-        @Nullable Experience experience) {
+        @Nullable Experience experience,
+        @Nullable Money money) {
     public MobLoot {
         tables = List.copyOf(Objects.requireNonNullElse(tables, List.of()));
         slots = slots == null ? null : Map.copyOf(slots);
@@ -41,7 +44,7 @@ public record MobLoot(
      * @return loot of its own nothing: the world's and the server's tables decide
      */
     public static MobLoot inherited() {
-        return new MobLoot(List.of(), null, true, true, VanillaLoot.KEEP, null);
+        return new MobLoot(List.of(), null, true, true, VanillaLoot.KEEP, null, null);
     }
 
     /**

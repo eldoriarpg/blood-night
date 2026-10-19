@@ -94,7 +94,7 @@ class EditorChecksTest {
     @Test
     void lootTablesNeedKnownItemsAndAssignmentsKnownTables() {
         CustomMob mob = Mobs.zombie("a", Graph.builder().build())
-                .withLoot(new MobLoot(List.of("gems", "gone"), null, null, null, null, null));
+                .withLoot(new MobLoot(List.of("gems", "gone"), null, null, null, null, null, null));
         LootTable gems = new LootTable("Gems", List.of(new LootEntry("ruby", 1, null, false)));
         EditorResult result =
                 new EditorResult(Map.of("a", mob), List.of(), Map.of(), Map.of("gems", gems), null, Map.of());

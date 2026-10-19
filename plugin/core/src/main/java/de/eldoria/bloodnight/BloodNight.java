@@ -62,6 +62,9 @@ import de.eldoria.bloodnight.living.spawn.MobSpawner;
 import de.eldoria.bloodnight.loot.drop.DropHandler;
 import de.eldoria.bloodnight.loot.drop.PickupGuard;
 import de.eldoria.bloodnight.loot.drop.RewardLoot;
+import de.eldoria.bloodnight.loot.money.DamageShares;
+import de.eldoria.bloodnight.loot.money.MoneyRewards;
+import de.eldoria.bloodnight.loot.money.VaultWallet;
 import de.eldoria.bloodnight.metrics.BloodNightMetrics;
 import de.eldoria.bloodnight.mob.CustomMob;
 import de.eldoria.bloodnight.mob.attributes.MobName;
@@ -274,6 +277,8 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         plugins.registerEvents(ItemDropBox.closing(this), this);
         ForeignMobs foreign =
                 new ForeignMobs(() -> configuration.main().foreignMobs(), () -> pluginLoader("MythicMobs"));
+        DamageShares damageShares = new DamageShares();
+        plugins.registerEvents(damageShares, this);
         plugins.registerEvents(
                 new DropHandler(
                         id -> configuration.mobs().get(id),
@@ -287,6 +292,10 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
                         regions,
                         RewardLoot::rollFor,
                         plugins::callEvent,
+                        new MoneyRewards(
+                                new VaultWallet(tasks), damageShares, getServer()::getPlayer, () -> configuration
+                                        .main()
+                                        .announcements()),
                         getLogger()),
                 this);
         plugins.registerEvents(new EnchantmentEffects(bloodNights, BloodEnchantments::level, tasks::entityNow), this);
