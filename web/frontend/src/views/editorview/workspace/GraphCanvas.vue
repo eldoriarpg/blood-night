@@ -37,7 +37,8 @@ import type {PatchOperation} from '~/util/patch/jsonPatch'
  * section. The play button of a node starting a chain lights up the nodes and wires it reaches, one after another in
  * the order they run (see {@link executionOrder}), each with its step number. Nodes snap to the grid the background dots draw; holding Alt while dragging places them freely. Settings and
  * values are edited on the nodes themselves. A double click on a wire puts a reroute on it there, a dot that only
- * gives the wire another path.
+ * gives the wire another path. A wire reaches Vue Flow only once it holds both of its nodes: Vue Flow takes new wires
+ * before new nodes, so a node added with its wire would otherwise leave the wire pointing at nothing for a moment.
  */
 const props = defineProps<{
   graph: Graph
@@ -104,7 +105,8 @@ const nodes = computed(() => view.value.nodes.map(node => ({
   data: node,
   class: playback.current.value === node.id ? 'bn-lit bn-current' : playback.order.value.has(node.id) ? 'bn-lit' : '',
 })))
-const edges = computed(() => view.value.edges.map(edge => ({
+const flowNodeIds = computed(() => new Set(flow.nodes.value.map(node => node.id)))
+const edges = computed(() => view.value.edges.filter(edge => flowNodeIds.value.has(edge.source) && flowNodeIds.value.has(edge.target)).map(edge => ({
   id: edge.id,
   source: edge.source,
   sourceHandle: edge.sourceHandle,
