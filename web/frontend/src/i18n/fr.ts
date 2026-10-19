@@ -995,6 +995,14 @@ export default {
             amount: 'Expérience',
             factor: 'Facteur',
         },
+        money: {
+            nothing: 'Rien',
+            pay: 'Un montant',
+            min: 'Au moins',
+            max: 'Au plus',
+            to: 'à',
+            noEconomy: 'Ce serveur n\'a pas d\'économie. Installez Vault et un plugin d\'économie, sinon les mises à mort ne rapportent rien.',
+        },
         mobLoot: {
             title: 'Ce qu\'il fait tomber',
             world: 'Dans le monde',
@@ -1016,6 +1024,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: 'Dire aux joueurs combien une mise à mort leur a rapporté'},
             phase: {
                 probabilities: 'Chance d\'une nuit de sang pour chaque nuit du cycle',
             },
@@ -1071,13 +1080,16 @@ export default {
             mobLoot: {
                 slots: 'Combien d\'entrées de table une mise à mort fait tomber. Sans réglage, le nombre du monde s\'applique, sinon celui du serveur.',
                 replaceSame: 'Un objet des tables de cette créature est retiré des tables du monde et du serveur, pour que la chance et la quantité de cette créature comptent.',
+                money: 'Argent qu\'une mise à mort rapporte via Vault, tiré entre les deux montants. Il est partagé entre les joueurs qui ont blessé la créature, selon les dégâts de chacun. Sans réglage, l\'argent du monde s\'applique, sinon celui du serveur.',
             },
             loot: {
                 tables: 'Les tables dont chaque créature spéciale ici fait aussi tomber, sauf si la créature le désactive.',
                 slots: 'Combien d\'entrées de table une mise à mort fait tomber quand la créature n\'en règle aucune.',
+                money: 'Argent que rapporte via Vault la mise à mort d\'une créature spéciale qui n\'en fixe pas. Il est partagé entre les joueurs qui l\'ont blessée, selon les dégâts de chacun.',
             },
             ordinary: {
                 tables: 'Les tables de butin dont les ennemis ordinaires font aussi tomber pendant les nuits de sang. Celles du monde s\'ajoutent à celles du serveur.',
+                money: 'Argent que rapporte via Vault la mise à mort d\'un ennemi ordinaire pendant les nuits de sang, partagé selon les dégâts de chaque joueur.',
             },
             settings: {
                 displayName: 'Affiché dans les messages, les placeholders et ici dans l\'éditeur. Les couleurs MiniMessage fonctionnent. Vide : le nom du monde dans Multiverse ou Hyperverse, sinon le nom de son dossier.',
@@ -1325,6 +1337,7 @@ export default {
             inherit: 'Faire tomber aussi le butin réglé plus haut',
             replaceSame: 'Ses objets remplacent les mêmes objets plus haut',
             experience: 'Expérience',
+            money: 'Argent',
             ordinary: 'Ennemis ordinaires pendant les nuits de sang',
         },
     },

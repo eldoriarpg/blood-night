@@ -47,6 +47,7 @@ import java.util.stream.Stream;
  *                         editor suggests them in command lists
  * @param trimPatterns     the armour trim patterns, by key, sorted
  * @param trimMaterials    the armour trim materials, by key, sorted
+ * @param economy          whether Vault and an economy plugin take payments, so kills can pay money
  */
 public record EditorChoices(
         String minecraftVersion,
@@ -63,7 +64,8 @@ public record EditorChoices(
         Map<String, GameRuleChoice> gameRules,
         List<String> commands,
         List<String> trimPatterns,
-        List<String> trimMaterials) {
+        List<String> trimMaterials,
+        boolean economy) {
     /**
      * @param type           {@code boolean} or {@code integer}, what the rule's value is
      * @param translationKey the key of the rule's name in Minecraft's language files, e.g. {@code gamerule.doInsomnia}
@@ -109,7 +111,8 @@ public record EditorChoices(
                 serverGameRules(),
                 serverCommands(),
                 keys(RegistryKey.TRIM_PATTERN),
-                keys(RegistryKey.TRIM_MATERIAL));
+                keys(RegistryKey.TRIM_MATERIAL),
+                Integrations.hasEconomy());
     }
 
     private static List<String> keys(RegistryKey<? extends Keyed> key) {

@@ -23,6 +23,7 @@ announcements:
   method: SUBTITLE
   personalMethod: ACTION_BAR
   fallbackLocale: en_US
+  money: true
 ```
 
 | Key | What it does |
@@ -32,6 +33,7 @@ announcements:
 | `method` | How they see it: `CHAT`, `TITLE`, `SUBTITLE` or `ACTION_BAR`. |
 | `personalMethod` | How a single player sees messages meant for them, like "you entered a world with a blood night". |
 | `fallbackLocale` | The language for players whose language BloodNight does not have: `en_US`, `de_DE`, `es_ES`, `fr_FR`, `ms_MY`, `tr_TR` or `zh_CN`. |
+| `money` | Whether players see how much [money](../mobs/loot-tables.md#money) a kill paid them. They see it the `personalMethod` way. |
 
 ### Languages
 

@@ -725,9 +725,12 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "economy" : {
+          "type" : "boolean"
         }
       },
-      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials" ]
+      "required" : [ "minecraftVersion", "materials", "materialInfo", "enchantments", "entityClasses", "mobTypes", "spawnReasons", "mythicTypes", "attributes", "biomes", "effects", "gameRules", "commands", "trimPatterns", "trimMaterials", "economy" ]
     },
     "EditorItem" : {
       "type" : "object",

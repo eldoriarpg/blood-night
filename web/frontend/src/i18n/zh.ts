@@ -995,6 +995,14 @@ export default {
             amount: '经验',
             factor: '倍数',
         },
+        money: {
+            nothing: '无',
+            pay: '一个金额',
+            min: '最少',
+            max: '最多',
+            to: '至',
+            noEconomy: '此服务器没有经济系统。请安装 Vault 和一个经济插件，否则击杀不会支付任何钱。',
+        },
         mobLoot: {
             title: '掉落内容',
             world: '所在世界',
@@ -1016,6 +1024,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: '告诉玩家一次击杀为他们赚了多少钱'},
             phase: {
                 probabilities: '周期中每一夜出现血夜的几率',
             },
@@ -1071,13 +1080,16 @@ export default {
             mobLoot: {
                 slots: '一次击杀掉落多少个表条目。未设置时使用世界的数量，否则使用服务器的。',
                 replaceSame: '此生物表中的物品会从世界和服务器的表中移除，以此生物的几率和数量为准。',
+                money: '一次击杀通过 Vault 支付的金钱，在两个金额之间随机。它按每位玩家造成的伤害，分给伤害过该生物的玩家。未设置时使用世界的金钱，否则使用服务器的。',
             },
             loot: {
                 tables: '此处每个特殊生物额外掉落的表，除非生物关闭此项。',
                 slots: '生物未设置时，一次击杀掉落多少个表条目。',
+                money: '特殊生物未设置时，其被击杀通过 Vault 支付的金钱。它按每位玩家造成的伤害，分给伤害过它的玩家。',
             },
             ordinary: {
                 tables: '普通敌人在血夜期间额外掉落的战利品表。世界的表会加入服务器的表。',
+                money: '血夜期间击杀普通敌人通过 Vault 支付的金钱，按每位玩家造成的伤害分配。',
             },
             settings: {
                 displayName: '显示在消息、占位符和编辑器中。支持 MiniMessage 颜色。留空：使用 Multiverse 或 Hyperverse 中的世界名称，否则使用文件夹名称。',
@@ -1325,6 +1337,7 @@ export default {
             inherit: '同时掉落上级设置的战利品',
             replaceSame: '自己的物品替换上级的相同物品',
             experience: '经验',
+            money: '金钱',
             ordinary: '血夜期间的普通敌人',
         },
     },

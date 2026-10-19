@@ -995,6 +995,14 @@ export default {
             amount: 'Tecrübe',
             factor: 'Çarpan',
         },
+        money: {
+            nothing: 'Hiçbir şey',
+            pay: 'Bir miktar',
+            min: 'En az',
+            max: 'En çok',
+            to: 'ile',
+            noEconomy: 'Bu sunucuda ekonomi yok. Vault ve bir ekonomi eklentisi kur, yoksa öldürmeler para ödemez.',
+        },
         mobLoot: {
             title: 'Ne düşürür',
             world: 'Dünyada',
@@ -1016,6 +1024,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: 'Oyunculara bir öldürmenin onlara ne kadar para kazandırdığını söyle'},
             phase: {
                 probabilities: 'Döngünün her gecesinde Lanetli Gece şansı',
             },
@@ -1071,13 +1080,16 @@ export default {
             mobLoot: {
                 slots: 'Bir öldürmenin kaç tablo girdisi düşürdüğü. Belirlenmezse dünyanın sayısı, o da yoksa sunucununki geçerlidir.',
                 replaceSame: 'Bu yaratığın tablolarındaki bir eşya dünyanın ve sunucunun tablolarından çıkarılır, böylece bu yaratığın şansı ve miktarı geçerli olur.',
+                money: 'Bir öldürmenin Vault üzerinden ödediği para, iki miktar arasında rastgele. Yaratığa zarar veren oyuncular arasında, her birinin verdiği hasara göre bölünür. Belirlenmezse dünyanın parası, o da yoksa sunucununki geçerlidir.',
             },
             loot: {
                 tables: 'Buradaki her özel yaratığın ek olarak düşürdüğü tablolar; yaratık bunu kapatmadıkça.',
                 slots: 'Yaratık bir sayı belirlemediğinde bir öldürmenin kaç tablo girdisi düşürdüğü.',
+                money: 'Özel bir yaratığın öldürülmesinin, yaratık belirlemediğinde Vault üzerinden ödediği para. Ona zarar veren oyuncular arasında, her birinin hasarına göre bölünür.',
             },
             ordinary: {
                 tables: 'Sıradan düşmanların Lanetli Gecelerde ek olarak düşürdüğü ganimet tabloları. Dünyanınkiler sunucununkilere eklenir.',
+                money: 'Lanetli Gecelerde sıradan bir düşmanın öldürülmesinin Vault üzerinden ödediği para, her oyuncunun hasarına göre bölünür.',
             },
             settings: {
                 displayName: 'Mesajlarda, yer tutucularda ve burada düzenleyicide görünür. MiniMessage renkleri çalışır. Boş: dünyanın Multiverse veya Hyperverse içindeki adı, yoksa klasör adı.',
@@ -1325,6 +1337,7 @@ export default {
             inherit: 'Yukarıda belirlenen ganimeti de düşür',
             replaceSame: 'Kendi eşyaları yukarıdaki aynı eşyaların yerini alır',
             experience: 'Tecrübe',
+            money: 'Para',
             ordinary: 'Lanetli Gecelerde sıradan düşmanlar',
         },
     },

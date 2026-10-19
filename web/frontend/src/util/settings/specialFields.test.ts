@@ -23,6 +23,7 @@ describe('special fields', () => {
         expect(specialField(field('slots', 'map'), 'loot')).toBe('dropWeights')
         expect(specialField(field('tables', 'texts'), 'ordinary')).toBe('lootTables')
         expect(specialField({...field('experience', 'group'), definition: 'Experience'}, 'loot')).toBe('experience')
+        expect(specialField({...field('money', 'group'), definition: 'Money'}, 'ordinary')).toBe('money')
         expect(specialField(field('gameRules', 'map'), 'nightRules')).toBe('gameRules')
         expect(specialField(field('mobs', 'map'), 'spawning')).toBe('worldMobs')
         expect(specialField(field('overrides', 'map'), 'mobSettings')).toBe('mobMap')

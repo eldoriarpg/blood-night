@@ -755,6 +755,14 @@ export default {
             amount: 'Experience',
             factor: 'Factor',
         },
+        money: {
+            nothing: 'Nothing',
+            pay: 'An amount',
+            min: 'Least',
+            max: 'Most',
+            to: 'to',
+            noEconomy: 'This server has no economy. Install Vault and an economy plugin, or kills pay nothing.',
+        },
         mobLoot: {
             title: 'What it drops',
             world: 'In world',
@@ -776,6 +784,7 @@ export default {
     },
     settings: {
         fieldsIn: {
+            announcements: {money: 'Tell players the money a kill paid them'},
             phase: {probabilities: 'Chance of a blood night in each night of the cycle'},
             moonPhase: {probabilities: 'Chance of a blood night by the moon'},
             creepers: {blockDamage: 'Creepers break blocks during blood nights', always: 'Keep blocks safe from creepers all the time, not only during blood nights'},
@@ -808,13 +817,16 @@ export default {
             mobLoot: {
                 slots: 'How many table entries one kill drops. Unset, the world\'s count applies, else the server\'s.',
                 replaceSame: 'An item this mob\'s tables drop is left out of the world\'s and the server\'s tables, so this mob\'s chance and amount count.',
+                money: 'Money a kill pays through Vault, rolled between the two amounts. It is split among the players who hurt the mob, by the damage each dealt. Unset, the world\'s money applies, else the server\'s.',
             },
             loot: {
                 tables: 'The tables every special mob here also drops from, unless the mob turns that off.',
                 slots: 'How many table entries a kill drops where the mob sets none.',
+                money: 'Money a kill of a special mob pays through Vault where the mob sets none. It is split among the players who hurt the mob, by the damage each dealt.',
             },
             ordinary: {
                 tables: 'Loot tables ordinary enemies also drop from during blood nights. A world\'s tables join the server\'s.',
+                money: 'Money a kill of an ordinary enemy pays through Vault during blood nights, split by the damage each player dealt.',
             },
             settings: {
                 displayName: 'Shown in messages, placeholders and here in the editor. MiniMessage colours work. Empty: the world\'s name in Multiverse or Hyperverse, else its folder name.',
@@ -1036,6 +1048,7 @@ export default {
             inherit: 'Also drop the loot set further up',
             replaceSame: 'Own items replace the same items further up',
             experience: 'Experience',
+            money: 'Money',
             ordinary: 'Ordinary enemies during blood nights',
         },
     },

@@ -139,6 +139,19 @@ test('only unset parts of a mob offer to be set up', async ({page}) => {
     expect(stage.changes).toEqual([[{op: 'add', path: '/mobs/speed_creeper/equipment', value: {}}]])
 })
 
+/** A mob's money is set to an amount, and the field warns that the server has no economy to pay it through. */
+test('a mob pays money for a kill and warns without an economy', async ({page}) => {
+    const stage = await stageEditor(page)
+    await page.goto(stage.link)
+    await page.getByRole('button', {name: 'Loot', exact: true}).click()
+
+    await choose(page, page.getByRole('button', {name: 'Money', exact: true}), 'An amount')
+
+    await expect(page.getByText('Saved, revision 1')).toBeVisible()
+    expect(stage.changes).toEqual([[{op: 'add', path: '/mobs/speed_creeper/loot/money', value: {min: 1, max: 5}}]])
+    await expect(page.getByTestId('money-no-economy')).toBeVisible()
+})
+
 /** A loot table is made by name, gets an item, shows its chances and rolls; its uses lead to where it is given. */
 test('a loot table is made, filled, previewed and followed to its uses', async ({page}) => {
     const stage = await stageEditor(page)
@@ -921,7 +934,7 @@ test.describe('settings an everyday user can fill in', () => {
         await page.getByRole('button', {name: 'Add a number'}).first().click()
         await expect(page.getByText('Saved, revision 4')).toBeVisible()
         expect(stage.changes[3]).toEqual([{op: 'add', path: '/settings/worlds/w1/settings/loot/slots', value: {0: 10, 1: 1}}])
-        await expect(page.getByText('Nothing')).toBeVisible()
+        await expect(page.getByText('Nothing', {exact: true}).first()).toBeVisible()
 
         await page.getByRole('button', {name: 'Use the broader setting'}).first().click()
         await expect(page.getByText('Saved, revision 5')).toBeVisible()

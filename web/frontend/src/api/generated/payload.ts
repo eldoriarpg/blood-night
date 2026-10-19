@@ -1197,6 +1197,7 @@ export interface EditorChoices {
   commands: string[];
   trimPatterns: string[];
   trimMaterials: string[];
+  economy: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

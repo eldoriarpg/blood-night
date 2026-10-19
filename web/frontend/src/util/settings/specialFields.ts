@@ -20,6 +20,7 @@ import type {Field} from '~/util/settings/schemaFields'
  *     <li>`dropWeights`: weights by number of drops, which a mob or world may leave to the next broader level</li>
  *     <li>`lootTables`: the loot tables a mob, world or the server assigns, picked by name</li>
  *     <li>`experience`: how experience changes, or left to the next broader level</li>
+ *     <li>`money`: the money a kill pays through Vault, or left to the next broader level</li>
  *     <li>`gameRules`: game rule values by rule, the rules picked by name</li>
  *     <li>`miniMessage`: a MiniMessage text, with a preview</li>
  *     <li>`moonPhases`: a chance for every phase of the moon</li>
@@ -28,7 +29,7 @@ import type {Field} from '~/util/settings/schemaFields'
  *     <li>`mobName`: a mob's name per language with one style</li>
  * </ul>
  */
-export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'lootTables' | 'experience' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName'
+export type SpecialField = 'percent' | 'dayTime' | 'unchanged' | 'unchangedSeconds' | 'effect' | 'mob' | 'mobMap' | 'worldMobs' | 'dropWeights' | 'lootTables' | 'experience' | 'money' | 'gameRules' | 'miniMessage' | 'moonPhases' | 'phaseCycle' | 'curve' | 'mobName'
 
 const PERCENT: ReadonlySet<string> = new Set(['chance', 'chancePerMinute', 'lightningChance', 'thunderChance', 'loseExperienceChance', 'loseInventoryChance', 'probability', 'spawnPercentage'])
 const MINI_MESSAGE: ReadonlySet<string> = new Set(['title', 'prompt', 'prefix', 'displayName'])
@@ -63,6 +64,7 @@ export function specialField(field: Field, parent: string | undefined): SpecialF
         case 'group':
             if (field.definition === 'MobName') return 'mobName'
             if (field.definition === 'Experience') return 'experience'
+            if (field.definition === 'Money') return 'money'
             return parent === 'nightSelection' && field.key === 'curve' ? 'curve' : undefined
         case 'any':
             return parent === 'phase' && field.key === 'probabilities' ? 'phaseCycle' : undefined
