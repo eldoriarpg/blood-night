@@ -432,6 +432,8 @@
             "$ref" : "#/$defs/UpdateSettings"
           } ],
           "default" : {
+            "askForAutoUpdate" : true,
+            "autoUpdate" : false,
             "notice" : true
           }
         },
@@ -2983,6 +2985,14 @@
       "type" : "object",
       "properties" : {
         "notice" : {
+          "type" : "boolean",
+          "default" : true
+        },
+        "autoUpdate" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "askForAutoUpdate" : {
           "type" : "boolean",
           "default" : true
         }

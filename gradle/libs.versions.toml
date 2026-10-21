@@ -9,7 +9,7 @@ strokkcommands = "2.3.1"
 jackson = "3.2.3"
 jackson-bukkit = "2.0.0"
 ocular = "2.3.0"
-eldoutil = "2.2.0"
+eldoutil = "3.0.2"
 paper = "26.3.build.206-stable"
 jetbrains-annotations = "26.1.0"
 junit = "6.1.3"
@@ -45,6 +45,7 @@ eldoutil-entities = { module = "de.eldoria.util:entities", version.ref = "eldout
 eldoutil-debugging = { module = "de.eldoria.util:debugging", version.ref = "eldoutil" }
 eldoutil-messaging = { module = "de.eldoria.util:messaging", version.ref = "eldoutil" }
 eldoutil-localization = { module = "de.eldoria.util:localization", version.ref = "eldoutil" }
+eldoutil-updater = { module = "de.eldoria.util:updater", version.ref = "eldoutil" }
 
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
@@ -79,7 +80,7 @@ testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupit
 sadu = ["sadu-postgresql", "sadu-datasource", "sadu-queries", "sadu-mapper", "sadu-updater"]
 jackson-lite = ["jackson-core", "jackson-databind", "jackson-annotations"]
 jackson-full = ["jackson-core", "jackson-databind", "jackson-annotations", "jackson-yaml"]
-eldoria-utilities = ["eldoutil-items", "eldoutil-entities", "eldoutil-debugging", "eldoutil-messaging", "eldoutil-localization"]
+eldoria-utilities = ["eldoutil-items", "eldoutil-entities", "eldoutil-debugging", "eldoutil-messaging", "eldoutil-localization", "eldoutil-updater"]
 junit = ["junit-jupiter", "junit-params"]
 
 [plugins]

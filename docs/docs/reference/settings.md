@@ -39,6 +39,8 @@ Settings for the whole server.
 | `resourcePack.prompt` | text | `<red>BloodNight would like to show its blood nights with a few extra effects.` |
 | `placeholders.revealNext` | true or false | `false` |
 | `updates.notice` | true or false | `true` |
+| `updates.autoUpdate` | true or false | `false` |
+| `updates.askForAutoUpdate` | true or false | `true` |
 | `store.autoUpdate` | true or false | `true` |
 | `foreignMobs.wrap` | true or false | `false` |
 | `foreignMobs.rules` | true or false | `false` |
@@ -83,6 +85,8 @@ resourcePack:
 placeholders:
   revealNext: false
 updates:
+  askForAutoUpdate: true
+  autoUpdate: false
   notice: true
 store:
   autoUpdate: true
