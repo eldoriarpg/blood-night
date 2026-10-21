@@ -68,15 +68,22 @@ When BloodNight loads a settings file, it adds keys that are missing, with their
 
 ## New versions
 
-BloodNight looks for a new version when the server starts and every 12 hours after that. When there is one, it
+BloodNight looks for a new version when the server starts and every 6 hours after that. When there is one, it
 says so in the console. Players with the permission `bloodnight.updates` see a message when they join. Operators
-have it at first. BloodNight never downloads anything by itself.
+have it at first.
 
-To turn this off, set this in `config.yml`:
+The message has a download button. BloodNight puts the new version into the `plugins/update` folder and the server
+installs it on the next start. After a download you are asked whether future versions should be downloaded by
+themselves. Your answer is written to `config.yml`.
+
+With `autoUpdate` on, new stable versions are downloaded without asking. Development builds never are. To hear
+nothing about new versions, turn `notice` off.
 
 ```yaml
 updates:
-  notice: false
+  notice: true
+  autoUpdate: false
+  askForAutoUpdate: true
 ```
 
 ## Usage numbers

@@ -982,6 +982,8 @@ export interface PlaceholderSettings {
  */
 export interface UpdateSettings {
   notice?: boolean;
+  autoUpdate?: boolean;
+  askForAutoUpdate?: boolean;
 }
 /**
  * This interface was referenced by `EditorPayload`'s JSON-Schema

@@ -31,6 +31,7 @@ Did you already delete the old folder? Put a backup of it into `plugins/BloodNig
 |---|---|
 | Prefix, broadcast level and method, language | `announcements` in `config.yml` |
 | Update reminder | `updates.notice` |
+| Auto updater | `updates.autoUpdate` |
 | Blindness, join warning, blocked commands | Each world, as before they counted for all |
 | Spawner settings | Each world's ignored spawn reasons and vanilla loot |
 | World on or off, creepers, boss bar | The world file |
@@ -56,7 +57,7 @@ drops come from the first world that has some for it.
 ## What is lost
 
 - Where a night selection stood, like the current phase. It starts fresh.
-- `mobTick`, `beeFix` and `autoUpdater`. They have no use any more.
+- `mobTick` and `beeFix`. They have no use any more.
 - Items Minecraft cannot read any more, from very old versions.
 
 `/bn convert` lists everything that could not be taken over.

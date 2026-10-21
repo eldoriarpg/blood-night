@@ -160,7 +160,8 @@ public final class LegacyConverter {
                 .split("_")[0]
                 .toLowerCase(Locale.ROOT);
         copy(general, "updateReminder", tree, "updates.notice");
-        for (String gone : List.of("mobTick", "beeFix", "autoUpdater")) {
+        copy(general, "autoUpdater", tree, "updates.autoUpdate");
+        for (String gone : List.of("mobTick", "beeFix")) {
             if (general.containsKey(gone)) notes.add("%s has no use any more and was left out".formatted(gone));
         }
         return MAPPER.treeToValue(tree, ConfigFile.class);

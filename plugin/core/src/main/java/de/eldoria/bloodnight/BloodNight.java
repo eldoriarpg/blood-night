@@ -97,8 +97,7 @@ import de.eldoria.bloodnight.store.StoreEntry;
 import de.eldoria.bloodnight.store.StoreNotice;
 import de.eldoria.bloodnight.store.build.BuiltInStore;
 import de.eldoria.bloodnight.tasks.Tasks;
-import de.eldoria.bloodnight.updates.LynaSource;
-import de.eldoria.bloodnight.updates.UpdateNotice;
+import de.eldoria.bloodnight.updates.Updates;
 import de.eldoria.eldoutilities.debug.DebugDataProvider;
 import de.eldoria.eldoutilities.debug.data.EntryData;
 import de.eldoria.graph.payload.Catalog;
@@ -122,7 +121,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -170,6 +168,7 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     private PhantomForce phantoms;
     private MobStore mobStore;
     private @Nullable Metrics metrics;
+    private @Nullable Updates updates;
     private WorldNames worldNames;
     private RegionRules regions = RegionRules.NONE;
     private WorldRules worldRules;
@@ -498,13 +497,8 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
         tasks.globalTimer(Omens.STEP, omens::tick);
         tasks.globalTimer(NightGear.STEP, nightGear::tick);
         tasks.globalTimer(20, announcer::tick);
-        UpdateNotice updates = new UpdateNotice(
-                LynaSource.bloodNight(),
-                getPluginMeta().getVersion(),
-                () -> configuration.main().updates().notice(),
-                getLogger());
-        plugins.registerEvents(updates, this);
-        tasks.asyncTimer(Duration.ofHours(12), updates::check);
+        updates = new Updates(this, configuration);
+        updates.apply();
         metrics = BloodNightMetrics.start(this, configuration);
         tasks.globalTimer(1, stretch::tick);
         tasks.globalTimer(20, () -> bloodNights.check(getServer().getWorlds()));
@@ -590,6 +584,7 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     public void onDisable() {
         MobIds.clear();
         if (metrics != null) metrics.shutdown();
+        if (updates != null) updates.stop();
         StoreIds.clear();
         if (tasks != null) tasks.cancelAll();
         if (stretch != null) stretch.clear();
@@ -729,11 +724,13 @@ public final class BloodNight extends JavaPlugin implements DebugDataProvider {
     }
 
     /**
-     * Tells other plugins that the settings changed and are in use now. Call it on the global thread.
+     * Applies the update settings and tells other plugins that the settings changed and are in use now. Call it on the
+     * global thread.
      *
      * @param cause what made them change
      */
     public void settingsChanged(SettingsChangeCause cause) {
+        if (updates != null) updates.apply();
         getServer().getPluginManager().callEvent(new BloodNightSettingsChangeEvent(cause));
     }
 
