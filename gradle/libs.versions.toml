@@ -1,7 +1,7 @@
 [versions]
-javalin = "7.2.4"
+javalin = "7.3.0"
 sadu = "2.4.2"
-logback = "1.6.7"
+logback = "1.6.8"
 testcontainers = "2.0.5"
 run-paper = "3.1.0"
 plugin-yml = "0.9.0"
@@ -22,8 +22,8 @@ ecj = "3.46.100"
 javapoet = "0.23.0"
 shadow = "9.6.1"
 javaparser = "3.28.2"
-spotless = "8.11.0"
-spotbugs = "6.5.13"
+spotless = "8.12.0"
+spotbugs = "6.5.15"
 spotbugs-annotations = "4.10.5"
 jspecify = "1.0.1"
 palantir = "2.84.0"
@@ -71,7 +71,7 @@ sadu-datasource = { module = "de.chojo.sadu:sadu-datasource", version.ref = "sad
 sadu-queries = { module = "de.chojo.sadu:sadu-queries", version.ref = "sadu" }
 sadu-mapper = { module = "de.chojo.sadu:sadu-mapper", version.ref = "sadu" }
 sadu-updater = { module = "de.chojo.sadu:sadu-updater", version.ref = "sadu" }
-postgresql = { module = "org.postgresql:postgresql", version = "42.7.14" }
+postgresql = { module = "org.postgresql:postgresql", version = "42.7.15" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 testcontainers-junit = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
